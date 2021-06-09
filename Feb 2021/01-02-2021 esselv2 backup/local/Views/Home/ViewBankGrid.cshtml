@@ -1,0 +1,229 @@
+@model List<EsselTestLocalApplication.Models.AddBankDetails>
+<style>
+    td.details-control {
+        background: url('../../Content/EsselImages/details_open.png') no-repeat center center;
+        /*background-image: url('../../Content/EsselImages/details_close.png');*/
+        /*background-image: url('../../Content/EsselImages/details_open.png');*/
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../../Content/EsselImages/details_close.png' no-repeat center center;
+    }
+</style>
+
+<div class="table-responsive  w-100">
+    <table id="tblBankGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>BankName</th>
+                <th>AccountType</th>
+                <th>Accountno</th>
+                <th>AccountHolderName </th>
+                <th class="hidden">Banklocation</th>
+                <th class="hidden">AccOpeningDate</th>
+                <th class="hidden">OpeningBalance</th>
+                <th class="hidden">MinimumBalance</th>
+                <th class="hidden">Balance As On Date</th>
+                <th class="hidden">NatureGroupName</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Bankid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BankName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Accountno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccountHolderName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Banklocation)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.AccOpeningDate)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.OpeningBalance)
+                </td>
+
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.MinimumBalance)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.BalanceAsOn)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.NatureGroupName)
+                </td>
+                @if (item.Status == "Approved" && (item.CloseStatus=="Rejected" || item.CloseStatus ==null))
+                {
+                    <td>
+                        <select class="form-control dropdown-toggle" id="ddlBankGridActions" onchange="BankGridActionschange(@item.Bankid,'@item.BankName','@item.AccountType', '@item.Accountno','@item.AccountHolderName','@item.Banklocation','@item.ReturnAccOpeningDate','@item.OpeningBalance','@item.MinimumBalance','@item.ReturnBalanceAsOn','@item.NatureGroupName','@item.GroupId','@item.GroupName',@item.SubGroupId,'@item.SubGroupName',this)">
+                            <option selected="selected" value="Select">-Select-</option>
+                            @*<option value="Edit">Edit</option>
+                              <option value="Close">Delete</option>*@
+                        </select>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+
+<script>
+    $(document).ready(function () {
+        var BankGrid = null;
+        InitializeBankGrid();
+    });
+    function InitializeBankGrid() {
+        BankGrid = $('#tblBankGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Bank Accounts Found"
+            },
+            "createdRow": function (row, data, index) {
+                var ddlAction = $('td:eq(12)', row).find("select");                
+                ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                var Roleid = '@Session["Roleid"]';
+                var Mid = 'Bank Account';
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GetApprovalstatusBANK",
+                    data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        if (count > 0) {
+                            $.each(response, function () {
+                                ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                            });
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            },
+            pageLength: 10
+        });
+
+        $('#tblBankGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = BankGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatBank(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+    }
+    function formatBank(d) {
+        var loc, openingdate, openingbal, minbal, balasondate, natureofgroup;
+             $.each(d, function (index, value) {            
+            if (index == 6)
+               loc = value;
+            if (index == 7)
+                openingdate = value;
+            if (index == 8)
+                openingbal = value;
+            if (index == 9)
+                minbal = value;
+            if (index == 10)
+                balasondate = value;
+            if (index == 11)
+               natureofgroup = value;
+        });
+        var typeArr = openingdate.toString().split(' ');       
+        var d3 = typeArr[0];
+        var t1 = "'" + d3 + "'";
+        var openingdate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+
+        var typeArr1 = balasondate.toString().split(' ');
+        var d31 = typeArr[0];
+        var t11 = "'" + d31 + "'";
+        var balasondate1 = moment(t11, "DDMMYYYY").format('DD-MMM-YYYY');
+
+        return '<div style="width:100%;margin-top:-1% !important"><table cellpadding="5" cellspacing="0"   style="padding-left:50px;width:100%;">' +
+                  '<tr><td>Location:&nbsp;<b>' + loc + '</b></td>' +
+            '<td>A/C Opening Date:&nbsp;<b>' + openingdate1 + '</b></td></tr>' +
+               '<tr><td>Opening Balance:&nbsp;<b>' + openingbal + '</b></td>' +
+               '<td>Min Balance:&nbsp;<b>' + minbal + '</b></td></tr>' +
+            '<tr><td>Balance As On Date:&nbsp;<b>' + balasondate1 + '</b></td>' +
+               '<td>Ledger Group:&nbsp;<b>' + natureofgroup + '</b></td></tr>' +
+            '</table></div>';
+    
+    //    var Group, SubGroup, Balance, BalanceDate;
+    //    $.each(d, function (index, value) {
+    //        // Get value in alert
+    //        if (index == 6)
+    //            Group = value;
+    //        if (index == 7)
+    //            SubGroup = value;
+    //        if (index == 9)
+    //            Balance = value;
+    //        if (index == 10)
+
+
+    //        BalanceDate = value;
+    //    });
+
+
+    //    var typeArr = BalanceDate.toString().split(' ');
+    //    //alert(typeArr[0]);
+    //    var d3 = typeArr[0];
+    //    var t1 = "'" + d3 + "'";
+    //    var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+
+    //    return '<div><table cellpadding="5" cellspacing="0" border="1px" style="padding-left:50px;width:100%">' +
+    //        '<tr><td>Group:&nbsp;<b>' + Group + '</b></td>' +
+    //        '<td>Sub Group:&nbsp;<b>' + SubGroup + '</b></td></tr>' +
+    //        '<tr><td>Balance:&nbsp;<b>' + Balance + '</b></td>' +
+    //        '<td>Balance Date:&nbsp;<b>' + bldate1 + '</b></td></tr>' +
+    //        '</table></div>';
+    }
+
+
+</script>

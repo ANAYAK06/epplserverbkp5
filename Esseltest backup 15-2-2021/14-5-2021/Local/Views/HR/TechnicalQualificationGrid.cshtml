@@ -1,0 +1,134 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.TechnicalQualification>
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    System.Web.Script.Serialization.JavaScriptSerializer oSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var TechJson = "";
+    var EditTechJson = "";
+    var Action = Session["EmpAction"].ToString();
+    if (Action == "New")
+    {
+        TechJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.TechnicalQualification>)Session["TechnicalQualification"]).ToArray());
+    }
+    else {
+        EditTechJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.TechnicalQualification>)Session["EditTechnicalQualification"]).ToArray());
+    }
+}
+
+<div class="col-md-12 change-tab">
+    <div class="strike1">
+        <span>Technical Qualification</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="TechnicalQuaTable" class="table order-list technicalquatable dataTable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important;background-color: #202447;">S.No</td>
+                    <td style="text-align:center;color:#fff !important;background-color: #202447;">Technical Skills</td>
+                    <td style="text-align:center;color:#fff !important;background-color: #202447;">Year Of Experience</td>
+                    <td style="text-align:center;color:#fff !important;background-color: #202447;"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count3 = 1; }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center">@count3</td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.TechnicalSkill)
+                        </td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.ExperienceYears)
+                        </td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddTechSkilldelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count3++;
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var techGrid = null;
+        InitializeTechGrid();
+       
+         var Action = '@Session["EmpAction"]';
+        if (Action!== "") {
+            if (Action=== "New") {     $("#HiddenTechnicalData").val(@Html.Raw(Json.Encode(@TechJson)));}
+            else if(Action === "Edit") {
+                $("#UpdateHiddenTechnicalData").val(@Html.Raw(Json.Encode(@EditTechJson)));
+            }
+        }
+        $("table.order-list.technicalquatable").on("click", ".ibtnAddTechSkilldelete", function (event) {
+            var row = $(this).closest("tr");
+            var skill = $.trim(row.find("td").eq(1).html());
+            var rowno = $.trim(row.find("td").eq(0).html());
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteTecgnicalQualificationData',
+                data: { SkillName: skill },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        var Action1 = '@Session["EmpAction"]';
+                        if (Action1 !== "") {
+                            if (Action1 === "New") {
+                                $("#divTechnicalGrid").load('/HR/TechnicalQualificationGrid');
+                            }
+                            else {
+                                $("#divUpdateTechnicalGrid").load('/HR/TechnicalQualificationGrid');
+                            }
+                        }
+                           
+                       
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+    });
+    function ReassignRowNoforTQGrid() {
+        var rowno = 1;
+        $("#TechnicalQuaTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(rowno);
+            rowno++;
+        });
+
+    }
+    function InitializeTechGrid() {
+        techGrid = $('#TechnicalQuaTable').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+    }
+</script>
+

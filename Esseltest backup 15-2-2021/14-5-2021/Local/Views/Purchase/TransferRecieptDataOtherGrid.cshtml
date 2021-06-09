@@ -1,0 +1,179 @@
+﻿@model EsselTestLocalApplication.Models.ItemsTransferRecieptData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGrid">
+    <div class="strike">
+        <span>Items Details</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemITRODetailsDataTable" class="table order-list itemDetaillist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sending CC</label></td>
+                    }
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Issued Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Lost Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Damaged Quantity</label></td>
+                    }
+                    @if (Model.Type == "From Vendor")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Raised Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Recieved Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Previous Recieved Quantity</label></td>
+
+                    }
+                    @*<td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Lost Or Damged Remarks</label></td>*@
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                <tr>
+                    <td style="text-align:center;width:10px!important;">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    <input type="checkbox" class="eagle-check-input">
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </td>
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.CCCode)</td>
+                    }
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                    <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.Specification</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDCAcode)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.IssuedQty)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.LostQty)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DamagedQty)</td>
+                    }
+                    @if (Model.Type == "From Vendor")
+                    {
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Basic)</td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.RaisedQty)</td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.RecievedQty)</td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.PreviousRecievedQty)</td>
+                    }
+                    <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.Rid)</td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td></td>
+                        <td class="text-center"><label id="Totalqty"></label></td>
+                        <td class="text-center"><label id="Totallostqty"></label></td>
+                        <td class="text-center"><label id="Totaldamageqty"></label></td>
+                    }
+                    @if (Model.Type == "From Vendor")
+                    {
+                        <td class="text-center"><label id="TotalRaised"></label></td>
+                        <td class="text-center"><label id="TotalRecieved"></label></td>
+                        <td class="text-center"><label id="PreviousTotalRecieved"></label></td>
+                    }
+                    <td></td>
+                </tr>
+
+            </tfoot>
+        </table>
+        <table id="ItemITODataTable" class="table order-list itemIndentDetailRemlist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remarks</label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ItemRemarks)
+                {
+                    <tr>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Remarks)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var Type = '@Model.Type';
+        if (Type == "From Other Store") {
+            var totalqty = 0;
+            var Lostqty = 0;
+            var Damagedqty = 0;
+            $("#ItemITRODetailsDataTable tbody tr").each(function () {
+                var currentRow = $(this).closest("tr");
+                var Totalq = isNaN(parseFloat(currentRow.find("td").eq(9).html())) ? 0 : parseFloat(currentRow.find("td").eq(9).html())
+                var Totall = isNaN(parseFloat(currentRow.find("td").eq(10).html())) ? 0 : parseFloat(currentRow.find("td").eq(10).html())
+                var Totald = isNaN(parseFloat(currentRow.find("td").eq(11).html())) ? 0 : parseFloat(currentRow.find("td").eq(11).html())
+                totalqty = parseFloat(totalqty) + parseFloat(Totalq);
+                Lostqty = parseFloat(Lostqty) + parseFloat(Totall);
+                Damagedqty = parseFloat(Damagedqty) + parseFloat(Totald);
+            });
+            $("#ItemITRODetailsDataTable tfoot tr").each(function () {
+                $("#Totalqty").html(parseFloat(totalqty));
+                $("#Totallostqty").html(parseFloat(Lostqty));
+                $("#Totaldamageqty").html(parseFloat(Damagedqty));
+            });
+        }
+        else if (Type = "From Vendor") {
+            var raisedqty = 0;
+            var recievedqty = 0;
+            var prevrecievedqty = 0;
+            $("#ItemITRODetailsDataTable tbody tr").each(function () {
+                var currentRow = $(this).closest("tr");
+                var Totalraised = isNaN(parseFloat(currentRow.find("td").eq(8).html())) ? 0 : parseFloat(currentRow.find("td").eq(8).html())
+                var Totalrecieved = isNaN(parseFloat(currentRow.find("td").eq(9).html())) ? 0 : parseFloat(currentRow.find("td").eq(9).html())
+                var PrevTotalrecieved = isNaN(parseFloat(currentRow.find("td").eq(10).html())) ? 0 : parseFloat(currentRow.find("td").eq(10).html())
+                raisedqty = parseFloat(raisedqty) + parseFloat(Totalraised);
+                recievedqty = parseFloat(recievedqty) + parseFloat(Totalrecieved);
+                prevrecievedqty = parseFloat(prevrecievedqty) + parseFloat(PrevTotalrecieved);
+            });
+            $("#ItemITRODetailsDataTable tfoot tr").each(function () {
+                $("#TotalRaised").html(parseFloat(raisedqty));
+                $("#TotalRecieved").html(parseFloat(recievedqty));
+                $("#PreviousTotalRecieved").html(parseFloat(prevrecievedqty));
+            });
+        }
+    });
+</script>

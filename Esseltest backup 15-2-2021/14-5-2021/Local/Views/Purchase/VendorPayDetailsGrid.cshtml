@@ -1,0 +1,2901 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+<div class="col-md-12">
+    <ul class="nav nav-tabs" id="tabVendorInvpaydetails" role="tablist" >
+        @if (Model.payIntialData.BankAccess == true && Model.ThirdParyAccess == false)
+        {
+            <li id="litab"><a data-toggle="tab" href="#Bank" class="active">Bank</a></li>
+        }
+        @if (Model.payIntialData.CashAccess == true)
+        {
+            <li id="litab"><a data-toggle="tab" href="#Cash" class="active">Cash</a></li>
+        }
+        @if (Model.payIntialData.BankAccess == true && Model.ThirdParyAccess == true)
+        {
+
+            <li id="litab"><a data-toggle="tab" href="#ThirdParty" class="active">ThirdParty</a></li>
+        }
+    </ul>
+
+    <div class="tab-content">
+        @if (Model.payIntialData.BankAccess == true && Model.ThirdParyAccess == false)
+        {
+            <div id="Bank" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankId)
+                                @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvBankPayBank", onchange = "VendorinvPayModeChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ModeofPay)
+                                @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvBankPayMode", onchange = "VendorinvPayModeChange()" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Number)
+                                @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtInvBankPaymentNo" })
+                                <select class="form-control dropdown-toggle" id="ddlInvPaymentNo">
+                                    <option selected="selected" value="Select">-Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionDate)
+                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtInvBankPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtInvBankPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionAmount)
+                                @Html.TextBoxFor(model => model.TransactionAmount, new
+                           {
+                               @id = "txtInvBankPayFinalAmount",
+                               @class = "form-control",
+                               @type = "text",
+                               onkeypress = "return ValidateAmount(this,event);",
+                               onkeyup = "CheckPayAmount()"
+                           })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-right">
+                        @*<button class="btn btn1 btn-success" id="btnInvBankPaySubmit" onclick="SubmitVendorInvoiceBankPayData()">Submit</button>*@
+                        @if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Invoice")
+                        {
+                            <button class="btn btn1 btn-success" id="btnSPPOInvBankPaySubmit" onclick="SubmitVendorSPPOInvoiceBankPayData()">Submit</button>
+                        }
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnSPPOInvBankAdvPaySubmit" onclick="SubmitVendorSPPOAdvanceBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Retention")
+                        { <button class="btn btn1 btn-success" id="btnSPPOInvBankRetPaySubmit" onclick="SubmitVendorSPPORetentionBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnSPPOInvBankHoldPaySubmit" onclick="SubmitVendorSPPOHoldBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Invoice")
+                        { <button class="btn btn1 btn-success" id="btnSupplerInvBankPaySubmit" onclick="SubmitVendorSupplierInvoiceBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnSupplerAdvBankPaySubmit" onclick="SubmitVendorSupplierAdvanceBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplerHoldBankPaySubmit" onclick="SubmitVendorSupplierHoldBankPayData()">Submit</button>}
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.payIntialData.CashAccess == true)
+        {
+            <div id="Cash" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionDate)
+                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtInvCashPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtInvCashPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionAmount)
+                                @Html.TextBoxFor(model => model.TransactionAmount, new
+                           {
+                               @id = "txtInvCashPayFinalAmount",
+                               @class = "form-control",
+                               @type = "text",
+                               onkeypress = "return ValidateAmount(this,event);",
+                               onkeyup = "CheckPayAmount()"
+                           })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12  text-right">
+                        @if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Invoice")
+                        {
+                            <button class="btn btn1 btn-success" id="btnInvSPPOCashPaySubmit" onclick="SubmitVendorSPPOInvoiceCashPayData()">Submit</button>
+                        }
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnInvSPPOCashAdvPaySubmit" onclick="SubmitVendorSPPOAdvanceCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Retention")
+                        { <button class="btn btn1 btn-success" id="btnInvSPPOCashRetPaySubmit" onclick="SubmitVendorSPPORetentionCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnInvSPPOCashHoldPaySubmit" onclick="SubmitVendorSPPOHoldCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Invoice")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplierCashPaySubmit" onclick="SubmitVendorSupplierInvoiceCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplierAdvCashPaySubmit" onclick="SubmitVendorSupplierAdvanceCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplierHoldCashPaySubmit" onclick="SubmitVendorSupplierHoldCashPayData()">Submit</button>}
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.payIntialData.BankAccess == true && Model.ThirdParyAccess == true)
+        {
+            <div id="ThirdParty" class="tab-pane fade">
+                @*<p>ThirdParty</p>*@
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LoanNo)
+                                @Html.DropDownListFor(model => model.LoanNo, new SelectList(Model.TLLoanlist, "Loanno", "LoannoDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLoanNo", onchange = "VendorinvloanChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Agency)
+                                @Html.DropDownListFor(model => model.Agency, new SelectList(Model.TLAgencylist, "Agencycode", "AgencyDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAgency" })
+                            </div>
+                        </div>
+                       
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionDate)
+                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtInvBankPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtInvBankPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionAmount)
+                                @Html.TextBoxFor(model => model.TransactionAmount, new
+                           {
+                               @id = "txtInvBankPayFinalAmount",
+                               @class = "form-control",
+                               @type = "text",
+                               onkeypress = "return ValidateAmount(this,event);"
+                             
+                           })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-right">                        
+                            <button class="btn btn1 btn-success" id="btnThirdParty" onclick="SubmitThirdPartyData()">Submit</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+        let Paytype1 = '@Model.TransactionType';
+        if (Paytype1 == "Cash")
+        {
+                $("#divOtherCC").addClass("hidden");
+            }
+            //$("#litab").trigger('click');
+            $('#tabVendorInvpaydetails a:first').tab('show')
+
+           // alert();
+            //$('.nav-tabs li:eq(0) a').tab('show');
+            $("#ddlInvPaymentNo").addClass("hidden");
+            $("#txtInvBankPayDate").datepicker({
+        dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function(selectedDate) {
+                InvoicePaymentDateValidation('Bank', selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+            $("#txtInvCashPayDate").datepicker({
+        dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function(selectedDate) {
+                InvoicePaymentDateValidation('Cash', selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+            var target = $(e.target).attr("href")
+                //alert(target);
+                $("#txtActiveTab").val(target);
+            CountPayTotal();
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").addClass("hidden");
+        });
+    });
+
+    function VendorinvloanChange() {
+        var loanIndex = $("#ddlLoanNo option:selected").index();
+        var loan = $("#ddlLoanNo option:selected").val();
+        if (loanIndex == 0) {
+            $("#ddlAgency").empty().append('<option selected="selected" value="0">-Please Select-</option>');}
+        else {
+
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetAgencybyTermloan",
+                data: '{Loanno:"' + loan + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        $("#ddlAgency").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            $("#ddlAgency").append($("<option></option>").val(this['Agencycode']).html(this['AgencyDesc']));
+                        });
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+
+    }
+        //Final Amount validation if amount exceeding****************************************************************************************
+        function CheckPayAmount()
+        {
+        let Paytype = '@Model.Paytype';
+        let VendorType = '@Model.VendorType';
+        let finalAmount = 0;
+        let invtotalamount = 0;
+        var ActiveTab = $("#txtActiveTab").val();
+        if (ActiveTab === "#Bank")
+        {
+            finalAmount = $("#txtInvBankPayFinalAmount").val();
+        }
+        else
+        {
+            finalAmount = $("#txtInvCashPayFinalAmount").val();
+        }
+
+        if (VendorType == "Service Provider" && Paytype == "Vendor Invoice")
+        {
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+
+        }
+        //else if (VendorType == "Service Provider" && Paytype == "Vendor Advance")
+        //{
+        //    invtotalamount = $("#txtAdvanceBalance").val();
+        //}
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Retention")
+        {
+                $("#tblRetentionPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Hold")
+        {
+                $("#tblHoldPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Invoice")
+        {
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        //else if (VendorType == "Supplier" && Paytype == "Vendor Advance")
+        //{
+        //    invtotalamount = $("#txtAdvanceBalance").val();
+        //}
+        else if (VendorType == "Supplier" && Paytype == "Vendor Hold")
+        {
+
+                $("#tblHoldPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+            if ((parseFloat(finalAmount) > parseFloat(invtotalamount)) && Paytype !== "Vendor Advance")
+        {
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").append("<div>You are excessing the Invoice Amount</div>");
+                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else
+        {
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").addClass("hidden");
+        }
+
+}
+//count Total****************************************************************************************************************************************
+function CountPayTotal()
+{
+
+        let Paytype = '@Model.Paytype';
+        let VendorType = '@Model.VendorType';
+        let invtotalamount = 0;
+
+        if (VendorType == "Service Provider" && Paytype == "Vendor Invoice")
+        {
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Retention")
+        {
+                $("#tblRetentionPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Hold")
+        {
+                $("#tblHoldPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Invoice")
+        {
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Hold")
+        {
+
+                $("#tblHoldPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        var ActiveTab = $("#txtActiveTab").val();
+        if (ActiveTab === "#Bank")
+        {
+                $("#txtInvBankPayFinalAmount").val(parseFloat(invtotalamount).toFixed(2));
+        }
+        else
+        {
+                $("#txtInvCashPayFinalAmount").val(parseFloat(invtotalamount).toFixed(2));
+        }
+            $("#txtgridtotalamount").val(parseFloat(invtotalamount).toFixed(2));
+}
+
+//Date validation****************************************************************************************************************************************
+function InvoicePaymentDateValidation(MoneyPaytype, selectedDate)
+{
+        let Paytype = '@Model.Paytype';
+        let VendorType = '@Model.VendorType';
+        let paydate = selectedDate;
+        let invalidedatecount = 0;
+
+        if (VendorType == "Service Provider" && Paytype == "Vendor Invoice")
+        {
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var invdate = currentRow.find("td").eq(4).html();
+                if (checkbox == true)
+                {
+                    if (new Date(paydate) < new Date(invdate))
+                    {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        @*else if (VendorType == "Service Provider" && Paytype == "Vendor Advance")
+        {
+            Maxinvdate = '@Model.MaxInvoiceDate';
+            if (new Date(paydate) < new Date(Maxinvdate))
+            {
+                invalidedatecount = invalidedatecount + 1;
+            }
+        }*@
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Retention")
+        {
+                $("#tblRetentionPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var invdate = currentRow.find("td").eq(3).html();
+                if (checkbox == true)
+                {
+                    if (new Date(paydate) < new Date(invdate))
+                    {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Hold")
+        {
+                $("#tblHoldPayGrid tbody tr").each(function() {
+
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var invdate = currentRow.find("td").eq(3).html();
+                if (checkbox == true)
+                {
+                    if (new Date(paydate) < new Date(invdate))
+                    {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Invoice")
+        {
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var invdate = currentRow.find("td").eq(4).html();
+                if (checkbox == true)
+                {
+                    if (new Date(paydate) < new Date(invdate))
+                    {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        @*else if (VendorType == "Service Provider" && Paytype == "Vendor Advance")
+        {
+            Maxinvdate = '@Model.MaxInvoiceDate';
+            if (new Date(paydate) < new Date(Maxinvdate))
+            {
+                invalidedatecount = invalidedatecount + 1;
+            }
+        }*@
+        else if (VendorType == "Supplier" && Paytype == "Vendor Hold")
+        {
+                $("#tblHoldPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is (":checked");
+                var invdate = currentRow.find("td").eq(3).html();
+                if (checkbox == true)
+                {
+                    if (new Date(paydate) < new Date(invdate))
+                    {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        if (invalidedatecount > 0)
+        {
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").append("<div>Payment Date must be greater than Invoice Date</div>");
+                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                $("#divSppoPayInfoMsg").datepicker("setDate", 'dateToday');
+        }
+        else
+        {
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").addClass("hidden");
+        }
+
+
+
+
+}
+function PaidtootherCCCheck()
+{
+        if ($('#chkPaidtootherCC').is (":checked") === true) {
+                $("#divOtherCC").removeClass('hidden');
+            var currentCC = $("#ddlVendorPayCC option:selected").val();
+            debugger;
+                $.ajax({
+            type: "POST",
+                    url: "/Purchase/GetVendorPaymentOtherCC",
+                    data: '{CurrentCC:"' + currentCC + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(response) {
+                    ccddl = $("#ddlVendorPayOtherCC");
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0)
+                    {
+                        ccddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function() {
+                            ccddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                        });
+                    }
+                    else
+                    {
+                            $("#divSppoPayInfoMsg").text("");
+                            $("#divSppoPayInfoMsg").append("<div>Cost Center Does Not Exist</div>");
+                            $("#divSppoPayInfoMsg").addClass("alert-danger");
+                            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                    failure: function(response) {
+
+                },
+                    error: function(response) {
+                }
+            });
+        }
+            else {
+                $("#divOtherCC").addClass('hidden');
+        }
+}
+
+//function SubmitVendorSPPOInvoiceBankPayData()
+//{
+//        //alert('SPPOInvoiceBank');
+
+//        var tablerowcount = $("#tblInvPayGrid tbody tr").length;
+//        if (tablerowcount > 0)
+//        {
+//            isValid = true;
+//            var errorMsg = "";
+//            var selectedcheck = 0;
+//            var invtotalamount = 0;
+//                $("#tblInvPayGrid tbody tr").each(function() {
+//                var currentRow = $(this);
+//                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+//                var rowamount = currentRow.find("td").eq(10).html();
+//                if (checkbox === true)
+//                {
+//                    selectedcheck = selectedcheck + 1;
+//                }
+//            });
+//            if (selectedcheck === 0)
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+//                isValid = false;
+//            }
+//            // var Name = $("#txtInvBankPayName").val();
+//            var bank = $("#ddlInvBankPayBank option:selected").text();
+//            var Mode = $("#ddlInvBankPayMode option:selected").text();
+//            var bankindex = $("#ddlInvBankPayBank option:selected").index();
+//            var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+//            var date = $("#txtInvBankPayDate").val();
+//            var remarks = $("#txtInvBankPayReamarks").val();
+//            var amount = $("#txtInvBankPayFinalAmount").val();
+
+//            if (bankindex === 0)
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+//                isValid = false;
+//            }
+//            if (Modeindex === 0)
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+//                isValid = false;
+//            }
+//            if (Modeindex === 1)
+//            {
+//                var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+//                if (ddlcheque === 0)
+//                {
+//                    errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+//                    isValid = false;
+//                }
+//            }
+//            else
+//            {
+//                var cheque = $("#txtInvBankPaymentNo").val();
+//                if (cheque === "")
+//                {
+//                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+//                    isValid = false;
+//                }
+
+//            }
+//            if (date === "")
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+//                isValid = false;
+//            }
+//            if (remarks === "")
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+//                isValid = false;
+//            }
+//            if (amount === "" || amount === 0)
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+//                isValid = false;
+//            }
+//                $("#tblInvPayGrid tbody tr").each(function() {
+//                var currentRow = $(this);
+//                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+//                var rowamount = currentRow.find("td").eq(10).html();
+//                if (checkbox === true)
+//                {
+//                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+//                }
+//            });
+//            if (parseFloat(amount) > parseFloat(invtotalamount))
+//            {
+//                errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+//                isValid = false;
+//            }
+//            if (!isValid)
+//            {
+//                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+//                    $("#divSppoPayInfoMsg").text("");
+//                    $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+//                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+//                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+//            }
+//            else
+//            {
+//                var paydate = date;
+//                    $("#tblInvPayGrid tbody tr").each(function() {
+//                    var currentRow = $(this);
+//                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+//                    var invdate = currentRow.find("td").eq(4).html();
+//                    if (checkbox === true)
+//                    {
+//                        if (new Date(paydate) < new Date($.trim(invdate)))
+//                        {
+//                            isValid = false;
+//                        }
+//                    }
+
+//                });
+//                if (!isValid)
+//                {
+//                    var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+//                        $("#divSppoPayInfoMsg").text("");
+//                        $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+//                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+//                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+//                }
+//                else
+//                {
+//                        $("#divSppoPayInfoMsg").text("");
+//                        $("#divSppoPayInfoMsg").addClass("hidden");
+//                    //Insert DCA Budget in to db
+//                    // SaveVendorInvoicePayment();
+
+
+//                    var Invnos = "", Ponos = "";
+//                        $("#tblInvPayGrid tbody tr").each(function() {
+//                        var currentRow = $(this);
+//                        var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+//                        var invno = currentRow.find("td").eq(3).html();
+//                        var po = currentRow.find("td").eq(11).html();
+//                        if (checkbox === true)
+//                        {
+//                            Invnos += $.trim(invno) + ',';
+//                            Ponos += $.trim(po) + ',';
+//                        }
+//                    });
+//                    var payno = 0;
+//                    if ($("#ddlInvBankPayMode  option:selected").val() === 'Cheque')
+//                            payno = $("#ddlInvPaymentNo option:selected").text();
+//                        else
+//                            payno = $("#txtInvBankPaymentNo").val();
+
+//                    var SaveData = {
+//                            InvoiceNos: Invnos,
+//                            PONumber: Ponos,
+//                            TransactionDate: $("#txtInvBankPayDate").val(),
+//                            BankName: $("#ddlInvBankPayBank  option:selected").text(),
+//                            ModeofPay: $("#ddlInvBankPayMode  option:selected").val(),
+//                            BankId: $("#ddlInvBankPayBank  option:selected").val(),
+//                            TransactionAmount: $("#txtInvBankPayFinalAmount").val(),
+//                            Remarks: $("#txtInvBankPayReamarks").val(),
+//                            Number: payno,
+//                            Paytype: 'Vendor Invoice',
+//                            VendorType: $("#ddlVendorType  option:selected").val(),
+//                            BankorCash: 'Bank',
+//                            VendorCode: $("#ddlPaymentVendor  option:selected").val()
+//                        };
+//                debugger;
+//                addFailMsg = "Error Occurred While Adding New Payment";
+//                    addSuccessMsg = "Payment Details Added Successfully.";
+
+//                    $("#btnSPPOInvBankPaySubmit").prop("disabled", false);
+//                        $.ajax({
+//                type: 'POST',
+//                            dataType: 'json',
+//                            url: '/Purchase/SaveInvoicePayment',
+//                            data: JSON.stringify({ payData1: SaveData }),
+//                            success: function(Data) {
+//                        var typeArr = Data.saveStatus.toString().split('$');
+//                        var result = typeArr[0];
+//                        if (result === 'Submited')
+//                        {
+//                            addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+//                                    $("#divSppoPayInfoMsg").text(addSuccessMsg);
+//                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+//                                    $("#divSppoPayInfoMsg").addClass("alert-success");
+                                   
+//                        }
+//                        else
+//                        {
+//                                    $("#divSppoPayInfoMsg").text(Data.saveStatus);
+//                                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+//                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+//                                   // $("#btnSPPOInvBankPaySubmit").prop("disabled", true);
+//                        }
+//                    },
+//                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+//                        debugger;
+//                                $("#divSppoPayInfoMsg").text(addFailMsg);
+//                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+//                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+//                              //  $("#btnSPPOInvBankPaySubmit").prop("disabled", true);
+//                    }
+//                });
+//            }
+//        }
+//}
+//        }
+        function SubmitVendorSPPOInvoiceBankPayData()
+{
+        //alert('SPPOInvoiceBank');
+
+        var tablerowcount = $("#tblInvPayGrid tbody tr").length;
+        if (tablerowcount > 0)
+        {
+            isValid = true;
+            var errorMsg = "";
+            var selectedcheck = 0;
+            var invtotalamount = 0;
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox === true)
+                {
+                    selectedcheck = selectedcheck + 1;
+                }
+            });
+            if (selectedcheck === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+                isValid = false;
+            }
+            // var Name = $("#txtInvBankPayName").val();
+            var bank = $("#ddlInvBankPayBank option:selected").text();
+            var Mode = $("#ddlInvBankPayMode option:selected").text();
+            var bankindex = $("#ddlInvBankPayBank option:selected").index();
+            var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+            var date = $("#txtInvBankPayDate").val();
+            var remarks = $("#txtInvBankPayReamarks").val();
+            var amount = $("#txtInvBankPayFinalAmount").val();
+
+            if (bankindex === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                isValid = false;
+            }
+            if (Modeindex === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+                isValid = false;
+            }
+            if (Modeindex === 1)
+            {
+                var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+                if (ddlcheque === 0)
+                {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+                    isValid = false;
+                }
+            }
+            else
+            {
+                var cheque = $("#txtInvBankPaymentNo").val();
+                if (cheque === "")
+                {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+                    isValid = false;
+                }
+
+            }
+            if (date === "")
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+                isValid = false;
+            }
+            if (remarks === "")
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                isValid = false;
+            }
+            if (amount === "" || amount === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+                isValid = false;
+            }
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox === true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+            if (parseFloat(amount) > parseFloat(invtotalamount))
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+                isValid = false;
+            }
+            if (!isValid)
+            {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divSppoPayInfoMsg").text("");
+                    $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            }
+            else
+            {
+                var paydate = date;
+                    $("#tblInvPayGrid tbody tr").each(function() {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                    var invdate = currentRow.find("td").eq(4).html();
+                    if (checkbox === true)
+                    {
+                        if (new Date(paydate) < new Date($.trim(invdate)))
+                        {
+                            isValid = false;
+                        }
+                    }
+
+                });
+                if (!isValid)
+                {
+                    var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                }
+                else
+                {
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").addClass("hidden");
+                    //Insert DCA Budget in to db
+                    // SaveVendorInvoicePayment();
+
+
+                    var Invnos = "", Ponos = "";
+                        $("#tblInvPayGrid tbody tr").each(function() {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                        var invno = currentRow.find("td").eq(3).html();
+                        var po = currentRow.find("td").eq(11).html();
+                        if (checkbox === true)
+                        {
+                            Invnos += $.trim(invno) + ',';
+                            Ponos += $.trim(po) + ',';
+                        }
+                    });
+                    var payno = 0;
+                    if ($("#ddlInvBankPayMode  option:selected").val() === 'Cheque')
+                            payno = $("#ddlInvPaymentNo option:selected").text();
+                        else
+                            payno = $("#txtInvBankPaymentNo").val();
+
+                    //var SaveData = {
+                    //    InvoiceNos: Invnos,
+                    //    PONumber: Ponos,
+                    //    TransactionDate: $("#txtInvBankPayDate").val(),
+                    //    BankName: $("#ddlInvBankPayBank  option:selected").text(),
+                    //    ModeofPay: $("#ddlInvBankPayMode  option:selected").val(),
+                    //    BankId: $("#ddlInvBankPayBank  option:selected").val(),
+                    //    TransactionAmount: $("#txtInvBankPayFinalAmount").val(),
+                    //    Remarks: $("#txtInvBankPayReamarks").val(),
+                    //    Number: payno,
+                    //    Paytype: 'Vendor Invoice',
+                    //    VendorType: $("#ddlVendorType  option:selected").val(),
+                    //    BankorCash: 'Bank',
+                    //    VendorCode: $("#ddlPaymentVendor  option:selected").val()
+                    //};
+                    //debugger;
+                    addFailMsg = "Error Occurred While Adding New Payment";
+                    addSuccessMsg = "Payment Details Added Successfully.";
+                    $("#btnSPPOInvBankPaySubmit").prop("disabled", true);
+                        $.ajax({
+                    type: 'POST',
+                            dataType: 'json',
+                            url: '/Purchase/SaveNewSPPOInvoiceBankPayment',
+                           // data: JSON.stringify({ payData1: SaveData }),
+                            data: { InvoiceNos: Invnos, PONumber: Ponos, TransactionDate: $("#txtInvBankPayDate").val(), BankName: $("#ddlInvBankPayBank option:selected").text(), ModeofPay: $("#ddlInvBankPayMode option:selected").val(), BankId: $("#ddlInvBankPayBank option:selected").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), Remarks: $("#txtInvBankPayReamarks").val(), Number: payno, Paytype: 'Vendor Invoice', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Bank', VendorCode: $("#ddlPaymentVendor  option:selected").val() },
+                            success: function(Data) {
+                            var typeArr = Data.saveStatus.toString().split('$');
+                            var result = typeArr[0];
+                            if (result === 'Submited')
+                            {
+                                addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+                                    $("#divSppoPayInfoMsg").text(addSuccessMsg);
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+                                    $("#divSppoPayInfoMsg").addClass("alert-success");
+                                    
+                            }
+                            else
+                            {
+                                    $("#divSppoPayInfoMsg").text(Data.saveStatus);
+                                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                   $("#btnSPPOInvBankPaySubmit").prop("disabled", false);
+                            }
+                        },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            debugger;
+                                $("#divSppoPayInfoMsg").text(addFailMsg);
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                               $("#btnSPPOInvBankPaySubmit").prop("disabled", false);
+                        }
+                    });
+                }
+            }
+        }
+}
+function SubmitVendorSupplierInvoiceBankPayData()
+{
+       // alert('SupplierInvoiceBank');
+        var tablerowcount = $("#tblInvPayGrid tbody tr").length;
+        if (tablerowcount > 0)
+        {
+            isValid = true;
+            var errorMsg = "";
+            var selectedcheck = 0;
+            var invtotalamount = 0;
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox === true)
+                {
+                    selectedcheck = selectedcheck + 1;
+                }
+            });
+            if (selectedcheck === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+                isValid = false;
+            }
+            // var Name = $("#txtInvBankPayName").val();
+            var bank = $("#ddlInvBankPayBank option:selected").text();
+            var Mode = $("#ddlInvBankPayMode option:selected").text();
+            var bankindex = $("#ddlInvBankPayBank option:selected").index();
+            var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+            var date = $("#txtInvBankPayDate").val();
+            var remarks = $("#txtInvBankPayReamarks").val();
+            var amount = $("#txtInvBankPayFinalAmount").val();
+
+            if (bankindex === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                isValid = false;
+            }
+            if (Modeindex === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+                isValid = false;
+            }
+            if (Modeindex === 1)
+            {
+                var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+                if (ddlcheque === 0)
+                {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+                    isValid = false;
+                }
+            }
+            else
+            {
+                var cheque = $("#txtInvBankPaymentNo").val();
+                if (cheque === "")
+                {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+                    isValid = false;
+                }
+
+            }
+            if (date === "")
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+                isValid = false;
+            }
+            if (remarks === "")
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                isValid = false;
+            }
+            if (amount === "" || amount === 0)
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+                isValid = false;
+            }
+                $("#tblInvPayGrid tbody tr").each(function() {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is (":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox === true)
+                {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+            if (parseFloat(amount) > parseFloat(invtotalamount))
+            {
+                errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+                isValid = false;
+            }
+            if (!isValid)
+            {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divSppoPayInfoMsg").text("");
+                    $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    var paydate = date;
+                    $("#tblInvPayGrid tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                        var invdate = currentRow.find("td").eq(4).html();
+                        if (checkbox === true) {
+                            if (new Date(paydate) < new Date($.trim(invdate))) {
+                                isValid = false;
+                            }
+                        }
+
+                    });
+                    if (!isValid) {
+                        var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").addClass("hidden");
+                        //Insert DCA Budget in to db
+                        // SaveVendorInvoicePayment();
+
+
+                        var Invnos = "", Ponos = "";
+                        $("#tblInvPayGrid tbody tr").each(function () {
+                            var currentRow = $(this);
+                            var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                            var invno = currentRow.find("td").eq(3).html();
+                            var po = currentRow.find("td").eq(11).html();
+                            if (checkbox === true) {
+                                Invnos += $.trim(invno) + ',';
+                                Ponos += $.trim(po) + ',';
+                            }
+                        });
+                        var payno = 0;
+                        if ($("#ddlInvBankPayMode  option:selected").val() === 'Cheque') {
+                            payno = $("#ddlInvPaymentNo option:selected").text();
+                        }
+                        else {
+                            payno = $("#txtInvBankPaymentNo").val();
+                        }
+                        var SaveData = {
+                            'InvoiceNos': '"+Invnos+"',
+                        };
+                        var pdata = {
+                            paydata : SaveData
+
+                        }
+                        var d = JSON.parse(JSON.stringify(pdata));
+                        //var data = JSON.stringify(SaveData);
+                        //var sdata = "" + data;
+                        //var SaveData = {
+                            //"InvoiceNos": Invnos,
+                            //"PONumber": Ponos,
+                            //"TransactionDate": $("#txtInvBankPayDate").val(),
+                            //"BankName": $("#ddlInvBankPayBank option:selected").text(),
+                            //"ModeofPay": $("#ddlInvBankPayMode option:selected").val(),
+                            //BankId: $("#ddlInvBankPayBank option:selected").val(),
+                            //TransactionAmount: $("#txtInvBankPayFinalAmount").val(),
+                            //Remarks: $("#txtInvBankPayReamarks").val(),
+                            //Number: payno,
+                            //Paytype: 'Vendor Invoice',
+                            //VendorType: $("#ddlVendorType  option:selected").val(),
+                            //BankorCash: 'Bank',
+                            //VendorCode: $("#ddlPaymentVendor  option:selected").val()
+                       // };
+                       // alert(SaveData);
+                        //console.log(SaveData);
+                        //var data = JSON.parse(JSON.stringify(SaveData));
+
+                        var sdata=""
+                        debugger;
+                        addFailMsg = "Error Occurred While Adding New Payment";
+                        addSuccessMsg = "Payment Details Added Successfully.";
+                        $("#btnSupplerInvBankPaySubmit").prop("disabled", true);
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            url: '/Purchase/SaveNewSPPOInvoiceBankPayment',
+                            data: { InvoiceNos: Invnos, PONumber: Ponos, TransactionDate: $("#txtInvBankPayDate").val(), BankName: $("#ddlInvBankPayBank option:selected").text(), ModeofPay: $("#ddlInvBankPayMode option:selected").val(), BankId: $("#ddlInvBankPayBank option:selected").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), Remarks: $("#txtInvBankPayReamarks").val(), Number: payno, Paytype: 'Vendor Invoice', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Bank', VendorCode: $("#ddlPaymentVendor  option:selected").val()  },
+                              success: function (Data) {
+                                var typeArr = Data.saveStatus.toString().split('$');
+                                var result = typeArr[0];
+                                if (result === 'Submited') {
+                                    addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+                                    $("#divSppoPayInfoMsg").text(addSuccessMsg);
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+                                    $("#divSppoPayInfoMsg").addClass("alert-success");
+                          
+                                }
+                                else {
+                                    $("#divSppoPayInfoMsg").text(Data.saveStatus);
+                                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                    $("#btnSupplerInvBankPaySubmit").prop("disabled", false);
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                debugger;
+                                //console.log(errorThrown);
+                                //alert(errorThrown);
+                                $("#divSppoPayInfoMsg").text(addFailMsg);
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                $("#btnSupplerInvBankPaySubmit").prop("disabled", false);
+                            }
+                        });
+                    }
+                }
+            }
+
+        }
+        function SubmitVendorSupplierInvoiceCashPayData() {
+            //alert('SupplierInvoiceCash');
+            var tablerowcount = $("#tblInvPayGrid tbody tr").length;
+            if (tablerowcount > 0) {
+                isValid = true;
+                var errorMsg = "";
+                var selectedcheck = 0;
+                var invtotalamount = 0;
+                $("#tblInvPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                    var rowamount = currentRow.find("td").eq(10).html();
+                    if (checkbox === true) {
+                        selectedcheck = selectedcheck + 1;
+                    }
+                });
+                if (selectedcheck === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+                    isValid = false;
+                }
+                // var Name = $("#txtInvBankPayName").val();
+                //var bank = $("#ddlInvCashPayBank option:selected").text();
+                //var Mode = $("#ddlInvCashPayMode option:selected").text();
+                //var bankindex = $("#ddlInvCashPayBank option:selected").index();
+                //var Modeindex = $("#ddlInvCashPayMode option:selected").index();
+                var date = $("#txtInvCashPayDate").val();
+                var remarks = $("#txtInvCashPayReamarks").val();
+                var amount = $("#txtInvCashPayFinalAmount").val();
+
+                //if (bankindex === 0) {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                //    isValid = false;
+                //}
+                //if (Modeindex === 0) {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+                //    isValid = false;
+                //}
+
+                //var cheque = $("#txtInvCashPaymentNo").val();
+                //if (cheque === "") {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+                //    isValid = false;
+                //}
+
+
+                if (date === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+                    isValid = false;
+                }
+                if (remarks === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                    isValid = false;
+                }
+                if (amount === "" || amount === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+                    isValid = false;
+                }
+                //if ($('#chkPaidtootherCC').is(":checked") === true) {
+                //    var paidagainstCC = $("#ddlVendorPayOtherCC option:selected").index();
+                //    if (paidagainstCC === 0) {
+                //        errorMsg += "<p style='margin-top:-5px!important;'>Select Paid Against Cost Center</p>";
+                //        isValid = false;
+                //    }
+                //}
+                $("#tblInvPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                    var rowamount = currentRow.find("td").eq(10).html();
+                    if (checkbox === true) {
+                        invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                    }
+                });
+                if (parseFloat(amount) > parseFloat(invtotalamount)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+                    isValid = false;
+                }
+                if (!isValid) {
+                    var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divSppoPayInfoMsg").text("");
+                    $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    var paydate = date;
+                    $("#tblInvPayGrid tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                        var invdate = currentRow.find("td").eq(4).html();
+                        if (checkbox === true) {
+                            if (new Date(paydate) < new Date(invdate)) {
+                                isValid = false;
+                            }
+                        }
+
+                    });
+                    if (!isValid) {
+                        var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").addClass("hidden");
+                        //Insert DCA Budget in to db
+                        // SaveVendorInvoicePayment();
+                        var Invnos = "", Ponos = "";
+                        $("#tblInvPayGrid tbody tr").each(function () {
+                            var currentRow = $(this);
+                            var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                            var invno = currentRow.find("td").eq(3).html();
+                            var po = currentRow.find("td").eq(11).html();
+                            if (checkbox === true) {
+                                Invnos += $.trim(invno) + ',';
+                                Ponos += $.trim(po) + ',';
+                            }
+                        });
+                        var paidagainstCCCode = "";
+                        var index = $("#ddlGPCPaymentmode option:selected").index();
+                        if (index === 2) {
+                            paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+                        }
+                        //if ($('#chkPaidtootherCC').is(":checked") === true) {
+                        //    paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+
+                        //}
+
+                        var SaveData = {
+                            InvoiceNos: Invnos,
+                            PONumber: Ponos,
+                            TransactionDate: $("#txtInvCashPayDate").val(),
+                            TransactionAmount: $("#txtInvCashPayFinalAmount").val(),
+                            Remarks: $("#txtInvCashPayReamarks").val(),
+                            Paytype: 'Vendor Invoice',
+                            VendorType: $("#ddlVendorType  option:selected").val(),
+                            BankorCash: 'Cash',
+                            VendorCode: $("#ddlPaymentVendor  option:selected").val(),
+                            OtherCCCode: paidagainstCCCode,
+                            CCCode: $("#ddlVendorPayCC option:selected").val(),
+                            CashTransMode: index
+                        };
+                        debugger;
+                        addFailMsg = "Error Occurred While Adding New Payment";
+                        addSuccessMsg = "Payment Details Added Successfully.";
+                        $("#btnInvSupplierCashPaySubmit").prop("disabled", true);
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            url: '/Purchase/SaveNewInvoiceCashPayment',
+                            //data: { payData: SaveData },
+                            data: { InvoiceNos: Invnos, PONumber: Ponos, TransactionDate: $("#txtInvCashPayDate").val(), TransactionAmount: $("#txtInvCashPayFinalAmount").val(), Remarks: $("#txtInvCashPayReamarks").val(), Paytype: 'Vendor Invoice', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Cash', VendorCode: $("#ddlPaymentVendor  option:selected").val(), OtherCCCode: paidagainstCCCode, CCCode: $("#ddlVendorPayCC option:selected").val(), CashTransMode: index },
+                            success: function (Data) {
+                                var typeArr = Data.saveStatus.toString().split('$');
+                                var result = typeArr[0];
+                                if (result === 'Submited') {
+                                    addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+                                    $("#divSppoPayInfoMsg").text(addSuccessMsg);
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+                                    $("#divSppoPayInfoMsg").addClass("alert-success");
+                                    
+                                }
+                                else {
+                                    $("#divSppoPayInfoMsg").text(Data.saveStatus);
+                                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                    $("#btnInvSupplierCashPaySubmit").prop("disabled", false);
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                $("#divSppoPayInfoMsg").text(addFailMsg);
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                $("#btnInvSupplierCashPaySubmit").prop("disabled", false);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        function SubmitVendorSPPOInvoiceCashPayData() {
+            //alert('SPPOInvoiceCash');
+            var tablerowcount = $("#tblInvPayGrid tbody tr").length;
+            if (tablerowcount > 0) {
+                isValid = true;
+                var errorMsg = "";
+                var selectedcheck = 0;
+                var invtotalamount = 0;
+                $("#tblInvPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                    var rowamount = currentRow.find("td").eq(10).html();
+                    if (checkbox === true) {
+                        selectedcheck = selectedcheck + 1;
+                    }
+                });
+                if (selectedcheck === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+                    isValid = false;
+                }
+                // var Name = $("#txtInvBankPayName").val();
+                //var bank = $("#ddlInvCashPayBank option:selected").text();
+                //var Mode = $("#ddlInvCashPayMode option:selected").text();
+                //var bankindex = $("#ddlInvCashPayBank option:selected").index();
+                //var Modeindex = $("#ddlInvCashPayMode option:selected").index();
+                var date = $("#txtInvCashPayDate").val();
+                var remarks = $("#txtInvCashPayReamarks").val();
+                var amount = $("#txtInvCashPayFinalAmount").val();
+                var transactionmode = $("#ddlGPCPaymentmode option:selected").index();
+                // if (transactionmode === 0) {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                //    isValid = false;
+                //}
+                //if (bankindex === 0) {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                //    isValid = false;
+                //}
+                //if (Modeindex === 0) {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+                //    isValid = false;
+                //}
+                //var cheque = $("#txtInvCashPaymentNo").val();
+                //if (cheque === "") {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+                //    isValid = false;
+                //}
+                if (date === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+                    isValid = false;
+                }
+                if (remarks === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                    isValid = false;
+                }
+                if (amount === "" || amount === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+                    isValid = false;
+                }
+                $("#tblInvPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                    var rowamount = currentRow.find("td").eq(10).html();
+                    if (checkbox === true) {
+                        invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                    }
+                });
+                if (parseFloat(amount) > parseFloat(invtotalamount)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+                    isValid = false;
+                }
+
+                // if (transactionmode === 0) {
+                //    errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                //    isValid = false;
+                //}
+
+                //if ($('#chkPaidtootherCC').is(":checked") === true) {
+                //    var paidagainstCC = $("#ddlVendorPayOtherCC option:selected").index();
+                //    if (paidagainstCC === 0) {
+                //        errorMsg += "<p style='margin-top:-5px!important;'>Select Paid Against Cost Center</p>";
+                //        isValid = false;
+                //    }
+                //}
+                if (!isValid) {
+                    var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divSppoPayInfoMsg").text("");
+                    $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    var paydate = date;
+                    $("#tblInvPayGrid tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                        var invdate = currentRow.find("td").eq(4).html();
+                        if (checkbox === true) {
+                            if (new Date(paydate) < new Date($.trim(invdate))) {
+                                isValid = false;
+                            }
+                        }
+                    });
+                    if (!isValid) {
+                        var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").addClass("hidden");
+                        //Insert DCA Budget in to db
+                        // SaveVendorInvoicePayment();
+                        var Invnos = "", Ponos = "";
+                        $("#tblInvPayGrid tbody tr").each(function () {
+                            var currentRow = $(this);
+                            var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                            var invno = currentRow.find("td").eq(3).html();
+                            var po = currentRow.find("td").eq(11).html();
+                            if (checkbox === true) {
+                                Invnos += $.trim(invno) + ',';
+                                Ponos += $.trim(po) + ',';
+                            }
+                        });
+                        var paidagainstCCCode = "";
+                        var index = $("#ddlGPCPaymentmode option:selected").index();
+                        if (index === 2) {
+                            paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+                        }
+
+    @*var SaveData = {
+        InvoiceNos: Invnos,
+        PONumber: Ponos,
+        TransactionDate: $("#txtInvCashPayDate").val(),
+        TransactionAmount: $("#txtInvCashPayFinalAmount").val(),
+        Remarks: $("#txtInvCashPayReamarks").val(),
+        Paytype: 'Vendor Invoice',
+        VendorType: $("#ddlVendorType  option:selected").val(),
+        BankorCash: 'Cash',
+        VendorCode: $("#ddlPaymentVendor  option:selected").val(),
+        OtherCCCode: paidagainstCCCode,
+        CCCode: $("#ddlVendorPayCC option:selected").val(),
+        CashTransMode: index
+    };*@ $("#btnInvSPPOCashPaySubmit").prop("disabled", true);
+        debugger;
+        addFailMsg = "Error Occurred While Adding New Payment";
+        addSuccessMsg = "Payment Details Added Successfully.";
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewInvoiceCashPayment',
+        //data: { payData: SaveData },
+        data: { InvoiceNos: Invnos, PONumber: Ponos, TransactionDate: $("#txtInvCashPayDate").val(), TransactionAmount: $("#txtInvCashPayFinalAmount").val(), Remarks: $("#txtInvCashPayReamarks").val(), Paytype: 'Vendor Invoice', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Cash', VendorCode: $("#ddlPaymentVendor  option:selected").val(), OtherCCCode: paidagainstCCCode, CCCode: $("#ddlVendorPayCC option:selected").val(), CashTransMode: index },
+
+        success: function (Data) {
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+        addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+        $("#divSppoPayInfoMsg").addClass("alert-success");
+       
+        }
+        else {
+        $("#divSppoPayInfoMsg").text(Data.saveStatus);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        $("#btnInvSPPOCashPaySubmit").prop("disabled", false);
+        }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#btnInvSPPOCashPaySubmit").prop("disabled", false);
+        }
+        });
+        }
+        }
+        }
+        }
+        function SubmitVendorSPPOAdvanceBankPayData() {
+        //alert('SPPOAdvanceBank');
+        isValid = true;
+        var errorMsg = "";
+        var bank = $("#ddlInvBankPayBank option:selected").text();
+        var Mode = $("#ddlInvBankPayMode option:selected").text();
+        var bankindex = $("#ddlInvBankPayBank option:selected").index();
+        var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+        var date = $("#txtInvBankPayDate").val();
+        var remarks = $("#txtInvBankPayReamarks").val();
+        var amount = $("#txtInvBankPayFinalAmount").val();
+        //var balanceAmount = $("#txtAdvanceBalance").val();
+
+        if (bankindex === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+        isValid = false;
+        }
+        if (Modeindex === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+        isValid = false;
+        }
+        if (Modeindex === 1) {
+        var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+        if (ddlcheque === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+        isValid = false;
+        }
+        }
+        else {
+        var cheque = $("#txtInvBankPaymentNo").val();
+        if (cheque === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+        isValid = false;
+        }
+
+        }
+        if (date === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+        isValid = false;
+        }
+        if (remarks === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+        isValid = false;
+        }
+        if (amount === "" || amount <= 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+        isValid = false;
+        }
+        //else if (parseFloat(balanceAmount) < parseFloat(amount)) {
+        //errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Advance Amount</p>";
+        //isValid = false;
+        //}
+        //var maxinvdate = $("#txtadvinvdate").val();
+        //if (new Date(date) < new Date(maxinvdate)) {
+        //errorMsg += "<p style='margin-top:-5px!important;'>Payment Date must be greater than Invoice Date</p>";
+        //isValid = false;
+        //}
+        if (!isValid) {
+        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+
+        var payno = 0;
+        if ($("#ddlInvBankPayMode  option:selected").val() === 'Cheque')
+        payno = $("#ddlInvPaymentNo option:selected").text();
+        else
+        payno = $("#txtInvBankPaymentNo").val();
+
+        //var pnos = $('#ddlMultiPO option:selected').toArray().map(item => item.value).join(',');
+        //var allpos = pnos + ',';
+        var singlepo = $("#ddlSinglePO option:selected").val();
+
+        //var AdvanceData = {
+        //PONumber: singlepo,
+        //TransactionDate: $("#txtInvBankPayDate").val(),
+        //BankName: $("#ddlInvBankPayBank  option:selected").text(),
+        //ModeofPay: $("#ddlInvBankPayMode  option:selected").val(),
+        //BankId: $("#ddlInvBankPayBank  option:selected").val(),
+        //TransactionAmount: $("#txtInvBankPayFinalAmount").val(),
+        //Remarks: $("#txtInvBankPayReamarks").val(),
+        //Number: payno,
+        //Paytype: 'Vendor Advance',
+        //BankorCash: 'Bank',
+        //VendorType: $("#ddlVendorType  option:selected").val(),
+        //VendorCode: $("#ddlPaymentVendor  option:selected").val(),
+        ////InvoiceNo: $("#ddlAdvanceInv option:selected").val()
+        //};
+        debugger;
+        addFailMsg = "Error Occurred While Adding New Payment";
+        addSuccessMsg = "Payment Details Added Successfully.";
+            $("#btnSPPOInvBankAdvPaySubmit").prop("disabled", true);
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewSPPOAdvanceBankPayment',
+        data: { PONumber: singlepo, TransactionDate: $("#txtInvBankPayDate").val(), BankName: $("#ddlInvBankPayBank  option:selected").text(), ModeofPay: $("#ddlInvBankPayMode  option:selected").val(), BankId: $("#ddlInvBankPayBank  option:selected").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), Remarks: $("#txtInvBankPayReamarks").val(), Number: payno, Paytype: 'Vendor Advance', BankorCash: 'Bank', VendorType: $("#ddlVendorType  option:selected").val(), VendorCode: $("#ddlPaymentVendor  option:selected").val()},
+        success: function (Data) {
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+        addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+        $("#divSppoPayInfoMsg").addClass("alert-success");
+       
+        }
+        else {
+        $("#divSppoPayInfoMsg").text(Data.saveStatus);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        $("#btnSPPOInvBankAdvPaySubmit").prop("disabled", false);
+        }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#btnInvBankAdvPaySubmit").prop("disabled", false);
+        }
+        });
+
+        }
+
+        }
+        function SubmitVendorSPPOAdvanceCashPayData() {
+        // alert('SPPOAdvanceCash');
+        isValid = true;
+        var errorMsg = "";
+
+        var date = $("#txtInvCashPayDate").val();
+        var remarks = $("#txtInvCashPayReamarks").val();
+        var amount = $("#txtInvCashPayFinalAmount").val();
+      //  var balanceAmount = $("#txtAdvanceBalance").val();
+
+        if (date === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+        isValid = false;
+        }
+        if (remarks === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+        isValid = false;
+        }
+        if (amount === "" || amount <= 0) {
+        errorMsg += " <p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+        isValid = false;
+        }
+        //else if (parseFloat(balanceAmount) < parseFloat(amount)) {
+        //errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Advance Amount</p>";
+        //isValid = false;
+        //}
+        //var maxinvdate = $("#txtadvinvdate").val();
+        //if (new Date(date) < new Date(maxinvdate)) {
+        //errorMsg += "<p style='margin-top:-5px!important;'>Payment Date must be greater than Invoice Date</p>";
+        //isValid = false;
+        //}
+
+        if (!isValid) {
+        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+        // var  payno = $("#txtInvCashPaymentNo").val();
+        //var pnos = $('#ddlMultiPO option:selected').toArray().map(item => item.value).join(',');
+        //var allpos = pnos + ',';
+        var singlepo = $("#ddlSinglePO option:selected").val();
+        var paidagainstCCCode = "";
+
+        var index = $("#ddlGPCPaymentmode option:selected").index();
+        if (index === 2) {
+        paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+        }
+        var AdvanceData = {
+        PONumber: singlepo,
+        TransactionDate: $("#txtInvCashPayDate").val(),
+        TransactionAmount: $("#txtInvCashPayFinalAmount").val(),
+        Remarks: $("#txtInvCashPayReamarks").val(),
+        Paytype: 'Vendor Advance',
+        BankorCash: 'Cash',
+        VendorType: $("#ddlVendorType  option:selected").val(),
+        VendorCode: $("#ddlPaymentVendor  option:selected").val(),
+        OtherCCCode: paidagainstCCCode,
+        CCCode: $("#ddlVendorPayCC option:selected").val(),
+        CashTransMode: index,
+       // InvoiceNo: $("#ddlAdvanceInv option:selected").val()
+        };
+        debugger;
+        addFailMsg = "Error Occurred While Adding New Payment";
+        addSuccessMsg = "Payment Details Added Successfully.";
+            $("#btnInvSPPOCashAdvPaySubmit").prop("disabled", true);
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewSPPOAdvanceCashPayment',
+        data: { PONumber: singlepo, TransactionDate: $("#txtInvCashPayDate").val(), TransactionAmount: $("#txtInvCashPayFinalAmount").val(), Remarks: $("#txtInvCashPayReamarks").val(), Paytype: 'Vendor Advance', BankorCash: 'Cash', VendorType: $("#ddlVendorType  option:selected").val(), VendorCode: $("#ddlPaymentVendor  option:selected").val(), OtherCCCode: paidagainstCCCode, CCCode: $("#ddlVendorPayCC option:selected").val(), CashTransMode: index},
+        success: function (Data) {
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+        addSuccessMsg = 'Transaction Ref No. "' + typeArr[1]+'" Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+        $("#divSppoPayInfoMsg").addClass("alert-success");
+
+        }
+        else {
+        $("#divSppoPayInfoMsg").text(Data.saveStatus);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#btnInvSPPOCashAdvPaySubmit").prop("disabled", false);
+        }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+         $("#btnInvSPPOCashAdvPaySubmit").prop("disabled", false);
+        }
+        });
+
+        }
+        }
+        function SubmitVendorSPPORetentionBankPayData() {
+        //  alert('SPPORetentionBank');
+        var tablerowcount = $("#tblRetentionPayGrid tbody tr").length;
+        if (tablerowcount > 0) {
+        isValid = true;
+        var errorMsg = "";
+        var selectedcheck = 0;
+        var invtotalamount = 0;
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        selectedcheck = selectedcheck + 1;
+        }
+        });
+        if (selectedcheck === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+        isValid = false;
+        }
+        var bank = $("#ddlInvBankPayBank option:selected").text();
+        var Mode = $("#ddlInvBankPayMode option:selected").text();
+        var bankindex = $("#ddlInvBankPayBank option:selected").index();
+        var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+        var date = $("#txtInvBankPayDate").val();
+        var remarks = $("#txtInvBankPayReamarks").val();
+        var amount = $("#txtInvBankPayFinalAmount").val();
+
+        if (bankindex === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+        isValid = false;
+        }
+        if (Modeindex === 0) {
+        errorMsg += " <p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+        isValid = false;
+        }
+        if (Modeindex === 1) {
+        var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+        if (ddlcheque === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+        isValid = false;
+        }
+        }
+        else {
+        var cheque = $("#txtInvBankPaymentNo").val();
+        if (cheque === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Cheque No</p>";
+        isValid = false;
+        }
+        }
+        if (date === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+        isValid = false;
+        }
+        if (remarks === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+        isValid = false;
+        }
+        if (amount === "" || amount === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+        isValid = false;
+        }
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+        }
+        });
+        if (parseFloat(amount) > parseFloat(invtotalamount)) {
+        errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+        isValid = false;
+        }
+        if (!isValid) {
+        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + " </div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        var paydate = date;
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var invdate = currentRow.find("td").eq(3).html();
+        if (checkbox === true) {
+        if (new Date(paydate) < new Date($.trim(invdate))) {
+        isValid = false;
+        }
+        }
+
+        });
+        if (!isValid) {
+        var finalerror1 = " <div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+        //Insert DCA Budget in to db
+        // var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+        var chequeno;
+        if (Modeindex === 1) {
+        chequeno = $("#ddlInvPaymentNo option:selected").text();
+        }
+        else {
+        chequeno = $("#txtInvBankPaymentNo").val();
+        }
+        var selecetedinvnos = "", Ponos = "";
+
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var ino = currentRow.find("td").eq(2).html();
+        var pno = currentRow.find("td").eq(11).html();
+        if (checkbox === true) {
+        //  selecetedinvnos += ino + ",";
+        selecetedinvnos += $.trim(ino) + ",";
+        Ponos += $.trim(pno) + ",";
+        }
+        });
+        //var saveRetPay = {
+        //    InvoiceNos: selecetedinvnos,
+        //    PONumber: Ponos,
+        //    BankId: $("#ddlInvBankPayBank option:selected").val(),
+        //    TransactionDate: $("#txtInvBankPayDate").val(),
+        //    Number: chequeno,
+        //    Remarks: $("#txtInvBankPayReamarks").val(),
+        //    TransactionAmount: $("#txtInvBankPayFinalAmount").val(),
+        //    BankName: $("#ddlInvBankPayBank option:selected").text(),
+        //    ModeofPay: $("#ddlInvBankPayMode option:selected").text(),
+        //    Paytype: 'Vendor Retention',
+        //    Action: 'New',
+        //    VendorType: $("#ddlVendorType  option:selected").val(),
+        //    BankorCash: 'Bank',
+        //    VendorCode: $("#ddlPaymentVendor  option:selected").val()
+        //};
+        debugger;
+        addFailMsg = "Error Occurred While Adding Retention Payment";
+        addSuccessMsg = "Retention Payment Added Successfully.";
+            $("#btnSPPOInvBankRetPaySubmit").prop('disabled', true);
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewSPPORetentionBankPayment',
+        data: { InvoiceNos: selecetedinvnos, PONumber: Ponos, BankId: $("#ddlInvBankPayBank option:selected").val(), TransactionDate: $("#txtInvBankPayDate").val(), Number: chequeno, Remarks: $("#txtInvBankPayReamarks").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), BankName: $("#ddlInvBankPayBank option:selected").text(), ModeofPay: $("#ddlInvBankPayMode option:selected").text(), Paytype: 'Vendor Retention', Action: 'New', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Bank', VendorCode: $("#ddlPaymentVendor  option:selected").val()},
+        success: function (Data) {
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+        addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+        $("#divSppoPayInfoMsg").addClass("alert-success");
+   
+        }
+        else {
+        $("#btnSPPOInvBankRetPaySubmit").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+        $("#btnSPPOInvBankRetPaySubmit").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+       $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        });
+
+        }
+        }
+        }
+
+        }
+        function SubmitVendorSPPOHoldBankPayData() {
+        // alert('SPPOHoldBank');
+        var tablerowcount = $("#tblHoldPayGrid tbody tr").length;
+        if (tablerowcount > 0) {
+        isValid = true;
+        var errorMsg = "";
+        var selectedcheck = 0;
+        var invtotalamount = 0;
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        selectedcheck = selectedcheck + 1;
+        }
+        });
+        if (selectedcheck === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+        isValid = false;
+        }
+        var bank = $("#ddlInvBankPayBank option:selected").text();
+        var Mode = $("#ddlInvBankPayMode option:selected").text();
+        var bankindex = $("#ddlInvBankPayBank option:selected").index();
+        var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+        var date = $("#txtInvBankPayDate").val();
+        var remarks = $("#txtInvBankPayReamarks").val();
+        var amount = $("#txtInvBankPayFinalAmount").val();
+
+        if (bankindex === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+        isValid = false;
+        }
+        if (Modeindex === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+        isValid = false;
+        }
+        if (Modeindex === 1) {
+        var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+        if (ddlcheque === 0) {
+        errorMsg += " <p style='margin-top:-5px!important;'>Select Cheque No</p>";
+        isValid = false;
+        }
+        }
+        else {
+        var cheque = $("#txtInvBankPaymentNo").val();
+        if (cheque === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Cheque No</p>";
+        isValid = false;
+        }
+
+        }
+        if (date === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+        isValid = false;
+        }
+        if (remarks === "") {
+        errorMsg += " <p style='margin-top:-5px!important;'>Enter Remarks</p>";
+        isValid = false;
+        }
+        if (amount === "" || amount === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+        isValid = false;
+        }
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+        }
+        });
+        if (parseFloat(amount) > parseFloat(invtotalamount)) {
+        errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+        isValid = false;
+        }
+        if (!isValid) {
+        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        var paydate = date;
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var invdate = currentRow.find("td").eq(3).html();
+        if (checkbox === true) {
+        if (new Date(paydate) < new Date($.trim(invdate))) {
+        isValid = false;
+        }
+        }
+
+        });
+        if (!isValid) {
+        var finalerror1 = " <div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror1 + " </div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+        //Insert DCA Budget in to db
+        //  SaveHoldPayment();
+
+
+
+        var chequeno;
+        if (Modeindex === 1) {
+        chequeno = $("#ddlInvPaymentNo option:selected").text();
+        }
+        else {
+        chequeno = $("#txtInvBankPaymentNo").val();
+        }
+        var selecetedinvnos = "", ponos = "";
+
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var ino = currentRow.find("td").eq(2).html();
+        var pno = currentRow.find("td").eq(11).html();
+        if (checkbox === true) {
+        //  selecetedinvnos += ino + ",";
+        selecetedinvnos += $.trim(ino) + ",";
+        ponos += $.trim(pno) + ",";
+        }
+        });
+
+        //var saveHoldPay = {
+        //    InvoiceNos: selecetedinvnos,
+        //    PONumber: ponos,
+        //    BankId: $("#ddlInvBankPayBank option:selected").val(),
+        //    TransactionDate: $("#txtInvBankPayDate").val(),
+        //    Number: chequeno,
+        //    Remarks: $("#txtInvBankPayReamarks").val(),
+        //    TransactionAmount: $("#txtInvBankPayFinalAmount").val(),
+        //    BankName: $("#ddlInvBankPayBank option:selected").text(),
+        //    ModeofPay: $("#ddlInvBankPayMode option:selected").text(),
+        //    Paytype: 'Vendor Hold',
+        //    Action: 'New',
+        //    VendorType: $("#ddlVendorType  option:selected").val(),
+        //    BankorCash: 'Bank',
+        //    VendorCode: $("#ddlPaymentVendor  option:selected").val()
+        //};
+        debugger;
+
+        addFailMsg = "Error Occurred While Adding Hold Payment";
+        addSuccessMsg = "Hold Payment Added Successfully.";
+            $("#btnSPPOInvBankHoldPaySubmit").prop('disabled', true);
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewSPPOHoldBankPayment',
+        data: { InvoiceNos: selecetedinvnos, PONumber: Ponos, BankId: $("#ddlInvBankPayBank option:selected").val(), TransactionDate: $("#txtInvBankPayDate").val(), Number: chequeno, Remarks: $("#txtInvBankPayReamarks").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), BankName: $("#ddlInvBankPayBank option:selected").text(), ModeofPay: $("#ddlInvBankPayMode option:selected").text(), Paytype: 'Vendor Hold', Action: 'New', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Bank', VendorCode: $("#ddlPaymentVendor  option:selected").val() },
+
+        success: function (Data) {
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+        addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+        $("#divSppoPayInfoMsg").addClass("alert-success");
+        
+        }
+        else {
+        $("#divSppoPayInfoMsg").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+       
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            $("#btnSPPOInvBankHoldPaySubmit").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        });
+        }
+        }
+        }
+        }
+        function SubmitVendorSPPORetentionCashPayData() {
+        // alert('SPPORetentionCash');
+        var tablerowcount = $("#tblRetentionPayGrid tbody tr").length;
+        if (tablerowcount > 0) {
+        isValid = true;
+        var errorMsg = "";
+        var selectedcheck = 0;
+        var invtotalamount = 0;
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        selectedcheck = selectedcheck + 1;
+        }
+        });
+        if (selectedcheck === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+        isValid = false;
+        }
+        //var bank = $("#ddlInvCashPayBank option:selected").text();
+        //var Mode = $("#ddlInvCashPayMode option:selected").text();
+        //var bankindex = $("#ddlInvCashPayBank option:selected").index();
+        //var Modeindex = $("#ddlInvCashPayMode option:selected").index();
+        var date = $("#txtInvCashPayDate").val();
+        var remarks = $("#txtInvCashPayReamarks").val();
+        var amount = $("#txtInvCashPayFinalAmount").val();
+
+        
+        if (date === "") {
+        errorMsg += " <p style='margin-top:-5px!important;'>Enter Date</p>";
+        isValid = false;
+        }
+        if (remarks === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+        isValid = false;
+        }
+        if (amount === "" || amount === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+        isValid = false;
+        }
+       
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+        }
+        });
+        if (parseFloat(amount) > parseFloat(invtotalamount)) {
+        errorMsg += " <p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+        isValid = false;
+        }
+        if (!isValid) {
+        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        var paydate = date;
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var invdate = currentRow.find("td").eq(3).html();
+        if (checkbox === true) {
+        if (new Date(paydate) < new Date($.trim(invdate))) {
+        isValid = false;
+        }
+        }
+
+        });
+        if (!isValid) {
+        var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror1 + " </div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+        //Insert DCA Budget in to db
+        // var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+        //var chequeno;
+        //chequeno = $("#txtInvCashPaymentNo").val();
+
+        var selecetedinvnos = "", Ponos = "";
+
+        $("#tblRetentionPayGrid tbody tr").each(function () {
+
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var ino = currentRow.find("td").eq(2).html();
+        var pno = currentRow.find("td").eq(11).html();
+        debugger;
+        if (checkbox === true) {
+        //  selecetedinvnos += ino + ",";
+        selecetedinvnos += $.trim(ino) + ",";
+        Ponos += $.trim(pno) + ",";
+        }
+        });
+
+        var paidagainstCCCode = "";
+
+        var index = $("#ddlGPCPaymentmode option:selected").index();
+        if (index === 2) {
+        paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+        }
+        //if ($('#chkPaidtootherCC').is(":checked") === true) {
+        //    paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+
+        //}
+
+        //var saveRetPay = {
+        //    InvoiceNos: selecetedinvnos,
+        //    PONumber: Ponos,
+        //    TransactionDate: $("#txtInvCashPayDate").val(),
+        //    Remarks: $("#txtInvCashPayReamarks").val(),
+        //    TransactionAmount: $("#txtInvCashPayFinalAmount").val(),
+        //    Paytype: 'Vendor Retention',
+        //    Action: 'New',
+        //    VendorType: $("#ddlVendorType  option:selected").val(),
+        //    BankorCash: 'Cash',
+        //    VendorCode: $("#ddlPaymentVendor  option:selected").val(),
+        //    OtherCCCode: paidagainstCCCode,
+        //    CCCode: $("#ddlVendorPayCC option:selected").val(),
+        //    CashTransMode: index
+        //};
+        debugger;
+        addFailMsg = "Error Occurred While Adding Retention Payment";
+        addSuccessMsg = "Retention Payment Added Successfully.";
+            $("#btnInvSPPOCashRetPaySubmit").prop('disabled', true);
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewSPPORetentionCashPayment',
+        data: { InvoiceNos: selecetedinvnos, PONumber: Ponos, TransactionDate: $("#txtInvCashPayDate").val(), Remarks: $("#txtInvCashPayReamarks").val(), TransactionAmount: $("#txtInvCashPayFinalAmount").val(), Paytype: 'Vendor Retention', Action: 'New', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Cash', VendorCode: $("#ddlPaymentVendor  option:selected").val(), OtherCCCode: paidagainstCCCode, CCCode: $("#ddlVendorPayCC option:selected").val(), CashTransMode: index},
+        success: function (Data) {
+
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+            addSuccessMsg = 'VoucherId. ' + typeArr[1] + 'Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+        $("#divSppoPayInfoMsg").addClass("alert-success");
+       
+        }
+        else {
+        $("#btnInvSPPOCashRetPaySubmit").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            $("#btnInvSPPOCashRetPaySubmit").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        });
+
+        }
+        }
+        }
+        }
+        function SubmitVendorSPPOHoldCashPayData() {
+        // alert('SPPOHoldCash');
+        var tablerowcount = $("#tblHoldPayGrid tbody tr").length;
+        if (tablerowcount > 0) {
+        isValid = true;
+        var errorMsg = "";
+        var selectedcheck = 0;
+        var invtotalamount = 0;
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        selectedcheck = selectedcheck + 1;
+        }
+        });
+        if (selectedcheck === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+        isValid = false;
+        }
+        //var bank = $("#ddlInvCashPayBank option:selected").text();
+        //var Mode = $("#ddlInvCashPayMode option:selected").text();
+        //var bankindex = $("#ddlInvCashPayBank option:selected").index();
+        //var Modeindex = $("#ddlInvCashPayMode option:selected").index();
+        var date = $("#txtInvCashPayDate").val();
+        var remarks = $("#txtInvCashPayReamarks").val();
+        var amount = $("#txtInvCashPayFinalAmount").val();
+
+       
+
+
+        if (date === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+        isValid = false;
+        }
+        if (remarks === "") {
+        errorMsg += " <p style='margin-top:-5px!important;'>Enter Remarks</p>";
+        isValid = false;
+        }
+        if (amount === "" || amount === 0) {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+        isValid = false;
+        }
+       
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var rowamount = currentRow.find("td").eq(10).html();
+        if (checkbox === true) {
+        invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+        }
+        });
+        if (parseFloat(amount) > parseFloat(invtotalamount)) {
+        errorMsg += " <p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+        isValid = false;
+        }
+        if (!isValid) {
+        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        var paydate = date;
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var invdate = currentRow.find("td").eq(3).html();
+        if (checkbox === true) {
+        if (new Date(paydate) < new Date($.trim(invdate))) {
+        isValid = false;
+        }
+        }
+
+        });
+        if (!isValid) {
+        var finalerror1 = " <div style='align:center'> <p>Payment date must be greater than invoice Date</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror1 + " </div>");
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+        //Insert DCA Budget in to db
+        //  SaveHoldPayment();
+        //   var  chequeno = $("#txtInvCashPaymentNo").val();
+
+        var selecetedinvnos = "", ponos = "";
+
+        $("#tblHoldPayGrid tbody tr").each(function () {
+        var currentRow = $(this);
+        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+        var ino = currentRow.find("td").eq(2).html();
+        var pno = currentRow.find("td").eq(11).html();
+        if (checkbox === true) {
+        //  selecetedinvnos += ino + ",";
+        selecetedinvnos += $.trim(ino) + ",";
+        ponos += $.trim(pno) + ",";
+        }
+        });
+
+        var paidagainstCCCode = "";
+        var index = $("#ddlGPCPaymentmode option:selected").index();
+        if (index === 2) {
+        paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+        }
+        //if ($('#chkPaidtootherCC').is(":checked") === true) {
+        //    paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+
+        //}
+
+        //var saveHoldPay = {
+        //    InvoiceNos: selecetedinvnos,
+        //    PONumber: ponos,
+        //    TransactionDate: $("#txtInvCashPayDate").val(),
+        //    Remarks: $("#txtInvCashPayReamarks").val(),
+        //    TransactionAmount: $("#txtInvCashPayFinalAmount").val(),
+        //    Paytype: 'Vendor Hold',
+        //    Action: 'New',
+        //    VendorType: $("#ddlVendorType  option:selected").val(),
+        //    BankorCash: 'Cash',
+        //    VendorCode: $("#ddlPaymentVendor option:selected").val(),
+        //    OtherCCCode: paidagainstCCCode,
+        //    CCCode: $("#ddlVendorPayCC option:selected").val(),
+        //    CashTransMode: index
+        //};
+        debugger;
+
+        addFailMsg = "Error Occurred While Adding Hold Payment";
+        addSuccessMsg = "Hold Payment Added Successfully.";
+            $("#btnInvSPPOCashHoldPaySubmit").prop('disabled', true);
+        $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Purchase/SaveNewSPPOHoldCashPayment',
+        data: { InvoiceNos: selecetedinvnos, PONumber: ponos, TransactionDate: $("#txtInvCashPayDate").val(), Remarks: $("#txtInvCashPayReamarks").val(), TransactionAmount: $("#txtInvCashPayFinalAmount").val(), Paytype: 'Vendor Hold', Action: 'New', VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'Cash', VendorCode: $("#ddlPaymentVendor  option:selected").val(), OtherCCCode: paidagainstCCCode, CCCode: $("#ddlVendorPayCC option:selected").val(), CashTransMode: index },
+        success: function (Data) {
+       
+        var typeArr = Data.saveStatus.toString().split('$');
+        var result = typeArr[0];
+        if (result === 'Submited') {
+        addSuccessMsg = 'VoucherId  ' + typeArr[1] + ' Created Successfully';
+        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+            $("#divSppoPayInfoMsg").addClass("alert-success");
+           
+        }
+        else {
+            $("#btnInvSPPOCashHoldPaySubmit").prop('disabled', false);
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $("#btnInvSPPOCashHoldPaySubmit").prop('disabled', false);
+       
+        $("#divSppoPayInfoMsg").text(addFailMsg);
+        $("#divSppoPayInfoMsg").addClass("alert-danger");
+        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        });
+        }
+        }
+        }
+
+    }
+
+    function SubmitThirdPartyData() {
+
+        //alert('SPPOInvoiceCash');
+        var tablerowcount = $("#tblInvPayGrid tbody tr").length;
+        if (tablerowcount > 0) {
+            isValid = true;
+            var errorMsg = "";
+            var selectedcheck = 0;
+            var invtotalamount = 0;
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox === true) {
+                    selectedcheck = selectedcheck + 1;
+                }
+            });
+            if (selectedcheck === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Numbers</p>";
+                isValid = false;
+            }
+           
+            var date = $("#txtInvBankPayDate").val();
+            var remarks = $("#txtInvBankPayReamarks").val();
+            var amount = $("#txtInvBankPayFinalAmount").val();
+            var loanindex = $("#ddlLoanNo option:selected").index();
+            var agencyindex = $("#ddlAgency option:selected").index();
+            if (loanindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Loan No</p>";
+                isValid = false;
+            }
+            if (agencyindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Agency</p>";
+                isValid = false;
+            }
+            if (date === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+                isValid = false;
+            }
+            if (remarks === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                isValid = false;
+            }
+            if (amount === "" || amount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+                isValid = false;
+            }
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox === true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+            if (parseFloat(amount) > parseFloat(invtotalamount)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>You are excessing the Invoice Amount</p>";
+                isValid = false;
+            }
+
+           
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                var paydate = date;
+                $("#tblInvPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                    var invdate = currentRow.find("td").eq(4).html();
+                    if (checkbox === true) {
+                        if (new Date(paydate) < new Date($.trim(invdate))) {
+                            isValid = false;
+                        }
+                    }
+                });
+                if (!isValid) {
+                    var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+                    $("#divSppoPayInfoMsg").text("");
+                    $("#divSppoPayInfoMsg").append(finalerror1 + "</div>");
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    $("#divSppoPayInfoMsg").text("");
+                    $("#divSppoPayInfoMsg").addClass("hidden");
+                   
+                    
+                    var Invnos = "", Ponos = "";
+                    $("#tblInvPayGrid tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                        var invno = currentRow.find("td").eq(3).html();
+                        var po = currentRow.find("td").eq(11).html();
+                        if (checkbox === true) {
+                            Invnos += $.trim(invno) + ',';
+                            Ponos += $.trim(po) + ',';
+                        }
+                    });
+                    //var paidagainstCCCode = "";
+                    //var index = $("#ddlGPCPaymentmode option:selected").index();
+                    //if (index === 2) {
+                    //    paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+                    //}
+        debugger;
+                    addFailMsg = "Error Occurred While Adding New Payment";
+                    addSuccessMsg = "Payment Details Added Successfully.";
+                    $("#btnThirdParty").prop("disabled", true);
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: '/Purchase/SaveThirpartyInvPayment',
+                        data: { InvoiceNos: Invnos, PONumber: Ponos, TransactionDate: $("#txtInvBankPayDate").val(), LoanNo: $("#ddlLoanNo option:selected").text(), Agency: $("#ddlAgency option:selected").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), Remarks: $("#txtInvBankPayReamarks").val(), VendorType: $("#ddlVendorType  option:selected").val(), BankorCash: 'ThirdParty', VendorCode: $("#ddlPaymentVendor  option:selected").val() },
+                        success: function (Data) {
+                            var typeArr = Data.saveStatus.toString().split('$');
+                            var result = typeArr[0];
+                            if (result === 'Submited') {
+                                addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+                                $("#divSppoPayInfoMsg").text(addSuccessMsg);
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+                                $("#divSppoPayInfoMsg").addClass("alert-success");
+                              
+                            }
+                            else {
+                                $("#divSppoPayInfoMsg").text(Data.saveStatus);
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                $("#btnSupplerInvBankPaySubmit").prop("disabled", false);
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            debugger;
+                            //console.log(errorThrown);
+                            //alert(errorThrown);
+                            $("#divSppoPayInfoMsg").text(addFailMsg);
+                            $("#divSppoPayInfoMsg").addClass("alert-danger");
+                            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                            $("#btnSupplerInvBankPaySubmit").prop("disabled", false);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    function SubmitVendorSupplierAdvanceBankPayData() {
+
+        //alert('Supplier AdvanceBank');
+        isValid = true;
+        var errorMsg = "";
+        var bank = $("#ddlInvBankPayBank option:selected").text();
+        var Mode = $("#ddlInvBankPayMode option:selected").text();
+        var bankindex = $("#ddlInvBankPayBank option:selected").index();
+        var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+        var date = $("#txtInvBankPayDate").val();
+        var remarks = $("#txtInvBankPayReamarks").val();
+        var amount = $("#txtInvBankPayFinalAmount").val();
+        //var balanceAmount = $("#txtAdvanceBalance").val();
+
+        if (bankindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+            isValid = false;
+        }
+        if (Modeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+            isValid = false;
+        }
+        if (Modeindex === 1) {
+            var ddlcheque = $("#ddlInvPaymentNo option:selected").index();
+            if (ddlcheque === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+                isValid = false;
+            }
+        }
+        else {
+            var cheque = $("#txtInvBankPaymentNo").val();
+            if (cheque === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+                isValid = false;
+            }
+
+        }
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+            isValid = false;
+        }
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (amount === "" || amount <= 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+            isValid = false;
+        }
+      
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+
+            var payno = 0;
+            if ($("#ddlInvBankPayMode  option:selected").val() === 'Cheque') {
+                payno = $("#ddlInvPaymentNo option:selected").text();
+            }
+            else {
+                payno = $("#txtInvBankPaymentNo").val();
+            }
+
+            var singlepo = $("#ddlSinglePO option:selected").val();
+            
+            debugger;
+            addFailMsg = "Error Occurred While Adding New Payment";
+            addSuccessMsg = "Payment Details Added Successfully.";
+            $("#btnSupplerAdvBankPaySubmit").prop("disabled", true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/SaveNewSupplierAdvanceBankPayment',
+                data: { PONumber: singlepo, TransactionDate: $("#txtInvBankPayDate").val(), BankName: $("#ddlInvBankPayBank  option:selected").text(), ModeofPay: $("#ddlInvBankPayMode  option:selected").val(), BankId: $("#ddlInvBankPayBank  option:selected").val(), TransactionAmount: $("#txtInvBankPayFinalAmount").val(), Remarks: $("#txtInvBankPayReamarks").val(), Number: payno, Paytype: 'Vendor Advance', BankorCash: 'Bank', VendorType: $("#ddlVendorType  option:selected").val(), VendorCode: $("#ddlPaymentVendor  option:selected").val() },
+                success: function (Data) {
+                    var typeArr = Data.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') {
+                        addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+                        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+                        $("#divSppoPayInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divSppoPayInfoMsg").text(Data.saveStatus);
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                        $("#btnSupplerAdvBankPaySubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divSppoPayInfoMsg").text(addFailMsg);
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    $("#btnSupplerAdvBankPaySubmit").prop("disabled", false);
+                }
+            });
+
+        }
+    }
+    function SubmitVendorSupplierAdvanceCashPayData() {
+       // alert('Supplier Advance Cash');
+        isValid = true;
+        var errorMsg = "";
+        var date = $("#txtInvCashPayDate").val();
+        var remarks = $("#txtInvCashPayReamarks").val();
+        var amount = $("#txtInvCashPayFinalAmount").val();       
+
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+            isValid = false;
+        }
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (amount === "" || amount <= 0) {
+            errorMsg += " <p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+            isValid = false;
+        }        
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+            
+            var singlepo = $("#ddlSinglePO option:selected").val();
+            var paidagainstCCCode = "";
+
+            var index = $("#ddlGPCPaymentmode option:selected").index();
+            if (index === 2) {
+                paidagainstCCCode = $("#ddlVendorPayOtherCC option:selected").val();
+            }
+            var AdvanceData = {
+                PONumber: singlepo,
+                TransactionDate: $("#txtInvCashPayDate").val(),
+                TransactionAmount: $("#txtInvCashPayFinalAmount").val(),
+                Remarks: $("#txtInvCashPayReamarks").val(),
+                Paytype: 'Vendor Advance',
+                BankorCash: 'Cash',
+                VendorType: $("#ddlVendorType  option:selected").val(),
+                VendorCode: $("#ddlPaymentVendor  option:selected").val(),
+                OtherCCCode: paidagainstCCCode,
+                CCCode: $("#ddlVendorPayCC option:selected").val(),
+                CashTransMode: index,               
+            };
+            debugger;
+            addFailMsg = "Error Occurred While Adding New Payment";
+            addSuccessMsg = "Payment Details Added Successfully.";
+            $("#btnInvSupplierAdvCashPaySubmit").prop("disabled", true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/SaveNewSupplierAdvanceCashPayment',
+                data: { PONumber: singlepo, TransactionDate: $("#txtInvCashPayDate").val(), TransactionAmount: $("#txtInvCashPayFinalAmount").val(), Remarks: $("#txtInvCashPayReamarks").val(), Paytype: 'Vendor Advance', BankorCash: 'Cash', VendorType: $("#ddlVendorType  option:selected").val(), VendorCode: $("#ddlPaymentVendor  option:selected").val(), OtherCCCode: paidagainstCCCode, CCCode: $("#ddlVendorPayCC option:selected").val(), CashTransMode: index },
+                success: function (Data) {
+                    var typeArr = Data.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') {
+                        addSuccessMsg = 'Voucher Id. "' + typeArr[1] + '" Created Successfully';
+                        $("#divSppoPayInfoMsg").text(addSuccessMsg);
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-danger");
+                        $("#divSppoPayInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divSppoPayInfoMsg").text(Data.saveStatus);
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                        $("#btnInvSupplierAdvCashPaySubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divSppoPayInfoMsg").text(addFailMsg);
+                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    $("#btnInvSupplierAdvCashPaySubmit").prop("disabled", false);
+                }
+            });
+        }
+    }
+</script>

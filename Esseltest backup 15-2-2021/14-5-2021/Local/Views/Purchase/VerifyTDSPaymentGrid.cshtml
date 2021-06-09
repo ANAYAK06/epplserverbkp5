@@ -1,0 +1,148 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.VendorTDSPayment>
+<div class="table-responsive">
+    <table id="tblApproveTDSPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th >BankTransactionRefNo</th>
+                @*<th>Cost Center</th>*@
+                <th>Amount</th>
+                <th>TransactionDate</th>
+                <th  class="hidden">Cost Center</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionRefNo)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.CCName)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionDate)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CostCenter)
+                </td>
+
+                <td  class="hidden">
+                    @Html.DisplayFor(modelItem => item.TransactionStatus)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveGrid = null;
+            InitializeApproveGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppGenCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+          //  alert($("#roleid").val() + "-"+Sessionroleid);
+        });
+    function InitializeApproveGrid() {
+        ApproveGrid = $('#tblApproveTDSPayGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+                    var oldstatus = $('td:eq(5)', row).html();
+                    if (oldstatus == 1) {
+                        $('td:eq(5)', row).html("Verification Pending");
+                    }
+                    else { $('td:eq(5)', row).html("Return");}
+                },
+                pageLength: 10
+            });
+        $('#tblApproveTDSPayGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveGrid, tr);
+                    // Open this row
+                    row.child(formatTDSPay(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatTDSPay(d) {
+        //debugger;
+        var htmltext;
+        var  refno;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    refno = value;
+               
+            });
+        var divid = "divapprGen" + refno;
+        var divid1 = $("#" + divid + "");
+       
+        
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/VerifyTDSPaymentView',
+                data: { transactionRefno: refno },
+                success: function (Data) {
+                    var divid2 = "divapprGen" + refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+
+        
+        return '<div id="divapprGen' + refno + '" class="col-md-12 verifydiv"><br/></div>';
+        }
+</script>

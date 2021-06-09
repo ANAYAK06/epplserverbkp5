@@ -1,0 +1,208 @@
+﻿@model  EsselTestLocalApplication.Models.Budget.AmendDCABudget
+<div class="col-md-12 verifydiv" style="overflow-y:auto" id="divtbldcaAmendbycc">
+    <br />
+    <div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4"><label>Cost Center Code:&nbsp;&nbsp; </label><label>@Model.CCCode</label></div>
+                <div class="col-md-4"><label>Cost Center Budget:&nbsp;&nbsp; </label><label>@Model.CCBudget</label></div>
+                <div class="col-md-4"><label>Cost Center Balance:&nbsp;&nbsp; </label><label>@Model.CCBalance</label></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"><label>Total Addition Value:&nbsp;&nbsp; </label><label>@Model.DcaAddition</label></div>
+                <div class="col-md-4"><label>Total Substraction Value:&nbsp;&nbsp; </label><label>@Model.DcaSubstraction</label></div>
+                <div class="col-md-4"><label>Total Value:&nbsp;&nbsp; </label><label>@Model.TotalAmdValue</label></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"><label>Financial Year:&nbsp;&nbsp; </label><label>@Model.FYYear</label></div>
+            </div>
+            <div class="row">
+                <div id="GridDCAData">
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppDCABudgetAmendstatus" })
+                    </div>
+                </div>
+                <div class="col-md-8 ">
+                    <div class="form-group">
+                        <lable>Notes:</lable> <br />
+                        <textarea rows="3" cols="60" class="dcabudgetnote" id="AppDCABudgetAmendNote"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <input type="text" id="txtstatus" value="@Model.Status" style="display:none" />
+                        <br /><button onClick="ApproveDCABudgetAmend()">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprDCABudgetAmendInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script>
+    $(document).ready(function () {
+        var status = '@Model.Status';
+        var Fyyear = '@Model.FYYear';
+        var code='@Model.CCCode';
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#AppDCABudgetAmendstatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        if (this['Type'] == 'Return') {
+                        }
+                        else {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        }
+                    });
+                }
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/AccountsApproval/GetDCABudgetAmendgrid',
+            data: { CCCode: code, Fyear: Fyyear, Status: status },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridDCAData").html(data);
+                }
+            },
+        });
+    });
+    function ApproveDCABudgetAmend() {
+        var amendvalue = '@Model.TotalAmdValue';
+        var status = '@Model.Status';
+        var Fyyear = '@Model.FYYear';
+        var code='@Model.CCCode';
+        var appstatus = $("#AppDCABudgetAmendstatus option:selected").text();
+        retnote = $("#AppDCABudgetAmendNote").val();
+        msg = $("#divApprDCABudgetAmendInfoMsg");
+
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+            isValid = false;
+        }        
+        var currentrowcount = $("#AmenddcaDataTable tbody tr").length;
+        var chkcount = 0;
+        $("#AmenddcaDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');          
+            if (check == false) { chkcount = chkcount + 1; }
+           
+        });
+        if (currentrowcount == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;' >Invalid</p > ";
+            isValid = false;
+        }
+        if (chkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Amended DCA's</p > ";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+
+            var verifyDCABudgetAmend = {
+                //DCABudgetAmendmentId: amendid,
+                Action: appstatus,
+                ApprovalNote: retnote,
+                CreatedBy: $("#txtAppDcaBudAmendCreatedby").val(),
+                //AmendmentType: atype,
+                AmendedValue: amendvalue,
+                //DCABudgetId: $("#DcaBid").html(),
+                //CCBudgetId: $("#CCBid").html(),
+                RoleId: $("#roleid").val(),
+                CCCode: code,               
+                FYYear: Fyyear,
+                Status: status
+            };          
+            addFailMsg = "Error Occurred";            
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/ApproveDCABudgetAmend",
+                data: JSON.stringify({ apprDcaAmend: verifyDCABudgetAmend }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $('#ApproveDCABudgetAmendMsgModal').modal('show');
+                        var msg = "<div>Budget " + finalmsg + "</div>";
+                        $("#AppDcaBudgetAmendMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#AppDcaBudgetAmendMsg").html(msg);
+                        $('#ApproveDCABudgetAmendMsgModal').modal('show');
+                    }
+                },
+                failure: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppDcaBudgetAmendMsg").html(msg);
+                    $('#ApproveDCABudgetAmendMsgModal').modal('show');
+                },
+                error: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppDcaBudgetAmendMsg").html(msg);
+                    $('#ApproveDCABudgetAmendMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

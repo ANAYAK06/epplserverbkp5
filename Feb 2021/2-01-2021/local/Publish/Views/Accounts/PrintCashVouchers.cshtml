@@ -1,0 +1,173 @@
+﻿@model EsselTestLocalApplication.Models.PrintCashVoucher
+<link href="~/Content/PrintPopup.css" rel="stylesheet" />
+<style type="text/css">
+    .tdcls {
+        text-align: center;
+    }
+</style>
+<script type="text/javascript">
+    //function Print() {
+    //    var divToPrint = document.getElementById('tblprint');
+    //    var newWin = window.open('', 'Print-Window');
+    //    newWin.document.open();
+    //    newWin.document.write('<html><body onload="window.print()">' + divToPrint.innerHTML + '</body></html>');
+    //    newWin.document.close();
+    //    setTimeout(function () { newWin.close(); }, 10);
+    //}
+    //function Print() {
+    //    // The following line is required to show the print dialog after
+    //    // mail is rendered. Affects IE browser.
+    //    document.body.offsetHeight;
+    //    window.print();
+    //}
+    function Print() {
+        printElement(document.getElementById("tblprint"));
+    };
+
+    function printElement(elem) {
+        var domClone = elem.cloneNode(true);
+
+        var $printSection = document.getElementById("printSection");
+
+        if (!$printSection) {
+            var $printSection = document.createElement("div");
+            $printSection.id = "printSection";
+            document.body.appendChild($printSection);
+        }
+
+        $printSection.innerHTML = "";
+        $printSection.appendChild(domClone);
+        window.print();
+    }
+</script>
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            @*<form onsubmit="return false">*@
+            <div class="container col-md-12" id="tblprint" style="border:3px solid gray">
+                <div class="col-md-12">
+                    <div class="col-md-8">
+                        <div class="row  text-center">
+                            <h3>
+                                ESSEL&nbsp;PROJECTS&nbsp;PVT.&nbsp;LTD.
+                            </h3>
+                        </div>
+                        <div class="row text-center">
+                            <h4 style="text-align:center"> Payment Voucher</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <table align="right">
+                            <tr>
+                                <td>
+                                    <label style="margin-top:5px">Date:</label>
+                                </td>
+                                <td>
+                                    @Model.Date                                  
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label style="margin-top:5px">VR No:</label>
+
+                                </td>
+                                <td>
+                                    @Model.VRNo                                   
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label style="margin-top:5px">CC Code :</label>
+                                </td>
+                                <td>
+                                    @Model.CCCode                                  
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label style="margin-top:5px">Vendor :</label></td>
+                                <td>
+                                    @Model.Vendor                                   
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1"><label style="margin-top:5px">DCA:</label></div>
+                    <div class="col-md-5"><input type="text" class="form-control" value="@Model.DCACode" readOnly="readOnly" /></div>
+                    <div class="col-md-1"><label style="margin-top:5px">SubDCA:</label></div>
+                    <div class="col-md-5"><input type="text" class="form-control" value="@Model.SubDca" readOnly="readOnly" /></div>
+                </div>
+                <div class="col-md-12" style="margin-top:10px">
+                    <div class="col-md-2 text-center"><label style="margin-top:5px">Pay To,</label></div>
+                    <div class="col-md-10 text-left"><input type="text" class="form-control" value="@Model.Payto" readOnly="readOnly" /></div>
+                </div>
+                <div class="col-md-12" style="margin-top:10px">
+                    <table style="width:100%;" class="hover stripe nowrap example dataTable no-footer">
+                        <thead style="background-color:none !important;color:#fff !important">
+                            <tr>
+                                <td colspan="3">
+                                    <span style="font-style: italic">Being Paid Against</span>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    @Model.Remarks
+                                </td>
+                                <td></td>
+                                <td style="text-align:center; font-weight:bold">
+                                    @Model.amount
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <label style="margin-top:5px">Total</label>
+                                </td>
+                                <td style="text-align:center; font-weight:bold">
+                                    @Model.amount
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="col-md-12" style="margin-top:10px">
+                    <div class="col-md-10">
+                        <br />
+                        <div class="col-md-2 text-left"><label style="margin-top:5px">Rupees</label></div>
+                        <div class="col-md-10 text-left"><input type="text" class="form-control" value="@Model.Rupees" readOnly="readOnly" /></div>
+                    </div>
+                    <div class="col-md-2">
+                        <br />
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td style="width:60px;height:50px;border:1px solid gray;align-items:center;">
+                                        &nbsp;&nbsp;&nbsp;Stamp
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12" style="margin-top:50px">
+                    <div class="col-md-4 text-center"><label style="margin-top:5px">Approved By</label></div>
+                    <div class="col-md-4 text-center"><label style="margin-top:5px">Paid By</label></div>
+                    <div class="col-md-4 text-center"><label style="margin-top:5px">Recieved By</label></div>
+                </div>
+            </div>
+            <div class="col-md-12" style="margin-top:10px;text-align:center;">
+                <input class="buttonSubmit" onclick="Print();" type="button" value="Print" style="background-color:aqua" title="Print Report">
+            </div>
+            @*</form>*@
+        </div>
+    </div>
+</div>

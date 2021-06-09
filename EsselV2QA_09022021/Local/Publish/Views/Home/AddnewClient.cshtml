@@ -1,0 +1,405 @@
+﻿@model EsselTestLocalApplication.Models.AddClient
+<form onsubmit="return false">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Category)
+                @Html.DropDownListFor(model => model.Category, new SelectList(Model.CategoryNameList, "Category", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ClientCategoryddl" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Client_Name)
+                @Html.TextBoxFor(model => model.Client_Name, htmlAttributes: new { @class = "form-control", @id = "txtClient" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TINNo)
+                @Html.TextBoxFor(model => model.TINNo, htmlAttributes: new { @class = "form-control", @id = "txtTINNo" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PANNo)
+                @Html.TextBoxFor(model => model.PANNo, htmlAttributes: new { @class = "form-control", @id = "txtPANNo" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TANNo)
+                @Html.TextBoxFor(model => model.TANNo, htmlAttributes: new { @class = "form-control", @id = "txtTANNo" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Contact_Person_Name)
+                @Html.TextBoxFor(model => model.Contact_Person_Name, htmlAttributes: new { @class = "form-control", @id = "txtContactPersonName" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.NatureGroupName)
+                @Html.DropDownListFor(model => model.NatureGroupName, new SelectList(Model.ClientNatureOfGroups, "NatureGroupId", "NatureGroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlClientNatureGroup", onchange = "NewclientNatureofGrpChange()" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Person_PhoneNo)
+                @Html.TextBoxFor(model => model.Person_PhoneNo, htmlAttributes: new { @class = "form-control", @id = "txtPersonPhoneNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Master Group</label>
+                <select class="form-control dropdown-toggle" id="ddlNewclientMastergroup" onchange="NewCLIENTMasterGrpChange()">
+                    <option selected="selected" value="-Please Select-">-Please Select-</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6" id="divCLIENTSubGroup">
+            <div class="form-group">
+                <label>Sub Group</label>
+                <select class="form-control dropdown-toggle" id="ddlNewclientSubgroup">
+                    <option selected="selected" value="-Please Select-">-Please Select-</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Address)
+                @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtAddress", @rows = "3" })
+            </div>
+        </div>
+    </div>
+    @*<div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.GST_Applicable)
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" name="GstApplicable" value="Yes" id="chkGSTY" onclick="onlyOne(this)">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Yes</span>
+                        </label>
+                    </li>
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" name="GstApplicable" value="No" id="chkGSTN" onclick="onlyOne(this)">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">No</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>*@
+    @*</div>*@
+
+    @*<div class="row" id="divClientGst">
+            <div style="margin-left:2px;">
+                <div class="strike">
+                    <span>Add GST Details</span>
+                </div>
+                <div class="tabledynamic">
+                    <table id="ClientGstTable" class="table order-list ClientGstGrid">
+                        <thead>
+                            <tr>
+                                <td class="col-md-2"></td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.State)</td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.GST_No)</td>
+                                <td style="text-align:center"><label>Check</label></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="text-align:center">
+                                <td class="col-md-2">1</td>
+                                <td>
+                                    @Html.DropDownListFor(model => model.State, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGstState", onchange = "ClientGSTStateChange()" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.GST_No, htmlAttributes: new { @class = "form-control rowtotal", @id = "txtGSTNo" })
+                                </td>
+                                <td>
+                                    <ul class="list-inline">
+                                        <li class="eagle-checkbox">
+                                            <label class="eagle-check custom-checkbox">
+                                                <input type="checkbox" class="eagle-check-input" id="chkGstCheck">
+                                                <span class="eagle-check-indicator"></span>
+
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="col-md-2"></td>
+                                <td class="text-center"></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addTaxGST" value="Add New Tax" onclick="AddClientBindNewRowForGST()" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>*@
+    <div class="row">
+        <div class="text-right">
+            <input type="submit" class="btn btn1 btn-success" id="btnSubmitClient" onclick="SubmitClientData()" value="Submit" />
+            <input type="button" class="btn btn1 btn-success" id="btnResetClient" onclick="ClearAddClient()" value="Reset" />
+            <input type="text" hidden="hidden" value="0" id="txtsubgrpclientexist" />
+        </div>
+    </div>
+
+</form>
+<br />
+<div class="row">
+    <div class="text-center">
+        <div id="divAddClientInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+    @**@
+</div>
+<script type="text/javascript">
+    function SubmitClientData() {
+
+        isValid = true;
+        var errorMsg = "";
+        var Category = $("#ClientCategoryddl option:selected").index();
+        var clientName = $("#txtClient").val();
+        var Tin = $("#txtTINNo").val();
+        var Pan = $("#txtPANNo").val();
+        var Tan = $("#txtTANNo").val();
+        var ContactPerson = $("#txtContactPersonName").val();
+        var ContactNo = $("#txtPersonPhoneNo").val();
+        var Address = $("#txtAddress").val();
+        var naturegroup = $("#ddlClientNatureGroup option:selected").index();
+        var mastergrpindex = $("#ddlNewclientMastergroup option:selected").index();
+        var subgrpexist = $("#txtsubgrpclientexist").val();
+        if (Category == 0 || Category == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Client Classification</p>";
+            isValid = false;
+        }
+        if (clientName == null || clientName == "") {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Name</p>";
+            isValid = false;
+        }
+        if (Tin == null || Tin == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter TIN No</p>";
+            isValid = false;
+        }
+        if (Pan == null || Pan == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter PAN No</p>";
+            isValid = false;
+        }
+        if (Tan == null || Tan == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Tan No</p>";
+            isValid = false;
+        }
+        if (ContactPerson == null || ContactPerson == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Contact Person Name</p>";
+            isValid = false;
+        }
+        if (ContactNo == null || ContactNo == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Contact Person No</p>";
+            isValid = false;
+        }
+        else if (ContactNo.length != 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter 10 digit Phone No</p>";
+            isValid = false;
+        }
+        if (Address == null || Address == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Address</p>";
+            isValid = false;
+        }
+        if (naturegroup == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Nature Of Group</p>";
+            isValid = false;
+        }
+        if (mastergrpindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Group</p>";
+            isValid = false;
+        }
+        if (subgrpexist === '1') {
+            var Subgroupindex = $("#ddlNewclientSubgroup option:selected").index();
+            if (Subgroupindex == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Sub Group</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddClientInfoMsg").text("");
+            $("#divAddClientInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddClientInfoMsg").addClass("alert-danger");
+            $("#divAddClientInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+
+            AddNewClientDetails();
+            $("#divAddClientInfoMsg").text("");
+            $("#divAddClientInfoMsg").addClass("hidden");
+            //if ($('#chkGSTN').is(":checked")) {
+
+            //    var gst = confirm('Apply GST');
+            //    if (gst == true) {
+            //        //show gst grid
+            //        $("#chkGSTY").prop("checked", true);
+            //        $("#chkGSTN").prop("checked", false);
+            //        $("#divClientGst").removeClass('hidden');
+            //        //AddNewClientDetails();
+            //        $("#divAddClientInfoMsg").text("");
+            //        $("#divAddClientInfoMsg").addClass("hidden");
+            //    }
+            //    else {
+            //        //submit data without gst details
+            //        AddNewClientDetails();
+            //        $("#divAddClientInfoMsg").text("");
+            //        $("#divAddClientInfoMsg").addClass("hidden");
+            //    }
+            //}
+            //else {
+
+            //    var ddlcount = 0;
+            //    var amountcount = 0;
+            //    $("#ClientGstTable tbody tr").each(function () {
+
+            //        var currentRow = $(this);
+            //        var col2_value = currentRow.find("td").eq(1).find("select option:selected").index();
+            //        var col1_value = currentRow.find("td").eq(2).find("input[type='text']").val();
+
+            //        var stateName = currentRow.find("td").eq(1).find("select option:selected").text();
+            //        var check = currentRow.find('input[type="checkbox"]').is(':checked');
+            //        if (col2_value == 0) {
+            //            ddlcount = ddlcount + 1;
+            //        }
+
+            //        if (col1_value == "" || col1_value == "0") {
+            //            amountcount = amountcount + 1;
+            //        }
+
+            //        if (ddlcount > 0) {
+            //            errorMsg += "<p style='margin-top:-5px!important;'>Select State Name</p>";
+            //            isValid = false;
+            //        }
+            //        if (amountcount > 0) {
+            //            errorMsg += "<p style='margin-top:-5px!important;'>Enter GSTNo</p>";
+            //            isValid = false;
+            //        }
+            //        if (check == false) {
+            //            errorMsg += "<p style='margin-top:-5px!important;'>Select Check</p>";
+            //            isValid = false;
+            //        }
+            //    });
+
+            //    if (!isValid) {
+
+            //        var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            //        $("#divAddClientInfoMsg").text("");
+            //        $("#divAddClientInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            //        $("#divAddClientInfoMsg").addClass("alert-danger");
+            //        $("#divAddClientInfoMsg").removeClass("hidden alert-success");
+            //        return false;
+            //    }
+            //    else {
+            //        $("#divAddClientInfoMsg").text("");
+            //        $("#divAddClientInfoMsg").addClass("hidden");
+            //        AddNewClientDetails();
+            //    }
+            //}
+
+        }
+    }
+    function AddNewClientDetails() {
+        //var gstdeals = null;
+        //var gstApplicatble = 0;
+        //var rows = [];
+        //var GstStatids = "", GstNos = "";
+        //if ($('#chkGSTN').is(":checked")) { gstApplicatble = 0; }
+        //if ($('#chkGSTY').is(":checked")) {
+        //    gstApplicatble = 1;
+        //    var totalRowCount = $("#ClientGstTable tbody tr").length;
+        //    $("#ClientGstTable tbody tr").each(function () {
+        //        var currentRow = $(this);
+        //        var state = currentRow.find("td").eq(1).find("select option:selected").val();
+        //        var gstno = currentRow.find("td").eq(2).find("input[type='text']").val();
+        //        GstStatids += state + ",";
+        //        GstNos += gstno + ",";
+
+        //    });
+        //}
+        //var addClient = {
+        //    Category: $("#ClientCategoryddl option:selected").val(),
+        //    Client_Name: $("#txtClient").val(),
+        //    TINNo: $("#txtTINNo").val(),
+        //    PANNo: $("#txtPANNo").val(),
+        //    TANNo: $("#txtTANNo").val(),
+        //    Contact_Person_Name: $("#txtContactPersonName").val(),
+        //    Person_PhoneNo: $("#txtPersonPhoneNo").val(),
+        //    Address: $("#txtAddress").val(),
+        //    GST_Applicable: gstApplicatble,
+        //    Action: 1,
+        //    NatureGroupId: $("#ddlClientNatureGroup option:selected").val(),
+        //    GSTStatesList: GstStatids,
+        //    GSTNoList: GstNos,
+        //    Createdby: $("#txtClientCreatedby").val()
+        //};
+        var subgrpexist = $("#txtsubgrpclientexist").val();
+        var subgrp = '';
+        if (subgrpexist === '1') { subgrp = $("#ddlNewclientSubgroup option:selected").val(); }
+        else { subgrp = 0; }
+
+        var addClient = {
+            Category: $("#ClientCategoryddl option:selected").val(),
+            Client_Name: $("#txtClient").val(),
+            TINNo: $("#txtTINNo").val(),
+            PANNo: $("#txtPANNo").val(),
+            TANNo: $("#txtTANNo").val(),
+            Contact_Person_Name: $("#txtContactPersonName").val(),
+            Person_PhoneNo: $("#txtPersonPhoneNo").val(),
+            Address: $("#txtAddress").val(),
+            Action: 1,
+            NatureGroupId: $("#ddlClientNatureGroup option:selected").val(),
+            Createdby: $("#txtClientCreatedby").val(),
+            GroupId: $("#ddlNewclientMastergroup option:selected").val(),
+            SubGroupId: subgrp,
+        };
+        addFailMsg = "Error Occurred While Adding Client Details.";
+        addSuccessMsg = "Client Details Added Successfully.";
+        // alert('submit');
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Home/SaveNewClientDetails',
+            data: { addClient: addClient },
+            success: function (Data) {
+                if (Data.saveStatus == 'Submited') {
+                    $("#btnSubmitClient").prop('disabled', true);
+                    $("#divAddClientInfoMsg").text(addSuccessMsg);
+                    $("#divAddClientInfoMsg").removeClass("hidden alert-danger");
+                    $("#divAddClientInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnSubmitClient").prop('disabled', true);
+                    $("#divAddClientInfoMsg").text(Data.saveStatus);
+                    $("#divAddClientInfoMsg").addClass("alert-danger");
+                    $("#divAddClientInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnSubmitClient").prop('disabled', true);
+                $("#divAddClientInfoMsg").text(addFailMsg);
+                $("#divAddClientInfoMsg").addClass("alert-danger");
+                $("#divAddClientInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+
+
+    }
+</script>

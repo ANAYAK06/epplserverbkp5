@@ -1,0 +1,175 @@
+﻿@model EsselTestLocalApplication.Models.CCOverheadDepreciation
+@{
+    ViewBag.Title = "AccruedInterestConfig";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Accrued Interest Configuration</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">                            
+                            <div class="card-inner">
+                                <div class="row" id="divAdd">                                   
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.InterestRate, new { @id = "lblInterestRate" })
+                                            @Html.TextBoxFor(model => model.InterestRate, htmlAttributes: new { @class = "form-control", @id = "txtInterestRate", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" id="divvalue">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Value)
+                                            @Html.TextBoxFor(model => model.Value, htmlAttributes: new { @class = "form-control", @id = "txtValue", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnAdd" onclick="SubmitCCAccurate()">Submit</button>
+                                    </div>
+                                </div>                                
+                                <div class="row" id="divGrid">
+                                </div>
+                                <div class="row text-center" id="divMsg">
+                                    <div id="divCCAccurateInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#lblInterestRate").html("ACCRUED INTEREST PER ANNUM %");
+        RebindBindGrid();
+    });
+    function RebindBindGrid() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Home/CCOverheadAndDepreciationGrid',
+            data: { Type: "Accrued" },
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divGrid").html(Data);
+                }
+                else {
+                    $("#divGrid").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    }
+    function SubmitCCAccurate() {     
+        isValid = true;
+        var errorMsg = "";
+        var ccindex = $("#ddlCC option:selected").index();
+        var interest = $("#txtInterestRate").val();
+        var amount = $("#txtValue").val();
+        if (ccindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (interest === "" || interest === "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Interest Rate</p>";
+            isValid = false;
+        }
+        if (amount === "" || amount === "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Value</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCCAccurateInfoMsg").addClass("alert-danger");
+            $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").addClass("hidden");
+            addFailMsg = "Error Occurred While Adding  Details.";            
+            var saveData = {
+                Id: 0,
+                ReportType: "Accrued",
+                CostCenter: $("#ddlCC option:selected").val(),
+                InterestRate: $("#txtInterestRate").val(),
+                Value: $("#txtValue").val(),
+                Action: 'Add'
+            };
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/SaveCCAccurateValues',
+                data: { CCOD: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == "Submited") {
+                        $("#divCCAccurateInfoMsg").text("");
+                        $("#divCCAccurateInfoMsg").addClass("hidden");                        
+                        RebindBindGridaccruedupdate("Accrued");
+                        ClearFields();
+                    }
+                    else {
+                        $("#divCCAccurateInfoMsg").text(Data.saveStatus);
+                        $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                        $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCCAccurateInfoMsg").text(addFailMsg);
+                    $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                    $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    
+    function ClearFields() {      
+        $("#txtInterestRate").val("");
+        $("#txtValue").val("");
+        $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');        
+    }
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+</script>

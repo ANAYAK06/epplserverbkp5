@@ -1,0 +1,1268 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+@{
+    ViewBag.Title = "SPPOPayments";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@*@Scripts.Render("~/bundles/Purchase")*@
+<style>
+    .MultiWidth {
+        width:500px !important;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Vendor Payments</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    @if (Model.payIntialData.CashAccess == true)
+                                    {
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.TransactionType)
+                                            @Html.TextBoxFor(model => model.TransactionType, htmlAttributes: new {  @class = "form-control", @readOnly = "true" })
+                                        </div>
+                                    </div>
+                                    }
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.VendorType)
+                                            @Html.DropDownListFor(model => model.VendorType, new SelectList(Model.vendortypelist, "Type", "Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVendorType", onchange = "VendorTypeChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group" id="sppopaytypes">
+                                            @Html.LabelFor(model => model.PaymentType)
+                                            @Html.DropDownListFor(model => model.PaymentType, new SelectList(Model.PaymentTypeList, "Type", "TypeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPaymentType", onchange = "SPPOPaymentTypeChenage()" })
+                                        </div>
+                                    </div>
+                                    @if (Model.payIntialData.CashAccess == true)
+                                    {
+                                        <div class="col-md-3" id="divCashTransMode">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.CashTransactionMode)
+                                                @Html.DropDownListFor(model => model.CashTransactionMode, new SelectList(Model.lstCashTransactionmode, "GICashPaymentModeid", "GICashPaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPCPaymentmode", onchange = "BindCashCCCode()" })  @*, onchange = "BindCashCCCode()"*@
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" id="divCC">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.CCCode)
+                                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.payIntialData.UserCClist, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVendorPayCC", onchange = "VendorPayCCChange()" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" id="divOtherCC">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.OtherCCCode)
+                                                @Html.DropDownListFor(model => model.OtherCCCode, new SelectList(Model.payIntialData.UserCClist, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVendorPayOtherCC", onchange = "VendorPayOtherCCChange()" })
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-md-3" id="divVendor">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.VendorCode)
+                                            @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.VendorList, "VendorCode", "VendorName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPaymentVendor", onchange = "PaymentVendorVendorChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divSPPO">
+                                        <div class="form-group" id="divMultiPO">
+                                            @Html.LabelFor(model => model.SPPONo)<br />
+                                            @Html.ListBoxFor(model => model.SPPONo, new SelectList(Model.POList, "SPPONo", "SPPONoDesc"), new { @class = "listbox form-control", @id = "ddlMultiPO", @style = "margin:0px; width:100% !important;" })
+                                        </div>
+                                        <div class="form-group" id="divSinglePO">
+                                            @Html.LabelFor(model => model.SPPONo)<br />
+                                            @Html.DropDownListFor(model => model.SPPONo, new SelectList(Model.POList, "SPPONo", "SPPONoDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSinglePO", onchange = "PaymentAdvancePOChange()" })
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-3" id="divInv">
+                                        @Html.LabelFor(model => model.InvoiceNo)<br />
+                                        @Html.DropDownListFor(model => model.InvoiceNo, new SelectList(Model.lstInvnos, "InvoiceNo", "InvoiceNoDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvanceInv", onchange = "PaymentAdvanceInvChange()" })
+                                    </div>*@
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <br />
+                                            <input type="submit" value="View" class="btn btn1 btn-success" id="btnViewPayment" onclick="ShowSPPOPayment()" />
+                                            <input type="submit" value="Reset" class="btn btn1 btn-success" id="btnResetPayment" onclick="ResetSPPOPayment()" />
+                                            <input id="txtgridtotalamount" type="hidden" />
+                                            <input id="txtActiveTab" type="hidden" />
+                                            <input id="txtTransactionType" type="hidden" value="@Model.TransactionType" />
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="col-md-12" id="divPayment">
+                                        <div id="divInvPayment" class="col-md-12">
+                                        </div>
+                                        <div id="divAdvPayment" class="col-md-12"></div>
+                                        <div id="divRetPayment" class="col-md-12"> </div>
+                                        <div id="divHoldPayment" class="col-md-12"></div>
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <div id="divSppoPayInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.listbox').multiselect({
+            includeSelectAllOption: true
+        });       
+        if ('@Model.TransactionType' == "Cash") {
+            $("#divCC").addClass("hidden");
+            $("#txtActiveTab").val('#Cash');
+        }
+        else {
+            $("#txtActiveTab").val('#Bank');
+        }
+        $("#btnViewPayment").addClass("hidden");
+        $("#divVendor").addClass("hidden");
+        $("#divSPPO").addClass("hidden");
+        $("#btnResetPayment").removeClass("hidden");
+        $("#divPayment").addClass("hidden");
+        $("#sppopaytypes").addClass("hidden");
+        $("#divInv").addClass("hidden");
+        $("#divCC").addClass("hidden");
+         $("#divOtherCC").addClass("hidden"); 
+        //$("#ddlGPCPaymentmode").addClass("hidden");
+        $("#divCashTransMode").addClass("hidden");
+        $("#ddlMultiPO").change(function () {
+                //alert($(this).val());
+                if ($(this).val() != null) {
+                $("#btnViewPayment").removeClass("hidden");
+                }
+            else {              
+                  $("#btnViewPayment").addClass("hidden");
+                  $("#btnResetPayment").removeClass("hidden");
+                  $("#divPayment").addClass("hidden");
+                  $("#divSppoPayInfoMsg").text("");
+                  $("#divSppoPayInfoMsg").addClass("hidden");
+                }
+                //$("#MultiSelect_Preview").val($(this).val());
+        });
+
+        //$('#ddlCC').multiselect({
+        //    onDropdownHide: function (event) {
+        //    }
+        //});
+    });
+    function VendorTypeChange() {
+        var vendortypeindex = $("#ddlVendorType  option:selected").index();
+        var vendortype = $("#ddlVendorType  option:selected").val();
+        var payddl = $("#ddlPaymentType");
+        if (vendortypeindex !== 0){
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetSPPOPaymentType",
+                data: '{VendorType:"' + vendortype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        payddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            payddl.append($("<option></option>").val(this['Type']).html(this['TypeDesc']));
+                        });
+                        $("#sppopaytypes").removeClass("hidden");
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            location.reload();
+        }
+
+    }
+    function PaymentVendorVendorChange() {
+        debugger;
+        var payment = $("#ddlPaymentType option:selected").val();
+        var vendorIndex = $("#ddlPaymentVendor option:selected").index();
+        var vendor = $("#ddlPaymentVendor option:selected").val();
+        var vendortypeindex = $("#ddlVendorType  option:selected").index();
+        var vendortype = $("#ddlVendorType  option:selected").val();
+        var singlepoddl = $("#ddlSinglePO");
+        if (vendorIndex === 0) {
+            $("#btnViewPayment").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+            //poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divInvPayment").html("No Data Found");
+            $("#divPayment").removeClass('hidden');
+            $("#divInvPayment").removeClass('hidden');
+            $("#divAdvPayment").addClass('hidden');
+            $("#divRetPayment").addClass('hidden');
+            $("#divHoldPayment").addClass('hidden');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+
+            $("#ddlMultiPO option:selected").prop("selected", false);
+            $("#ddlMultiPO option").remove();
+            $('#ddlMultiPO').multiselect('rebuild');
+            singlepoddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        if (vendortypeindex === 0) {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append("<div>Select Vendor Type</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#btnViewPayment").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+            $("#ddlMultiPO option:selected").prop("selected", false);
+            $("#ddlMultiPO option").remove();
+            $('#ddlMultiPO').multiselect('rebuild');
+            singlepoddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            debugger;
+            if (payment === "Vendor Advance") {
+               
+                var transactiontype = $("#txtTransactionType").val();
+                if (transactiontype == "Cash") {
+                    var index = $("#ddlGPCPaymentmode option:selected").index();
+                    if (index !== 0) {
+                        let CashCC = '';
+                        if (index === 2) { CashCC = $("#ddlVendorPayOtherCC option:selected").val(); }
+                        else if (index === 1) { CashCC = $("#ddlVendorPayCC option:selected").val(); }
+                        debugger;
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/GetPOForCashPayment",
+                            data: '{VendorCode:"' + vendor + '",VendorType:"' + vendortype + '",CCCode:"' + CashCC + '",PaymentType:"' + payment + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                var count1 = Object.keys(response).length;
+                                if (count1 > 0) {
+                                    singlepoddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                    $("#ddlMultiPO").multiselect();
+                                    $("#ddlMultiPO option:selected").prop("selected", false);
+                                    $("#ddlMultiPO option").remove();
+                                    $('#ddlMultiPO').multiselect('rebuild');
+                                    $.each(response, function () {
+                                        //$('#ddlMultiPO').append('<option value="' + this['SPPONo'] + '">' + this['SPPONoDesc'] + '</option>').multiselect('rebuild');
+                                        singlepoddl.append($("<option></option>").val(this['SPPONo']).html(this['SPPONoDesc']));
+                                    });
+                                    $("#divSPPO").removeClass("hidden");
+                                    $("#divSppoPayInfoMsg").text("");
+                                    $("#divSppoPayInfoMsg").addClass("hidden");
+                                    $("#divMultiPO").addClass("hidden");
+                                    $("#divSinglePO").removeClass("hidden");
+                                }
+                                else {
+                                    $("#divSppoPayInfoMsg").text("");
+                                    $("#divSppoPayInfoMsg").append("<div>PO Does Not Exist</div>");
+                                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                    $("#btnViewPayment").addClass("hidden");
+                                    $("#divSPPO").addClass("hidden");
+                                    $("#btnResetPayment").removeClass("hidden");
+                                    $("#divPayment").addClass();
+                                    $("#divMultiPO").addClass("hidden");
+                                    $("#divSinglePO").addClass("hidden");
+                                }
+                            },
+                            failure: function (response) {
+
+                            },
+                            error: function (response) {
+                            }
+                        });
+                    }
+
+                }
+                else {
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetPOForPayment",
+                        data: '{VendorCode:"' + vendor + '",VendorType:"' + vendortype + '",PaymentType:"' + payment + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count1 = Object.keys(response).length;
+                            if (count1 > 0) {
+                                singlepoddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $("#ddlMultiPO").multiselect();
+                                $("#ddlMultiPO option:selected").prop("selected", false);
+                                $("#ddlMultiPO option").remove();
+                                $('#ddlMultiPO').multiselect('rebuild');
+                                $.each(response, function () {
+                                    //$('#ddlMultiPO').append('<option value="' + this['SPPONo'] + '">' + this['SPPONoDesc'] + '</option>').multiselect('rebuild');
+                                    singlepoddl.append($("<option></option>").val(this['SPPONo']).html(this['SPPONoDesc']));
+                                });
+                                $("#divSPPO").removeClass("hidden");
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").addClass("hidden");
+                                $("#divMultiPO").addClass("hidden");
+                                $("#divSinglePO").removeClass("hidden");
+                            }
+                            else {
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").append("<div>PO Does Not Exist</div>");
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                $("#btnViewPayment").addClass("hidden");
+                                $("#divSPPO").addClass("hidden");
+                                $("#btnResetPayment").removeClass("hidden");
+                                $("#divPayment").addClass();
+                                $("#divMultiPO").addClass("hidden");
+                                $("#divSinglePO").addClass("hidden");
+                            }
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+            }
+            else {
+                var paymenttype = $("#ddlPaymentType option:selected").val();
+                var transactiontype = $("#txtTransactionType").val();
+                if (transactiontype == "Cash") {
+                    debugger;
+                    var index = $("#ddlGPCPaymentmode option:selected").index();
+                    if (index !== 0) {
+                        let CashCC = '';
+                       
+                        if (index === 2) { CashCC = $("#ddlVendorPayOtherCC option:selected").val();}
+                        else if (index === 1) { CashCC = $("#ddlVendorPayCC option:selected").val(); }
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/GetPOForCashPayment",
+                            data: '{VendorCode:"' + vendor + '",VendorType:"' + vendortype + '",CCCode:"' + CashCC + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                var count1 = Object.keys(response).length;
+                                if (count1 > 0) {
+                                    // poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                    $("#ddlMultiPO").multiselect();
+                                    $("#ddlMultiPO option:selected").prop("selected", false);
+                                    $("#ddlMultiPO option").remove();
+                                    $('#ddlMultiPO').multiselect('rebuild');
+                                    $.each(response, function () {
+                                        $('#ddlMultiPO').append('<option value="' + this['SPPONo'] + '">' + this['SPPONoDesc'] + '</option>').multiselect('rebuild');
+                                        //poddl.append($("<option></option>").val(this['SPPONo']).html(this['SPPONoDesc']));
+                                    });
+                                    $("#divSPPO").removeClass("hidden");
+                                    $("#divSppoPayInfoMsg").text("");
+                                    $("#divSppoPayInfoMsg").addClass("hidden");
+                                    $("#divMultiPO").removeClass("hidden");
+                                    $("#divSinglePO").addClass("hidden");
+                                }
+                                else {
+                                    $("#divSppoPayInfoMsg").text("");
+                                    $("#divSppoPayInfoMsg").append("<div>PO Does Not Exist</div>");
+                                    $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                    $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                    $("#btnViewPayment").addClass("hidden");
+                                    $("#divSPPO").addClass("hidden");
+                                    $("#btnResetPayment").removeClass("hidden");
+                                    $("#divPayment").addClass();
+                                    $("#divMultiPO").addClass("hidden");
+                                    $("#divSinglePO").addClass("hidden");
+                                }
+                            },
+                            failure: function (response) {
+
+                            },
+                            error: function (response) {
+                            }
+                        });
+                    }
+
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetPOForPayment",
+                        data: '{VendorCode:"' + vendor + '",VendorType:"' + vendortype + '",PaymentType:"' + paymenttype + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count1 = Object.keys(response).length;
+                            if (count1 > 0) {
+                                // poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $("#ddlMultiPO").multiselect();
+                                $("#ddlMultiPO option:selected").prop("selected", false);
+                                $("#ddlMultiPO option").remove();
+                                $('#ddlMultiPO').multiselect('rebuild');
+                                $.each(response, function () {
+                                    $('#ddlMultiPO').append('<option value="' + this['SPPONo'] + '">' + this['SPPONoDesc'] + '</option>').multiselect('rebuild');
+                                    //poddl.append($("<option></option>").val(this['SPPONo']).html(this['SPPONoDesc']));
+                                });
+                                $("#divSPPO").removeClass("hidden");
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").addClass("hidden");
+                                $("#divMultiPO").removeClass("hidden");
+                                $("#divSinglePO").addClass("hidden");
+                            }
+                            else {
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").append("<div>PO Does Not Exist</div>");
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                                $("#btnViewPayment").addClass("hidden");
+                                $("#divSPPO").addClass("hidden");
+                                $("#btnResetPayment").removeClass("hidden");
+                                $("#divPayment").addClass();
+                                $("#divMultiPO").addClass("hidden");
+                                $("#divSinglePO").addClass("hidden");
+                            }
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+            }
+        }
+    }
+    function PaymentAdvancePOChange(){
+        var payment = $("#ddlPaymentType option:selected").val();
+        var vendorIndex = $("#ddlPaymentVendor option:selected").index();
+        var vendor = $("#ddlPaymentVendor option:selected").val();
+        var vendortypeindex = $("#ddlVendorType  option:selected").index();
+        var vendortype = $("#ddlVendorType  option:selected").val();
+        var singlepoddlindex = $("#ddlSinglePO option:selected").index();
+        var singlepo = $("#ddlSinglePO option:selected").val();
+        var invddl = $("#ddlAdvanceInv");
+        if (vendorIndex === 0) {
+            $("#btnViewPayment").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+            $("#divInvPayment").html("No Data Found");
+            $("#divPayment").removeClass('hidden');
+            $("#divInvPayment").removeClass('hidden');
+            $("#divAdvPayment").addClass('hidden');
+            $("#divRetPayment").addClass('hidden');
+            $("#divHoldPayment").addClass('hidden');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+        }
+        else if (vendortypeindex === 0) {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append("<div>Select Vendor Type</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#btnViewPayment").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+        }
+        else if (singlepoddlindex === 0) {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append("<div>Select PO No</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#btnViewPayment").addClass("hidden");
+            $("#divInv").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+        }
+        else {
+            $("#btnViewPayment").removeClass("hidden");        
+                        //$.ajax({
+                        //    type: "POST",
+                        //    url: "/Purchase/GetPOInvoiceForPayment",
+                        //    data: '{Vendor:"' + vendor + '",PO:"' + singlepo + '",type:"' + vendortype + '"}',
+                        //    contentType: "application/json; charset=utf-8",
+                        //    dataType: "json",
+                        //    success: function (response) {
+                        //        var count1 = Object.keys(response).length;
+                        //        if (count1 > 0) {
+                        //            invddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                  
+                        //            $.each(response, function () {
+                                       
+                        //                invddl.append($("<option></option>").val(this['InvoiceNo']).html(this['InvoiceNoDesc']));
+                        //            });
+                        //            $("#divInv").removeClass("hidden");
+                        //            $("#divSppoPayInfoMsg").text("");
+                        //            $("#divSppoPayInfoMsg").addClass("hidden");
+                                    
+                        //        }
+                        //        else {
+                        //            $("#divSppoPayInfoMsg").text("");
+                        //            $("#divSppoPayInfoMsg").append("<div>Invoice Does Not Exist</div>");
+                        //            $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        //            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                        //            $("#btnViewPayment").addClass("hidden");
+                        //            $("#divInv").addClass("hidden");
+                        //            $("#btnResetPayment").removeClass("hidden");
+                        //            $("#divPayment").addClass();
+                                  
+                        //        }
+                        //    },
+                        //    failure: function (response) {
+
+                        //    },
+                        //    error: function (response) {
+                        //    }
+                        //});
+          
+        }
+    }    
+
+    //function PaymentAdvanceInvChange() {
+    //    var payment = $("#ddlPaymentType option:selected").val();
+       
+    //    var vendor = $("#ddlPaymentVendor option:selected").val();     
+    //    var vendortype = $("#ddlVendorType  option:selected").val();      
+    //    var singlepo = $("#ddlSinglePO option:selected").val();
+    //    var invddlindex = $("#ddlAdvanceInv option:selected").index();
+    //    var inv = $("#ddlAdvanceInv option:selected").val();
+    //    if (invddlindex === 0) {
+    //        $("#divSppoPayInfoMsg").text("");
+    //        $("#divSppoPayInfoMsg").append("<div>Select Invoice No</div>");
+    //        $("#divSppoPayInfoMsg").addClass("alert-danger");
+    //        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+    //        $("#btnViewPayment").addClass("hidden");           
+    //        $("#btnResetPayment").removeClass("hidden");
+    //        $("#divPayment").addClass();
+    //    }
+    //    else {
+    //        $("#btnViewPayment").removeClass("hidden");        
+    //    }
+    //}
+    function BindCashCCCode() {
+        //debugger;
+        var index = $("#ddlGPCPaymentmode option:selected").index();
+        $("#divVendor").addClass("hidden");
+        $("#divSPPO").addClass("hidden");
+        $("#btnResetPayment").removeClass("hidden");
+        $("#divPayment").addClass();
+        $("#ddlPaymentVendor").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlPaymentPONo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#divSppoPayInfoMsg").text("");
+        $("#divSppoPayInfoMsg").addClass("hidden");
+        $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlMultiPO option:selected").prop("selected", false);
+        $("#ddlMultiPO option").remove();
+        $('#ddlMultiPO').multiselect('rebuild');
+        if (index != 0) {
+            if (index === 2) {
+               
+                $("#divCC").removeClass("hidden");
+                $("#divOtherCC").addClass("hidden");
+            
+            }
+            else if (index === 1) {
+                $("#divCC").removeClass("hidden");
+                $("#divOtherCC").addClass("hidden"); }
+        }
+        else {
+            $("#divCC").addClass("hidden");
+            $("#divOtherCC").addClass("hidden");
+            //$("#divacccashcccode").addClass("hidden");
+            //$("#divcashcccode").addClass("hidden");
+            //$("#divcashinvoiceno").addClass("hidden");
+            //$("#divaccounthead").addClass("hidden");
+            //$("#divremarksamt").addClass("hidden");
+            //$("#divsubmitbtn").addClass("hidden");
+        }
+    }
+    function VendorPayOtherCCChange() {
+        var CCIndex = $("#ddlVendorPayOtherCC option:selected").index();
+        var CC = $("#ddlVendorPayOtherCC option:selected").val();
+        var vendorddl = $("#ddlPaymentVendor");
+        var vendortype = $("#ddlVendorType option:selected").val();
+        // var poddl = $("#ddlPaymentPONo");
+        if (CCIndex === 0) {
+            $("#btnViewPayment").addClass("hidden");
+            $("#divVendor").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+            vendorddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+
+            $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlMultiPO option:selected").prop("selected", false);
+            $("#ddlMultiPO option").remove();
+            $('#ddlMultiPO').multiselect('rebuild');
+            //$("#divOtherCC").addClass("hidden");
+        }
+        else {
+            debugger;
+            var index = $("#ddlGPCPaymentmode option:selected").index();
+            if (index !== 0) {
+                var payment = $("#ddlPaymentType option:selected").val();
+                //if (index === 1) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetSPPOPaymentVendorbyCC",
+                        data: '{VendorType:"' + vendortype + '",CCCode:"' + CC + '",PaymentType:"' + payment + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count1 = Object.keys(response).length;
+                            if (count1 > 0) {
+                                vendorddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $.each(response, function () {
+                                    vendorddl.append($("<option></option>").val(this['VendorCode']).html(this['VendorName']));
+                                });
+                                $("#divVendor").removeClass("hidden");
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").addClass("hidden");
+                            }
+                            else {
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").append("<div>Vendor Does Not Exist</div>");
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+
+                                $("#btnViewPayment").addClass("hidden");
+                                $("#divVendor").addClass("hidden");
+                                $("#divSPPO").addClass("hidden");
+                                $("#btnResetPayment").removeClass("hidden");
+                                $("#divPayment").addClass();
+
+                                $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $("#ddlMultiPO option:selected").prop("selected", false);
+                                $("#ddlMultiPO option").remove();
+                                $('#ddlMultiPO').multiselect('rebuild');
+
+                            }
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                //}
+
+            }
+            else {
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").append("<div>Select Transaction Mode</div>");
+                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            }
+
+        }
+    }
+    function SPPOPaymentTypeChenage() {
+        var paymenttypeIndex = $("#ddlPaymentType option:selected").index();
+        var payment = $("#ddlPaymentType option:selected").val();
+        var vendorddl = $("#ddlPaymentVendor");
+        var vendortype = $("#ddlVendorType option:selected").val();
+        var TransactionType = $("#txtTransactionType").val();
+        var poddl = $("#ddlPaymentPONo");
+        if (paymenttypeIndex === 0) {
+            $("#btnViewPayment").addClass("hidden");
+            $("#divVendor").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+            vendorddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+            if (TransactionType === "Cash") {
+                $("#divCC").addClass("hidden");
+                ////$("#ddlVendorPayCC").prop('selectedIndex', 0);
+                $("#ddlVendorPayCC").prop('selectedIndex', 0);
+                $("#ddlVendorPayCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            }
+            $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlMultiPO option:selected").prop("selected", false);
+            $("#ddlMultiPO option").remove();
+            $('#ddlMultiPO').multiselect('rebuild');
+        }
+        else {
+            if (TransactionType === "Cash") {
+                $("#divCashTransMode").removeClass("hidden");
+                $("#divCC").addClass("hidden");
+                $("#divOtherCC").addClass("hidden");
+            }
+            else {
+                var paymenttype = $("#ddlPaymentType option:selected").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/GetSPPOPaymentVendor",
+                    data: '{VendorType:"' + vendortype + '",PaymentType:"' + paymenttype + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        if (count1 > 0) {
+                            vendorddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                vendorddl.append($("<option></option>").val(this['VendorCode']).html(this['VendorName']));
+                            });
+                            $("#divVendor").removeClass("hidden");
+                            $("#divSppoPayInfoMsg").text("");
+                            $("#divSppoPayInfoMsg").addClass("hidden");
+                        }
+                        else {
+                            $("#divSppoPayInfoMsg").text("");
+                            $("#divSppoPayInfoMsg").append("<div>Vendor Does Not Exist</div>");
+                            $("#divSppoPayInfoMsg").addClass("alert-danger");
+                            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+
+                            $("#btnViewPayment").addClass("hidden");
+                            $("#divVendor").addClass("hidden");
+                            $("#divSPPO").addClass("hidden");
+                            $("#btnResetPayment").removeClass("hidden");
+                            $("#divPayment").addClass();
+                            poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        }
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+                    }
+                });
+            }
+
+        }
+
+    }
+    function PaymentPOChange(){
+        $("#btnViewPayment").removeClass("hidden");
+        var ponoindex = $("#ddlPaymentPONo option:selected").index();
+        if (ponoindex === 0) {
+            $("#btnViewPayment").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass("hidden");
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+        }
+    }
+    function ShowSPPOPayment() {
+        debugger;
+        isValid = true;
+        var errorMsg = "";
+        var paymenttypeIndex = $("#ddlPaymentType option:selected").index();
+        var vendor = $("#ddlPaymentVendor option:selected").val();
+        var vendorIndex = $("#ddlPaymentVendor option:selected").index();
+        var ponos = $('#ddlMultiPO > option:selected');
+        // var ponoindex = $("#ddlPaymentPONo option:selected").index();
+        // var pono = $("#ddlPaymentPONo  option:selected").val();
+        var payment = $("#ddlPaymentType option:selected").val();
+        var vendorname = $("#ddlPaymentVendor option:selected").text();
+
+        var vArr = vendorname.split(',');
+        vendorname1 = vArr[1];
+
+        if (paymenttypeIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Payment Type</p>";
+            isValid = false;
+        }
+        if (vendorIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Vendor</p>";
+            isValid = false;
+        }
+        if (payment !== 0 && payment !== "Vendor Advance") {
+            if (ponos.length === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select PO Number</p>";
+                isValid = false;
+            }
+        }
+        else if (payment !== 0 && payment === "Vendor Advance") {
+            var singlepoddlindex = $("#ddlSinglePO option:selected").index();
+            if (singlepoddlindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select PO Number</p>";
+                isValid = false;
+            }
+            //else {
+            //    var invddlindex1 = $("#ddlAdvanceInv option:selected").index();
+            //    if (invddlindex1 === 0) {
+            //        errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Number</p>";
+            //        isValid = false;
+            //    }
+            //}
+        }
+        var transtype = $("#txtTransactionType").val();
+        if (transtype === "Cash") {
+            var cashmode = $("#ddlGPCPaymentmode option:selected").val();
+            var selfcc = $("#ddlVendorPayCC option:selected").val();
+            var otherCC = $("#ddlVendorPayOtherCC option:selected").val();
+
+            if (cashmode === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cash Transaction Mode</p>";
+                isValid = false;
+            }
+            if (selfcc === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Accountant Cost Center</p>";
+                isValid = false;
+            }
+            if (otherCC === 0 && cashmode === 2) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+            if (ponos.length === 0 && payment !== "Vendor Advance") {
+                $("#btnViewPayment").addClass("hidden");
+                $("#btnResetPayment").removeClass("hidden");
+                $("#divPayment").addClass("hidden");
+            }
+            else {
+
+                $("#ddlPaymentType").prop("disabled", true);
+                $("#ddlPaymentVendor").prop("disabled", true);
+                $("#ddlVendorType").prop("disabled", true);
+                $("#btnViewPayment").prop("disabled", true);
+
+                if (transtype === "Cash") {
+                    $("#ddlVendorPayCC").prop("disabled", true);
+                    $("#ddlVendorPayOtherCC").prop("disabled", true);
+                    $("#ddlGPCPaymentmode").prop("disabled", true);
+                }
+
+                $("#ddlMultiPO").multiselect("disable");
+                var vendortype = $("#ddlVendorType option:selected").val();
+                var pnos = $('#ddlMultiPO option:selected').toArray().map(item => item.value).join(',');
+                //pnos = $("#ddlMultiPO option:selected").map(function () { return this.text }).get().join(',');
+                var allpos = pnos + ',';
+                //  alert(allpos);
+                var pocount = ponos.length;
+
+                if (payment === "Vendor Invoice") {
+                    debugger;
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Purchase/VendorInvoicePayGrid',
+                        data: { VendorCode: vendor, PONo: allpos, PayType: payment, VendorName: vendorname1, Vendortype: vendortype, polength: pocount, Transtype: transtype },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divInvPayment").html(Data);
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").removeClass('hidden');
+                                $("#divAdvPayment").addClass('hidden');
+                                $("#divRetPayment").addClass('hidden');
+                                $("#divHoldPayment").addClass('hidden');
+                                $("#ddlInvPaymentNo").addClass('hidden');
+                                $("#txtInvPayPaymentNo").removeClass('hidden');
+                                var cashmode1 = $("#ddlGPCPaymentmode option:selected").val();
+                                if (transtype === "Cash" && cashmode1==2 ) { $("#divOtherCC").removeClass("hidden");}
+                            }
+                            else {
+                                $("#divInvPayment").html("No Data Found");
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").removeClass('hidden');
+                                $("#divAdvPayment").addClass('hidden');
+                                $("#divRetPayment").addClass('hidden');
+                                $("#divHoldPayment").addClass('hidden');
+                            }
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert("error");
+                        }
+                    });
+
+                }
+                if (payment === "Vendor Retention") {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Purchase/VendorRetentionPayGrid',
+                        data: { VendorCode: vendor, PONo: allpos, PayType: payment, VendorName: vendorname1, Vendortype: vendortype, Transtype: transtype },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divRetPayment").html(Data);
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").addClass('hidden');
+                                $("#divAdvPayment").addClass('hidden');
+                                $("#divRetPayment").removeClass('hidden');
+                                $("#divHoldPayment").addClass('hidden');
+                                $("#ddlRetPaymentNo").addClass('hidden');
+                                $("#txtRetPayPaymentNo").removeClass('hidden');
+                            }
+                            else {
+                                $("#divRetPayment").html("No Data Found");
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").addClass('hidden');
+                                $("#divAdvPayment").addClass('hidden');
+                                $("#divRetPayment").removeClass('hidden');
+                                $("#divHoldPayment").addClass('hidden');
+
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+                }
+                if (payment === "Vendor Hold") {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Purchase/VendorHoldPayGrid',
+                        data: { VendorCode: vendor, PONo: allpos, PayType: payment, VendorName: vendorname1, Vendortype: vendortype, Transtype: transtype },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divHoldPayment").html(Data);
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").addClass('hidden');
+                                $("#divAdvPayment").addClass('hidden');
+                                $("#divRetPayment").addClass('hidden');
+                                $("#divHoldPayment").removeClass('hidden');
+                                $("#ddlRetPaymentNo").addClass('hidden');
+                                $("#txtRetPayPaymentNo").removeClass('hidden');
+                            }
+                            else {
+                                $("#divHoldPayment").html("No Data Found");
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").addClass('hidden');
+                                $("#divAdvPayment").addClass('hidden');
+                                $("#divRetPayment").addClass('hidden');
+                                $("#divHoldPayment").removeClass('hidden');
+
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+
+                }
+                if (payment === "Vendor Advance") {
+                    //var invddlindex = $("#ddlAdvanceInv option:selected").index();
+                    //var inv = $("#ddlAdvanceInv option:selected").val();
+                    var singlepo = $("#ddlSinglePO option:selected").val();
+                    debugger;
+                    //alert(inv+"----"+ singlepo);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Purchase/VendorAdvancePayGrid',
+                        data: { VendorCode: vendor, PONo: singlepo, PayType: payment, VendorName: vendorname1, Vendortype: vendortype, Transtype: transtype },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divAdvPayment").html(Data);
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").addClass('hidden');
+                                $("#divAdvPayment").removeClass('hidden');
+                                $("#divRetPayment").addClass('hidden');
+                                $("#divHoldPayment").addClass('hidden');
+                                $("#ddlAdvPaymentNo").addClass('hidden');
+                                $("#txtAdvPayPaymentNo").removeClass('hidden');
+                                $("#ddlSinglePO").prop('disabled', true);
+                                $("#ddlAdvanceInv").prop('disabled', true);
+                            }
+                            else {
+                                $("#divAdvPayment").html("No Data Found");
+                                $("#divPayment").removeClass('hidden');
+                                $("#divInvPayment").addClass('hidden');
+                                $("#divAdvPayment").removeClass('hidden');
+                                $("#divRetPayment").addClass('hidden');
+                                $("#divHoldPayment").addClass('hidden');
+
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+
+
+                }
+
+            }
+        }
+    }
+    function ResetSPPOPayment() {
+        location.reload();
+    }
+    function VendorinvPayModeChange() {
+
+        var bank = $("#ddlInvBankPayBank option:selected").text();
+        var Mode = $("#ddlInvBankPayMode option:selected").text();
+
+        var bankindex = $("#ddlInvBankPayBank option:selected").index();
+        var Modeindex = $("#ddlInvBankPayMode option:selected").index();
+
+        if (Modeindex !== 0 && bankindex !== 0) {
+            if (Modeindex === 1) {
+                $("#txtInvBankPaymentNo").addClass('hidden');
+                $("#ddlInvPaymentNo").removeClass('hidden');
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetChequeNos",
+                    data: '{bankname:"' + bank + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        //alert("Cheques"+count);
+                        var ddlInvPaymentNo = $("#ddlInvPaymentNo");
+                        if (count > 0) {
+
+                            ddlInvPaymentNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                ddlInvPaymentNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                            });
+                            $("#divInvPayInfoMsg").text("");
+                            $("#divInvPayInfoMsg").addClass("hidden");
+                        } else { ddlInvPaymentNo.empty().append('<option selected="selected" value="0">-Please Select-</option>'); }
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+            else {
+                $("#txtInvBankPaymentNo").removeClass('hidden');
+                $("#ddlInvPaymentNo").addClass('hidden');
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").addClass("hidden");
+            }
+        }
+        else if (Modeindex === 0 && bankindex !== 0) {
+            $("#txtInvBankPaymentNo").removeClass('hidden');
+            $("#ddlInvPaymentNo").addClass('hidden');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+
+        }
+        else if (Modeindex !== 0 && bankindex === 0) {
+            $("#txtInvBankPaymentNo").removeClass('hidden');
+            $("#ddlInvPaymentNo").addClass('hidden');
+
+            $("#divSppoPayInfoMsg").text("Select Bank Name");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#divSppoPayInfoMsg").prop('selectedIndex', 0);
+        }
+        else {
+            $("#txtInvBankPaymentNo").removeClass('hidden');
+            $("#ddlInvPaymentNo").addClass('hidden');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+
+        }
+    }
+   
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode === 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function VendorPayCCChange() {
+        var CCIndex = $("#ddlVendorPayCC option:selected").index();
+        var CC = $("#ddlVendorPayCC option:selected").val();
+        var vendorddl = $("#ddlPaymentVendor");
+        var vendortype = $("#ddlVendorType option:selected").val();
+        // var poddl = $("#ddlPaymentPONo");
+        if (CCIndex === 0) {
+            $("#btnViewPayment").addClass("hidden");
+            $("#divVendor").addClass("hidden");
+            $("#divSPPO").addClass("hidden");
+            $("#btnResetPayment").removeClass("hidden");
+            $("#divPayment").addClass();
+            vendorddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            //poddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+
+            $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlMultiPO option:selected").prop("selected", false);
+            $("#ddlMultiPO option").remove();
+            $('#ddlMultiPO').multiselect('rebuild');
+            $("#divOtherCC").addClass("hidden");
+            $("#ddlVendorPayOtherCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            var index = $("#ddlGPCPaymentmode option:selected").index();
+            if (index !== 0) {
+                if (index === 1) {
+
+
+                    //$.ajax({
+                    //    type: "POST",
+                    //    url: "/Purchase/GetPendingVendorsForPayment",
+                    //    data: '{VendorType:"' + vendortype + '",CCCode:"' + CC + '",Transtype:"Cash"}',
+                    //    contentType: "application/json; charset=utf-8",
+                    //    dataType: "json",
+                    //    success: function (response) {
+                    //        var pendingcount1 = Object.keys(response).length;
+                    //        alert(pendingcount1);
+                    //        if (pendingcount1 > 0) {
+                    //            $("#divSppoPayInfoMsg").text("");
+                    //            $("#divSppoPayInfoMsg").append("<div>Vendor Invoices are in Verification pending</div>");
+                    //            $("#divSppoPayInfoMsg").addClass("alert-danger");
+                    //            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+
+                    //            $("#btnViewPayment").addClass("hidden");
+                    //            $("#divVendor").addClass("hidden");
+                    //            $("#divSPPO").addClass("hidden");
+                    //            $("#btnResetPayment").removeClass("hidden");
+                    //            $("#divPayment").addClass();
+
+                    //            $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    //            $("#ddlMultiPO option:selected").prop("selected", false);
+                    //            $("#ddlMultiPO option").remove();
+                    //            $('#ddlMultiPO').multiselect('rebuild');
+                    //        }
+                    //        else {
+                    var payment = $("#ddlPaymentType option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetSPPOPaymentVendorbyCC",
+                        data: '{VendorType:"' + vendortype + '",CCCode:"' + CC + '",PaymentType:"' + payment + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count1 = Object.keys(response).length;
+                            if (count1 > 0) {
+                                vendorddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $.each(response, function () {
+                                    vendorddl.append($("<option></option>").val(this['VendorCode']).html(this['VendorName']));
+                                });
+                                $("#divVendor").removeClass("hidden");
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").addClass("hidden");
+                            }
+                            else {
+                                $("#divSppoPayInfoMsg").text("");
+                                $("#divSppoPayInfoMsg").append("<div>Vendor Does Not Exist</div>");
+                                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+
+                                $("#btnViewPayment").addClass("hidden");
+                                $("#divVendor").addClass("hidden");
+                                $("#divSPPO").addClass("hidden");
+                                $("#btnResetPayment").removeClass("hidden");
+                                $("#divPayment").addClass();
+
+                                $("#ddlSinglePO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $("#ddlMultiPO option:selected").prop("selected", false);
+                                $("#ddlMultiPO option").remove();
+                                $('#ddlMultiPO').multiselect('rebuild');
+
+                            }
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                    //}
+                    //    },
+                    //    failure: function (response) {
+
+                    //    },
+                    //    error: function (response) {
+                    //    }
+                    //});
+                }
+                else {
+                    var otehrCCddl = $("#ddlVendorPayOtherCC");
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetAllCashCC",
+                        data: '{cc:"' + CC + '" ,Type:"' + index + '" }',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            otehrCCddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                otehrCCddl.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                            });
+                            $("#divCC").removeClass("hidden");
+                            $("#divOtherCC").removeClass("hidden");
+                        },
+                        failure: function (response) {
+
+
+                        },
+                        error: function (response) {
+
+
+                        }
+
+                    });
+
+
+                }
+
+            }
+            else {
+                $("#divSppoPayInfoMsg").text("");
+                $("#divSppoPayInfoMsg").append("<div>Select Transaction Mode</div>");
+                $("#divSppoPayInfoMsg").addClass("alert-danger");
+                $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                $("#divCC").addClass("hidden");
+                $("#divOtherCC").addClass("hidden");
+            }
+
+        }
+    }
+</script>
+

@@ -1,0 +1,211 @@
+﻿@model EsselTestLocalApplication.Models.AddSubClient
+  
+<div>
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClientCode)
+                    @Html.TextBoxFor(model => model.ClientCode, htmlAttributes: new { @class = "form-control", @id = "txtClientCodeForClient" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Branch)
+                    @Html.TextBoxFor(model => model.Branch, htmlAttributes: new { @class = "form-control", @id = "txtSCBranch" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_Person_Name)
+                    @Html.TextBoxFor(model => model.SC_Person_Name, htmlAttributes: new { @class = "form-control", @id = "txtSCPersonName" })
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_Phone_No)
+                    @Html.TextBoxFor(model => model.SC_Phone_No, htmlAttributes: new { @class = "form-control", @id = "txtSCPhoneNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_TINNo)
+                    @Html.TextBoxFor(model => model.SC_TINNo, htmlAttributes: new { @class = "form-control", @id = "txtSCTINNo" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_PANNo)
+                    @Html.TextBoxFor(model => model.SC_PANNo, htmlAttributes: new { @class = "form-control", @id = "txtSCPANNo" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_TANNo)
+                    @Html.TextBoxFor(model => model.SC_TANNo, htmlAttributes: new { @class = "form-control", @id = "txtSCTANNo" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NatureGroupName)
+                    @Html.DropDownListFor(model => model.NatureGroupName, new SelectList(Model.SClientNatureOfGroups, "NatureGroupId", "NatureGroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSClientNatureGroup" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address)
+                    @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtSCAddress" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.GST_Applicable)
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="SCGstApplicable" value="Yes" id="chkSCGSTY" onclick="SubClientGSTValidation(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">Yes</span>
+                            </label>
+                        </li>
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="SCGstApplicable" value="No" id="chkSCGSTN" onclick="SubClientGSTValidation(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">No</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row" id="divSubClientGst">
+            <div style="margin-left:2px;">
+                <div class="strike">
+                    <span>Add GST Details</span>
+                </div>
+                <div class="tabledynamic">
+                    <table id="SubClientGstTable" class="table order-list subclientgst">
+                        <thead>
+                            <tr>
+                                <td class="col-md-2"></td>
+                                <td style="text-align:center;color:#fff !important">State</td>
+                                <td style="text-align:center;color:#fff !important">GST Number</td>
+                                <td style="text-align:center;color:#fff !important"><label>Check</label></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="text-align:center">
+                                <td class="col-md-2">1</td>
+                                <td>
+                                    @Html.DropDownListFor(model => model.State, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSCGstState" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.GST_No, htmlAttributes: new { @class = "form-control rowtotal", @id = "txtSCGSTNo" })
+                                </td>
+                                <td>
+                                    <ul class="list-inline">
+                                        <li class="eagle-checkbox">
+                                            <label class="eagle-check custom-checkbox">
+                                                <input type="checkbox" class="eagle-check-input" id="chkSCGstCheck">
+                                                <span class="eagle-check-indicator"></span>
+
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="col-md-2"></td>
+                                <td class="text-center"></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addTaxGST" value="Add New Tax" onclick="AddSubClientBindNewRowForGST()" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="text-right">
+                <input type="text" id="txtClientidforsubclient" style="display:none" />
+                <input type="submit" class="btn btn1 btn-success" id="btnSubmitSubClient" onclick="SubmitSubClientData()" value="Submit" />
+                @*<input type="button" class="btn btn1 btn-success" id="btnResetSubClient" onclick="ClearAddSubClient()" value="Reset" />*@
+                
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <div id="divSubClientInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>   
+     $(document).ready(function () {
+         //Add Client
+         $("#chkSCGSTN").prop("checked", true);
+         $("#chkSCGSTY").prop("checked", false);              
+         $("#divSubClientGst").addClass('hidden');
+         $("table.order-list.subclientgst").on("click", ".ibtnSCClientDel", function (event) {
+             $(this).closest("tr").remove();  
+             Reassignrownoafterdeleting()
+         });
+         
+    });
+
+    function SubClientGSTValidation(checkbox) {
+        var selectedIds = [];
+        var checkboxes = document.getElementsByName('SCGstApplicable');
+        for (var i in checkboxes)
+            checkboxes[i].checked = checkbox.checked;
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+        var ids = document.getElementsByName('SCGstApplicable');
+        for (var i = 0; i < ids.length; i++) {
+            if (ids[i].checked == true) {
+                // alert(ids[i].value);
+                if (ids[i].value == 'Yes') {
+                    $("#divSubClientGst").removeClass('hidden');
+                    $("#divSubClientInfoMsg").text("");
+                    $("#divSubClientInfoMsg").addClass("hidden");
+                }
+                else {
+                    $("#divSubClientGst").addClass('hidden');
+                    $("#SubClientGstTable tbody tr:not(:first)").remove();
+                    $("#SubClientGstTable tbody tr:first").each(function () {
+                        var currentRow = $(this);
+                        var state = currentRow.find("td").eq(1).find("select").prop('selectedIndex', 0);
+                        var gstno = currentRow.find("td").eq(2).find("input[type='text']").val("");
+                        currentRow.find('input[type="checkbox"]').prop("checked", false);
+
+                    });
+                    $("#divSubClientInfoMsg").text("");
+                    $("#divSubClientInfoMsg").addClass("hidden");
+                }
+            }
+        }
+    }
+
+    function Reassignrownoafterdeleting() {
+        var rowno = 1;
+        $("#SubClientGstTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(rowno);
+            rowno++;
+        });
+        
+    }
+   
+    
+</script>

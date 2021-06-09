@@ -1,0 +1,874 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.AdvancePayment
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ClientAdvancePayment</title>
+</head>
+<body>
+    <div class="col-md-12">
+        <form onsubmit="return false">
+            <input type="hidden" value="@Model.BankTransactionRefNo" id="txttransrefno" />
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @if (Model.Client != null)
+                            {
+                                @Html.LabelFor(model => model.Client)
+                                @Html.DropDownListFor(model => model.Client, new SelectList(Model.AdvClientList, "ClientCode", "ClientName"), Model.Client, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "txtAdvPayClient", readOnly = "readOnly" })
+                            }
+                            else
+                            {
+                                @Html.LabelFor(model => model.Client)
+                                @Html.DropDownListFor(model => model.Client, new SelectList(Model.AdvClientList, "ClientCode", "ClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayClient", onchange = "AdvPayClientChange()" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="divAdvPaySubclient">
+                        @if (Model.SubClient != null)
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubClient)
+                                @Html.DropDownListFor(model => model.SubClient, new SelectList(Model.AdvsubClientList, "SubClientCode", "SubClientCodename"), Model.SubClient, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPaysubClient", readOnly = "readOnly" })
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubClient)
+                                @Html.DropDownListFor(model => model.SubClient, new SelectList(Model.AdvsubClientList, "SubClientCode", "SubClientCodename"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPaysubClient", onchange = "AdvPaySubClientChange()" })
+                            </div>
+                        }
+
+                    </div>
+                    <div class="col-md-3" id="divAdvPayCC">
+                        <div class="form-group">
+                            @if (Model.CCCode != null)
+                            {
+                                @Html.LabelFor(model => model.CCCode)
+                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.AdvCCList, "CC_Code", "CC_Name"), Model.CCName, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayCC", readOnly = "readOnly" })
+                            }
+                            else
+                            {
+                                @Html.LabelFor(model => model.CCCode)
+                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.AdvCCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayCC", onchange = "AdvCCChange()" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-3" id="divAdvPayPO">
+                        <div class="form-group">
+                            @if (Model.PONo != null)
+                            {
+                                @Html.LabelFor(model => model.PONo)
+                                @Html.TextBoxFor(model => model.PONo, new { @id = "ddlAdvPayPO", @class = "form-control" })
+                                @*@Html.DropDownListFor(model => model.PONo, new SelectList(Model.AdvPOList, "ClientPOId", "PONumber"), Model.PONo, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayPO", readOnly = "readOnly" })*@
+                            }
+                            else
+                            {
+                                @Html.LabelFor(model => model.PONo)
+                                @Html.DropDownListFor(model => model.PONo, new SelectList(Model.AdvPOList, "ClientPOId", "PONumber"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayPO", onchange = "AdvPayPOChange()" })
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="divAdvPayDetails">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RequestDate, new { @id = "lblAdvPayReqDate" })
+                                @Html.TextBoxFor(model => model.RequestDate, "{0:dd/MM/yyyy}", new { @id = "txtAdvPayReqDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.RANo)
+                                @Html.TextBoxFor(model => model.RANo, new { @id = "txtAdvPayRANo", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BasicValue)
+                                @Html.TextBoxFor(model => model.BasicValue, new { @id = "txtAdvPayBasicValue", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", value = "", onkeyup = "CountAdvPayTotal()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                    </div>
+                </div>
+                @*<div class="col-md-12 change-tab" id="divAdvPayTaxGrid">
+            <div class="strike">
+                <span>Add Tax</span>
+            </div>
+            <div class="tabledynamic">
+                <br />
+                <table id="AdvPayTaxTable" class="table order-list advpayclienttax">
+                    <thead>
+                        <tr>
+                            <td style="text-align:center" class="hidden"><label>No</label></td>
+                            <td style="text-align:center"><label>IsCreditable</label></td>
+                            <td style="text-align:center"><label>DCA</label></td>
+                            <td style="text-align:center"><label>SubDCA</label></td>
+                            <td style="text-align:center"><label>TaxName</label></td>
+                            <td style="text-align:center"><label>Amount</label></td>
+                            <td style="text-align:center"><label>Check</label></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.BankTransactionId == 0)
+                        {
+                            <tr>
+                                <td style="text-align:center" class="hidden">1</td>
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle advpayctaxtype" onchange="AdvPayClientTaxTypeChange(this)">
+                                        <option selected="selected" value="Select">Select</option>
+                                        <option value="Creditable">Creditable</option>
+                                        <option value="Non-Creditable">Non-Creditable</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle advpayctaxdca" onchange="AdvPayClientTaxDCAChange(this)">
+                                        <option selected="selected" value="Select">Select</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle advpayctaxsdca" onchange="AdvPayClientTaxSubDCAChange(this)">
+                                        <option selected="selected" value="Select">Select</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle advpayctaxname">
+                                        <option selected="selected" value="Select">Select</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:center"><input type="text" class="form-control advpayctaxamount" value="" onkeypress="return ValidateAmount(this,event);" onkeyup="CountAdvPayTaxTotal()" /></td>
+                                <td style="text-align:center">
+                                    <ul class="list-inline">
+                                        <li class="eagle-checkbox">
+                                            <label class="eagle-check custom-checkbox">
+                                                <input type="checkbox" class="eagle-check-input" id="chkAdvPayClientTax">
+                                                <span class="eagle-check-indicator"></span>
+                                                <span class="eagle-check-description"></span>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="button" class="btn btn-default  btn-block" value="Add New Tax" onclick="AdvPayTaxAddNewRowtoGrid();" />
+                            </td>
+                            <td></td>
+                            <td class="text-center"><label>Tax Total</label></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>*@
+                <div id="divAdvPayDeduction">
+                    <div class="col-md-12" style="margin-top:15px">
+                        <hr />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="col-md-4 text-center">
+                                    <div class="form-group">
+                                        <input id="chkDedAdvY" name="ClientAdvDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                        <input id="chkDedAdvN" name="ClientAdvDeduction" value="No" type="radio" checked>No
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <div class="col-md-12 change-tab" id="divAdvPayDeductionGrid">
+                        <div class="strike">
+                            <span>Add Deduction</span>
+                        </div>
+                        <div class="tabledynamic">
+                            <br />
+                            <table id="AdvPayDeductionGrid" class="table order-list AdvPayDeductionGrid" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="hidden">No</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important">Is deducted from other CC</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important">Cost Center</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important">Account Head</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important">SubAccount Head </td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important">Amount</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important">Check</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @*@if (Model.BankTransactionId == 0)
+                                    {
+                                        <tr>
+                                            <td style="text-align:center" class="hidden">1</td>
+                                            <td style="text-align:center">
+                                                <select class="form-control dropdown-toggle AdvPayOtherCC">
+                                                    <option selected="selected" value="Select">Select</option>
+                                                    <option value="Yes">Yes</option>
+                                                    <option value="No">No</option>
+                                                </select>
+                                            </td>
+                                            <td style="text-align:center"><select class="form-control dropdown-toggle AdvPayCC"><option selected="selected" value="Select">Select</option></select></td>
+                                            <td style="text-align:center"><select class="form-control dropdown-toggle AdvPayDCA"><option selected="selected" value="Select">Select</option></select></td>
+                                            <td style="text-align:center"><select class="form-control dropdown-toggle AdvPaySubDCA"><option selected="selected" value="Select">Select</option></select></td>
+                                            <td style="text-align:center"><input type="text" value="" class="form-control AdvPayDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountAdvPayDeductionTotal()" /></td>
+                                            <td style="text-align:center">
+                                                <ul class="list-inline">
+                                                    <li class="eagle-checkbox">
+                                                        <label class="eagle-check custom-checkbox">
+                                                            <input type="checkbox" class="eagle-check-input" name="chkAdvPayDeduction">
+                                                            <span class="eagle-check-indicator"></span>
+                                                            <span class="eagle-check-description"></span>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    }*@
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <input type="button" class="btn btn-default  btn-block" id="addDeduction" value="Add More Deduction Dca" onclick="AdvPayDeductionBindNewRowtoGrid();" />
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        @*</div>*@
+                    </div>
+                </div>
+                   
+                    <div class="row" id="divAdvPayment">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @if (Model.Bank != null)
+                                    {
+                                        @Html.LabelFor(model => model.Bank)
+                                        @Html.DropDownListFor(model => model.Bank, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), Model.Bank, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayBank" })
+                                    }
+                                    else
+                                    {
+
+                                        @Html.LabelFor(model => model.Bank)
+                                        @Html.DropDownListFor(model => model.Bank, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayBank" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Number)
+                                    @Html.TextBoxFor(model => model.Number, new { @id = "txtAdvPayNo", @class = "form-control" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TransactionDate)
+                                    @Html.TextBoxFor(model => model.TransactionDate, "{0:dd/MM/yyyy}", new { @id = "txtAdvbPayDate", @class = "form-control date-picker", @type = "text", @readonly = "true" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Remarks)
+                                    @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtAdvPayRemarks", @rows = "3" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount)
+                                    @Html.TextBoxFor(model => model.Amount, htmlAttributes: new { @class = "form-control", @id = "txtAdvPayAmount", @readonly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-right">
+                                <input type="hidden" value="0" id="txtAdvPayTaxTotal" />
+                                <input type="hidden" value="0" id="txtAdvPayDeductionTotal" />
+                                <input type="hidden" value="0" id="txtAPMinusAmount" />
+                                <input type="hidden" value="0" id="txtadvpayCreatedby" style="display:none" />
+                                <input type="text" value="0" id="txtClientAdvRoleId" style="display:none" />
+                                @if (Model.BankTransactionId == 0)
+                                {
+                                    <button class="btn btn1 btn-success" id="btnAdvPaySubmit" onclick="SubmitAdvancePayData()">Submit</button>
+                                    <button class="btn btn1 btn-success" id="btnAdvPayReset" onclick="ResetAdvancePayData()">Reset</button>
+                                }
+                                else
+                                {
+                                    <input type="hidden" value="" id="txtolddeductionids" />
+                                    <button class="btn btn1 btn-success" id="btnAdvPayReturnSubmit" onclick="SubmitAdvancePayReturnData('@Model.BankTransactionRefNo',@Model.BankTransactionId)">Submit</button>
+                                }
+                            </div>
+
+                        </div>
+                        <div class="row col-md-12 text-center">
+                            <div id="divAdvPayInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</form>
+    </div>
+</body>
+</html>
+<script>
+   
+    $(document).ready(function () {
+        // alert(@Model.BankTransactionId);
+        var Sessioncreated = '@Session["Createdby"]';
+        var RoleID = '@Session["Roleid"]';
+        $("#txtClientAdvRoleId").val(RoleID);
+        $("#txtadvpayCreatedby").val(Sessioncreated);
+        $("#divAdvPayDeductionGrid").addClass("hidden");
+
+        $("input:radio[name='ClientAdvDeduction']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var DedExist = _val;
+            if (DedExist == "Yes") {
+                BindEmptyrowtoDeductionAdvance();
+                $("#divAdvPayDeductionGrid").removeClass("hidden");
+                // BindEmptyrowtoDeduction();
+            }
+            else if (DedExist == "No") {
+                $("#divAdvPayDeductionGrid").addClass("hidden");
+
+                clearforAdvanceDeduction();
+            }
+            CountAdvPayDeductionTotal();
+            CountAdvPayTotal();
+
+        });
+
+        //});
+
+        if (@Model.BankTransactionId == 0 || @Model.BankTransactionId == null) {
+            $("#divAdvPaySubclient").addClass('hidden');
+            $("#divAdvPayCC").addClass('hidden');
+            $("#divAdvPayPO").addClass('hidden');
+            $("#divAdvPayDetails").addClass('hidden');
+
+            var SubClientddl = $("#ddlAdvPaysubClient");
+            SubClientddl.empty().append('<option selected="selected" value="Select">Select</option>');
+            var ddlAdvPayCC = $("#ddlAdvPayCC");
+            ddlAdvPayCC.empty().append('<option selected="selected" value="Select">Select</option>');
+            var ddlAdvPayPO = $("#ddlAdvPayPO");
+            ddlAdvPayPO.empty().append('<option selected="selected" value="Select">Select</option>');
+            $("#txtAdvPayReqDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                maxDate: 'dateToday',
+                onClose: function (selectedDate) {
+                    // RemoveTaxesonRequestDatechange();
+                }
+            }).datepicker("setDate", new Date());
+            $("#txtAdvbPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class='glyphicon glyphicon-calendar'></i>",
+            }).datepicker("setDate", new Date());
+        }
+        else {
+            /// alert('@Model.CCCode');
+            $("#btnAdvPayReset").addClass("hidden");
+            //  var reqdate = $("#txtAdvPayReqDate").val();
+            ////  alert(reqdate);
+            //  var paydate = $("#txtAdvbPayDate").val();
+            $("#divAdvPaySubclient").removeClass('hidden');
+            $("#divAdvPayCC").removeClass('hidden');
+            $("#divAdvPayPO").removeClass('hidden');
+            $("#divAdvPayDetails").removeClass('hidden');
+            $("#txtAdvPayReqDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                maxDate: 'dateToday',
+                onClose: function (selectedDate) {
+                    //RemoveTaxesonRequestDatechange();
+                }
+            }).datepicker("setDate", '@Model.RequestDate');
+            //var edate = "'" + reqdate + "'";
+            //var edate1 = moment(reqdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#txtAdvPayReqDate").datepicker("setDate", edate1);
+            $("#txtAdvbPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class='glyphicon glyphicon-calendar'></i>",
+            }).datepicker("setDate", '@Model.TransactionDate');
+            //var pdate = "'" + paydate + "'";
+            //var pdate1 = moment(pdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#txtAdvbPayDate").datepicker("setDate", pdate1);
+            //bind client taxes
+            var refno = $("#txttransrefno").val();
+            var subtotal = 0;
+            //bind taxes
+
+            //bind deductions         
+
+
+            var Deductions = @Html.Raw(Json.Encode(Model.Deductionlist));
+            var count = Deductions.length;
+            var deductiontotal = 0;
+            if (count > 0) {
+                for (var i = 0; i < Deductions.length; i++) {
+                    var rowno = i + 1;
+                    var newRow = $("<tr>");
+                    var cols = "";
+                    cols += '<td  style="text-align:center" class="hidden">' + rowno + '</td>';
+                    cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle AdvPayOtherCC"><option selected="selected" value="Select">Select</option>';
+                    cols += ' <option value="Yes">Yes</option>';
+                    cols += ' <option value="No">No</option>';
+                    cols += '</select>';
+                    cols += '<td style="text-align:center"><select class="form-control dropdown-toggle AdvPayCC" ><option selected="selected" value="Select">Select</option></select></td>';
+                    cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle AdvPayDCA"><option selected="selected" value="Select">Select</option></select></td>';
+                    cols += '<td style="text-align:center"><select class="form-control dropdown-toggle AdvPaySubDCA" ><option selected="selected" value="Select">Select</option></select></td>';
+                    cols += '<td style="text-align:center"><input type="text" value=""  class="form-control AdvPayDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountAdvPayDeductionTotal()" /></td>';
+                    cols += '<td style="text-align:center"> <ul class="list-inline"><li class="eagle-checkbox">';
+                    cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkDeduction" name="chkDeduction">';
+                    cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul>';
+                    //if (rowno > 1) {
+                    cols += '<td ><input type="button" class="ibtnAdvPayDel btn btn-md btn-danger" value="Delete"></td>';
+                    //}
+                    newRow.append(cols);
+                    $("table.order-list.AdvPayDeductionGrid").append(newRow);
+                }      
+                var j = 0;
+                var OldDeductionids = '';
+                var selecteddcalist = [];
+                $("#divAdvPayDeductionGrid").removeClass("hidden");
+                $("#chkDedAdvY").prop("checked", true);
+                $("#chkDedAdvN").prop("checked", false);
+                $("#AdvPayDeductionGrid tbody tr").each(function () {
+                    let currentRow = $(this);
+                    let RowNo = currentRow.find("td").eq(0).html();
+                    let checkbox = currentRow.find("td").eq(6).find("input[type='checkbox']").is(":checked");
+                    let OtherCC = currentRow.find("td").eq(1).find("select");
+                    let ddlCCCode = currentRow.find("td").eq(2).find("select");
+                    let ddlDCA = currentRow.find("td").eq(3).find("select");
+                    let ddlSubDCA = currentRow.find("td").eq(4).find("select");
+                    let DcaAmount = currentRow.find("td").eq(5).find("input[type='text']").val();
+                    let ddltype = currentRow.find("td").eq(1).find("select");
+                    let CC1 = '@Model.CCCode';
+                    let Deduction = Deductions[j];
+                    let currentcc = Deduction.CCCode;
+                    let currentdca = Deduction.DCACode;
+                    let currentsdca = Deduction.SubDcaCode;
+                    let currentamount = Deduction.DeducationValue;
+                    let currentdedid = Deduction.ClientDeducationsId;
+                    OldDeductionids += currentdedid + ',';
+                    selecteddcalist.push(currentcc);
+                    if (currentcc !== CC1) {
+                        OtherCC.prop('selectedIndex', 1);
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/BindClientRec_Deduction_CCcodes",
+                            data: '{ CC_code:"' + CC1 + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                $.each(response, function () {
+                                    var dbdedCC = this['CC_Code'];
+                                    if (currentcc == dbdedCC) {
+                                        ddlCCCode.append($("<option selected='selected'></option>").val(this['CC_Code']).html(this['CC_Name']));
+                                    }
+                                    else {
+                                        var status = checkValueInArrayUpdate(this['CC_Code'], selecteddcalist);
+                                        if (status === false) {
+                                            ddlCCCode.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                                        }
+                                    }
+                                });
+
+                            },
+                            failure: function (response) {
+
+                            },
+                            error: function (response) {
+
+                            }
+                        });
+                    }
+                    else {
+                           OtherCC.prop('selectedIndex', 2);
+                           ddlCCCode.append($("<option selected='selected'></option>").val(CC1).html(CC1 + ',' + '@Model.CCName'));
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/BindClientRec_Deduction_DCA",
+                        data: '{ CC_code:"' + currentcc + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $.each(response, function () {
+
+                                var dbdeddca = this['DCACode'];
+                                if (currentdca == dbdeddca) {
+                                    ddlDCA.append($("<option selected='selected'></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                }
+                                else { ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR'])); }
+                            });
+
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetSubDCAForCleintInvDeductionbycode",
+                        data: '{ DCACode:"' + currentdca + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $.each(response, function () {
+                                var dbdedsdca = this['SubDCACode'];
+                              
+                                if (currentsdca == dbdedsdca) {
+                                    ddlSubDCA.append($("<option selected='selected'></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                }
+                                else { ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR'])); }
+                            });
+
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                    currentRow.find("td").eq(5).find("input[type='text']").val(currentamount);
+                    currentRow.find("td").eq(6).find('input[type="checkbox"]').prop("checked", true);
+              
+                            
+                   
+                    j++;
+                });
+                CountAdvPayDeductionTotal();
+                $("#txtolddeductionids").val(OldDeductionids);
+            }
+            else {
+                $("#divAdvPayDeductionGrid").addClass("hidden");
+                $("#chkDedAdvY").prop("checked", true);
+                $("#chkDedAdvN").prop("checked", false);               
+                CountAdvPayTotal();
+                clearforAdvanceDeduction();
+            }
+            }
+
+            
+           
+
+
+                $('#AdvPayDeductionGrid').on('change', '.AdvPayOtherCC', function () {
+                    var index = $(this).find("option:selected").index();                 
+                    var selectedCC = $("#ddlAdvPayCC option:selected").val();
+                    var selectedCCText = $("#ddlAdvPayCC option:selected").text();
+                    var row = $(this).closest('tr'); // get the row
+                    var ddlCC = row.find('.AdvPayCC'); // get the other select in the same row
+                    var ddlDCA = row.find('.AdvPayDCA');
+                    var ddlSubDCA = row.find('.AdvPaySubDCA');
+                    var amount = row.find('.AdvPayDcaAmount');
+                    var selectedcclist = [];
+                    debugger;
+                    $("#AdvPayDeductionGrid tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var DedCC = currentRow.find("td").eq(2).find("select option:selected").index();
+                        if (DedCC !== 0) {
+                            selectedcclist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                            //alert(currentRow.find("td").eq(2).find("select option:selected").val());
+                        }
+                    });
+                    if (index == 0) {
+                        ddlCC.empty().append('<option selected="selected" value="Select">Select</option>');
+                        ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        ddlSubDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        amount.val("");
+                        CountAdvPayDeductionTotal();
+                    }
+                    else if (index == 2) {
+                        ddlCC.empty().append('<option selected="selected" value="0">Select</option>');
+                        ddlCC.append($("<option></option>").val(selectedCC).html(selectedCCText));
+                    }
+                    else {
+                        ddlCC.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/BindClientRec_Deduction_CCcodes",
+                            data: '{ CC_code:"' + selectedCC + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlCC.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    var status = checkValueInArray(this['CC_Code'], selectedcclist);
+                                    if (status === false) {
+                                        ddlCC.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                                    }
+
+                                });
+                           
+                            },
+                            failure: function (response) {
+                      
+                            },
+                            error: function (response) {
+                    
+                            }
+                        });
+                    }
+                });
+               
+                $('#AdvPayDeductionGrid').on('change', '.AdvPayCC', function () {                  
+                    var ddlCC = $(this).find("option:selected").val();
+                    var row = $(this).closest('tr'); // get the row
+                    var ddlDCA = row.find('.AdvPayDCA'); // get the other select in the same row
+                    var ddlSubDCA = row.find('.AdvPaySubDCA');
+                    var amount = row.find('.AdvPayDcaAmount');
+                    if ($(this).find("option:selected").index() == 0) {
+                        ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        ddlSubDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        amount.val("");
+                        CountAdvPayDeductionTotal();
+                    }
+                    else {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/BindClientRec_Deduction_DCA",
+                            data: '{ CC_code:"' + ddlCC + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                });
+                               
+                            },
+                            failure: function (response) {
+                     
+                            },
+                            error: function (response) {
+                             
+                            }
+                        });
+                    }
+                });
+                $('#AdvPayDeductionGrid').on('change', '.AdvPayDCA', function () {
+                    var ddlDCA = $(this).find("option:selected").val();
+                    var row = $(this).closest('tr'); // get the row
+                    var ddlSubDCA = row.find('.AdvPaySubDCA'); // get the other select in the same row
+                    var amount = row.find('.AdvPayDcaAmount');
+                    if ($(this).find("option:selected").index() == 0) {
+                        ddlSubDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        amount.val("");
+                        CountAdvPayDeductionTotal();
+                    }
+                    else {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/BindClientRec_Deduction_SubDCA",
+                            data: '{ DCAID:"' + ddlDCA + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlSubDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                });
+                            
+                            },
+                            failure: function (response) {
+                               
+                            },
+                            error: function (response) {
+                      
+                            }
+                        });
+                    }
+                });
+   $("table.order-list.AdvPayDeductionGrid").on("click", ".ibtnAdvPayDel", function (event) {                    
+                    var rowcount = $("#AdvPayDeductionGrid tbody tr").length;
+
+                    if (rowcount == 1) {
+                        $("#chkDedAdvY").prop("checked", false);
+                        $("#chkDedAdvN").prop("checked", true);
+                        clearforAdvanceDeduction();
+                    }
+                    $(this).closest("tr").remove();
+                    CountAdvPayDeductionTotal();
+                    CountAdvPayTotal();
+
+                });
+        });
+     
+    function CountAdvPayDeductionTotal() {
+            var Basic = $("#txtAdvPayBasicValue").val();
+        if (Basic == "" || Basic == "0") {
+            if ($("#chkDedAdvY").is(':checked') === true) {
+                $("#AdvPayDeductionGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(5).find("input[type='text']").val("");
+                });
+            }
+                $("#divAdvPayInfoMsg").text("");
+                $("#divAdvPayInfoMsg").append("<div>Enter Basic Value</div>");
+                $("#divAdvPayInfoMsg").addClass("alert-danger");
+                $("#divAdvPayInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divAdvPayInfoMsg").text("");
+                $("#divAdvPayInfoMsg").addClass("hidden");
+                var subtotal = 0;
+                var rowtotal = 0;
+            if ($("#chkDedAdvY").is(':checked') === true) {
+                $("#AdvPayDeductionGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    rowtotal = currentRow.find("td").eq(5).find("input[type='text']").val();
+                    if (rowtotal != "") {
+                        subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+                    }
+                });
+                // alert(subtotal);
+                $("#AdvPayDeductionGrid tfoot tr").each(function () {
+                    var footerRow = $(this);
+                    //foottotal = footerRow.find("td").eq(5).find("input[type='text']").val();
+                    if (!isNaN(subtotal)) {
+                        footerRow.find("td").eq(4).html("Deduction Total:<b>" + subtotal + "</b>");
+                    }
+                    else {
+                        footerRow.find("td").eq(4).html("Deduction Total:<b>0</b>");
+                    }
+                });
+            }
+                if (!isNaN(subtotal)) {
+                    $("#txtAdvPayDeductionTotal").val(subtotal);
+                }
+                else { $("#txtAdvPayDeductionTotal").val(0);}
+                CountAdvPayTotal();
+            }
+        }
+    function CountAdvPayTotal() {
+            var Basic = $("#txtAdvPayBasicValue").val();
+            //var Taxtotal = $("#txtAdvPayTaxTotal").val();
+            var Dedtotal = $("#txtAdvPayDeductionTotal").val();
+            var final = 0;
+            //if (Taxtotal != "") {
+
+            //    final = parseFloat(final) + parseFloat(Taxtotal);
+            //}
+            if (Basic != "") {
+                final = parseFloat(final) + parseFloat(Basic);
+            }
+            if (Dedtotal != "") {
+                final = parseFloat(final) - parseFloat(Dedtotal);
+            }
+            if (!isNaN(final)) {
+                if (parseFloat(final).toFixed(2)>=0)
+                 {
+                    $("#txtAdvPayAmount").val(parseFloat(final).toFixed(2));
+                     $("#divAdvPayInfoMsg").text("");
+                     $("#divAdvPayInfoMsg").addClass("hidden");
+                }
+                 else {
+                    $("#txtAdvPayAmount").val(parseFloat(final).toFixed(2));
+                     $("#divAdvPayInfoMsg").text("");
+                     $("#divAdvPayInfoMsg").append("<div>Advance must be a positive value</div>");
+                     $("#divAdvPayInfoMsg").addClass("alert-danger");
+                     $("#divAdvPayInfoMsg").removeClass("hidden alert-success");
+                     return false;
+                }
+            }
+            else {
+                $("#divAdvPayInfoMsg").text("");
+                $("#divAdvPayInfoMsg").addClass("hidden");
+                $("#txtAdvPayAmount").val("");
+            }
+    }
+    function checkValueInArrayUpdate(value, arr) {
+        var status = false;//Not Exist in array
+        for (var i = 0; i < arr.length; i++) {
+            var name = arr[i];
+            if (name == value) {
+                status = true;//Exist  in array
+                break;
+            }
+        }
+        return status;
+    }
+    function clearforAdvanceDeduction() {
+        $("#divAdvPayDeductionGrid").addClass("hidden");
+
+        //$("#chkDedY").prop("checked", false);
+        //$("#chkDedN").prop("checked", true);
+        $("#AdvPayDeductionGrid tbody tr").remove();
+        $("#AdvPayDeductionGrid tfoot tr").each(function () {
+            var footerRow = $(this);
+            footerRow.find("td").eq(4).html("Total Deduction:0");
+            //footerRow.find("td").eq(4).html(0);
+           $("#txtAdvPayDeductionTotal").val(0);
+        });
+    }
+    function BindEmptyrowtoDeductionAdvance() {
+        var newRow = $("<tr>");
+        var cols = "";
+        cols += '<td  style="text-align:center" class="hidden">' + 1 + '</td>';
+        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle AdvPayOtherCC" id="ddl_ClRecOtherCCddl"><option selected="selected" value="Select">Select</option>';
+        cols += ' <option value="Yes">Yes</option>';
+        cols += ' <option value="No">No</option>';
+        cols += '</select>';
+        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle AdvPayCC" id="ddl_ClRecDiductionCC_code"><option selected="selected" value="Select">Select</option></select></td>';
+        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle AdvPayDCA" id="ddl_ClRecDiductionDCA_code"><option selected="selected" value="Select">Select</option></select></td>';
+        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle AdvPaySubDCA" id="ddl_ClRecDiductionSubDCA_code"><option selected="selected" value="Select">Select</option></select></td>';
+        cols += '<td style="text-align:center"><input type="text" value="" class="form-control AdvPayDcaAmount" onkeypress="return ValidateAmount(this,event);" onKeyup="CountAdvPayDeductionTotal()"/></td>';
+        cols += '<td style="text-align:center"> <ul class="list-inline"><li class="eagle-checkbox">';
+        cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input"  name="chkAdvPayDeduction">';
+        cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul>';
+        cols += '<td ><input type="button" class="ibtnAdvPayDel btn btn-md btn-danger" value="Delete"></td>';
+        newRow.append(cols);
+        $("table.order-list.AdvPayDeductionGrid").append(newRow);
+    }
+</script>

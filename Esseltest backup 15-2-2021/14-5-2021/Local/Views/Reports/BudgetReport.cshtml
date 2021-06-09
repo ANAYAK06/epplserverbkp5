@@ -1,0 +1,213 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.CostCenterBudgetSummary
+@{
+    ViewBag.Title = "BudgetReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Reports")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">BudgetReport</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CCType)
+                                        @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBdgRptCCType", onchange = "BudgetRptCCTypeChange()" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group" id="divddlBdgRptCCSubType">
+                                        @Html.LabelFor(model => model.SubType)
+                                        @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBdgRptCCSubType", onchange = "BdgRptCCSubTypeChange()" })
+                                    </div>
+                                    <div class="form-group" id="divddlBdgRptNonPerCCCode">
+                                        @Html.LabelFor(model => model.CostCenterCode)
+                                        @Html.DropDownListFor(model => model.CostCenterCode, new SelectList(Model.CostCenterList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBdgRptNonPerCCCode", onchange = "ddlBdgRptNonPerCCCodeChange()" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group" id="divBdgRptPerCCCode">
+                                        @Html.LabelFor(model => model.CostCenterCode)
+                                        @Html.DropDownListFor(model => model.CostCenterCode, new SelectList(Model.CostCenterList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBdgRptPerCCCode" })
+                                    </div>
+                                    <div class="form-group" id="divddlBdgRptYear">
+                                        @Html.LabelFor(model => model.Year)
+                                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBdgRptYear" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3" id="divBdgRptBtns">
+                                    <div class="form-group">
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-3  text-center">
+                                                <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewCCBudgetRpt" />
+                                            </div>
+                                            <div class="col-md-3  text-center">
+                                                <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetCCBudgetRpt" onclick="ResetBudgetReport()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divBdgRptGrid">
+                                <div id="divDCABudgetRptDetails">
+                                </div>
+                                <div id="divBdgRptInvoiceGrid">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="text-center">
+                                    <br />
+                                    <div id="divBudgertReportInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divddlBdgRptCCSubType").addClass('hidden');
+        $("#divddlBdgRptYear").addClass('hidden');
+        $("#divBdgRptBtns").addClass('hidden');
+        $("#divBdgRptGrid").addClass('hidden');
+        $("#divBdgRptInvoiceGrid").addClass('hidden');
+        $("#divddlBdgRptNonPerCCCode").addClass('hidden');
+        $("#divBdgRptPerCCCode").addClass('hidden');
+        $("#btnViewCCBudgetRpt").click(function () {            
+            isValid = true;
+            var errorMsg = "";
+            var CCTypeindex = $("#ddlBdgRptCCType option:selected").index();
+            var CCType = $("#ddlBdgRptCCType option:selected").text();
+            if (CCTypeindex !== 0) {
+                if (CCType === "Performing") {
+                    var CCSubTypeindex = $("#ddlBdgRptCCSubType option:selected").index();
+                    var CCCodeindex = $("#ddlBdgRptPerCCCode option:selected").index();
+                    var CCCode = $("#ddlBdgRptPerCCCode option:selected").val();
+                    var CCSubType = $("#ddlBdgRptCCSubType option:selected").val();
+                    var year = '';
+                    if (CCSubTypeindex === 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Select Sub Type</p>";
+                        isValid = false;
+                    }
+                    if (CCCodeindex === 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                        isValid = false;
+                    }
+                    if (!isValid) {
+                        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                        $("#divBudgertReportInfoMsg").text("");
+                        $("#divBudgertReportInfoMsg").append(finalerror + errorMsg + "</div>");
+                        $("#divBudgertReportInfoMsg").addClass("alert-danger");
+                        $("#divBudgertReportInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        $("#divBudgertReportInfoMsg").text("");
+                        $("#divBudgertReportInfoMsg").addClass("hidden");
+                        $("#divBdgRptGrid").removeClass('hidden');
+                        $.ajax({
+                            type: 'GET',
+                            dataType: 'html',
+                            url: '/Reports/ViewDCABudgetReportGrid',
+                            data: { CCCode: CCCode, Year: year },
+                            success: function (Data) {
+                                var count1 = Object.keys(Data).length;
+                                var msg = "";
+                                if (count1 > 0) {
+                                    $("#divDCABudgetRptDetails").html(Data);
+                                    $("#divBdgRptGrid").removeClass('hidden');
+                                    if (CCType == "Performing") {
+                                        $("#divBdgRptInvoiceGrid").removeClass('hidden');
+                                        BindClientInvoiceDetailsForCC(CCCode);
+                                    }
+                                }
+                                else {
+                                    $("#divDCABudgetRptDetails").html('No Data Found');
+                                    $("#divBdgRptGrid").removeClass('hidden');
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert("error");
+                            }
+                        });
+                    }
+
+                }
+                else {
+                    var NonperCCCodeindex = $("#ddlBdgRptNonPerCCCode option:selected").index();
+                    var NonperCCCode = $("#ddlBdgRptNonPerCCCode option:selected").val();
+
+                    var Yearindex = $("#ddlBdgRptYear option:selected").index();
+                    var Year = $("#ddlBdgRptYear option:selected").val();
+                    if (NonperCCCodeindex === 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Select  Cost Center</p>";
+                        isValid = false;
+                    }
+                    if (Yearindex === 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Select Year</p>";
+                        isValid = false;
+                    }
+                    if (!isValid) {
+                        var finalerror2 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                        $("#divBudgertReportInfoMsg").text("");
+                        $("#divBudgertReportInfoMsg").append(finalerror2 + errorMsg + "</div>");
+                        $("#divBudgertReportInfoMsg").addClass("alert-danger");
+                        $("#divBudgertReportInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        $("#divBudgertReportInfoMsg").text("");
+                        $("#divBudgertReportInfoMsg").addClass("hidden");
+                        $("#divBdgRptGrid").removeClass('hidden');
+                        $.ajax({
+                            type: 'GET',
+                            dataType: 'html',
+                            url: '/Reports/ViewDCABudgetReportGrid',
+                            data: { CCCode: NonperCCCode, Year: Year },
+                            success: function (Data) {
+                                //var headerRow = $('#tblDcaBudgetReportGrid thead tr')[0];
+                                //headerRow.find("th").eq(0).html(10);
+                                $("#divDCABudgetRptDetails").html(Data);
+                                $("#divBdgRptGrid").removeClass('hidden');
+                                if (CCType == "Performing") {
+                                    $("#divBdgRptInvoiceGrid").removeClass('hidden');
+                                    BindClientInvoiceDetailsForCC(NonperCCCode);
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert("error");
+                            }
+                        });
+                    }
+
+                }
+
+            }
+            else {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divBudgertReportInfoMsg").text("");
+                $("#divBudgertReportInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divBudgertReportInfoMsg").addClass("alert-danger");
+                $("#divBudgertReportInfoMsg").removeClass("hidden alert-success");
+                $("#divBudgertReportInfoMsg").text("");
+                $("#divBudgertReportInfoMsg").addClass("hidden");
+
+            }
+
+
+        });
+    });
+</script>
+
+

@@ -1,0 +1,447 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralInvoicePayment
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.TransactionType == "Bank")
+    {
+
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Cost Center</label>
+                    @Html.TextBoxFor(model => model.SelfCC, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceNo)
+                    @Html.TextBoxFor(model => model.InvoiceNo, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceAmount)
+                    @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceDate)
+                    @Html.TextBoxFor(model => model.InvoiceDate, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Bank)
+                    @Html.TextBoxFor(model => model.Bank, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Modeofpay)
+                    @Html.TextBoxFor(model => model.Modeofpay, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionNo)
+                    @Html.TextBoxFor(model => model.TransactionNo, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionDate)
+                    @Html.TextBoxFor(model => model.TransactionDate, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionAmount)
+                    @Html.TextBoxFor(model => model.TransactionAmount, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-12">
+            <table style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                        <th style="text-align:center;color:#fff"></th>
+                        <th style="text-align:center;color:#fff">Employee Name</th>
+                        <th style="text-align:center;color:#fff">Remarks </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int count2 = 1; }
+                    @foreach (var item in Model.ApprovalDatalst)
+                    {
+                        <tr>
+                            <th style="text-align:center" class="hidden">count2</th>
+                            @if (count2 == 1)
+                            {
+                                <th style="text-align:center">Created By:@item.Rolename</th>
+                            }
+                            else
+                            {
+                                <th style="text-align:center">Verified By </th>
+                            }
+                            <th style="text-align:center">@item.Empname</th>
+                            <th style="text-align:center">@item.Remarks </th>
+
+                        </tr>
+                        count2++;
+                    }
+                </tbody>
+            </table>
+            <br />
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apppaystatus" })
+
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppPayNote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveBankPayment(@serializer.Serialize(Model))">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+    </form>
+    }
+    else
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SelfCC)
+                        @Html.TextBoxFor(model => model.SelfCC, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.OtherCC)
+                        @Html.TextBoxFor(model => model.OtherCC, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceNo)
+                        @Html.TextBoxFor(model => model.InvoiceNo, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceAmount)
+                        @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceDate)
+                        @Html.TextBoxFor(model => model.InvoiceDate, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Name)
+                        @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DCACode)
+                        @Html.TextBoxFor(model => model.DCACode, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubDca)
+                        @Html.TextBoxFor(model => model.SubDca, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TransactionDate)
+                        @Html.TextBoxFor(model => model.TransactionDate, htmlAttributes: new { @class = "form-control", @readonly = true })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TransactionAmount)
+                        @Html.TextBoxFor(model => model.TransactionAmount, htmlAttributes: new { @class = "form-control", @readonly = true })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <table style="width:100%;border:1px solid gray">
+                    <thead>
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                            <th style="text-align:center;color:#fff"></th>
+                            <th style="text-align:center;color:#fff">Employee Name</th>
+                            <th style="text-align:center;color:#fff">Remarks </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int count2 = 1; }
+                        @foreach (var item in Model.ApprovalDatalst)
+                        {
+                            <tr>
+                                <th style="text-align:center" class="hidden">count2</th>
+                                @if (count2 == 1)
+                                {
+                                    <th style="text-align:center">Created By:@item.Rolename</th>
+                                }
+                                else
+                                {
+                                    <th style="text-align:center">Verified By </th>
+                                }
+                                <th style="text-align:center">@item.Empname</th>
+                                <th style="text-align:center">@item.Remarks </th>
+
+                            </tr>
+                            count2++;
+                        }
+                    </tbody>
+                </table>
+                <br />
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apppaystatus" })
+
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppPayNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveCashPayment(@serializer.Serialize(Model))">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+        </form>
+    }
+
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprVendorPayInfoMsg" class="alert alert-danger hidden"></div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#Apppaystatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        if (this['Type'] !== "Return") {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        }
+                    });
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    });
+
+    function ApproveBankPayment(Model) {
+        isValid = true;
+        var errorMsg = "";
+        var appstatus = $("#Apppaystatus option:selected").text();
+        retnote = $("#AppPayNote").val();
+        msg = $("#divApprVendorPayInfoMsg");        
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }        
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var BankData = {
+                InvoiceNo: Model.InvoiceNo,
+                OtherCC: Model.SelfCC,
+                TransactionAmount: Model.TransactionAmount,
+                BankId: Model.BankId,
+                TransactionRefNo: Model.TransactionRefNo,
+                Action: appstatus,
+                ApprovalNote: retnote,
+            };
+
+            addFailMsg = "Error Occurred";
+            //addSuccessMsg = "IT Verified Successfully.";
+            //debugger;
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/ApproveGenInvBankPayment",
+                data: JSON.stringify({ InvData: BankData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus === "Submited") {
+                        $('#ApprovePayMsgModal').modal('show');
+                        var msg = "<div>" + finalmsg + "</div>";
+                        $("#AppPayMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#AppPayMsg").html(msg1);
+                        $('#ApprovePayMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg2 = "<div>" + addFailMsg + " </div>";
+                    $("#AppPayMsg").html(msg2);
+                    $('#ApprovePayMsgModal').modal('show');
+                }
+            });
+
+        }
+  
+    }
+    function ApproveCashPayment(Model) {
+        isValid = true;
+        var errorMsg = "";
+        var appstatus = $("#Apppaystatus option:selected").text();
+        retnote = $("#AppPayNote").val();
+        msg = $("#divApprVendorPayInfoMsg");
+
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var BankData = {
+                InvoiceNo: Model.InvoiceNo,
+                SelfCC: Model.SelfCC,
+                OtherCC: Model.OtherCC,
+                TransactionAmount: Model.TransactionAmount,
+                BankId: Model.BankId,
+                TransactionRefNo: Model.TransactionRefNo,
+                Action: appstatus,
+                ApprovalNote: retnote,
+                InvoiceDate: Model.InvoiceDate
+            };
+            addFailMsg = "Error Occurred";
+            //addSuccessMsg = "IT Verified Successfully.";
+            //debugger;
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/ApproveGenInvCashPayment",
+                data: JSON.stringify({ InvData: BankData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus === "Submited") {
+                        $('#ApprovePayMsgModal').modal('show');
+                        var msg = "<div>" + finalmsg + "</div>";
+                        $("#AppPayMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#AppPayMsg").html(msg1);
+                        $('#ApprovePayMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg2 = "<div>" + addFailMsg + " </div>";
+                    $("#AppPayMsg").html(msg2);
+                    $('#ApprovePayMsgModal').modal('show');
+                }
+            });
+        }
+    }
+    </script>

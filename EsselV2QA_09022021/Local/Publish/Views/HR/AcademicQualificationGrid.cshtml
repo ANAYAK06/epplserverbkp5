@@ -1,0 +1,147 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.AcademicQualification>
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    System.Web.Script.Serialization.JavaScriptSerializer oSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();    
+    var AcademicJson = "";
+    var EditAcademicJson = "";
+    var Action = Session["EmpAction"].ToString();
+    if (Action == "New")
+    {
+        AcademicJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.AcademicQualification>)Session["AcademicQualification"]).ToArray());
+    }
+    else { EditAcademicJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.AcademicQualification>)Session["EditAcademicQualification"]).ToArray()); }
+}
+
+<div class="col-md-12 change-tab">
+    <div class="strike1">
+        <span>Academic Qualification</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="AcademicTable" class="table order-list academictable dataTable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">S.No</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Class</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Name of University</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">From</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">To</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Percentage</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count2 = 1; }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center">@count2</td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.AcademicClass)
+                        </td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.NameofUniversity)
+                        </td>
+
+                        <td style="text-align:center">@Html.DisplayFor(modelItem => item.FromYear)</td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.ToYear)
+                        </td>
+
+                        <td style="text-align:center">@Html.DisplayFor(modelItem => item.Percentage)</td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddAcademicClassdelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count2++;
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var AcademictechGrid = null;
+        InitializeAcademicGrid();
+       
+        var Action = '@Session["EmpAction"]';
+        if (Action!== "") {
+            if (Action=== "New") {      $("#HiddenAcademicData").val(@Html.Raw(Json.Encode(@AcademicJson)));}
+            else if(Action === "Edit") {
+                $("#UpdateHiddenAcademicData").val(@Html.Raw(Json.Encode(@EditAcademicJson)));
+            }
+        }
+        $("table.order-list.academictable").on("click", ".ibtnAddAcademicClassdelete", function (event) {
+            var row = $(this).closest("tr");
+            var aclass = $.trim(row.find("td").eq(1).html());
+            var rowno = $.trim(row.find("td").eq(0).html());
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteAcademicQualificationData',
+                data: { AcademicClassName: aclass },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        var Action1 = '@Session["EmpAction"]';
+                        if (Action1 !== "") {
+                            if (Action1 === "New") {
+                                $("#divAcademicQualGridData").load('/HR/AcademicQualificationGrid');
+                            }
+                            else {
+                                $("#divUpdateAcademicQualGridData").load('/HR/AcademicQualificationGrid');
+                            }
+                        }
+                      
+                            
+                        //}
+                        //else { ReassignRowNoforAQGrid(); }
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+    });
+    function ReassignRowNoforAQGrid() {
+        var rowno = 1;
+        $("#AcademicTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(rowno);
+            rowno++;
+        });
+
+    }
+    function InitializeAcademicGrid() {
+        AcademictechGrid = $('#AcademicTable').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+
+    }
+</script>

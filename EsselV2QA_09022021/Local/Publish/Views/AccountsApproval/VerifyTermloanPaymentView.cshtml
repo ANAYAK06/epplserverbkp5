@@ -1,0 +1,233 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.TermLoanPayment>
+@foreach (var item in Model)
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.PaymentType)
+                    <input type="text" class="form-control" value="@item.PaymentType" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.LoanNos)
+                    <input type="text" class="form-control" value="@item.LoanNos" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Acodeandname)
+                    <input type="text" class="form-control" value="@item.Acodeandname" readOnly="readOnly" />
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Principleamt)
+                    <input type="text" class="form-control" value="@item.Principleamt" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.IntrestAmt)
+                    <input type="text" class="form-control" value="@item.IntrestAmt" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.instno)
+                    <input type="text" class="form-control" value="@item.instno" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.TLPRemarks)
+                    <input type="text" class="form-control" value="@item.TLPRemarks" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.BankName)
+                    <input type="text" class="form-control" value="@item.BankName" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Modeofpay)
+                    <input type="text" class="form-control" value="@item.Modeofpay" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Instrumentno)
+                    <input type="text" class="form-control" value="@item.Instrumentno" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.BDate)
+                    <input type="text" class="form-control" value="@item.BDate" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.BankRemarks)
+                    <input type="text" class="form-control" value="@item.BankRemarks" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.TotalAmount)
+                    <input type="text" class="form-control" value="@item.TotalAmount" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprTLPstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprtlpNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button class="btn btn1 btn-success" onClick="ApprovetlpDetails('@item.TNO')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprTLPInfoMsg-@item.TNO" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+    break;
+}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprTLPstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        });
+        function ApprovetlpDetails(Rowid) {
+            appstatusid = "ApprTLPstatus-" + Rowid;
+            var appstatus = $("#ApprTLPstatus").val();
+            var ReturnText = $("#ApprtlpNotes").val();
+            var retnoteid = "ApprtlpNotes-" + Rowid;
+            retnote = $("#" + retnoteid + "").val();
+            Rid = "divApprTLPInfoMsg-" + Rowid;
+            msg = $("#" + Rid + "");
+            isValid = true;
+            var errorMsg = "";
+            if (appstatus == "Select" || appstatus == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                isValid = false;
+            }
+            if (ReturnText == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $(msg).text("");
+                $(msg).append(finalerror1 + errorMsg + "</div>");
+                $(msg).addClass("alert-danger");
+                $(msg).removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $(msg).text("");
+                $(msg).addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+                else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/AccountsApproval/Approvetermloanpayment",
+                    data: '{Rowid:"' + Rowid + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprtlpCreatedby").val() + '",Remarks:"' + $("#ApprtlpNotes").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var msg = response.saveStatus;
+                        if (msg == "Submitted") {
+                            $('#ApprovetlpMsgModal').modal('show');
+                            var msg = "<div>TermloanPayment " + finalmsg + "</div>";
+                            $("#ApprovetlpMsgModal").on("hide.bs.modal", function () {
+                                $("#divApprtlpGrid").load('/AccountsApproval/VerifyTermLoanPaymentGrid');
+                            });
+                            $("#ApprtlpMsg").html(msg);
+                        }
+                        else {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprtlpMsg").html(msg);
+                            $('#ApprovetlpMsgModal').modal('show');
+                        }
+
+                    },
+                    failure: function (response) {
+
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprtlpMsg").html(msg);
+                        $('#ApprovetlpMsgModal').modal('show');
+                    },
+                    error: function (response) {
+
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprtlpMsg").html(msg);
+                        $('#ApprovetlpMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+    </script>

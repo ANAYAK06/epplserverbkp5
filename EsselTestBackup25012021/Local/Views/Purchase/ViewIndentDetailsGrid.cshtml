@@ -1,0 +1,178 @@
+﻿@model EsselTestLocalApplication.Models.IndentData
+    <style>
+        .tdcls {
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal;
+        }
+    </style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGrid">
+    <div class="strike">
+        <span>Indent Items</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemIndentDetailsDataTable" class="table order-list itemIndentDetaillist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    @*<td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Sub DCA</label></td>*@
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Quantity</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                <tr>
+                    <td style="text-align:center;width:10px!important;">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    <input type="checkbox" class="eagle-check-input">
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                    <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.Specification</td>
+                    @*<td> @Html.DisplayFor(modelItem => item.Specification, new { htmlAttributes = new { @class = "tdcls" }  })</td>*@
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                    @*<td> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>*@
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Quantity)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                @foreach (var item in Model.Total)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        @*<td></td>*@
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center" colspan="2"><label>SubTotal: @item.TotalAmount</label></td>
+                    </tr>
+                }
+                </tfoot>
+
+        </table>
+        <table id="ItemIndentDetailsRemDataTable" class="table order-list itemIndentDetailRemlist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                   <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remarks</label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Remarks)
+                {
+                    <tr>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Remarks)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        //$("table.order-list.itemIndentlist").on("click", ".btnIndentDel", function (event) {
+        //    //$(this).closest("tr").remove();
+        //    var currentRow = $(this).closest("tr");
+        //    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+        //    var IndListid = currentRow.find("td").eq(11).html();
+        //    var CCCode = currentRow.find("td").eq(12).html();
+        //    if (check == true) {
+        //        var Items = {
+        //            IndentListId: IndListid
+        //        };
+        //        addFailMsg = "Error Occurred While Deleting Item";
+        //        addSuccessMsg = "Deleted Successfully.";
+        //        $.ajax({
+        //            type: "POST",
+        //            url: "/Purchase/DeleteIndentItem",
+        //            data: JSON.stringify({ Ind: Items }),
+        //            contentType: "application/json; charset=utf-8",
+        //            dataType: "json",
+        //            success: function (response) {
+        //                if (response.saveStatus == "Submited") {
+        //                    alert("Deleted Successfully");
+        //                    $.ajax({
+        //                        type: 'GET',
+        //                        dataType: 'html',
+        //                        url: '/Purchase/ViewIndentDetails',
+        //                        data: { cccode: CCCode },
+        //                        success: function (data) {
+        //                            var count = Object.keys(data).length;
+        //                            if (count > 0) {
+        //                                $("#GridData").html(data);
+        //                                $("#GridData").removeClass('hidden');
+        //                            }
+        //                            else {
+        //                                $("#GridData").addClass('hidden');
+        //                            }
+        //                        },
+        //                    });
+        //                }
+        //                else {
+        //                    alert(response.saveStatus);
+        //                }
+        //            },
+        //            error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //            }
+        //        });
+        //    }
+        //    else {
+        //        alert("Please Check for Delete");
+        //        return false;
+        //    }
+        //});
+    });
+
+    //function CountItemTotalAmount() {
+    //    var Basic = 0;
+    //    var price = 0;
+    //    var rowtotal = 0;
+    //    var subtotal = 0;
+    //    $("#ItemIndentDataTable tbody tr").each(function () {
+    //        var currentRow = $(this);
+    //        Basic = currentRow.find("td").eq(6).html();
+    //        price = currentRow.find("td").eq(8).find("input[type='text']").val();
+    //        if (Basic != "" && price != "") {
+    //            rowtotal = parseFloat(Basic) * parseFloat(price);
+    //            currentRow.find("td").eq(9).find("input[type='text']").val(rowtotal);
+    //            subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+    //        }
+    //        else {
+    //            currentRow.find("td").eq(9).find("input[type='text']").val(0);
+    //        }
+    //    });
+    //    $("#ItemIndentDataTable tfoot tr").each(function () {
+    //        var footerRow = $(this);
+    //        if (!isNaN(subtotal)) {
+    //            footerRow.find("td").eq(9).html("<b>" + parseFloat(subtotal).toFixed(2) + "</b>");
+    //        }
+    //        else {
+    //            footerRow.find("td").eq(9).html("");
+    //        }
+    //    });
+
+    //}
+
+</script>

@@ -1,0 +1,462 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.Refund
+
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date)
+                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtRefundDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                </div>
+            </div>
+            @if (Model.paymentcategory == "OtherRefund")
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.paymentcategory)
+                        @*@Html.DropDownListFor(model => model.paymentcategory, new SelectList(Model.RefundPaymentCategory, "PaymentCatId", "PaymentCatName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlpaymentcategory", onchange = "Refpaymentcategorychange()" })*@
+                        @Html.TextBoxFor(model => model.paymentcategory, new { @id = "ddlpaymentcategory", @class = "form-control", @type = "text", @readonly = "true" })
+
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.paymentcategory)
+                        @*@Html.DropDownListFor(model => model.paymentcategory, new SelectList(Model.RefundPaymentCategory, "PaymentCatId", "PaymentCatName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlpaymentcategory", onchange = "Refpaymentcategorychange()" })*@
+                        @Html.TextBoxFor(model => model.paymentcategory, new { @id = "ddlpaymentcategory", @class = "form-control", @type = "text", @readonly = "true" })
+
+                    </div>
+                </div>
+                <div class="col-md-3" id="divtype">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.RefundType)
+                        @*@Html.DropDownListFor(model => model.RefundType, new SelectList(Model.RefundTypes, "Type_Id", "Type_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltype" })*@
+                        @Html.TextBoxFor(model => model.RefundType, new { @id = "ddltype", @class = "form-control", @type = "text", @readonly = "true" })
+
+                    </div>
+                </div>
+            }
+            <div class="col-md-3">
+                <div class="form-group">
+                </div>
+            </div>
+            <div class="col-md-12" id="divpricniple">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Refund_CC_Code)
+                        @Html.DropDownListFor(model => model.Refund_CC_Code, new SelectList(Model.RefundCcCodesList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Refundcccode", onchange = "GetRefDca()" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Refund_DCA_Code)
+                        @Html.DropDownListFor(model => model.Refund_DCA_Code, new SelectList(Model.RefundDcaCodesList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefDCACode", onchange = "GetRefSDca()" })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Refund_Sub_DCA_Code)
+                        @Html.DropDownListFor(model => model.Refund_Sub_DCA_Code, new SelectList(Model.RefundSdcaCodesList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefSubDcaCode" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Amount)
+                        @Html.TextBoxFor(model => model.Amount, new { @id = "txtPrincipleAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountRefTotal()" })
+                    </div>
+                </div>
+            </div>
+            @if (Model.RefIntCC != null && Model.RefIntCC != "")
+            {
+                <div class="col-md-12 change-tab" id="divIntrestTables">
+                    <div class="strike">
+                        <span>Add Intrest</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table id="IntrestTables" class="table order-list" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <td style="text-align:center">@Html.LabelFor(model => model.Refund_CC_Code)</td>
+                                    <td style="text-align:center">@Html.LabelFor(model => model.Refund_DCA_Code)</td>
+                                    <td style="text-align:center">@Html.LabelFor(model => model.Refund_Sub_DCA_Code)</td>
+                                    <td style="text-align:center">@Html.LabelFor(model => model.RefIntAmount)</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="text-align:center">
+                                    <td>
+                                        @Html.DropDownListFor(model => model.Refund_CC_Code, new SelectList(Model.RefundCcCodesList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefintrestCCCode", onchange = "GetRefDedDca()" })
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(model => model.Refund_DCA_Code, new SelectList(Model.RefundDcaCodesList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefintrestDCACode", onchange = "GetRefDedSDca()" })
+                                    </td>
+
+                                    <td>
+                                        @Html.DropDownListFor(model => model.Refund_Sub_DCA_Code, new SelectList(Model.RefundSdcaCodesList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefintrestSDCACode" })
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.RefIntAmount, new { @id = "txRefundIntrestAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountRefTotal()" })
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            <div class="col-md-12 change-tab">
+                <div class="col-md-12" style="text-align:left;margin-bottom:0px;">
+                    <h5 style="font-weight:bold;">Payment Details</h5>
+                    <hr style="margin-top:0%;margin-bottom:0%" />
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Refund_Name)
+                            @Html.TextBoxFor(model => model.Refund_Name, htmlAttributes: new { @class = "form-control", @id = "txtRefundName" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Bank)
+                            @Html.DropDownListFor(model => model.Bank, new SelectList(Model.RefundBanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefBank" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Mode_of_Pay)
+                            @Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.RefundPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_RefPayMode" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Refund_No)
+                            @Html.TextBoxFor(model => model.Refund_No, htmlAttributes: new { @class = "form-control", @id = "txtrefundNo" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Remarks)
+                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtRefundRemarks", @class = "form-control", @type = "text" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Refpayment_Date)
+                            @Html.TextBoxFor(model => model.Refpayment_Date, "{0:dd-MMM-yyyy}", new { @id = "txtRefPayDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Refund_final_Amount)
+                            @Html.TextBoxFor(model => model.Refund_final_Amount, new { @id = "txtRefFinalAmount", @class = "form-control", @type = "text", @readOnly = "true" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <button class="btn btn1 btn-success" id="btnRefSubmit" onclick="btnReturnRefundData('@Model.Refno')">Submit</button>             @*btnSubmitRefundData*@
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <div id="divRefInfoReturnMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+</div>
+<script>
+    $(document).ready(function () {       
+        var Date = '@Model.Date';       
+        var RefDate = '@Model.Refpayment_Date';
+        $("#txtRefPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            minDate: Date,
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtRefPayDate").val(selectedDate);
+            }
+        });
+        var Type = '@Model.paymentcategory';
+        if (Type == 'Other Refunds') {
+            $("#ddlpaymentcategory").val("Other Refunds");
+        }
+        else if (Type == '') {
+            $("#ddlpaymentcategory").val("Refunds");
+            $("#ddltype").val("SD");
+        }
+        
+        var CCVALUE = '@Model.Refund_CC_CodeVal';
+        $("#ddl_Refundcccode").val(CCVALUE);
+        var DCA = $("#ddl_RefDCACode");
+        var SDCA = $("#ddl_RefSubDcaCode");
+        var DCAVALUE = '@Model.Refund_DCA_CodeVal';
+        var SDCAVALUE = '@Model.Refund_Sub_DCA_CodeVal';
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/BindMiscDCA',
+            data: { CC_code: CCVALUE, date: Date },
+            
+            success: function (response) {
+                DCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                $.each(response, function () {
+                    DCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                    DCA.val(DCAVALUE);                   
+                });
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/Accounts/BindMiscSDCA',
+                    data: { DCA: DCAVALUE },
+                    
+                    success: function (response) {
+                        SDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            SDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            SDCA.val(SDCAVALUE);                            
+                        });
+                       
+                    },
+                });
+            },
+        });
+        
+        var CCINTVALUE = '@Model.Refund_CC_CodeValINT';       
+        if (CCINTVALUE != '') {
+            $("#ddl_RefintrestCCCode").val(CCINTVALUE);
+            var INTDCA = $("#ddl_RefintrestDCACode");
+            var INTSDCA = $("#ddl_RefintrestSDCACode");
+            var DCAVALUEINT = '@Model.Refund_DCA_CodeValINT';
+            var SDCAVALUEINT = '@Model.Refund_Sub_DCA_CodeValINT';
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Accounts/BindMiscDCA',
+                data: { CC_code: CCVALUE, date: Date },
+               
+                success: function (response) {
+                    INTDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        INTDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        INTDCA.val(DCAVALUEINT);
+                    });
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: '/Accounts/BindMiscSDCA',
+                        data: { DCA: DCAVALUEINT },
+                        
+                        success: function (response) {
+                            INTSDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                INTSDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                INTSDCA.val(SDCAVALUEINT);
+                            });
+                         
+                        },
+                    });
+                    
+                },
+            });
+        }
+        var BankId = '@Model.BankID';
+        $("#ddl_RefBank").val(BankId);
+        var paymentmode = '@Model.Mode_of_Pay';
+        $("#ddl_RefPayMode").val(paymentmode);
+
+    });
+    function Refpaymentcategorychange() {
+        var IntrestModeval = $("#ddlpaymentcategory option:selected").val();
+        if ($("#txtRefundDate").val() == "") {
+            alert("Select Date");
+            $('#ddlpaymentcategory').get(0).selectedIndex = 0
+            return false;
+        }
+        else if (IntrestModeval == "1") {
+            $("#txtRefundDate").datepicker("disable");
+            $("#ddltype").removeClass("hidden");
+        }
+        else if (IntrestModeval == "2") {
+            $("#divclientandsunclient").addClass("hidden");
+            $("#txtRefundDate").datepicker("disable");
+            $("#ddltype").addClass("hidden");
+           
+        }     
+        else {
+            $("#txtRefundDate").datepicker("enable");
+            return true;
+        }
+    }
+    function GetRefSDca() {
+        var index = $("#ddl_RefDCACode option:selected").index();
+        var DCAVal = $("#ddl_RefDCACode option:selected").val();
+        if (index != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindMiscSDCA",
+                data: '{DCA:"' + DCAVal + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+               
+                success: function (response) {
+                    var sdca = $("#ddl_RefSubDcaCode");
+                    sdca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        sdca.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                    
+                },
+                failure: function (response) {
+                   
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    
+                    alert(response.responseText);
+                }
+            });
+        }
+    }
+    function GetRefDedDca() {
+        var index = $("#ddl_RefintrestCCCode option:selected").index();
+        var CCVal = $("#ddl_RefintrestCCCode option:selected").val();
+        var Date = $("#txtRefundDate").val();
+        if ($("#txtRefundDate").val() != "") {
+            if (index != 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindMiscDCA",
+                    data: '{CC_code:"' + CCVal + '",date:"' + Date + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                   
+                    success: function (response) {
+                        var dca = $("#ddl_RefintrestDCACode");
+                        dca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            dca.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        });
+                       
+                    },
+                    failure: function (response) {
+                       
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                       
+                        alert(response.responseText);
+                    }
+                });
+            }
+        }
+        else {
+            alert("Please Select Date");
+            $('#ddl_RefintrestCCCode').get(0).selectedIndex = 0;
+            return false;
+        }
+    }
+    function GetRefDedSDca() {
+        var index = $("#ddl_RefintrestDCACode option:selected").index();
+        var DCAVal = $("#ddl_RefintrestDCACode option:selected").val();
+        if (index != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindMiscSDCA",
+                data: '{DCA:"' + DCAVal + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+              
+                success: function (response) {
+                    var sdca = $("#ddl_RefintrestSDCACode");
+                    sdca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        sdca.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                   
+                },
+                failure: function (response) {
+                   
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                   
+                    alert(response.responseText);
+                }
+            });
+        }
+    }
+    function CountRefTotal() {        
+        var amount = $("#txtPrincipleAmount").val();
+        var final = $("#txtRefFinalAmount").val();
+        if ($("#txRefundIntrestAmount").val() != undefined)
+            var InterestExist = $("#txRefundIntrestAmount").val();
+        else
+            var InterestExist = 0;
+             var total = 0;
+             if (InterestExist != "" && amount != "") {
+            $("#IntrestTables tbody tr").each(function () {
+                     var currentRow = $(this);
+                     var Interest = currentRow.find("td").eq(3).find("input[type='text']").val();
+                     if (Interest != "") {
+                         total = parseFloat(amount) + parseFloat(Interest);
+                     }
+                     else {
+                         total = parseFloat(amount);
+                     }
+                 });
+             }
+             if (InterestExist == 0 && amount != "") {
+                 total = parseFloat(amount);
+             }
+             if (InterestExist == "" && amount != "") {
+                 total = parseFloat(amount);
+             }
+             if (InterestExist != "" && amount == "") {
+            $("#IntrestTables tbody tr").each(function () {
+                     var currentRow = $(this);
+                     var Interest = currentRow.find("td").eq(3).find("input[type='text']").val();
+                     total = parseFloat(Interest);
+                     if (Interest != "") {
+                         total = parseFloat(Interest);
+                     }
+                     else {
+                         total = 0;
+                     }
+                 });
+             }
+             if (InterestExist == 0 && amount == "") {
+                 total = 0;
+             }
+        $("#txtRefFinalAmount").val(total);
+
+         }
+</script>

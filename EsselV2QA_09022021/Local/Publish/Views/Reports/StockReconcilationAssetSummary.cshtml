@@ -1,0 +1,117 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.AssetSummaryData
+<style>
+    .tdclass {
+        text-align: center;
+    }
+</style>
+
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                @if (Model.AssetsummaryList.Count > 0)
+                {
+                    <div align="right" class="col-md-12">
+                        <span>Export to : </span>
+                        <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelPopupAssetGrid();" />
+                        <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfPopupAssetGrid();" />
+
+                    </div>
+                    <div class="col-md-12">
+                        <br />
+                        <br />
+                        <div class="row change-tab text-right" id="divSPPOInvtaxtable">
+                            <div class="tabledynamic">
+                                <br />
+                                <table style="width:100%;border:1px solid gray" class="table order-list">
+                                    <thead>
+                                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                            <th style="text-align:center;color:#fff">Item Code</th>
+                                            <th style="text-align:center;color:#fff">Reference No</th>
+                                            <th style="text-align:center;color:#fff">Dispatched Date </th>
+                                            <th style="text-align:center;color:#fff">Recieved Date </th>
+                                            <th style="text-align:center;color:#fff">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int count = 1; }
+                                        @foreach (var item in Model.AssetsummaryList)
+                                        {
+                                            <tr>
+                                                <td class="tdclass">@item.ItemCode</td>
+                                                <td class="tdclass">@item.refno</td>
+                                                <td class="tdclass">@item.transfer_date</td>
+                                                <td class="tdclass">@item.RecievedDate</td>
+                                                <td class="tdclass">@item.remarks</td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    </tbody>
+                                    <tfoot>
+
+                                    </tfoot>
+                                </table>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div>No Data Found</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function ExportExcelPopupAssetGrid() {
+         var CC = '@Model.cccode';
+                var ItemCode = '@Model.itemcode';
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelPopupAssetGrid',       
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+            
+               
+                link.download =  CC + " ,Itemcode:" + ItemCode+" ReconcilationReport.xlsx";
+
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+    function ExportpdfPopupAssetGrid() {
+         var CC = '@Model.cccode';
+                var ItemCode = '@Model.itemcode';
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfPopupAssetGrid',
+            data: { CCCode: CC, ItemCode: ItemCode },
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                
+                link.download =  CC + " ,Itemcode:" + ItemCode +" ReconcilationReport.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });}
+</script>

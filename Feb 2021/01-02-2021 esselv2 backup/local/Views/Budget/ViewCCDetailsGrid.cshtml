@@ -1,0 +1,174 @@
+﻿
+@model List<EsselTestLocalApplication.Models.CCDetails>
+<div class="col-lg-12">
+    <div class="table-responsive">
+        <table id="tblCCDetails" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="hidden">Budget Id</th>
+                    <th class="hidden">CC Id</th>
+                    <th>CC Code</th>
+                    <th>CC Name</th>
+                    <th>CC Type</th>
+                    <th>Budget Created Date</th>
+                    <th>Assigned Budget Value</th>
+                    <th>Budget Balance</th>
+                    @*<th>Amend</th>*@
+                    <th>Actions</th>
+                    <th class="hidden">Year</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CCBudgetId)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CC_Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CC_Code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CC_Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CC_Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.BudgetValue)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.BalanceBudget)
+                    </td>
+                    <td>
+                        @*@if ((item.Status == "Approved") || (item.Status!= "Pending"))*@
+                        @if (item.Status == "Approved")
+                        {
+                            <a title="Amend" href="javascript:void(0)" data-toggle="modal" onclick="OpenAmendCCBudgetPopup(@item.CCBudgetId,@item.CC_Id, '@item.CC_Code', '@item.CC_Name','@item.CC_Type', @item.BudgetValue, @item.BalanceBudget, '@item.CreatedDate','@item.FYyear')">Amend</a>
+                            @*<a title="Close" href="javascript:void(0)" data-toggle="modal" onclick="OpenCloseCCBudgetPopup(@item.CCBudgetId,@item.CC_Id, '@item.CC_Code', '@item.CC_Name','@item.CC_Type', @item.BudgetValue, @item.BalanceBudget, '@item.CreatedDate');">Close</a>*@
+                        }
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.FYyear)
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <div id="CCAmendModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Amend Cost Center Budget</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control dropdown-toggle WdNo" id="ddlCCAmendType" onchange="CCAmendTypeChange()">
+                                    <option selected="selected" value="Select">-Select-</option>
+                                    <option value="Add">Add</option>
+                                    <option value="Substract">Substract</option>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divAmendCC">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Cost Center Code:</label>
+                                    <label id="lblCcAmendCode"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cost Center Name:</label>
+                                <label id="lblCcAmendName"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cost Center Type:</label>
+                                <label id="lblCcAmendType"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Budget Value:</label>
+                                <label id="lblCcAmendBudget"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Budget Balance:</label>
+                                <label id="lblCcAmendBudgetBalance"></label>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Amount:</label>
+                                    <input type="text" id="AmendCCBudgetAmount" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="AmendCCVerification()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-right">
+                                <button class="btn btn1 btn-success" id="btnAmendCCSubmit" onclick="SubmitAmendCCData()">Submit</button>
+                                <input type="text" id="txtCCBudgetid" style="display:none" />
+                                <input type="text" id="txtCCBudgetold" style="display:none" />
+                                <input type="text" id="txtCCBalanceOld" style="display:none" />
+                                <input type="text" id="txtCCBudgetamduid" style="display:none" />
+                                <input type="text" id="txtCCAmendYear"  style="display:none" />
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divAmendCCInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                @*<div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>*@
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var ccGrid = null;
+        InitializeCCDetailsGrid();
+        $("#CCAmendModal").on("hidden.bs.modal", function () {           
+            var Fyear = ''; var SubType = '';
+            
+            var CCType = $("#ddlAmendCCBType option:selected").text();
+            if (CCType === 'Performing') {
+                 SubType = $("#ddlAmendCCSubType option:selected").val();}
+            else {
+                Fyear=$("#ddlAmendCCYear option:selected").val();
+            }            
+          $("#divAmendCCGrid").load('/Budget/ViewCCDetailsGrid?Year='+ Fyear + '&CCSubType=' + SubType+'&CCType=' + CCType+'');
+           
+        });
+        var SessionUID = '@Session["UID"]';
+        $("#txtCCBudgetamduid").val(SessionUID);
+    });
+</script>

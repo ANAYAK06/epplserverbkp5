@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewBag.Title = "ChildGroups";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*<h2>ChildGroups</h2>*@
+<link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+@Scripts.Render("~/bundles/Ledger")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Child Groups</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div id="ChildGroup">
+                                        <button class="btn btn1 btn-success" id="btnewChildbgroup" onclick="ViewAddNewChildGroupModel()">Add Child Group</button>
+                                        <div id="divChildGroupGrid">
+                                            @Html.Action("ViewChildGroupsGrid", "Ledger")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AddNewChildGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Child Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <label>Select Sub Group</label>
+                                <select class="form-control dropdown-toggle" id="ddlNewCGSubGroups" onchange="NewCGSubGroupChange()">
+                                    <option selected="selected" value="-Please Select-">-Please Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="divaddchildgrpdetails">
+                            <div id="divAddChildGroupGrid">
+                                <div class="col-md-12 change-tab">
+                                    <div class="strike">
+                                        <span>Add ChildGroups</span>
+                                    </div>
+                                    <div class="tabledynamic">
+                                        <br />
+                                        <table id="AddChildGroupTable" class="table order-list addchildgrptable">
+                                            <thead>
+                                                <tr>
+                                                    <td style="text-align:center;color:#fff !important">S.No</td>
+                                                    <td style="text-align:center;color:#fff !important">Child Group Name</td>
+                                                    <td style="text-align:center;color:#fff !important"></td>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="text-align:center">1</td>
+                                                    <td style="text-align:center">
+                                                        <input type="text" class="form-control" style="text-transform:uppercase" />
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="button" class="btn btn-default  btn-block" value="Add New ChildGroup" onclick="AddChildgroupgridnewrow();" />
+                                                    </td>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="text-right">
+                                    <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewChildGroup" onclick="SubmitNewChildGroup()" value="Submit" />
+                                    <input type="button" class="btn btn1 btn-success" id="btnResetNewChildGroup" onclick="ResetNewChildGroup()" value="Reset" />
+                                </div>
+                            </div>
+                            <div class="row col-md-12 text-center">
+                                <br />
+                                <div id="divNewChildGroupInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div id="EditChildGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Child Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+                        <label>Enter Child Group Name</label>
+                        <input type="text" id="txtUpChildGpName" class="form-control" style="text-transform:uppercase" />
+
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnUpdateChildGroup" onclick="UpdateChildGroup()" value="Submit" />
+                        <input type="text" id="txtUpChildGpId" class="form-control" style="display:none;width:10px" />
+                    </div>
+                </div>
+                <div class="row col-md-12 text-center">
+                    <br />
+                    <div id="divUpdateChildGroupInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div id="deleteChildGroup" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Child Group: </p><label id="lbldelChildGroupname"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeletechildgroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletechigrp">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btndeletersubgrp" onclick="DeleteChildGroup()">Delete</button>
+                    <input type="text" id="txtdeleteChildGroupid" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+ $(document).ready(function () {
+     var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+     });
+</script>
+

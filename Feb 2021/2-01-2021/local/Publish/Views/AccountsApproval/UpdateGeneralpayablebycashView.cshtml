@@ -1,0 +1,275 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPayablebyCash
+
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-12">
+                @if (Model.PaidAgainstCCCode == null)
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GPCash_TransactionMode)
+                            @*@Html.DropDownListFor(model => model.GPCash_TransactionMode, new SelectList(Model.GICashTransactionmode, "GICashPaymentModeid", "GICashPaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPCPaymentmode", onchange = "BindCashCCCode()" })*@
+                            @Html.TextBoxFor(model => Model.GPCash_TransactionMode, new { @id = "txtGPCPaymentmode", @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divcashccode">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GPCash_CCCode)
+                            @*@Html.DropDownListFor(model => model.GPCash_CCCode, new SelectList(Model.GICashCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashCCCode", onchange = "BindCashDcaCode()" })*@
+                            @Html.TextBoxFor(model => Model.GPCash_CCCode, new { @id = "txtGICashCCCode", @class = "form-control", @readOnly = "true" })
+
+                        </div>
+                    </div>
+                }
+                @if (Model.PaidAgainstCCCode != null)
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GPCash_TransactionMode)
+                            @*@Html.DropDownListFor(model => model.GPCash_TransactionMode, new SelectList(Model.GICashTransactionmode, "GICashPaymentModeid", "GICashPaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPCPaymentmode", onchange = "BindCashCCCode()" })*@
+                            @Html.TextBoxFor(model => Model.GPCash_TransactionMode, new { @id = "txtGPCPaymentmode", @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divcashccode">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GPCash_CCCode)
+                            @*@Html.DropDownListFor(model => model.GPCash_CCCode, new SelectList(Model.GICashCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashCCCode", onchange = "BindCashDcaCode()" })*@
+                            @Html.TextBoxFor(model => Model.GPCash_CCCode, new { @id = "txtGICashCCCode", @class = "form-control", @readOnly = "true" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divcashccode">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PaidAgainstCCCode)
+                            @*@Html.DropDownListFor(model => model.GPCash_CCCode, new SelectList(Model.GICashCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashCCCode", onchange = "BindCashDcaCode()" })*@
+                            @Html.TextBoxFor(model => Model.PaidAgainstCCCode, new { @id = "txtGIpaidCashCCCode", @class = "form-control", @readOnly = "true" })
+
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="row" id="divcashinvoiceno">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_Date)
+                        @Html.TextBoxFor(model => model.GPCash_Date, "{0:dd-MMM-yyyy}", new { @id = "txtGPCashdate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_PaidDate)
+                        @Html.TextBoxFor(model => model.GPCash_PaidDate, "{0:dd-MMM-yyyy}", new { @id = "txtGPCashpaiddate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row" id="divaccounthead">
+            <div class="col-md-12">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_DCACode)
+                        @*@Html.DropDownListFor(model => model.GPCash_DCACode, new SelectList(Model.GICashAccountHead, "GICashDCACodeID", "GICashDCACodeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashDCACode", onchange = "BindCashSDcaCode()" })*@
+                        @Html.TextBoxFor(model => Model.GPCash_DCACode, new { @id = "txtGICashDCACode", @class = "form-control", @readOnly = "true" })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_SDCACode)
+                        @*@Html.DropDownListFor(model => model.GPCash_SDCACode, new SelectList(Model.GICashSubAccountHead, "GICashSDCACodeID", "GICashSDCACodeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashSDCACode" })*@
+                        @Html.TextBoxFor(model => Model.GPCash_SDCACode, new { @id = "txtGICashSDCACode", @class = "form-control", @readOnly = "true" })
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_Name)
+                        @Html.TextBoxFor(model => model.GPCash_Name, new { @id = "txtGPCashName", @class = "form-control", @type = "text" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="divamt">
+            <div class="col-md-12">
+
+                <div class="col-md-9">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_Remarks)
+                        @Html.TextBoxFor(model => model.GPCash_Remarks, new { @id = "txtGPCashRemarks", @class = "form-control", @type = "text" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GPCash_Amount)
+                        @Html.TextBoxFor(model => model.GPCash_Amount, new { @id = "txtGPCashAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @type = "text" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="divsubmitbtn">
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtGeneralSessionCC" style="display:none" />
+                    <button class="btn btn1 btn-success" onclick="btngeneralinvocicecashupdation('@Model.Voucherno')" id="btnsubmitgeneralcashinv">Submit</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="row col-md-12 text-center">
+            <div id="divcashgeneralinvoiceupdateInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        var Roleid = '@Session["Roleid"]';
+        $("#txtApprgeneralpayablebycashRole").val(Roleid);
+        var createdby = '@Session["Createdby"]';
+        $("#txtApprgeneralpayablebycashCreatedby").val(createdby);
+          var Sessioncreated = '@Session["SessionCostCenter"]';
+         $("#txtGeneralSessionCC").val(Sessioncreated);
+        var InvoiceDate = '@Model.GPCash_Date';
+        $("#txtGPCashdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtGPCashdate").val(selectedDate);
+            }
+        });
+        var PaymentDate = '@Model.GPCash_PaidDate';
+        $("#txtGPCashpaiddate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtGPCashpaiddate").val(selectedDate);
+            }
+        });
+        var BankTID = '@Model.Id';
+        var index = '';
+        var Select = '';
+        var selfcostcenter = '@Model.GPCash_CCCode';
+        var othercostcenter = '@Model.PaidAgainstCCCode';
+        if (selfcostcenter == othercostcenter) {
+            index = 1;
+            $("#txtGPCPaymentmode").val("Self Debit");
+
+        }
+        else {
+            index = 2;
+            $("#txtGPCPaymentmode").val("Debit From Other CC");
+        }        
+        Select = index;
+        //debugger;
+        var CC = $("#ddlGICashCCCode").text();
+        var DCA = $("#ddlGICashDCACode");
+        var SDCA = $("#ddlGICashSDCACode");
+        var DCAVALUE = '@Model.GPCash_DCACode';
+        var SDCAVALUE = '@Model.GPCash_SDCACode';
+        var CCode = '@Model.GPCash_CCCode';
+        $("#txtGICashCCCode").val(CCode);  
+        $("#txtGICashDCACode").val(DCAVALUE);
+        $("#txtGICashSDCACode").val(SDCAVALUE);
+        ////$.ajax({
+        ////    type: 'POST',
+        ////    dataType: 'json',
+        ////    url: '/Accounts/GetAllCashCC',
+        ////    data: { cc: selfcostcenter, Type: Select },
+        ////    beforeSend: function () {
+        ////        $('#ajax-container').html('');
+        ////        addSpinner($('#ajax-container'));
+        ////    },
+        ////    success: function (response) {
+        ////        CC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        ////        $.each(response, function () {
+        ////            CC.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+        ////            if (selfcostcenter == othercostcenter) {
+        ////                $("#ddlGICashCCCode").val(selfcostcenter);
+        ////                $.ajax({
+        ////                    type: 'POST',
+        ////                    dataType: 'json',
+        ////                    url: '/Accounts/GetAllCashDCAs',
+        ////                    data: { Cashcc: selfcostcenter },
+        ////                    beforeSend: function () {
+        ////                        $('#ajax-container').html('');
+        ////                        addSpinner($('#ajax-container'));
+        ////                    },
+        ////                    success: function (response) {
+        ////                        DCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        ////                        $.each(response, function () {
+        ////                            DCA.append($("<option></option>").val(this['CashDCA_Id']).html(this['CashDCA_Code']));
+        ////                            $("#ddlGICashDCACode").val(DCAVALUE);
+        ////                        });
+        ////                        removeSpinner($('#ajax-container'), function () {
+        ////                            $('#ajax-container').html('Content loaded.');
+        ////                        })
+        ////                    },
+        ////                });
+        ////            }
+        ////            else {
+        ////                $("#ddlGICashCCCode").val(othercostcenter);
+        ////                $.ajax({
+        ////                    type: 'POST',
+        ////                    dataType: 'json',
+        ////                    url: '/Accounts/GetAllCashDCAs',
+        ////                    data: { Cashcc: othercostcenter },
+        ////                    beforeSend: function () {
+        ////                        $('#ajax-container').html('');
+        ////                        addSpinner($('#ajax-container'));
+        ////                    },
+        ////                    success: function (response) {
+        ////                        DCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        ////                        $.each(response, function () {
+        ////                            DCA.append($("<option></option>").val(this['CashDCA_Id']).html(this['CashDCA_Code']));
+        ////                            $("#ddlGICashDCACode").val(DCAVALUE);
+        ////                        });
+        ////                        removeSpinner($('#ajax-container'), function () {
+        ////                            $('#ajax-container').html('Content loaded.');
+        ////                        })
+        ////                    },
+        ////                });
+        ////            }                     
+
+        ////        });
+        ////        $.ajax({
+        ////            type: 'POST',
+        ////            dataType: 'json',
+        ////            url: '/Accounts/GetCashSDCA',
+        ////            data: { Cashdca: DCAVALUE },
+        ////            beforeSend: function () {
+        ////                $('#ajax-container').html('');
+        ////                addSpinner($('#ajax-container'));
+        ////            },
+        ////            success: function (response) {
+        ////                //alert(SDCAVALUE);
+        ////                SDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        ////                $.each(response, function () {
+        ////                    SDCA.append($("<option></option>").val(this['CashSDCA_Id']).html(this['CashSDCA_Code']));
+        ////                    $("#ddlGICashSDCACode").val(SDCAVALUE);
+
+        ////                });
+        ////                removeSpinner($('#ajax-container'), function () {
+        ////                    $('#ajax-container').html('Content loaded.');
+        ////                })
+        ////            },
+        ////        });
+             
+        ////    },
+        ////});
+    });
+</script>

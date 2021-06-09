@@ -1,0 +1,379 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SupplierPO
+@{
+    ViewBag.Title = "SupplierPOCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Supplier PO Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-lg-12">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.IndentNo)
+                                            @Html.DropDownListFor(model => model.IndentNo, new SelectList(Model.Indentlist, "IndentId", "IndentNo"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlIndentNo", onchange = "IndentNoChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group" id="sppopaytypes">
+                                            @Html.LabelFor(model => model.PartIndentNo)
+                                            @Html.DropDownListFor(model => model.PartIndentNo, new SelectList(Model.PartIndentlist, "IndentId", "IndentNo"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPartIndentNo", onchange = "PartIndentNoChange()" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-12" style="margin-top:-20px !important"><hr /></div>
+                                <div class="row" id="divPO">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.VendorCode)
+                                                @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.Vendorlist, "VendorCode", "VendorName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlpoVendor" })
+                                            </div>
+                                        </div>
+                                       
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.PODate)
+                                                @Html.TextBoxFor(model => model.PODate, "{0:dd/MM/yyyy}", new { @id = "txtPODate", @class = "form-control  date-picker", type = "text", @readonly = true })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.POExpireDate)
+                                                @Html.TextBoxFor(model => model.POExpireDate, "{0:dd/MM/yyyy}", new { @id = "txtPOExpireDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.RefNo)
+                                                @Html.TextBoxFor(model => model.RefNo, new { @id = "txtRefNo", @class = "form-control", type = "text" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.RefDate)
+                                                @Html.TextBoxFor(model => model.RefDate, "{0:dd/MM/yyyy}", new { @id = "txtRefDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+                                            </div>
+                                        </div>
+                                        @* <div class="col-md-1 text-right">
+            <div class="form-group" style="margin-top:10px">
+
+                @Html.LabelFor(model => model.MRRType)
+            </div>
+        </div>*@
+                                        <div class="col-md-4 text-left">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.MRRType)
+                                                <ul class="list-inline">
+                                                    <li class="eagle-checkbox">
+                                                        <label class="eagle-check custom-checkbox">
+                                                            <input type="checkbox" class="eagle-check-input" name="MRRType" value="Single" id="chkSingle" onclick="MRRTypeValidation(this)" checked>
+                                                            <span class="eagle-check-indicator"></span>
+                                                            <span class="eagle-check-description">Single</span>
+                                                        </label>
+                                                    </li>
+                                                    <li class="eagle-checkbox">
+                                                        <label class="eagle-check custom-checkbox">
+                                                            <input type="checkbox" class="eagle-check-input" name="MRRType" value="Multiple" id="chkMultiple" onclick="MRRTypeValidation(this)">
+                                                            <span class="eagle-check-indicator"></span>
+                                                            <span class="eagle-check-description">Multiple</span>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="divPOGrid">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="change-tab row" id="divPOTACGrid">
+                                            <div class="strike">
+                                                <span>Terms & Conditions</span>
+                                            </div>
+                                            <div class="tabledynamic">
+                                                <br />
+                                                <table id="POTACTable" class="table order-list sptactable">
+                                                    <thead>
+                                                        <tr>
+                                                            <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important"></label></td>
+                                                            <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important">S.No</label></td>
+                                                            <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Terms & Conditions</label></td>
+                                                            <td style="text-align:center;color:#fff !important"><label style="color:#fff !important"></label></td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="text-align:center;width:10px!important;">
+                                                                <ul class="list-inline">
+                                                                    <li class="eagle-checkbox">
+                                                                        <label class="eagle-check custom-checkbox">
+                                                                            <input type="checkbox" class="eagle-check-input" id="chkNSppoTAC">
+                                                                            <span class="eagle-check-indicator"></span>
+                                                                            <span class="eagle-check-description"></span>
+                                                                        </label>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                            <td style="text-align:center;width:10px!important;"><label style="margin-top:10%">1</label></td>
+                                                            <td style="text-align:center;">
+                                                                <textarea class="form-control txttac" rows="1" cols="50" onkeypress="return RestrictPipeSymbol(this,event);"></textarea>
+                                                            </td>
+                                                            <td style="text-align:center"><input type="button" class="ibtsupplierpoTACDel btn btn-md btn-danger" value="Delete"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td class="text-center;"></td>
+                                                            <td></td>
+                                                            <td>
+                                                                <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoNewSupplierPOTACGrid();" />
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="divAddress">                                        
+                                        <div class="col-md-5" style="margin-left:10px">
+                                            <div class="col-md-12"><h5>INVOICE ADDRESS</h5></div>
+                                            <div class="col-md-12" style="margin-top:-25px !important"><hr /></div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.InvAddress1)
+                                                @Html.TextAreaFor(model => model.InvAddress1, new { @id = "txtInvAdd1", @class = "form-control", @type = "text", @rows = "3" })
+                                            </div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.InvAddress2)
+                                                @Html.TextAreaFor(model => model.InvAddress2, new { @id = "txtInvAdd2", @class = "form-control", @type = "text", @rows = "3" })
+                                            </div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.GstNo)
+                                                @Html.TextBoxFor(model => model.GstNo, htmlAttributes: new { @class = "form-control", @id = "txtInvGstNo" })
+                                            </div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.MobileNo)
+                                                @Html.TextBoxFor(model => model.MobileNo, htmlAttributes: new { @class = "form-control", @id = "txtInvMobileNo", onkeypress = "return IsNumeric(event)" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="col-md-12"><h5>DELIVERY SITE ADDRESS</h5></div>
+                                            <div class="col-md-12" style="margin-top:-25px !important"><hr /></div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.SiteAddress1)
+                                                @Html.TextAreaFor(model => model.SiteAddress1, new { @id = "txtSiteAddress1", @class = "form-control", @type = "text", @rows = "3" })
+                                            </div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.SiteAddress2)
+                                                @Html.TextAreaFor(model => model.SiteAddress2, new { @id = "txtSiteAddress2", @class = "form-control", @type = "text", @rows = "3" })
+                                            </div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.Contact)
+                                                @Html.TextBoxFor(model => model.Contact, htmlAttributes: new { @class = "form-control", @id = "txtSiteContact" })
+                                            </div>
+                                            <div class="col-md-12">
+                                                @Html.LabelFor(model => model.SiteMobileNo)
+                                                @Html.TextBoxFor(model => model.SiteMobileNo, htmlAttributes: new { @class = "form-control", @id = "txtSiteMobileNo", onkeypress = "return IsNumeric(event)" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="margin-top:20px">
+                                        <div class="text-right">
+                                            <input type="submit" class="btn btn1 btn-success" id="btnSubmitSuplierPO" onclick="SubmitSupplierPOData()" value="Submit" />
+                                            <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetSupplierPO()" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <div id="divSppPoInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input id="txtPOType" type="hidden"/>
+<div id="ModalNewIndentconfirm" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title"></h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do You Really Want to Raise PO Against This New Indent No:-</p><label id="lblNewIndentNo"></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-danger" onclick="ShowNewPOGrid()" id="btnRemaindMe">Remaind Me Later</button>
+                    <button type="button" class="btn btn-info" onclick="ShowPartIndent()" id="btnGoforPartIndent">Yes</button>
+                    <button type="button" class="btn btn-info" onclick="ShowCompleteNewIndentPO()" id="btnFirsttTimePO">Yes</button>
+                    <button type="button" class="btn btn-info" onclick="CancelNewIndent()" id="btnCancelorResetPO">No</button>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ModalPartIndentconfirm" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title"></h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do You Really Want to Raise PO Against Part Indent No:-</p><label id="lblNewIndentNo"></label>
+                    @*<p>Do You Really Want to Raise PO Against This Part Indent No:-</p><label id="lblNewIndentNo"></label>*@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-danger" onclick="ShowPartIndentGrid()" id="btnEnablePartindent">Yes</button>
+                    <button type="button" class="btn btn-info" onclick="ShowIndentCancelPopup()" id="btnShowIndentCancel">No</button>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalCancelIndent" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title"></h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do You Really Want to Raise PO Against This Part Indent No:-</p><label id="lblNewIndentNo"></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-info" onclick="CloseIndent()" id="btnCloseIndent">Yes</button>
+                    <button type="button" class="btn btn-info" onclick="CancelCloseIndent()" id="btnCancelCloseIndent">No</button>
+                </div>
+                <div class="col-md-12 text-center">
+                    <div id="divSppCancelPoInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+       // $("#ddlPartIndentNo").prop("disabled", true);
+        $("#divPO").addClass("hidden");
+        $("#txtPODate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtPOExpireDate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtPOExpireDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+        }).datepicker("setDate", new Date());
+        $("#txtRefDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+        }).datepicker("setDate", new Date());
+
+        $("table.order-list.sptactable").on("click", ".ibtsupplierpoTACDel", function (event) {
+            var tablerowcount = $("#POTACTable tbody tr").length;
+
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNosuplierPOTAC();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    BindEmptyRowSuplierpoTACGrid();
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNosuplierPOTAC();
+                }
+            }
+        });
+
+        $("#ModalCancelIndent").on("hidden.bs.modal", function () {
+            location.reload();
+        });
+    });
+    function MRRTypeValidation(checkbox) {
+        var selectedIds = [];
+        var checkboxes = document.getElementsByName('MRRType');
+        for (var i in checkboxes)
+            checkboxes[i].checked = checkbox.checked;
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+    }
+</script>
+
+@*<div class="modal fade" id="ModalPOGrid" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+
+            <div class="modal-content">
+                <div class="modal-header" style="height:50px">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+                    <div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+

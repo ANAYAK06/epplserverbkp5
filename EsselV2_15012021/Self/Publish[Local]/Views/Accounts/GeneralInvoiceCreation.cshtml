@@ -1,0 +1,140 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralInvoiceCreation
+@{
+    ViewBag.Title = "GeneralInvoiceCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+<div class="container col-lg-12" style="align-content:center;">
+    <div class="row">
+        <div class="form-horizontal col-lg-12">
+            <div class="row text-center" style="background-color:lightgray;">
+                <h5 style="font-weight:bold">Self Invoice For General Payment</h5>
+            </div>
+            <form class="form-horizontal" onsubmit="return false">
+                <div class="row form-group" style="margin-top:10px">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.CostCentertype)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.DropDownListFor(model => model.CostCentertype, new SelectList(Model.CCtypelist, "CCTypeId", "CCTypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlcctype" })
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.CostCentersubtype)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.DropDownListFor(model => model.CostCentersubtype, new SelectList(Model.CCSubtypeList, "SubtypeID", "SubtypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlccsubtype" })
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.Invoicedate)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.TextBoxFor(model => model.Invoicedate, "{0:dd-MMM-yyyy}", new { @id = "txtinvoicedate", @class = "form-control   date-picker", @readonly = "true" })
+
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.CostCenter)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_CodeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlcostcenter" })
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.DCACode)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.DCAList, "DCA_Code", "DCA_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddldcacode"})
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.SUBDCACode)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.DropDownListFor(model => model.SUBDCACode, new SelectList(Model.SUBDCAList, "SubDCA_Code", "SubDca_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlsubdcacode" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" id="divlbltaxno">
+                        @Html.LabelFor(model => model.Taxno)
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" id="divtxttaxno">
+                        @Html.DropDownListFor(model => model.Taxno, new SelectList(Model.TaxNoList, "Tax_Id", "TaxNO"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltaxnos" })
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.Modeofpay)
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        @Html.DropDownListFor(model => model.Modeofpay, new SelectList(Model.PayModeList, "Payment_Id", "Payment_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlmodeofpay" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.Partyname)
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
+                        @Html.TextBoxFor(model => model.Partyname, htmlAttributes: new { @class = "form-control", @id = "txtpartyname" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.Remarks)
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtremarks" })
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.LabelFor(model => model.Invoiceamount)
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                        @Html.TextBoxFor(model => model.Invoiceamount, htmlAttributes: new { @class = "form-control", @id = "txtinvoiceamt", onkeypress = "return ValidateAmount(this,event)" })
+                    </div>
+                </div>
+                <div class="row form-group text-center">
+                    <input type="submit" value="Submit" class="btn btn-default firmbtns-hover" onclick="btnSubmitGeneralInvoiceCreation()" />
+                    
+                </div>
+            </form>
+            <div class="row col-md-12 text-center">
+                <div id="divGeneralInvoiceCreationInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#txtinvoicedate").datepicker({
+        dateFormat: 'dd-M-yy',
+        changeMonth: true,
+        changeYear: true,
+        showOn: "button",
+        minDate: 'dateToday',
+        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        onClose: function (selectedDate) {
+        }
+    }).datepicker("setDate", new Date());
+
+    $(document).ready(function () {
+        $("#divlbltaxno").hide();
+        $("#divtxttaxno").hide(); 
+        $("#ddldcacode").change(function () {            
+            var selectedText = $(this).find("option:selected").text();
+            var selectedValue = $(this).val(); 
+            if (selectedValue == "DCA-Excise") {
+                $("#divlbltaxno").show();
+                $("#divtxttaxno").show();
+            }
+            else {
+                $("#divlbltaxno").hide();
+                $("#divtxttaxno").hide();
+            }
+
+        });
+    });
+    
+
+   
+
+</script>

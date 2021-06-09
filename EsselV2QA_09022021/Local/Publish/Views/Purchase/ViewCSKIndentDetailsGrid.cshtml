@@ -1,0 +1,195 @@
+﻿@model EsselTestLocalApplication.Models.IndentData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGrid">
+    <div class="form-group" >
+        <label style="color:green">NOTE:- If you want to Transfer/Issue Stock from other Cost Centers. Please choose the cost center from the below dropdown.</label>
+    </div>
+    <div class="form-group" id="TransferCodes">
+        @Html.LabelFor(model => model.CCCode)
+        @Html.ListBoxFor(model => model.CCCode, new SelectList(Model.lstIndentCostCenter, "CC_Code", "CC_Name"), new { @class = "listbox form-control", @id = "ddlMultiIndentCCCode", onchange = "SelectedCC()" })
+    </div>
+    <div class="form-group" id="AlertText">
+        <label style="color:red">Please Create WorkFlow Level For Items Issue From Other Stores</label>
+    </div>
+    <div class="strike">
+        <span>Indent Items</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemIndentDetailsCSKDataTable" class="table order-list itemIndentDetaillist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Raised Qty</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Issued Qty</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Stock</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">New Stock</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                    <tr>
+                        <td style="text-align:center;width:10px!important;">
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                        <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.Specification</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Quantity)</td> @*Raised Qty*@
+                        <td style="font-weight:normal; white-space: normal; width:50px"><input type="text" class="form-control countcheck" onkeypress="return IsNumericdecimal(this)" readonly /></td> @*onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()"*@
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Stock)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.NewStock)</td>
+                        <td class="hidden"> @Html.DisplayFor(modelItem => item.IndentListId)</td>
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @foreach (var item in Model.Total)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center" colspan="3"><label style="color:green">SubTotal: @item.TotalAmount</label></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>
+                }
+            </tfoot>
+
+        </table>
+        <table id="ItemIndentDetailsRemDataTable" class="table order-list itemIndentDetailRemlist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remarks</label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Remarks)
+                {
+                    <tr>
+                        <td style="font-weight:normal; white-space: normal;font-size:smaller"> @Html.DisplayFor(modelItem => item.Remarks)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="GridCCItemsData">
+        </div>
+
+    </div>
+</div>
+@foreach (var item in Model.Data)
+{
+    <input type="text" style="display:none" id="txtindentno" value="@item.Indentno" />
+    break;
+}
+<script>
+    function SelectedCC() {
+        var Indentno = $("#txtindentno").val();
+        var options = $('#ddlMultiIndentCCCode > option:selected');
+        if (options.text != "Select") {
+            $("#ItemIndentDetailsCSKDataTable tbody tr").each(function () {
+                var currentRow1 = $(this);
+                currentRow1.find("td").eq(9).find("input[type='text']").val("");
+            });
+            var SelectedCC = $('#ddlMultiIndentCCCode option:selected').toArray().map(item => item.value).join() + ',';
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/ViewIndentCCGridView',
+                data: { SelectedCC: SelectedCC, Indentno: Indentno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridCCItemsData").html(data);
+                    }
+                },
+            });
+        }
+    }
+    $(document).ready(function () {
+        debugger;
+        $("#TransferCodes").addClass("hidden");
+        $("#AlertText").addClass("hidden");
+        $('.listbox').multiselect();
+        var Indentno = $("#txtindentno").val();
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/GETIndentCCCodes",
+            data: '{Indentno:"' + Indentno + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var AppUserCCList = response;
+                $("#ddlMultiIndentCCCode").multiselect();
+                var AppUserCCCount = AppUserCCList.length;
+                $.each(response, function () {
+                    $('#ddlMultiIndentCCCode').append('<option value="' + this['CC_Code'] + '">' + this['CC_Name'] + '</option>').multiselect('rebuild');
+                });
+                CheckWorkFlow(Indentno);
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });       
+      
+       
+    });
+    function CheckWorkFlow(Indentno){
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/CheckTransferWorkflow",
+            data: '{Indentno:"' + Indentno + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {               
+                if (data.flowExist == "Exists") {
+                    $("#TransferCodes").removeClass("hidden");
+                }
+                else { $("#AlertText").removeClass("hidden"); }
+            },
+        });
+    }
+   
+
+</script>
+

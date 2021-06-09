@@ -1,0 +1,160 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.BankTransfer
+<<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        @*<div class="col-md-12">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Name)
+                        @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtBanktranferName" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>*@
+        <div class="col-md-12">
+            <hr style="margin-top:0px;margin-bottom:2px" />
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.From)
+                    @*@Html.DropDownListFor(model => model.From, new SelectList(Model.TranBankFromList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TranFrom", onchange = "DepositPayModeChange()" })*@
+                    @Html.TextBoxFor(model => Model.From, new { @id = "txtFrbank", @class = "form-control", @readOnly = "true" })
+                    <input type="text" class="form-control" value="@Model.FromId" id="txtFrombank" style="display:none" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Mode_of_Pay)
+                    @*@Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.TranPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TansferPayMode", onchange = "DepositPayModeChange()" })*@
+                    @Html.TextBoxFor(model => Model.Mode_of_Pay, new { @id = "txtmode", @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.No)
+                    @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtTansferNo", @readOnly = "true" })
+                    @*@Html.DropDownListFor(model => model.Chequeid, new SelectList(Model.WdChequesList, "Cheque_Id", "Cheque_No"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Transferchequenos" })*@
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.To)
+                    @Html.DropDownListFor(model => model.To, new SelectList(Model.TranBankToList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TranTo" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date)
+                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtTransferDate1", @class = "form-control", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txttransferRemarks", @class = "form-control", @rows = "3" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Amount)
+                    @Html.TextBoxFor(model => model.Amount, new { @id = "txtTransferAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-right">
+                <button class="btn btn1 btn-success" id="btnTransferupdateSubmit" onclick="btnReturnBankTransferData('@Model.Refno')">Submit</button>  @*btnSubmitBankTransferData*@
+
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <div id="divBankTransferupdateInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+          var Date = '@Model.Date';
+        $("#txtTransferDate1").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtTransferDate1").val(selectedDate);
+            }
+        });
+        if (@Model.Refno != null || @Model.Refno != '') {
+            debugger;
+            var FromBank = '@Model.From';
+            var ToBank = '@Model.ToId';
+            var Mode = '@Model.Mode_of_Pay';
+            var FrombankName = '@Model.From';
+            var no = '@Model.No';
+            $("#txtTansferNo").val(no);            
+            $("#txtFrbank").val(FromBank);
+            $("#ddl_TranTo").val(ToBank);
+            $("#txtmode").val(Mode);
+            //if (Mode == 'Cheque') {                
+            //    $("#ddl_Transferchequenos").removeClass('hidden');
+            //    $("#txtTansferNo").addClass("hidden");
+            //    $.ajax({
+            //        type: "POST",
+            //        url: "/Accounts/BindWdCheques",
+            //        data: '{BankName:"' + FrombankName + '"}',
+            //        contentType: "application/json; charset=utf-8",
+            //        dataType: "json",
+            //        beforeSend: function () {
+            //            $('#ajax-container').html('');
+            //            addSpinner($('#ajax-container'));
+            //        },
+            //        success: function (response) {
+            //            var count = Object.keys(response).length;
+            //            var rowcount = 0;
+            //            if (count > 0) {
+            //                var ddlRetPayNo = $("#ddl_Transferchequenos");
+            //                ddlRetPayNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            //                $.each(response, function () {
+            //                    ddlRetPayNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+            //                });
+            //                ddlRetPayNo.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+            //            }
+
+            //            removeSpinner($('#ajax-container'), function () {
+            //                $('#ajax-container').html('');
+            //            })
+            //        },
+            //        failure: function (response) {
+
+            //            removeSpinner($('#ajax-container'), function () {
+            //                $('#ajax-container').html('');
+            //            })
+            //            alert(response.responseText);
+            //        },
+            //        error: function (response) {
+
+            //            removeSpinner($('#ajax-container'), function () {
+            //                $('#ajax-container').html('');
+            //            })
+            //            alert(response.responseText);
+            //        }
+            //    });
+            //}
+            //else {
+            //    $("#ddl_Transferchequenos").addClass("hidden");
+            //    $("#txtTansferNo").removeClass('hidden');
+            //}
+        }
+
+    });
+
+</script>

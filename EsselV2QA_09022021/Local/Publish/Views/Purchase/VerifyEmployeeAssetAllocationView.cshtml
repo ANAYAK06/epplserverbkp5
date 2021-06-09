@@ -1,0 +1,193 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.EmployeeAssetAllocation
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div id="GridAssetAllData">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprassetallstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprAssetAllNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveAssetAllDetails('@Model.AllocationRefno')">Submit</button>
+                    <input type="text" value="@Model.Employeeid" id="txtempid" style="display:none" />
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprAssetAllInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        var AllRefno = '@Model.AllocationRefno';
+        var AllEmpid = $("#txtempid").val();
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#Apprassetallstatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        if (this['Type'] == 'Return') {
+                        }
+                        else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                    });
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+          $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                 url: '/Purchase/ViewemployeeAssetitemsDetailsverify',
+                 data: { AllocationRefno: AllRefno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridAssetAllData").html(data);
+                    }
+                },
+            });
+
+    });
+    function ApproveAssetAllDetails(Rowid) {
+        var Roleid = '@Session["Roleid"]';
+        var AllRefno = '@Model.AllocationRefno';
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprasstCreatedby").val(Sessioncreated);
+        appstatusid = "Apprassetallstatus-" + Rowid;
+        var appstatus = $("#Apprassetallstatus").val();
+        var ReturnText = $("#ApprAssetAllNotes").val();
+        var retnoteid = "ApprAssetAllNotes-" + Rowid;
+        retnote = $("#" + retnoteid + "").val();
+        msg = $("#divApprAssetAllInfoMsg");
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (ReturnText == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divApprAssetAllInfoMsg").text("");
+            $("#divApprAssetAllInfoMsg").addClass("hidden");
+            var chkcount = 0; currentrowcount = 0;
+            var currentrowcount = $("#ItemEmpAssetDataTableVerify tbody tr").length;
+            $("#ItemEmpAssetDataTableVerify tbody tr").each(function () {
+                var currentRow = $(this);
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                if (check == false) { chkcount = chkcount + 1; }
+            });
+            if (chkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Issued Items</p > ";
+                isValid = false;
+            }
+            if (currentrowcount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Invalid No Data to submit</p > ";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divApprAssetAllInfoMsg").text("");
+                $("#divApprAssetAllInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divApprAssetAllInfoMsg").addClass("alert-danger");
+                $("#divApprAssetAllInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var AllRefno = '@Model.AllocationRefno';
+                var AllEmpid = $("#txtempid").val();
+                $("#divApprAssetAllInfoMsg").text("");
+                $("#divApprAssetAllInfoMsg").addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                //else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/ApproveAssetAllocation",
+                    data: '{AllocationRefno:"' + AllRefno + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprasstCreatedby").val() + '",Remarks:"' + $("#ApprAssetAllNotes").val() + '",Empid:"' + $("#txtempid").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var msg = response.saveStatus;
+                        if (response.saveStatus == "Submitted") {
+                            var msg = '';
+                            $('#ApproveasstMsgModal').modal('show');
+                            msg = "<div>Employee Id  " + AllEmpid + finalmsg + "  </div>";
+                            $("#ApproveasstMsgModal").on("hide.bs.modal", function () {
+                                $("#divApprasstGrid").load('/Purchase/VerifyEmployeeAssetAllocationGrid');
+                            });
+                            $("#ApprasstMsg").html(msg);
+                        }
+                        else {
+                            msg = "<div>" + response.saveStatus + "</div>";
+                            $("#ApprasstMsg").html(msg);
+                            $('#ApproveasstMsgModal').modal('show');
+                        }
+                    },
+                    failure: function (response) {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprasstMsg").html(msg);
+                        $('#ApproveasstMsgModal').modal('show');
+                    },
+                    error: function (response) {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprasstMsg").html(msg);
+                        $('#ApproveasstMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+    }
+</script>

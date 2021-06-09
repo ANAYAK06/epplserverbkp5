@@ -1,0 +1,110 @@
+﻿@model List<EsselTestLocalApplication.Models.Users>
+<div class="table-responsive">
+    <table id="tblUserGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="hidden">Id</th>
+                <th>User Name</th>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+                <th>Status</th>
+                <th>Role</th>
+                <th>Actions</th>
+                <th class="hidden">RoleID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Userid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Firstname)</td>
+                <td>@Html.DisplayFor(modelItem => item.Middlename)</td>
+                <td>@Html.DisplayFor(modelItem => item.Lastname)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserRole)
+                    <ol>
+                        @foreach (var list in item.UserCCList)
+                        {
+
+                            <li>@Html.DisplayFor(listItem => list.CC_Code)</li>
+                        }
+                    </ol>
+                </td>
+                <td>
+                    @if (item.VerificationPendingExist == false && item.isSuperAdmin == false && item.islowestlevel==true)
+                    {
+                        <select class="form-control dropdown-toggle" id="ddlLedgerGridActions" onchange="UserActionschange('@item.Username','@item.Status',this)">
+                            <option selected="selected" value="-Select-">-Select-</option>
+                            <option value="Edit">Edit</option>
+                             @if (item.Status != "Left")
+                            {
+                            <option value="RoleAssign">RoleAssign</option>
+
+                                <option value="LeftEmployee">Left Employee</option>}
+
+                        </select>
+                    }
+                </td>
+                <td class="hidden">@Html.DisplayFor(modelItem => item.RoleID)</td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<div class="modal fade" id="EditUserModal" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="LeftEmployeeModal" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="EmployeeRoleAssignModal" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="UpEmployeeRoleAssignModal" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+
+<script>
+    $(document).ready(function () {
+        var UserGrid = null;
+        InitializeUserGrid();
+        $("#EditUserModal").on("hidden.bs.modal", function () {
+            $("#divUserDetailsGrid").load('/Home/ViewUsersGrid');
+        });
+        $("#LeftEmployeeModal").on("hidden.bs.modal", function () {
+            $("#divUserDetailsGrid").load('/Home/ViewUsersGrid');
+        });
+        $("#EmployeeRoleAssignModal").on("hidden.bs.modal", function () {
+            $("#divUserDetailsGrid").load('/Home/ViewUsersGrid');
+        });
+        $("#UpEmployeeRoleAssignModal").on("hidden.bs.modal", function () {
+            $("#divUserDetailsGrid").load('/Home/ViewUsersGrid');
+        });
+    });
+    function InitializeUserGrid() {
+        UserGrid = $('#tblUserGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Users Found"
+            },
+            "createdRow": function (row, data, index) { },
+            pageLength: 10
+        });
+
+    }
+</script>

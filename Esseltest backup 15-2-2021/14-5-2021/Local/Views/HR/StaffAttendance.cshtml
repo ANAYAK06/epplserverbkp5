@@ -1,0 +1,307 @@
+﻿@model EsselTestLocalApplication.Models.HR.Attendance
+@{
+    ViewBag.Title = "EmployeeAttendance";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <h4 style="text-align:left;font-weight:bold">Employee Attendance</h4>
+                        </div>
+                        <div class="col-md-6" style="text-align:right">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlEmpCC", onchange = "EmpAttendanceCCChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divDate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.AttendanceDate)
+                                            @Html.TextBoxFor(model => model.AttendanceDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtAttendanceDate", @readOnly = "true" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <br />
+                                            <button class="btn btn1 btn-success" id="btnViewAttendance" onclick="GetEmpAttendanceData()">View</button>
+                                            <button class="btn btn1 btn-success" id="btnSResetAttendance" onclick="ResetAttendance()">Reset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divgrid">
+                                    <div class="row" id="divAttendanceGrid">
+
+                                    </div>
+                                    <div class="row text-center">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnAttendanceSubmit" onclick="SubmitAttendanceData()">Submit</button>
+                                    </div>
+                                </div>
+                                    <div class="col-md-12">
+                                        <br />
+                                        <div class="text-center">
+                                            <div id="divAttendanceInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var holidays = [
+        //'1.1.2021',
+        //'15.1.2021',  
+        //'16.1.2021',
+        //'26.1.2021'
+    ];
+    $(document).ready(function () {
+      
+        var today = new Date();
+       // var array = ["2021-01-31", "2021-01-11", "2021-01-19"]
+        $("#divAttendanceGrid").addClass("hidden");    
+        $("#divDate").addClass("hidden");    
+        $("#divgrid").addClass("hidden");    
+        $("#btnViewAttendance").addClass("hidden");    
+        //$("#txtAttendanceDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",            
+        //    yearRange: "-100:+0",
+        //    beforeShowDay: noSundaysOrHolidays,
+        //    minDate: 0,
+        //    onClose: function (selectedDate) {             
+        //    }
+        //});
+    });    
+    function noSundaysOrHolidays(date) {//including sundays
+        var day = date.getDay();
+        if (day != 0) {
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+            for (i = 0; i < holidays.length; i++) {
+                if ($.inArray((d) + '.' + (m + 1) + '.' + y, holidays) != -1) {
+                    return [false];
+                }
+            }
+            return [true];
+        }
+        else {
+            return [day != 0, ''];
+        }
+    }
+    function disableAllTheseDays(date) {//without sundays only holidays from db
+        var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
+        if ($.inArray((d) + '.' + (m + 1) + '.' + y, holidays) != -1) return [false];
+        return [true];
+    }
+    function EmpAttendanceCCChange() {
+        let ccindex = $("#ddlEmpCC select:option").index();
+        let cccode = $("#ddlEmpCC option:selected").val();
+        if (ccindex === 0) {
+            $("#divAttendanceGrid").addClass("hidden");
+            $("#divDate").addClass("hidden");
+            return false;
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetCCHolidays",
+                data: '{ CCCode:"' + cccode + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response.AllHolidays).length;
+                    if (response.RuleStatus === "Exist") {
+                        console.log(response);
+                        console.log(response.AllHolidays);
+                        var Allholidays = [];
+                        $.each(response.AllHolidays, function () {
+                            holidays.push(this['holiday'])
+                        });
+                        $("#txtAttendanceDate").datepicker({
+                            dateFormat: 'dd-M-yy',
+                            changeMonth: true,
+                            changeYear: true,
+                            showOn: "button",
+                            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",                           
+                            beforeShowDay: disableAllTheseDays,   
+                            maxDate:0,
+                            onClose: function (selectedDate) {
+                            }
+                        });
+                        $("#divDate").removeClass("hidden");
+                        $("#btnViewAttendance").removeClass("hidden");   
+                        console.log(holidays);
+                    }
+                    else if (response.RuleStatus === "NotExist"){
+                        $("#divAttendanceInfoMsg").text("");
+                        $("#divAttendanceInfoMsg").append("<div>Holidays For this Cost Center State Does Not Exist</div>");
+                        $("#divAttendanceInfoMsg").addClass("alert-danger");
+                        $("#divAttendanceInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+    }
+    function ResetAttendance() { location.reload(); }
+    function GetEmpAttendanceData() {
+        let ccindex = $("#ddlEmpCC select:option").index();
+        let cccode = $("#ddlEmpCC option:selected").val();
+        let date = $("#txtAttendanceDate").val();
+        if (ccindex === 0) {
+            $("#divAttendanceInfoMsg").text("");
+            $("#divAttendanceInfoMsg").append("<div>Select Cost Center</div>");
+            $("#divAttendanceInfoMsg").addClass("alert-danger");
+            $("#divAttendanceInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else if (date === "") {
+            $("#divAttendanceInfoMsg").text("");
+            $("#divAttendanceInfoMsg").append("<div>Select Date</div>");
+            $("#divAttendanceInfoMsg").addClass("alert-danger");
+            $("#divAttendanceInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#btnViewAttendance").prop('disabled', false);
+            $.ajax({
+                type: "POST",
+                url: "/HR/StaffAttendanceGrid",
+                data: '{ CCCode:"' + cccode + '",Date:"' + date + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#divAttendanceGrid').html(data);
+                    $("#divAttendanceGrid").removeClass("hidden");
+                    $("#divgrid").removeClass("hidden");   
+                    
+                }
+            });
+
+        }
+    }
+    function SubmitAttendanceData() {
+        var isValid = true;
+        var errorMsg = "";       
+        let ccindex = $("#ddlEmpCC select:option").index();
+        let cccode = $("#ddlEmpCC option:selected").val();
+        let date = $("#txtAttendanceDate").val();
+        if (ccindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        let employeeidscount = "";
+        $("#tblAttendanceGrid tbody tr").each(function () {
+            var currentRow = $(this);         
+            var typeindex = currentRow.find("td").eq(3).find("select option:selected").index();
+            if (typeindex ===0) {
+                employeeidscount++;
+            }
+        });
+        if (employeeidscount>0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Attendance Type</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAttendanceInfoMsg").text("");
+            $("#divAttendanceInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAttendanceInfoMsg").addClass("alert-danger");
+            $("#divAttendanceInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAttendanceInfoMsg").text("");
+            $("#divAttendanceInfoMsg").addClass("hidden");
+            let employeeids = "", attendancetype = "";
+            $("#tblAttendanceGrid tbody tr").each(function () {
+                var currentRow = $(this);
+
+                var empId = $.trim(currentRow.find("td").eq(1).html());
+                var type = currentRow.find("td").eq(3).find("select option:selected").val();
+                employeeids += empId + ",";
+                if (type === "P") {
+                    attendancetype += type + ",";
+                }
+                else if (type==="A"){
+                    attendancetype += type + ",";
+                }
+                else if (type === "PL") {
+                    attendancetype += type + ",";
+                }
+            });
+            let saveData = {
+                CostCenter: cccode,
+                AttendanceDate: date,
+                EmployeeIds: employeeids,
+                Attendancetypes: attendancetype               
+            };
+            //debugger;
+            addFailMsg = "Error Occurred While Adding.";
+            addSuccessMsg = "Staff Added Details Successfully.";
+            //alert('submit');
+            $("#btnAttendanceSubmit").prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveStaffAttendance',
+                data: { attendance: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == 'Submited') {
+                     
+                        $("#divAttendanceInfoMsg").text(addSuccessMsg);
+                        $("#divAttendanceInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAttendanceInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnAttendanceSubmit").prop('disabled', false);
+                        $("#divAttendanceInfoMsg").text(Data.saveStatus);
+                        $("#divAttendanceInfoMsg").addClass("alert-danger");
+                        $("#divAttendanceInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnAttendanceSubmit").prop('disabled', false);
+                    $("#divAttendanceInfoMsg").text(addFailMsg);
+                    $("#divAttendanceInfoMsg").addClass("alert-danger");
+                    $("#divAttendanceInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,106 @@
+﻿@model List<EsselTestLocalApplication.Models.AddClient>
+@{
+    ViewBag.Title = "VerifyCloseClient";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table id="tblclientcloseGrid" style="width:100%" class="hover stripe nowrap example">
+                        <thead>
+                            <tr>
+                                <th class="hidden">ID</th>
+                                <th>Client Code</th>
+                                <th>Client Name</th>
+                                <th>Nature Of Group</th>
+                                <th>Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+
+                                <td class="hidden">
+                                    @Html.DisplayFor(modelItem => item.Client_ID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Client_Code)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Client_Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NatureGroupName)
+                                </td>
+                                <td>
+                                    <button onClick="ViewClientCloseDetail('@item.Client_Code','@item.Client_Name')">View</button>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal fade" id="closeclientConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<div class="modal fade" id="closeclientConfirmationVerification" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<script src="~/Scripts/moment.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var ClientGrid = null;
+        InitializeClientGrid();
+
+    });
+    function InitializeClientGrid() {
+        ClientGrid = $('#tblclientcloseGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Clients Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+
+    }
+    function ViewClientCloseDetail(clientid, clientname) {
+        debugger
+        $.ajax({
+            type: "POST",
+            url: "/Home/ViewCloseClient",
+            data: '{ClientCode:"' + clientid + '",ClientName:"' + clientname + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#closeclientConfirmationVerification').html(data);
+                $('#closeclientConfirmationVerification').modal();
+                $("#divClsoeClientInfoMsg").text("");
+                $("#divClsoeClientInfoMsg").addClass("hidden");
+            }
+        });
+    } 
+</script>

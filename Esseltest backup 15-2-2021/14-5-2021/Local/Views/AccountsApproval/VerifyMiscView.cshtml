@@ -1,0 +1,211 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.MiscDetails>
+<div class="col-md-12 verifydiv">
+    @foreach (var item in Model)
+    {
+    <form onsubmit="return false">
+        <br />
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="text" class="form-control" value="@item.InvoiceDate" readOnly="readOnly" id="ApprMiscname-@item.Refno" />
+                </div>
+            </div>
+            @if (item.clientid != "")
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Intrest Type:</label>
+                        <input type="text" class="form-control" value="Intrest From Client" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client:</label>
+                        <input type="text" class="form-control" value="@item.clientid" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sub-client:</label>
+                        <input type="text" class="form-control" value="@item.Subclient" readOnly="readOnly" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <label>Intrest Type:</label>
+                        <input type="text" class="form-control" value="Intrest From Others" readOnly="readOnly" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Interest CostCenter:</label>
+                    <input type="text" class="form-control" value="@item.MiscIntCCCode" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Interest AccountHead:</label>
+                    <input type="text" class="form-control" value="@item.MiscIntDCACode" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Interest SubAccountHead:</label>
+                    <input type="text" class="form-control" value="@item.MiscIntSubDCACode" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Interest Amount:</label>
+                    <input type="text" class="form-control" value="@item.MiscIntAmount" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        @if (item.MiscDedCCCode != "")
+        {
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Deduction CostCenter:</label>
+                        <input type="text" class="form-control" value="@item.MiscDedCCCode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Deduction AccountHead:</label>
+                        <input type="text" class="form-control" value="@item.MiscDedDCACode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Deduction SubAccountHead:</label>
+                        <input type="text" class="form-control" value="@item.MiscDedSubDCACode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Deduction Amount:</label>
+                        <input type="text" class="form-control" value="@item.MiscDedAmount" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" class="form-control" value="@item.Name" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>BankName:</label>
+                    <input type="text" class="form-control" value="@item.Bank" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>ModeofPay:</label>
+                    <input type="text" class="form-control" value="@item.ModeofPay" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>No:</label>
+                    <input type="text" class="form-control" value="@item.No" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Remarks:</label>
+                    <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="text" class="form-control" value="@item.PaymentDate" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Amount:</label>
+                    <input type="text" class="form-control" value="@item.Amount" readOnly="readOnly" />
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprMiscstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprMiscNote-@item.Refno"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveMisc('@item.Refno')">Submit</button> @**@
+                </div>
+            </div>
+            <div class="col-md-2">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprMiscInfoMsg-@item.Refno" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+
+    }
+</div>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprMiscstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+               
+                },
+                failure: function (response) {
+                 
+                },
+                error: function (response) {
+             
+                }
+            });
+    });
+    </script>

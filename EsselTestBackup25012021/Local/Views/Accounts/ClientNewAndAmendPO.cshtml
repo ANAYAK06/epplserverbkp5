@@ -1,0 +1,137 @@
+﻿@model List<EsselTestLocalApplication.Models.MasterWorkFlowStatus>
+@{
+    ViewBag.Title = "ClientNewAndAmendPO";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Accounts")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Client New And Amend PO</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <input type="text" value="0" id="txtPOCreatedby" style="display:none" />
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            @foreach (var item in Model)
+                                            {
+                                                if (item.MID == 122 && item.WorkflowExist == true)
+                                                {
+                                                    <li role="presentation"><a data-toggle="tab" href="#New_PO">New PO</a></li>
+                                                }
+                                                if (item.MID == 124 && item.WorkflowExist == true)
+                                                {
+                                                    <li role="presentation"><a data-toggle="tab" href="#Amend_PO">Amend PO</a></li>
+                                                }
+                                            }
+
+                                        </ul>
+                                        <div class="tab-content">
+                                            @foreach (var item in Model)
+                                            {
+                                                if (item.MID == 122 && item.WorkflowExist == true)
+                                                {
+                                                    <div role="tabpanel" id="New_PO" class="tab-pane fade">
+                                                        @Html.Action("AddNewClientPO", "Accounts")
+
+                                                    </div>
+                                                }
+                                                if (item.MID == 124 && item.WorkflowExist == true)
+                                                {
+                                                    <div role="tabpanel" id="Amend_PO" class="tab-pane fade">
+                                                        @Html.Action("AddNewClientPOAmend", "Accounts")
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.css" rel="stylesheet">
+
+<script>
+    $(document).ready(function () {
+        $('.nav-tabs li:eq(0) a').tab('show');
+            var Sessioncreated = '@Session["Createdby"]';
+        $("#txtPOCreatedby").val(Sessioncreated);
+        $('#txtpostartdate').css('background-color', 'transparent');
+        $('#txtpocompletiondate').css('background-color', 'transparent');
+        $("#txtpostartdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            minDate:'-3M',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtpocompletiondate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtpocompletiondate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: 'dateToday',
+            maxDate: "+3y",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtamendpocompletiondate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        }).datepicker("setDate", new Date());
+    });
+    function btnResetNewPOData() {
+        $("#CostCenterddl").prop('selectedIndex', 0);
+        $("#ddlclient").prop('selectedIndex', 0);
+        $("#ddlsubclient").prop('selectedIndex', 0);
+        $("#txtpono").val("");
+        $("#txtpostartdate").datepicker({}).datepicker("setDate", new Date());
+        $("#txtpocompletiondate").datepicker({}).datepicker("setDate", new Date());
+
+        $("#txtpovalue").val("");
+        $("#txtgst").val("");
+        $("#txttotal").val("");
+        $("#ddlmobadv").prop('selectedIndex', 0);
+        $("#txtrabill").val("");
+        $("#txtrabilldues").val("");
+        $("#txtadvsettelment").val("");
+        $("#divpoInfoMsg").text("");
+        $("#divpoInfoMsg").addClass("hidden");
+        $("#btnClientPOSubmit").prop("disabled", false);
+    }
+</script>
+

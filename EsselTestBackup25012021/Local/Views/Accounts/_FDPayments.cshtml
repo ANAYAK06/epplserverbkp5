@@ -1,0 +1,154 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.FDPayments
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Fixed Deposit</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row" id="divtranstype" style="margin-bottom:5px;">
+                                        <div class="col-md-12">
+                                            <div class="col-md-4">
+                                                @Html.LabelFor(model => model.TransactionType)
+                                                @Html.DropDownListFor(model => model.TransactionType, new SelectList(Model.FDTransactionType, "FDTran_id", "FDTran_name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_FDTransactiontype", onchange = "FDTransactiontypechange()" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="divOpenFD">
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+                                                <div class="col-md-4" id="divfdrno">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.FDRNo)
+                                                        @Html.TextBoxFor(model => model.FDRNo, htmlAttributes: new { @class = "form-control", @id = "txtfdrnos" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divfdrtodate">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.FDRFromDate)
+                                                        @Html.TextBoxFor(model => model.FDRFromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfdfromdate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divfdrfromdate">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.FDRToDate)
+                                                        @Html.TextBoxFor(model => model.FDRToDate, "{0:dd-MMM-yyyy}", new { @id = "txtfdtodate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.FDRROI)
+                                                        @Html.TextBoxFor(model => model.FDRROI, new { @id = "txtfdrroi", @class = "form-control", onkeypress = "return ValidateAmount(this,event);" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.FDRAmount)
+                                                        @Html.TextBoxFor(model => model.FDRAmount, new { @id = "txtfdramount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountOpenFdTotal()" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PaymentBankName)
+                                                        @Html.DropDownListFor(model => model.PaymentBankName, new SelectList(Model.PaymentBankList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_fdrpaymentbank" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PaymentModeofPay)
+                                                        @Html.DropDownListFor(model => model.PaymentModeofPay, new SelectList(Model.FDPaymentmodeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_FDPaymentMode", onchange = "FDRPayModeChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PaymentNo, htmlAttributes: new { @id = "lblfdchqNo" })
+                                                        @Html.TextBoxFor(model => model.PaymentNo, htmlAttributes: new { @class = "form-control", @id = "txtfdchqNo" })
+                                                        @*@Html.DropDownListFor(model => model.Chequeid, new SelectList(Model.FDChequesList, "Cheque_Id", "Cheque_No"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_FDRchequenos" })*@
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.FDRPaymentDate)
+                                                        @Html.TextBoxFor(model => model.FDRPaymentDate, "{0:dd-MMM-yyyy}", new { @id = "txtFDRPaymentDate", @class = "form-control  date-picker", @readonly = "true" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-8">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PaymentRemarks)
+                                                        @Html.TextAreaFor(model => model.PaymentRemarks, new { @id = "txtFDRRemarks", @class = "form-control", @rows = "3" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PaymentAmount)
+                                                        @Html.TextBoxFor(model => model.PaymentAmount, new { @id = "txtFDRAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @readonly = "true" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-right">
+                                                    <input type="text" value="0" id="txtFDRoleId" style="display:none" />
+                                                    <button class="btn btn1 btn-success" id="btnFDRSubmit" onclick="btnSubmitfdrData()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnFDRReset" onclick="ResetfdrData()">Reset</button>
+                                                    <input type="text" value="0" id="txtFDCreatedby" style="display:none" />
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-center">
+                                                    <br />
+                                                    <div id="divFDRInfoMsg" class="alert alert-danger hidden">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="row" id="divFdPartialFD">
+                                        <br />
+                                        @Html.Action("ViewFdPartialClose", "Accounts", new { TransactionRefno = "000" })
+                                    </div>
+                                    <div class="row" id="divFdInterest">
+                                        <br />
+                                        @Html.Action("ViewFdInterest", "Accounts", new { TransactionRefno = "000" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var RoleID = '@Session["Roleid"]';
+        $("#txtFDRoleId").val(RoleID);
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtFDCreatedby").val(Sessioncreated);
+        $("#btnFDRSubmit").prop('disabled', false);
+    });
+</script>
+
+

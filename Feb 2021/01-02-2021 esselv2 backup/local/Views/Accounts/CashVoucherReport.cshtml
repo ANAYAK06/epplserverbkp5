@@ -1,0 +1,240 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.CashBook>
+@{
+    ViewBag.Title = "CashVoucherReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<script src="~/Scripts/DataTables/media/js/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<style>
+    td.details-control {
+        background: url('../../Content/EsselImages/details_open.png') no-repeat center center;
+        /*background-image: url('../../Content/EsselImages/details_close.png');*/
+        /*background-image: url('../../Content/EsselImages/details_open.png');*/
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../../Content/EsselImages/details_close.png' no-repeat center center;
+    }
+</style>
+
+<div class="card-header">
+    <h4 style="text-align:left;font-weight:bold">Cash Vocher Report</h4>
+</div>
+<div class="body">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <!-- Example Tabs Left-->
+            <div class="card-inner">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table id="tblCashReportDetails" style="width:100%" class="hover stripe nowrap example1">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Id</th>
+                                        <th>PaidTo</th>
+                                        <th>CCCode</th>
+                                        <th>VoucherDate</th>
+                                        <th>VoucherId</th>
+                                        <th>Remarks</th>
+                                        <th class="hidden">DCACode</th>
+                                        <th class="hidden">SubDca</th>
+                                        <th class="hidden">ITCode</th>
+                                        <th class="hidden">Credit</th>
+                                        <th class="hidden">Debit</th>
+                                        <th class="hidden">Balance</th>
+                                        <th class="hidden">ModifiedDate</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="details-control"></td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Id)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PaidTo)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.CCCode)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.VoucherDate)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.VoucherId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Remarks)
+                                            </td>
+
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.DCACode)
+                                            </td>
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.SubDca)
+                                            </td>
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.ITCode)
+                                            </td>
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.Credit)
+                                            </td>
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.Debit)
+                                            </td>
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.Balance)
+                                            </td>
+                                            <td class="hidden">
+                                                @Html.DisplayFor(modelItem => item.ModifiedDate)
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr></tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <input type="text" id="txtcvrvPaidAga" style="display:none" />
+                        <input type="text" id="txtcvrvPaidto" style="display:none"/>
+                        <input type="text" id="txtcvrvDCA" style="display:none" />
+                        <input type="text" id="txtcvrvSubDCA" style="display:none"/>
+                        <input type="text" id="txtcvrvITCode" style="display:none"/>
+
+                        <input type="text" id="txtcvrvFromdate" style="display:none"/>
+                        <input type="text" id="txtcvrvTodate" style="display:none"/>
+
+                        <input type="text" id="txtcvrvReportBy" style="display:none"/>
+                        <input type="text" id="txtcvrvPRole" style="display:none"/>
+                        <input type="text" id="txtcvrvSessionCC" style="display:none"/>
+                        <input type="text" id="txtcvrvUser" style="display:none"/>
+                    </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/moment.js"></script>
+<script>
+    $(document).ready(function () {
+        var CashVoucherReportGrid = null;
+        InitializeCashVoucherReportGrid();  
+        GetCashVoucherTotalDetails();
+        var queryDict = {};
+        location.search.substr(1).split("&").forEach(function (item) { queryDict[item.split("=")[0]] = item.split("=")[1] });
+        $("#txtcvrvPaidAga").val(queryDict['PaidACC']);
+        $("#txtcvrvPaidto").val(queryDict['PaidTo']);
+        $("#txtcvrvDCA").val(queryDict['d']);
+        $("#txtcvrvSubDCA").val(queryDict['sd']);
+        $("#txtcvrvITCode").val(queryDict['IT']);
+        $("#txtcvrvFromdate").val(queryDict['frm']);
+        $("#txtcvrvTodate").val(queryDict['To']);
+        $("#txtcvrvReportBy").val(queryDict['rb']);
+        $("#txtcvrvPRole").val(queryDict['rl']);
+        $("#txtcvrvSessionCC").val(queryDict['scc']);
+        $("#txtcvrvUser").val(queryDict['usr']);
+       // alert(queryDict['usr']);
+    });
+    function InitializeCashVoucherReportGrid() {
+
+        CashVoucherReportGrid = $('#tblCashReportDetails').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Cash Vochers Found"
+            },
+            "createdRow": function (row, data, index) {
+                var vdate = $('td:eq(4)', row).html();
+                //var st = vdate.trim();
+               
+                //var d = st.split(' ')[0];
+                //alert(d);
+                //var t = "'" + d + "'";
+                //var vdate1 = moment(t, "DD-MMM-YYYY").format('MMM DD YYYY');
+                var d = vdate.split(' ')[0];
+                var t = "'" + d + "'";
+                var vdate1 = moment(t, "DDMMYYYY").format('MMM-DD-YYYY');
+               // var v = moment().format("MMM DD YYYY");
+                //alert(vdate1);
+              
+                
+               // var vdate1 = moment(t, "DD-MMM-YYYY").format('MMM DD YYYY');
+                $('td:eq(4)', row).html(vdate);
+               
+
+            },
+            pageLength: 10
+        });
+        
+        $('#tblCashReportDetails tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = CashVoucherReportGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatCashVoucherReport(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+
+    }
+    function formatCashVoucherReport(d) {
+        var DCACode, SubDca, ITCode, Credit, Debit, Balance, ModifiedDate;
+        $.each(d, function (index, value) {
+            // Get value in alert  
+            if (index == 7)
+                DCACode = value;
+            if (index == 8)
+                SubDca = value;
+            if (index == 9)
+                ITCode = value;
+            if (index == 10)
+                Credit = value;
+            if (index == 11)
+                Debit = value;
+            if (index == 12)
+                Balance = value;
+            if (index == 13)
+                ModifiedDate = value;
+        });
+        //alert(ModifiedDate);
+        var d = ModifiedDate.split(' ')[0];
+        var t = "'" + d + "'";
+        var ModifiedDate1 = moment(t, "DDMMYYYY").format('MMM-DD-YYYY');
+        return '<div><table cellpadding="5" cellspacing="0" border="1px" style="padding-left:50px;width:100%">' +
+            '<tr><td>Account Head:&nbsp;<b>' + DCACode + '</b></td>' +
+            '<td>Sub Account Head:&nbsp;<b>' + SubDca + '</b></td>' +
+            '<td>IT Code:&nbsp;<b>' + ITCode + '</b></td></tr>' +
+            '<tr><td>Credit:&nbsp;<b>' + Credit + '</b></td>' +
+            '<td>Debit:&nbsp;<b>' + Debit + '</b></td>' +
+            '<td>Balance:&nbsp;<b>' + Balance + '</b></td></tr>' +
+            '<tr><td>ModifiedDate:&nbsp;<b>' + ModifiedDate1 + '</b></td>' +
+             '<td></td><td></td></tr>' +
+            '</table></div>';
+    }
+
+ 
+
+</script>

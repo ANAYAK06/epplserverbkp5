@@ -1,0 +1,281 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoice
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+
+}
+
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorName)
+                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPONo)
+                    @Html.TextBoxFor(model => model.SPPONo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="col-md-12" style="margin-top:-5px !important">
+            <hr />
+        </div>
+        <div class="col-md-12" id="divPOData">
+            <div class="col-md-4">
+                <div class="col-md-5 text-right" style="margin-top:5px">@Html.LabelFor(model => model.CCCode)</div>
+                <div class="col-md-5 text-left" style="margin-left:-10px!important">@Html.TextBoxFor(model => model.CCCode, new { @id = "txtNSpInvCCCode", @class = "form-control", type = "text", @readonly = true })</div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-6 text-right" style="margin-top:5px">  @Html.LabelFor(model => model.DCACode)</div>
+                <div class="col-md-6 text-left" style="margin-left:-10px!important">  @Html.TextBoxFor(model => model.DCACode, new { @id = "txtNSpInvDCACode", @class = "form-control", type = "text", @readonly = true })</div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-6 text-right" style="margin-top:5px">  @Html.LabelFor(model => model.SubDCACode)</div>
+                <div class="col-md-6 text-left" style="margin-left:-10px!important">  @Html.TextBoxFor(model => model.SubDCACode, new { @id = "txtNSpInvSubDcaCode", @class = "form-control", type = "text", @readonly = true })</div>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="margin-top:-5px !important">
+            <hr />
+        </div>
+        <div class="col-md-12" style="margin-top:-5px !important">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOInvoiceNo)
+                    @Html.TextBoxFor(model => model.SPPOInvoiceNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOInvoiceDate)
+                    @Html.TextBoxFor(model => model.SPPOInvoiceDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOInvoiceMakingDate)
+                    @Html.TextBoxFor(model => model.SPPOInvoiceMakingDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOBasicValue)
+                    @Html.TextBoxFor(model => model.SPPOBasicValue, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <hr />
+        </div>
+        @if (Model.TaxList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvtaxtable">
+                    <div class="strike">
+                        <span>Taxes</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table style="width:100%;border:1px solid gray" class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">Type</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Tax Number</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.TaxList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.TaxType</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.TaxNo</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.TaxTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.OtherChargeList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvChargetable">
+                    <div class="strike">
+                        <span>Other Charges</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.OtherChargeList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.ChargesTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.DeductionList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvDeductiontable">
+                    <div class="strike">
+                        <span>Deductions</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.DeductionList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.DeductionTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceValue)
+                    @Html.TextBoxFor(model => model.InvoiceValue, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description)
+                    @Html.TextAreaFor(model => model.Description, htmlAttributes: new { @class = "form-control", @rows = "2", @readOnly = "true" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Retention)
+                    @Html.TextBoxFor(model => model.Retention, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Hold)
+                    @Html.TextBoxFor(model => model.Hold, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NetAmount)
+                    @Html.TextBoxFor(model => model.NetAmount, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+        </div>
+    
+   
+    </form>
+</div>

@@ -1,0 +1,257 @@
+﻿@model EsselTestLocalApplication.Models.ItemsTransferData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12 change-tab" id="divItemtransferGrid">
+        <div class="strike">
+            <span>Transfer Items</span>
+        </div>
+        <div style="height:5px"></div>
+        <div class="tabledynamic">
+            <table id="ItemtransfercskDataTable" class="table order-list itemtransfercsklist">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Avaliable Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Status</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Before Depriciation</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Depriciation</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">After Depriciation</label></td>
+
+                        @*<td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:75px !important;">Amount</label></td>*@
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px" class="hidden"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Data)
+                    {
+                        <tr>
+                            <td style="text-align:center;width:10px!important;">
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            <input type="checkbox" class="eagle-check-input">
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Specification)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Basic)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.AvlQuantity)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><input type="text" class="form-control " style="width:50px !important; font-size:10px" onkeypress="return IsNumericdecimal(this)" onkeyup="CountItemTotalAmount()" /></td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;">
+                                <select class="form-control dropdown-toggle" id="ddlStocktype" style="width:100px">
+                                    <option value="0" selected="selected">Select</option>
+                                    <option value="Stock">Stock</option>
+                                    <option value="NewStock">NewStock</option>
+                                </select>
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;">
+                                <select class="form-control dropdown-toggle" id="ddldeppercent" onchange="Calculate(this)" style="width:100px">
+                                    <option value="0" selected="selected">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                </select>
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.AfterDep)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> <input type="button" class="btnIndentDel btn btn-md btn-danger" value="Delete" /></td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.ItId)</td>
+                            @*<td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.Costcenter)</td>*@
+                        </tr>
+
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        @*<td class="text-center"colspan="2" ><label>SubTotal</label></td>*@
+
+                        <td></td>
+                        <td class="text-center"><label style="color:green" id="lblSumtotal"></label></td>
+                        <td></td>
+                        <td class="text-center"><label style="color:green" id="lblDepsumtotal"></label></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $("table.order-list.itemtransfercsklist").on("click", ".btnIndentDel", function (event) {
+            var currentRow = $(this).closest("tr");
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var Listid = currentRow.find("td").eq(15).html();
+            if (check == true) {
+                var Items = {
+                    ItId: Listid
+                };
+                addFailMsg = "Error Occurred While Deleting Item";
+                addSuccessMsg = "Deleted Successfully.";
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/DeleteItemsTransferItem",
+                    data: JSON.stringify({ Ind: Items }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus == "Submited") {
+                            alert("Deleted Successfully");
+                            resetgrid();
+                        }
+                        else {
+                            alert(response.saveStatus);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    }
+                });
+            }
+            else {
+                alert("Please Check for Delete");
+                return false;
+            }
+        });
+    });
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+        return true;
+    }
+    function CountItemTotalAmount() {     
+        var qty = 0;
+        var beforedep = 0;
+        var Total = 0;
+        $("#ItemtransfercskDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            basic = currentRow.find("td").eq(7).html();
+            avlqty = currentRow.find("td").eq(8).html();
+            qty = currentRow.find("td").eq(9).find("input[type='text']").val();
+            if (parseFloat(qty) != "") {
+                if (parseFloat(qty) > parseFloat(avlqty)) {
+                    alert("Invalid Quantity")
+                    currentRow.find("td").eq(9).find("input[type='text']").val("0");     
+                    beforedep = parseFloat(basic) * parseFloat(0)
+                    currentRow.find("td").eq(11).html(parseFloat(beforedep).toFixed(2));
+                    Total = parseFloat(Total) + parseFloat(beforedep);
+                }
+
+                else if (qty != 0 && qty != "") {
+                    beforedep = parseFloat(basic) * parseFloat(qty)
+                    currentRow.find("td").eq(11).html(parseFloat(beforedep).toFixed(2));
+                    Total = parseFloat(Total) + parseFloat(beforedep);
+                }
+                else if (qty == 0 && qty == "") {
+                    currentRow.find("td").eq(11).html("");
+                    Total = parseFloat(Total) + parseFloat(beforedep);
+                }
+            }
+        });
+        $("#ItemtransfercskDataTable tfoot tr").each(function () {
+            $("#lblSumtotal").html(parseFloat(Total).toFixed(2));
+        });
+    }
+    function Calculate(val) {       
+        var sumvalue = 0;
+        var qty = 0;
+        $("#ItemtransfercskDataTable tbody tr").each(function () {            
+            var currentRow = $(this).closest("tr");
+            var code = currentRow.find("td").eq(1).html().trim();
+            var itemcode = code.substring(0, 1);
+            //var depval = val.value;
+            var depval = currentRow.find("td").eq(12).find("select option:selected").val();
+            qty = currentRow.find("td").eq(9).find("input[type='text']").val();
+            if (qty != 0 && qty != "") {
+                if (depval != 0 && itemcode == 1) {
+                    alert("Depreciation Value is not applicable for Asset Items")
+                    return false;
+                }
+                else if (depval == 100 && itemcode != 1) {
+                    currentRow.find("td").eq(13).html(0);
+                    sumvalue = parseFloat(sumvalue) + parseFloat(0);
+                }
+                else if (depval != 100 && itemcode != 1) {
+                    var beforedep = currentRow.find("td").eq(11).html().replace(/,/g, "");
+                    var sumtot = parseFloat(beforedep) * parseFloat(depval) / 100;
+                    currentRow.find("td").eq(13).html(parseFloat(sumtot));
+                    sumvalue = parseFloat(sumvalue) + parseFloat(sumtot);
+                }
+            }
+            else {
+                currentRow.find("td").eq(12).find("select").prop('selectedIndex', 0);
+            }
+        });
+        $("#ItemtransfercskDataTable tfoot tr").each(function () {
+
+            $("#lblDepsumtotal").html(parseFloat(sumvalue).toFixed(2));
+        });      
+    }   
+    function resetgrid() {
+        var cc = $("#ddlFromCC option:selected").val();
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/ItemsTransferCSK',
+            data: { cccode: cc },
+            success: function (data) {
+                $("#GridCSKData").html(data);
+                var currentrowcount2 = $("#ItemtransfercskDataTable tbody tr").length;
+                if (currentrowcount2 > 0) {
+                    $("#GridCSKData").removeClass('hidden');
+                    $("#divgriddata").removeClass("hidden");
+                }
+                else {
+                    $("#GridCSKData").addClass('hidden');
+                    $("#divgriddata").addClass("hidden");
+                }
+            },
+        });
+    }
+</script>

@@ -1,0 +1,60 @@
+﻿@model List<EsselTestLocalApplication.Models.BasicFirmInfo>
+<div class="table-responsive">
+    <table id="tblshareholderGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr style="font-weight:200; align-content:center"><th colspan="5">Share Holder Details</th></tr>
+            <tr>
+                <th>Name</th>
+                <th>% Of Share Holding</th>
+                <th>No Of Shares</th>
+                <th>Each Share Price</th>
+                <th>Total Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShareHolderNames)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShareHolderPrecent)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShareHolderNoofShares)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShareHolderSharePrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShareHolderTotal)
+                </td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApprovecccashtransferGrid = null;
+        InitializeApprcccashtransferGrid();
+    });
+    function InitializeApprcccashtransferGrid() {
+        ApprovecccashtransferGrid = $('#tblshareholderGrid').DataTable({
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            pagingType: false,
+            ordering: false,
+            formatNumber: false,
+            language: {
+                "emptyTable": "No Records Found"
+            },
+        });
+    }
+
+</script>

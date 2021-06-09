@@ -1,0 +1,89 @@
+﻿@model EsselTestLocalApplication.Models.AddEditDCA
+@Scripts.Render("~/Scripts/bootstrap-multiselect.js")
+@Scripts.Render("~/Scripts/bootstrap.min.js")
+@Styles.Render("~/Content/bootstrap-multiselect/bootstrap-multiselect.css")
+<div class="col-md-12 verifydiv">
+    <br />
+    @*<h4 style="text-align:center">Add General DCA</h4>
+        <hr />*@
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DCACode, htmlAttributes: new { @class = "control-label col-xs-3" })
+                    <div class="col-xs-6">
+                        @Html.TextBoxFor(model => model.DCACode, htmlAttributes: new { @class = "form-control", @id = "txtAddGenerelDCACode", @readOnly = true })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DCAName, htmlAttributes: new { @class = "control-label col-xs-3" })
+                    <div class="col-xs-6">
+                        @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @id = "txtAddGenerelDCAName" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCTypeIDs, htmlAttributes: new { @class = "control-label col-xs-3" })
+                    <div class="col-xs-6">
+                        @Html.ListBoxFor(model => model.CCTypeIDs, new SelectList(Model.CCtypeList, "CCTypeID", "CCTypeDescription"), new { @class = "listbox form-control", @id = "addGeneralDCACCtypeMLID" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentTypeIDs, htmlAttributes: new { @class = "control-label col-xs-3" })
+                        <div class="col-xs-6">
+                            @Html.ListBoxFor(model => model.PaymentTypeIDs, new SelectList(Model.PaymentTypesList, "PaymentTypeID", "PaymentTypeDescription"), new { @class = "listbox form-control", @id = "addGeneralDCAPaymenttypeMLID" })
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        @*@if (Model.ITCodeID != 0)
+            {
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ITCodeID, htmlAttributes: new { @class = "control-label col-xs-3" })
+                        <div class="col-xs-6">
+                            @Html.DropDownListFor(model => model.ITCodeID, new SelectList(Model.ITCodesList, "ITCodeID", "ITCodename"), Model.ITCodename, htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "ITCodeddlID" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }*@
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-10">
+                    <input type="text" value="0" id="txtUpdateGeneralDCARoleId" style="display:none" />
+                    <input type="submit" value="Submit" onclick="UpdateGeneralDCA('@Model.DCACodeID')" /> &nbsp;&nbsp;
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<label class="hidden">
+    hdnGeneralDCAID: @Html.Hidden("hdnGeneralDCAID", 0)
+</label>
+<div class="col-md-12 text-center">
+    <div id="divAddGeneralDCAInfoMsg" class="alert alert-danger hidden">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+         var RoleID = '@Session["Roleid"]';
+        $("#txtUpdateGeneralDCARoleId").val(RoleID);
+        $('#addGeneralDCACCtypeMLID').multiselect('rebuild');
+        $('#addGeneralDCAPaymenttypeMLID').multiselect('rebuild');
+    });
+</script>
+

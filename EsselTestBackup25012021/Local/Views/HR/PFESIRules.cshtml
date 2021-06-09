@@ -1,0 +1,219 @@
+﻿@model EsselTestLocalApplication.Models.HR.PFESIRules
+<div class="container">
+    <div class="col-md-10">
+        <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">PF Rules</h5>
+    </div>
+    <div class="col-md-10"><hr class="separationHr" /></div>
+
+    <div class="col-md-10 rowspace">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.EmployeeContribution)
+            @Html.TextBoxFor(model => model.EmployeeContribution, htmlAttributes: new { @class = "form-control", @id = "txtPFEmployeeContribution", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.EmployerContribution)
+            @Html.TextBoxFor(model => model.EmployerContribution, htmlAttributes: new { @class = "form-control", @id = "txtPFEmployerContribution", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.PFAdminCharge)
+            @Html.TextBoxFor(model => model.PFAdminCharge, htmlAttributes: new { @class = "form-control", @id = "txtPFAdminCharge", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+        <div class="col-md-4 rowspace">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PFEffectDate)
+                @Html.TextBoxFor(model => model.PFEffectDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtPFWithEffectDate", @readOnly = "true" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10">
+        <br />
+        <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">ESI Rules</h5>
+    </div>
+    <div class="col-md-10"><hr class="separationHr" /></div>
+    <div class="col-md-10 rowspace">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.ESISalaryLimit)
+            @Html.TextBoxFor(model => model.ESISalaryLimit, htmlAttributes: new { @class = "form-control", @id = "txtESIEmployeeContribution", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.ESIPercentage)
+            @Html.TextBoxFor(model => model.ESIPercentage, htmlAttributes: new { @class = "form-control", @id = "txtESIEmployerContribution", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ESIEffectDate)
+                @Html.TextBoxFor(model => model.ESIEffectDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtESIWithEffectDate", @readOnly = "true" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10 text-right">
+        <br />
+        <button class="btn btn1 btn-success" id="btnPFESITDSSubmit" onclick="SubmitPFESITDSData()">Submit</button>
+        <button class="btn btn1 btn-success" id="btnPFESITDSUpdate" onclick="SubmitPFESITDSData()">Update</button>
+        <button class="btn btn1 btn-success" id="btnPFESITDSReset" onclick="ResetPFESITDSData()">Reset</button>
+    </div>
+
+</div>
+<div class="row rowspace">
+    <div class="text-center">
+        <br />
+        <div id="divPFESIInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        //Start of PF,ESI,TDS *************************************************************
+     
+        if (@Model.PFAdminCharge>0) {//update data
+            $("#txtPFWithEffectDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                yearRange: "-100:+1",
+            }).datepicker("setDate", '@Model.PFEffectDate');
+            $("#txtESIWithEffectDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                yearRange: "-100:+1",
+            }).datepicker("setDate", '@Model.ESIEffectDate');
+            $("#btnPFESITDSUpdate").removeClass("hidden");
+            $("#btnPFESITDSSubmit").addClass("hidden");
+            $("#btnPFESITDSSubmit").prop('disabled', false);
+            $("#btnPFESITDSUpdate").prop('disabled', false);
+            @*$("#txtPFWithEffectDate").datepicker("setDate", '@Model.PFEffectDate');
+            $("#txtESIWithEffectDate").datepicker("setDate", '@Model.ESIEffectDate');*@
+        }
+        else {//first time rule set
+            $("#btnPFESITDSUpdate").addClass("hidden");
+            $("#btnPFESITDSSubmit").removeClass("hidden");
+            $("#btnPFESITDSSubmit").prop('disabled', false);
+            $("#btnPFESITDSUpdate").prop('disabled', false);
+            $("#txtPFWithEffectDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                yearRange: "-100:+1",
+            });
+            $("#txtESIWithEffectDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                yearRange: "-100:+1",
+            });
+
+        }
+    });
+    //Start of PF,ESI,TDS *************************************************************
+    function SubmitPFESITDSData() {
+        var errorMsg = "";
+        isValid = true;
+        var PFEmployeePercent = $('#txtPFEmployeeContribution').val();
+        var PFEmployerPercent = $('#txtPFEmployerContribution').val();
+        var PFAdminCharge = $('#txtPFAdminCharge').val();
+        var PFEffectdate = $('#txtPFWithEffectDate').val();
+
+        var EsiSalarylmt = $("#txtESIEmployeeContribution").val();
+        var EsiPercent = $("#txtESIEmployerContribution").val();
+        var EsiDate = $('#txtESIWithEffectDate').val();
+        if (PFEmployeePercent === "" || PFEmployeePercent === "0" || PFEmployeePercent === 0 || PFEmployeePercent === "0.0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter PF Employee Contribution</p>";
+            isValid = false;
+        }
+        if (PFEmployerPercent === "" || PFEmployerPercent === "0" || PFEmployerPercent === 0 || PFEmployerPercent === "0.0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter PF Employer Contribution </p>";
+            isValid = false;
+        }
+        if (PFAdminCharge === "" || PFAdminCharge === "0" || PFAdminCharge === 0 || PFAdminCharge === "0.0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter PF Admin Charge</p>";
+            isValid = false;
+        }
+        if (PFEffectdate === "" ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter PF Effective Date</p>";
+            isValid = false;
+        }
+        if (EsiSalarylmt === "" || EsiSalarylmt === "0" || EsiSalarylmt === 0 || EsiSalarylmt === "0.0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter ESI Applicable Salary</p>";
+            isValid = false;
+        }
+        if (EsiPercent === "" || EsiPercent === "0" || EsiPercent === 0 || EsiPercent === "0.0" ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter ESI Percent</p>";
+            isValid = false;
+        }
+        if (EsiDate === "" ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter ESI Effective Datee</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPFESIInfoMsg").text("");
+            $("#divPFESIInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divPFESIInfoMsg").addClass("alert-danger");
+            $("#divPFESIInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divPFESIInfoMsg").text("");
+            $("#divPFESIInfoMsg").addClass("hidden");
+
+            let data = {
+                EmployeeContribution: PFEmployeePercent,
+                EmployerContribution: PFEmployerPercent,
+                PFAdminCharge: PFAdminCharge,
+                PFEffectDate: PFEffectdate,
+                ESISalaryLimit: EsiSalarylmt,
+                ESIPercentage: EsiPercent,
+                ESIEffectDate: EsiDate
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+          
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveHRPFESIRule',
+                data: { objHRRules: data },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        // location.reload();
+                        //$("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+                        //$('#txtMinWageAmount').val("");
+                        //$("#ddlMinWageSkillName").prop('selectedIndex', 0);
+                        $("#divPFESIInfoMsg").text("Rule Added Successfully");
+                        $("#divPFESIInfoMsg").removeClass("hidden alert-danger");
+                        $("#divPFESIInfoMsg").addClass("alert-success");
+
+                    }
+                    else {
+                        $("#divPFESIInfoMsg").text(addFailMsg);
+                        $("#divPFESIInfoMsg").addClass("alert-danger");
+                        $("#divPFESIInfoMsg").removeClass("hidden alert-success");
+                    }
+                    $("#btnPFESITDSSubmit").prop('disabled', true);
+                    $("#btnPFESITDSUpdate").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divPFESIInfoMsg").text(addFailMsg);
+                    $("#divPFESIInfoMsg").addClass("alert-danger");
+                    $("#divPFESIInfoMsg").removeClass("hidden alert-success");
+                    $("#btnPFESITDSSubmit").prop('disabled', true);
+                    $("#btnPFESITDSUpdate").prop('disabled', true);
+                }
+            });
+        }
+
+
+    }
+    function ResetPFESITDSData() {
+        $('#liPFESI').trigger('click');
+    }
+</script>

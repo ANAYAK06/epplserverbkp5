@@ -1,0 +1,398 @@
+﻿@model EsselTestLocalApplication.Models.DCAdetails
+@if (Model.CloseNotificationExist == 0 || (Model.CloseStatus == "Rejected" && Model.CloseNotificationExist == 1))
+{
+    if (Model.CloseLevelAccess == "Creation" || Model.CloseLevelAccess == "FirstAndLastLevel" )
+    {
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Close Account Head</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+                    <div>
+                        <form onsubmit="return false">
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Account Head Code</label>
+                                        <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCACode" readOnly="readOnly" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Account Head Name</label>
+                                        <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCAName" readOnly="readOnly" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Account Head Type</label>
+                                        <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCATypeName" readOnly="readOnly" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Closing As On Date</label>
+
+                                        @Html.TextBoxFor(model => model.ClosingDate, "{0:dd-MMM-yyyy}", new { @id = "txtDcaClosingAson", @class = "form-control  date-picker", @readonly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.lstDCAPending.Count > 0)
+                            {
+                                <div class="col-md-12">
+                                    <h5>Verifications pending for this Account Head are:</h5>
+                                </div>
+                                <div class="col-md-12">
+                                    @{ int rowNo = 1; }
+                                    <table cellspacing="2" cellpadding="2" style="width:100%;" id="tableDcaclosenotify" class="hover stripe nowrap example dataTable">
+                                        <thead>
+                                            <tr>
+                                                <td class="hidden">RowNo</td>
+                                                <td class="hidden">MasterId</td>
+                                                <td>Master Operation</td>
+                                                <td>Number of Pendings</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.lstDCAPending)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center" class="hidden">
+                                                        @rowNo
+                                                    </td>
+                                                    <td class="hidden">@item.WorkFlowLevelId</td>
+                                                    <td style="text-align:left;width:60%">@item.MasterOperationDescription</td>
+                                                    <td style="text-align:left"><h5>@item.NoofPendings</h5></td>
+
+                                                    @{rowNo++;}
+                                                </tr>
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            <div class="col-md-12" id="divclremdstatus">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Remarks:</label><br />
+                                        <textarea rows="3" cols="60" class="form-control" id="txtDcaCloseNote">@Model.CloseRemarks</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <br /><button class="btn btn-default  btn-block" id="btnNotify" onClick="NotifyDcaPendings(@Model.BasicDCAInfo.DCAID,  '@Model.BasicDCAInfo.DCACode', '@Model.CloseLevelAccess')">Notify To All</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <br />
+                                <div class="text-center">
+                                    <div id="divClsoeDcaInfoMsg" class="alert alert-danger hidden"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Close Account Head</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+                    <div class="alert alert-danger text-center">Close Account Head Request Not Yet Initiated</div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else if (Model.CloseNotificationExist == 1 && Model.CloseStatus != "Rejected")
+{
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Close Account Head</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div>
+                    <form onsubmit="return false">
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Account Head Code</label>
+                                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCACode" readOnly="readOnly" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Account Head Name</label>
+                                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCAName" readOnly="readOnly" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Account Head Type</label>
+                                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCATypeName" readOnly="readOnly" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Closing As On Date</label>
+
+                                    @Html.TextBoxFor(model => model.ClosingDate, "{0:dd-MMM-yyyy}", new { @id = "txtDcaClosingAson", @class = "form-control  date-picker", @readonly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.lstDCAPending.Count > 0)
+                        {
+                            <div class="col-md-12">
+                                <h5>Verifications pending for this Account Head are:</h5>
+                            </div>
+                            <div class="col-md-12">
+                                @{ int rowNo = 1; }
+                                <table cellspacing="2" cellpadding="2" style="width:100%;" id="tableDcaclosenotify" class="hover stripe nowrap example dataTable">
+                                    <thead>
+                                        <tr>
+                                            <td class="hidden">RowNo</td>
+                                            <td class="hidden">MasterId</td>
+                                            <td>Master Operation</td>
+                                            <td>Number of Pendings</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.lstDCAPending)
+                                        {
+                                            <tr>
+                                                <td style="text-align:center" class="hidden">
+                                                    @rowNo
+                                                </td>
+                                                <td class="hidden">@item.WorkFlowLevelId</td>
+                                                <td style="text-align:left;width:60%">@item.MasterOperationDescription</td>
+                                                <td style="text-align:left"><h5>@item.NoofPendings</h5></td>
+
+                                                @{rowNo++;}
+                                            </tr>
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        @if (Model.CloseLevelAccess == "ApproveLevel" || Model.CloseLevelAccess == "VerificationLevel")
+                        {
+                            <div class="col-md-12" id="divclremdstatus">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Remarks:</label><br />
+                                        <textarea rows="3" cols="60" class="form-control" id="txtDcaCloseNote">@Model.CloseRemarks</textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="form-control dropdown-toggle" id="ddlCloseDcaStatus">
+                                            <option selected="selected" value="Select">Select</option>
+                                            @if (Model.CloseLevelAccess == "VerificationLevel")
+                                            {
+                                                <option value="Verify">Verify</option>
+                                            }
+                                            else if (Model.CloseLevelAccess == "ApproveLevel" || Model.CloseLevelAccess == "FirstAndLastLevel")
+                                            {
+                                                <option value="Approve">Approve</option>
+                                                <option value="Reject">Reject</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <br /><button class="btn btn-default  btn-block" id="btnNotify" onClick="NotifyDcaPendings(@Model.BasicDCAInfo.DCAID,  '@Model.BasicDCAInfo.DCACode', '@Model.CloseLevelAccess')">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-12">
+                            <br />
+                            <div class="text-center">
+                                <div id="divClsoeDcaInfoMsg" class="alert alert-danger hidden"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ClsoeDcaGrid = null;
+        InitializecloseDCAGrid();
+         var RoleAccess = '@Model.CloseLevelAccess';
+        var Status = '@Model.CloseStatus';
+        var currentlevel = '@Model.CurrentRoleLevel';
+        var minlevel = '@Model.CloseMinRoleLevel';
+        var maxlevel = '@Model.CloseMaxRoleLevel';      
+        if (@Model.CloseNotificationExist == 1 && Status !='Rejected') {
+            if (RoleAccess == 'ApproveLevel' && maxlevel == currentlevel && Status == minlevel && (parseInt(minlevel) + 1) == currentlevel) {
+                //only 0,1 levels exist
+                //current level is the last/approval level
+                $("#txtDcaClosingAson").datepicker({
+                    dateFormat: 'dd-M-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showOn: "button",
+                    minDate: 'dateToday',
+                    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                    onClose: function (selectedDate) {
+
+                    }
+                });
+
+                $("#divclremdstatus").removeClass("hidden");
+                $("#btnNotify").removeClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && maxlevel == currentlevel && (Status != 'Approved') && (minlevel < Status && Status < maxlevel) && Status != minlevel) {
+
+                    $("#txtDcaClosingAson").datepicker({
+                        dateFormat: 'dd-M-yy',
+                        changeMonth: true,
+                        changeYear: true,
+                        showOn: "button",
+                        minDate: 'dateToday',
+                        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                        onClose: function (selectedDate) {
+
+                        }
+                    });
+
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && (Status == 'Approved') && Status === minlevel  ) {
+                $("#btnNotify").addClass("hidden");
+                $("#divclremdstatus").addClass("hidden");
+
+            }
+            else if (RoleAccess == 'ApproveLevel' && (Status == 'Approved')) {
+
+                $("#btnNotify").addClass("hidden");
+                $("#divclremdstatus").addClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && Status == minlevel &&(parseInt(minlevel)+1)!= currentlevel) {
+
+                 $("#btnNotify").addClass("hidden");
+                 $("#divclremdstatus").addClass("hidden");
+             }
+            if (RoleAccess == 'VerificationLevel') {
+                //recordexist
+                if (Status == currentlevel || (Status == 'Approved' || Status == 'Rejected') || Status > currentlevel) {
+                    $("#divclremdstatus").addClass("hidden");
+                    $("#btnNotify").addClass("hidden");
+                }
+                else {
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                }
+
+            }
+            if (RoleAccess == 'Creation') {
+                if (RoleAccess == 'Creation' && Status == 'Rejected') {
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                    $("#txtDcaClosingAson").datepicker({
+                        dateFormat: 'dd-M-yy',
+                        changeMonth: true,
+                        changeYear: true,
+                        showOn: "button",
+                        minDate: 'dateToday',
+                        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                        onClose: function (selectedDate) {
+
+                        }
+                    });
+                }
+                else if (Status >= currentlevel) {
+                    //record exist visiting again for creation
+                    $("#btnNotify").addClass("hidden");
+                    $("#divclremdstatus").addClass("hidden");
+                }
+                else {
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                }
+            }
+            
+
+            if (RoleAccess == 'FirstAndLastLevel') {
+                if (Status == 'Approved') {
+                    //approved visiting again
+                    $("#btnNotify").addClass("hidden");
+                    $("#divclremdstatus").addClass("hidden");
+                }
+                else {
+                    //new record with approval
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                }
+            }
+        }
+        else if (@Model.CloseNotificationExist == 0 || (@Model.CloseNotificationExist == 1 && Status == 'Rejected')) {
+            //if 0 level or 0 level is the  approval then give permission to  create close date with current date
+            $("#txtDcaClosingAson").datepicker({
+                 dateFormat: 'dd-M-yy',
+                 changeMonth: true,
+                 changeYear: true,
+                 showOn: "button",
+                 minDate: 'dateToday',
+                 buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                 onClose: function (selectedDate) {
+
+                 }
+             }).datepicker("setDate", new Date());
+        }
+
+
+        });
+    function InitializecloseDCAGrid() {
+        ClsoeDcaGrid = $('#tableDcaclosenotify').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+    }
+</script>

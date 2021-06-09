@@ -1,0 +1,246 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.TDSReportData
+<div class="table-responsive">
+    <table id="tblTDSPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px" class="hidden">VendorTaxId</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Date of Payment/Credit</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice No</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Vendor Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">PAN</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Cost Center</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IT Code</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Amount</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Total TDS</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">TDS Balance</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">TDS Balance</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"" class="Rethdcheckall">
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input chkRetselectall" name="chkhdRetselectall">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description"></span>
+                            </label>
+                        </li>
+                    </ul>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+           @{ var none = "N/A"; }
+            @foreach (var item in Model.TDSData)
+            {
+                <tr>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px" class="hidden">
+                        @Html.DisplayFor(modelItem => item.VendorTaxId)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.PaymentDate)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.date)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.InvoiceNo)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorName)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @if (item.panno != "" && item.panno != null)
+                        {
+                            @Html.DisplayFor(modelItem => item.panno)
+                        }
+                        else
+                        {
+
+                            @none
+
+                        }
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TDSITCode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Basicvalue)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TdsAmount)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TdsAmountBal)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.EditorFor(modelItem => item.TdsAmountBal)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chkRetpaysingle" name="chkRetpaysingle"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            @*<tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+            </tr>*@
+        </tfoot>
+    </table>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        var TDSPayGrid = null;
+        InitializeformatTDSPayGrid();
+
+        $('#tblTDSPayGrid thead tr').on('change', '.chkRetselectall', function () {
+            var row = $(this).closest('tr'); // get the row
+            var headcheckbox = row.find("th").eq(12).find("input[type='checkbox']").is(":checked");
+            // alert(headcheckbox);
+            if (headcheckbox == true) {
+                $("#tblTDSPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(12).find("input[type='checkbox']").prop('checked', true);
+                });
+            }
+            else {
+                $("#tblTDSPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(12).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            CountPayTotal();
+        });
+        $('#tblTDSPayGrid').on('change', '.chkRetpaysingle', function () {
+           // //debugger;
+            var row = $(this).closest('tr'); // get the row
+            var checkbox = row.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+            if (checkbox == false) {
+                $("#tblTDSPayGrid thead tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("th").eq(12).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            else {
+                var invalidamoutcount = 0;
+                var noofrows = $("#tblTDSPayGrid tbody tr").length;
+                var checkedrows = 0;
+                $("#tblTDSPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+                    var originalbalance = $.trim(currentRow.find("td").eq(10).html());
+                    var payamount = currentRow.find("td").eq(11).find("input[type='text']").val();
+                  //  //debugger;
+                    if (checkbox == true) {
+                        checkedrows = parseInt(checkedrows) + 1;
+                        if (!isNaN(payamount)) {
+                            if (parseFloat(payamount) > parseFloat(originalbalance)) {
+                                invalidamoutcount = parseInt(invalidamoutcount) + 1;
+                            }
+                        }
+                    }
+                });
+                if (parseInt(noofrows) == parseInt(checkedrows)) {
+                    $("#tblTDSPayGrid thead tr").each(function () {
+                        var currentRow = $(this);
+                        currentRow.find("th").eq(12).find("input[type='checkbox']").prop('checked', true);
+                    });
+                }
+                if (invalidamoutcount > 0) {
+                    $("#divTDSPayInfoMsg").text("");
+                    $("#divTDSPayInfoMsg").append("<div>Payment Amount is Greater Than Balance</div>");
+                    $("#divTDSPayInfoMsg").addClass("alert-danger");
+                    $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+
+                }
+                else {
+                    $("#divTDSPayInfoMsg").text("");
+                    $("#divTDSPayInfoMsg").addClass("hidden");
+                }
+            }
+            CountPayTotal();
+        });
+
+        $("#tblTDSPayGrid").on("keyup", "input[type='text']", function (event) {
+            var currentRow = $(this).closest("tr");
+            var colIndex = $(this).parent().index();
+            var rowindex = $(this).closest('tr').index();
+            // var CurrentAmt = $(this).closest("tr").val();
+            var Balance = $.trim($(this).closest("tr").find("td").eq(10).html());
+            var CurrentAmt = $(this).closest("tr").find("td").eq(11).find("input[type='text']").val();
+            if (!isNaN(CurrentAmt)) {
+                if (parseFloat(CurrentAmt) > parseFloat(Balance)) {
+                    $("#divTDSPayInfoMsg").text("");
+                    $("#divTDSPayInfoMsg").append("<div>Payment Amount is Greater Than Balance</div>");
+                    $("#divTDSPayInfoMsg").addClass("alert-danger");
+                    $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+
+                }
+                else {
+                    $("#divTDSPayInfoMsg").text("");
+                    $("#divTDSPayInfoMsg").addClass("hidden");
+                }
+            }
+            CountPayTotal();
+        });
+        
+    });
+    function InitializeformatTDSPayGrid() {
+        TDSPayGrid = $('#tblTDSPayGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+    }
+
+    function CountPayTotal() {
+        var invtotalamount = 0;
+        ////debugger;
+        $("#tblTDSPayGrid tbody tr").each(function () {
+            var currentRow = $(this);
+            var checkbox = currentRow.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+            var rowamount = currentRow.find("td").eq(11).find("input[type='text']").val();
+            if (checkbox == true && !isNaN(rowamount)) {
+                invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+            }
+        });
+
+        if (!isNaN(invtotalamount)) {
+            $("#txtFinalAmount").val(parseFloat(invtotalamount).toFixed(2));
+        }
+        else {
+            $("#txtFinalAmount").val(0);
+
+        }
+    }
+</script>

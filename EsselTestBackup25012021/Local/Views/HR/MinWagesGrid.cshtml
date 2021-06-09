@@ -1,0 +1,166 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.MinWageData>
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblMinWageGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="hidden">StateId</th>
+                    <th class="hidden">wageId</th>
+                    <th>Effective Date</th>
+
+                    <th>Skill Type</th>
+                    <th>StateName</th>
+                    <th>Amount</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Stateid)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.LabourWageId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EffectiveDate)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SkillType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StateName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @*<input type="button" class="editleave btn btn-md btn-danger" value="Edit">*@
+                        <input type="button" class="deleteWage btn btn-md btn-danger" value="Delete">
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+    $(document).ready(function () {
+        var MinWageGrid = null;
+        InitializetblMinWageGrid();
+        $("#tblMinWageGrid").on("click", ".deleteWage", function (event) {
+            //alert('deleted');
+            var row = $(this).closest("tr");
+            var id = $.trim(row.find("td").eq(1).html());
+            var stateid = $.trim(row.find("td").eq(2).html());
+            //$(this).closest("tr").remove();
+            var wagedata = {
+                Stateid: stateid,
+                LabourWageId: id
+            }
+            var data = {
+                MinimumWageData: wagedata,
+                StaffType: "Labour"
+            }
+            addFailMsg = "Error Occurred While Deleting.";
+            debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteSalaryHeadMinWages1',
+                data: { Statemame: state },
+                success: function (Data) {
+                    alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        row.remove();
+                        
+                       // RebindMinWageCategories();
+                        //RebindStates();
+                        //$("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+                       
+                        //$('#txtMinWageAmount').val("");
+                        //$("#ddlMinWageSkillName").prop('selectedIndex', 0);
+                        //var shcount = $("#tblSalaryHeadGrid tbody tr").length;
+                        //if (shcount > 0) {
+                        //    $("#divGridSalaryHead").removeClass('hidden');
+                        //}
+                        //else { $("#divGridSalaryHead").addClass('hidden'); }
+                    }
+                    else {
+                        $("#divMinWageInfoMsg").text(addFailMsg);
+                        $("#divMinWageInfoMsg").addClass("alert-danger");
+                        $("#divMinWageInfoMsg").removeClass("hidden alert-success");
+                    }
+                    //var shcount = $("#tblMinWageGrid tbody tr").length;
+                    //if (shcount > 0) {
+                    //    $("#MinWageGrid").removeClass('hidden');
+                    //}
+                    //else { $("#MinWageGrid").addClass('hidden'); }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divMinWageInfoMsg").text(addFailMsg);
+                    $("#divMinWageInfoMsg").addClass("alert-danger");
+                    $("#divMinWageInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+       });
+
+    });
+        function InitializetblMinWageGrid() {
+            leavesGrid = $('#tblMinWageGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Rules Found"
+            },
+                "createdRow": function (row, data, index) {
+
+                    //var oldcarryfwd = $.trim($('td:eq(1)', row).html());
+                    ////alert(oldstatus);
+                    //debugger;
+                    //if (oldcarryfwd === false) {
+                    //    $('td:eq(1)', row).html("No");
+
+                    //}
+                    //else { $('td:eq(1)', row).html("Yes"); }
+
+            },
+            pageLength: 10
+        });
+        }
+        //function RebindMinWageCategories() {
+
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/HR/GetCostCenterStatesForMinWage",
+        //        data: '{ }',
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: "json",
+
+        //        success: function (response) {
+        //            var ddl = $("#ddlSWCategory");
+        //            ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        //            $.each(response, function () {
+        //                ddl.append($("<option></option>").val(this['CategoryId']).html(this['CategoryName']));
+        //            });
+        //        },
+        //        failure: function (response) {
+        //        },
+        //        error: function (response) {
+        //        }
+        //    });
+        //}
+    </script>
+}

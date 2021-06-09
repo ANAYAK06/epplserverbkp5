@@ -1,0 +1,356 @@
+﻿
+@model List<EsselTestLocalApplication.Models.CCDetails>
+<div class="col-lg-12">
+    <div class="table-responsive">
+        <table id="tblCCDetails" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="hidden">Budget Id</th>
+                    <th class="hidden">CC Id</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">CC Code</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">CC Name</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">CC Type</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Budget Created Date</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Assigned Budget Value</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Budget Balance</th>
+                    @*<th>Amend</th>*@
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Actions</th>
+                    <th class="hidden">Year</th>
+                    <th class="hidden">CCSubtype</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CCBudgetId)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CC_Id)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.CC_Code)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.CC_Name)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.CC_Type)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.CreatedDate)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.BudgetValue)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.BalanceBudget)
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px">
+                        @*@if ((item.Status == "Approved") || (item.Status!= "Pending"))*@
+                        @if (item.Status == "Approved")
+                        {
+                            <a title="Amend" href="javascript:void(0)" data-toggle="modal" onclick="OpenAmendCCBudgetPopup(@item.CCBudgetId,@item.CC_Id, '@item.CC_Code', '@item.CC_Name','@item.CC_Type', @item.BudgetValue, @item.BalanceBudget, '@item.CreatedDate','@item.FYyear','@item.CC_SubType')">Amend</a>
+                            @*<a title="Close" href="javascript:void(0)" data-toggle="modal" onclick="OpenCloseCCBudgetPopup(@item.CCBudgetId,@item.CC_Id, '@item.CC_Code', '@item.CC_Name','@item.CC_Type', @item.BudgetValue, @item.BalanceBudget, '@item.CreatedDate');">Close</a>*@
+                        }
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.FYyear)
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.CC_SubType)
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <div id="CCAmendModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Amend Cost Center Budget</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <select class="form-control dropdown-toggle WdNo" id="ddlCCAmendType" onchange="CCAmendTypeChange()">
+                                    <option selected="selected" value="Select">-Select-</option>
+                                    <option value="Add">Add</option>
+                                    <option value="Substract">Substract</option>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divAmendCC">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Cost Center Code:</label>
+                                    <label id="lblCcAmendCode"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cost Center Name:</label>
+                                <label id="lblCcAmendName"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cost Center Type:</label>
+                                <label id="lblCcAmendType"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Year:</label>                               
+                                    <label id="lblamdccyear"></label>                               
+                            </div>
+                            <div class="col-md-4">
+                                <label>Budget Value:</label>
+                                <label id="lblCcAmendBudget"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Budget Balance:</label>
+                                <label id="lblCcAmendBudgetBalance"></label>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:10px">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Amount:</label>
+                                    <input type="text" id="AmendCCBudgetAmount" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="AmendCCVerification()" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-right">
+                                <button class="btn btn1 btn-success" id="btnAmendCCSubmit" onclick="SubmitAmendCCData()">Submit</button>
+                                <input type="text" id="txtCCBudgetid" style="display:none" />
+                                <input type="text" id="txtCCBudgetold" style="display:none" />
+                                <input type="text" id="txtCCBalanceOld" style="display:none" />
+                                <input type="text" id="txtCCBudgetamduid" style="display:none" />
+                                <input type="text" id="txtCCAmendYear" style="display:none" />
+                                <input type="text" id="txtCCAmendSubtype" style="display:none" />
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divAmendCCInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function OpenAmendCCBudgetPopup(budgetid, ccid, cccode, ccname, cctype, budgetvalue, budgetbalace, date, year, subtype) {
+        //clearCCAmend();
+        //debugger;
+        $('#CCAmendModal').modal('show');
+        $("#divAmendCC").addClass('hidden');
+        $("#lblCcAmendCode").text(cccode);
+        $("#lblCcAmendName").text(ccname);
+        $("#lblCcAmendBudget").text(budgetvalue);
+        $("#lblCcAmendBudgetBalance").text(budgetbalace);
+        $("#lblCcAmendType").text(cctype);
+        $("#txtCCBudgetold").val(budgetvalue);
+        $("#txtCCBalanceOld").val(budgetbalace);
+        $("#txtCCBudgetid").val(budgetid);
+        $("#txtCCAmendYear").val(year);
+        $("#AmendCCBudgetAmount").val("");
+        $("#btnAmendCCSubmit").attr("disabled", false);
+        $("#divAmendCCInfoMsg").text("");
+        $("#divAmendCCInfoMsg").addClass("hidden");
+        $("#txtCCAmendSubtype").val(subtype);
+        $("#lblamdccyear").text(year);
+    }
+    function SubmitAmendCCData() {
+        $("#btnAmendCCSubmit").attr("disabled", true);
+        isValid = true;
+        var errorMsg = "";
+        var type = $("#ddlCCAmendType option:selected").val();
+        var OldBudget = $("#txtCCBudgetold").val();
+        var OldBalance = $("#txtCCBalanceOld").val();
+        var extraAmount = $("#AmendCCBudgetAmount").val();
+        var amount = $("#AmendCCBudgetAmount").val();
+        if (amount === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Amount</p>";
+            isValid = false;
+        }
+        if (type == 'Substract') {
+            var substract = parseFloat(OldBalance) - parseFloat(amount);
+            if (substract < 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Substract Amount is greater than the Balance</p>";
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAmendCCInfoMsg").text("");
+            $("#divAmendCCInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAmendCCInfoMsg").addClass("alert-danger");
+            $("#divAmendCCInfoMsg").removeClass("hidden alert-success");
+            $("#btnAmendCCSubmit").attr("disabled", false);
+        }
+        else {
+            $("#btnAmendCCSubmit").attr("disabled", true);
+            $("#divAmendCCInfoMsg").text("");
+            $("#divAmendCCInfoMsg").addClass("hidden");
+            $("#btnAmendCCSubmit").attr("disabled", false);
+            $("#AmendCCBudgetAmount").attr("disabled", true);
+            //Insert Amend CC Budget in to db 
+            //debugger;
+            var nBudget = 0;
+            var nBalance = 0;
+            var amendAmount = 0;
+            var amendcc = null;
+            var SubType = $("#txtCCAmendSubtype").val();
+            var FnYear = $("#txtCCAmendYear").val();
+            var cctype1 = $("#lblCcAmendType").text();
+            if (type === 'Add') {
+                nBudget = parseFloat(OldBudget) + parseFloat(extraAmount);
+                nBalance = parseFloat(OldBalance) + parseFloat(extraAmount);
+                amendAmount = parseFloat(extraAmount);
+                amendcc = {
+                    CCCode: $("#lblCcAmendCode").text(),
+                    AmendedValue: amendAmount,
+                    AmendmentType: "Add",
+                    BudgetId: $("#txtCCBudgetid").val(),
+                    NewBudget: nBudget,
+                    NewBudgetBalance: nBalance,
+                    CreatedBy: $("#txtAssignCCBudgetCreatedby").val(),
+                    UID: $("#txtCCBudgetamduid").val(),
+                    FYYear: $("#txtCCAmendYear").val()
+                };
+            }
+            else if (type === 'Substract') {
+                nBudget = parseFloat(OldBudget) - parseFloat(extraAmount);
+                nBalance = parseFloat(OldBalance) - parseFloat(extraAmount);
+                amendAmount = parseFloat(extraAmount);
+                amendcc = {
+                    CCCode: $("#lblCcAmendCode").text(),
+                    AmendedValue: amendAmount,
+                    AmendmentType: "Substract",
+                    BudgetId: $("#txtCCBudgetid").val(),
+                    NewBudget: nBudget,
+                    NewBudgetBalance: nBalance,
+                    CreatedBy: $("#txtAssignCCBudgetCreatedby").val(),
+                    UID: $("#txtCCBudgetamduid").val(),
+                    FYYear: $("#txtCCAmendYear").val()
+                };
+            }
+            ////debugger;
+            addFailMsg = "Error Occurred While Amending Cost Center Budget.";
+            addSuccessMsg = "Budget Amended Successfully.";
+            $("#btnAmendCCSubmit").prop("disabled", true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Budget/SaveCCAmendBudget',
+                data: { amendCCBudget: amendcc },
+                success: function (Data) {
+                    if (Data.saveStatus === "true") {
+                        $("#divAmendCCInfoMsg").text(addSuccessMsg);
+                        $("#divAmendCCInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAmendCCInfoMsg").addClass("alert-success");
+
+                        //$.ajax({
+                        //    type: 'GET',
+                        //    dataType: 'html',
+                        //    url: '/Budget/ViewCCDetailsGrid',
+                        //    data: { CCSubType: SubType, Year: FnYear, CCType: cctype1 },
+                        //    success: function (Data) {
+                        //        var count1 = Object.keys(Data).length;
+                        //        if (count1 > 0) {
+                        //            $("#divAmendCCGrid").html(Data);
+                        //            $("#divAmendCCGrid").removeClass('hidden');
+                        //            $("#ddlAmendCCSubType").prop("disabled", false);
+                        //            $("#ddlAmendCCBType").prop("disabled", false);
+                        //           // $(".modal-backdrop fade in").empty();
+                        //        }
+                        //        else {
+                        //            $("#divAmendCCGrid").html('No Data Found');
+                        //            $("#divAmendCCGrid").removeClass('hidden');
+                        //            $("#ddlAmendCCSubType").prop("disabled", false);
+                        //            $("#ddlAmendCCBType").prop("disabled", false);
+                        //            $("#btnAmendCCSubmit").prop("disabled", false);
+                        //        }
+                        //      //  $('#CCAmendModal').modal('show');
+                        //    },
+                        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //        alert("error");
+                        //        $("#btnAmendCCSubmit").prop("disabled", false);
+                        //    }
+                        //});
+
+                    }
+                    else {
+                        $("#divAmendCCInfoMsg").text(Data.saveStatus);
+                        $("#divAmendCCInfoMsg").addClass("alert-danger");
+                        $("#divAmendCCInfoMsg").removeClass("hidden alert-success");
+                        $("#btnAmendCCSubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAmendCCInfoMsg").text(addFailMsg);
+                    $("#divAmendCCInfoMsg").addClass("alert-danger");
+                    $("#divAmendCCInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+
+        }
+
+    }
+    $(document).ready(function () {
+        var ccGrid = null;
+        InitializeCCDetailsGrid();
+        $("#CCAmendModal").on("hidden.bs.modal", function () {  
+           // alert();
+            var Fyear = ''; var SubType = '';
+            
+            var CCType = $("#ddlAmendCCBType option:selected").text();
+            if (CCType === 'Performing') {
+                 SubType = $("#ddlAmendCCSubType option:selected").val();}
+            else {
+                Fyear=$("#ddlAmendCCYear option:selected").val();
+            }            
+          $("#divAmendCCGrid").load('/Budget/ViewCCDetailsGrid?Year='+ Fyear + '&CCSubType=' + SubType+'&CCType=' + CCType+'');
+           
+        });
+        var SessionUID = '@Session["UID"]';
+        $("#txtCCBudgetamduid").val(SessionUID);
+    });
+    function InitializeCCDetailsGrid() {
+        dcaGrid = $('#tblCCDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 50,          
+        });
+
+    }
+</script>

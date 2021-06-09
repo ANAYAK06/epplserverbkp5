@@ -1,0 +1,337 @@
+﻿@model EsselTestLocalApplication.Models.HR.Attendance
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<style>
+    .txtcls {
+        text-align: center !important
+    }
+
+    .tdcls {
+        text-align: center !important ;
+        background-color: #202447;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CCName)
+                @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control dropdown-toggle", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divDate">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AttendanceDate)
+                @Html.TextBoxFor(model => model.AttendanceDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+       
+            <div class="table-responsive  w-100">
+                <table id="tblAttendanceGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                    <thead>
+                        <tr>
+
+                            <th class="tdcls">Empolyee ID</th>
+                            <th class="tdcls">Name</th>
+                            <th class="tdcls">Attendance Type</th>
+                            <th class="tdcls hidden">Attendance Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CCEmplistforDate)
+                        {
+                            <tr>
+
+                                <td class="txtcls">
+                                    @Html.DisplayFor(modelItem => item.EmpId)
+                                </td>
+
+                                <td class="txtcls">
+                                    @Html.DisplayFor(modelItem => item.EmpName)
+                                </td>
+                                <td class="txtcls">                                    
+                                    <select id="dropdowntipo" class="form-control">
+                                        <option value="0">-Select-</option>
+                                        @if (item.AttendanceType == "P")
+                                        {
+                                        <option value="P" selected>Present</option>
+                                            <option value="A">Absent</option>
+                                            <option value="PL">PaidLeave</option>
+                                        }
+                                        else if (item.AttendanceType == "PL")
+                                        {
+                                            <option value="P">Present</option>
+                                            <option value="A">Absent</option>
+                                            <option value="PL" selected>PaidLeave</option>
+                                        }
+                                        else
+                                        {
+
+                                            <option value="P">Present</option>
+                                            <option value="A" selected>Absent</option>
+                                            <option value="PL" >PaidLeave</option>
+                                        }
+                                        @*@if (item.AttendanceType == "Present")
+        {
+            <option value="P" selected>@item.AttendanceType</option>
+            <option value="A">Absent</option>
+        }
+        else if (item.AttendanceType == "Absent")
+        {
+            <option value="P">Present</option>
+            <option value="A" selected>Absent</option>
+        }*@
+                                    </select>
+                                </td>
+                                <td class="txtcls hidden">
+                                    @Html.DisplayFor(modelItem => item.AttendanceType)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+
+            </div>
+        
+    </div>
+    <div class="col-md-12 ">
+        <br />
+        <div class="row"><hr style="color:#000;height:2px" /></div>
+        <div class="table-responsive  w-100">
+            <table style="width:100%;border:1px solid gray" class="hover stripe nowrap example dataTable no-footer">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                        <th style="text-align:center;color:#fff"></th>
+                        <th style="text-align:center;color:#fff">Employee Name</th>
+                        <th style="text-align:center;color:#fff">Remarks </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int count2 = 1; }
+                    @foreach (var item in Model.ApprovedFlowData)
+                    {
+                        <tr>
+                            <th style="text-align:center" class="hidden">count2</th>
+                            @if (count2 == 1)
+                            {
+                                <th style="text-align:center">Created By:@item.Role</th>
+                            }
+                            else
+                            {
+                                <th style="text-align:center">Verified By </th>
+                            }
+                            <th style="text-align:center">@item.Username</th>
+                            <th style="text-align:center">@item.Note </th>
+
+                        </tr>
+                        count2++;
+                    }
+                </tbody>
+            </table>
+        </div>
+        <br />
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                <label>Status</label>
+                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppApprstatus" })
+
+            </div>
+        </div>
+        <div class="col-md-6 ">
+            <div class="form-group">
+                <label>Notes:</label><br />
+                <textarea rows="3" cols="60" class="form-control" id="AppAttendanceNote"></textarea>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <br /><br /><button onClick="ApproveStaffAttendance(@serializer.Serialize(Model))">Submit</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprAttendanceInfoMsg" class="alert alert-danger hidden"></div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+      //var AttendancedataGrid = null;
+      //  InitializeAttendancedataGrid(); 
+         var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppApprstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] !== "Return" && this['Type'] !== "Reject") {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            }
+                        });
+                    }                 
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                   
+                }
+        });
+
+    });
+    //function InitializeAttendancedataGrid() {
+    //    AttendancedataGrid = $('#tblAttendanceGrid').DataTable({
+    //        info: false,
+    //        destroy: false,
+    //        paging: false,
+    //        lengthChange: false,
+    //        searching: false,
+    //        ordering: false,
+    //        pagingType: false,
+    //        language: {
+    //            "emptyTable": "No Staff Found"
+    //        },
+    //        "createdRow": function (row, data, index) {
+
+    //        },
+
+    //        pageLength: 10
+    //    });
+    //}
+    function ApproveStaffAttendance(Model) {
+        console.log(Model);
+        isValid = true;
+        var errorMsg = "";
+        var appstatus = $("#AppApprstatus option:selected").text();
+        retnote = $("#AppAttendanceNote").val();
+        msg = $("#divApprAttendanceInfoMsg");
+
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        let employeeidscount = "";
+        $("#tblAttendanceGrid tbody tr").each(function () {
+            var currentRow = $(this);
+            var typeindex = currentRow.find("td").eq(2).find("select option:selected").index();
+            if (typeindex === 0) {
+                employeeidscount++;
+            }
+        });
+        if (employeeidscount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Attendance Type</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+
+           
+
+            let employeeids = "", attendancetype = "";
+            $("#tblAttendanceGrid tbody tr").each(function () {
+                var currentRow = $(this);
+
+                var empId = $.trim(currentRow.find("td").eq(0).html());
+                var type = currentRow.find("td").eq(2).find("select option:selected").val();
+                employeeids += empId + ",";
+                //if (type === "P") {
+                //    attendancetype += 1 + ",";
+                //}
+                //else {
+                //    attendancetype += 0 + ",";
+                //}
+                if (type === "P") {
+                    attendancetype += type + ",";
+                }
+                else if (type === "A") {
+                    attendancetype += type + ",";
+                }
+                else if (type === "PL") {
+                    attendancetype += type + ",";
+                }
+            });
+
+            var SaveData = {
+                CostCenter: Model.CostCenter,
+                AttendanceDate: Model.AttendanceDate,
+                EmployeeIds: employeeids,
+                Attendancetypes: attendancetype,
+                Action: appstatus,
+                ApprovalNote: retnote,
+                TransactionNo: Model.TransactionNo,
+            };
+            //debugger;
+            addFailMsg = "Error Occurred";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/HR/ApproveStaffAttendance",
+                data: JSON.stringify({ attendance: SaveData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus === "Submited") {
+                        $('#ApproveAttendanceMsgModal').modal('show');
+                        var msg = "<div>" + finalmsg + "</div>";
+                        $("#ApprAttendanceMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#ApprAttendanceMsg").html(msg);
+                        $('#ApproveAttendanceMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + " </div>";
+                    $("#ApprAttendanceMsg").html(msg);
+                    $('#ApproveAttendanceMsgModal').modal('show');
+                }
+            });
+
+        }
+
+    }
+</script>

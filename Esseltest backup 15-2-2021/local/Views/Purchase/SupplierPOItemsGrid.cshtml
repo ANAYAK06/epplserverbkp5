@@ -1,0 +1,157 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.SupplierPOInvoice
+<style>
+    .tdtextcls {
+        word-wrap: break-word;
+        word-break: break-all !important;
+        white-space: normal;
+    }
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: center !important;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+    .datacls {
+        font-weight: normal;
+        white-space: normal;
+        font-size: 11px;
+        text-align: center !important;
+    }
+</style>
+<div class="row">
+    <div class="table-responsive">
+        <table id="tblPOGrid" style="width:100%;overflow:hidden" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+
+                    <th class="tdcls"></th>
+                    <th class="tdcls">ItemCode</th>
+                    <th class="tdcls">ItemName</th>
+                    <th class="tdcls">Specification</th>
+                    <th class="tdcls">AccountHead</th>
+                    <th class="tdcls">SubAccountHead</th>
+                    <th class="tdcls">Units</th>
+                    <th class="tdcls">RcvQty</th>
+                    <th width="50px" class="tdcls">New Purchase Price</th>
+                    <th class="tdcls">Amount</th>
+                    <th width="50px" class="tdcls hidden">CGST%</th>
+                    <th class="tdcls hidden">CGSTAmt</th>
+                    <th width="50px" class="tdcls hidden">SGST%</th>
+                    <th class="tdcls hidden">SGSTAmt</th>
+                    <th width="50px" class="tdcls hidden">IGST%</th>
+                    <th class="tdcls hidden">IGSTAmt</th>
+                    <th class="tdcls hidden" >ID</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.MRRItemData)
+                {
+                <tr>
+                    <td style="text-align:center">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chksingle" name="chksingle"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.itemcode)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.itemname)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.specification)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.dcacode)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.subdcacode)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.units)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.Requestedqty)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.NewBasicprice)
+                    </td>
+                    <td class="datacls">
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+
+                    <td class="datacls hidden">
+                        @Html.DisplayFor(modelItem => item.CGSTpercent)
+                    </td>
+                    <td class="datacls hidden">
+                        @Html.DisplayFor(modelItem => item.CGSTAmt)
+                    </td>
+                    <td class="datacls hidden">
+                        @Html.DisplayFor(modelItem => item.SGSTpercent)
+                    </td>
+                    <td class="datacls hidden">@Html.DisplayFor(modelItem => item.SGSTAmt)</td>
+
+                    <td class="datacls hidden">
+                        @Html.DisplayFor(modelItem => item.IGSTpercent)
+                    </td>
+                    <td class="datacls hidden">@Html.DisplayFor(modelItem => item.IGSTAmt)</td>
+                    <td class="datacls hidden" >@Html.DisplayFor(modelItem => item.Id)</td>
+                </tr>
+
+                }
+            </tbody>
+            <tfoot>
+                <tr>  
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td  class="datacls">@Model.ItemTotal</td>
+                    <td class="datacls hidden"></td>
+                    <td  class="datacls hidden">@Model.CGSTTotal</td>
+                    <td class="datacls hidden"></td>
+                    <td style="text-align:center"  class="datacls hidden">@Model.SGSTTotal</td>
+                    <td  class="datacls hidden"></td>
+                    <td  class="datacls hidden">@Model.IGSTTotal</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+</div>
+<div>
+    <input type="hidden" id="txtitmetotal" value="@Model.ItemTotal" />
+    <input type="hidden" id="txtCGSTtotal" value="@Model.CGSTTotal" />
+    <input type="hidden" id="txtSGSTtotal" value="@Model.SGSTTotal" />
+    <input type="hidden" id="txtIGSTtotal" value="@Model.IGSTTotal" />
+    @if (Model.igstapplicable == true)
+    {<input type="hidden" id="txtGSTApplicable" value="true" />}
+    else
+    {
+    <input type="hidden" id="txtGSTApplicable" value="false" />
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        $("#txtBasicValue").val(@Model.ItemTotal);
+        $("#txtInvTotalCGSTAmt").val(@Model.CGSTTotal);
+        $("#txtInvTotalSGSTAmt").val(@Model.SGSTTotal);
+        $("#txtInvTotalIGSTAmt").val(@Model.IGSTTotal);
+        CountNetAndInvoiceAmount();
+    });
+</script>

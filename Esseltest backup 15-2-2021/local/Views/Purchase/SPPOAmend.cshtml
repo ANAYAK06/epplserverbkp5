@@ -1,0 +1,899 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOAmend
+@{
+    ViewBag.Title = "SPPOAmend";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .Minus {
+      
+        color: green;
+    }
+
+    .Plus {
+        color: red;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">SPPO Amend</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorCode)
+                                                    @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.VendorsList, "VendorCode", "VendorName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSpAmendVendor", onchange = "NewSPPOAmendVendorChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CCCode)
+                                                    @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSpAmendCC", onchange = "NewSPPOAmendCCChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.SPPONo)
+                                                    @Html.DropDownListFor(model => model.SPPONo, new SelectList(Model.POList, "SPPONo", "SPPONoDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSpAmendPONo", onchange = "NewSPPOAmendPOChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div id="divNAmendDates">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.AmendDate)
+                                                        @Html.TextBoxFor(model => model.AmendDate, "{0:dd/MM/yyyy}", new { @id = "txtNSpAmendDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.POValue)
+                                                        @Html.TextBoxFor(model => model.POValue, new { @id = "txtNSpAemndPOValue", @class = "form-control", type = "text", @readonly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.POBalance)
+                                                        @Html.TextBoxFor(model => model.POBalance, new { @id = "txtNSpAemndPOBalance", @class = "form-control", type = "text", @readonly = true })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="change-tab row" id="divOlditemDescGrid">
+                                            <div class="strike">
+                                                <span>Current Item Description</span>
+                                            </div>
+                                            <div class="tabledynamic">
+                                                <br />
+                                                <table id="OlditemDescTable" class="table order-list olditemDesc" cellspacing="1" cellpadding="1">
+                                                    <thead style="height:250px!important">
+                                                        <tr>
+                                                            <td class="tdcls"></td>
+                                                            <td class="tdcls"><label class="tdlabelcls" >S.No</label></td>
+                                                            <td style="text-align:center;color:#fff !important;padding:0px!important;width:500px"><label class="tdlabelcls">Item Description</label></td>
+
+                                                            <td class="tdcls"><label class="tdlabelcls">Unit</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Quantity</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Rate</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Type</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">AmendPOQty</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Amount</label></td>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="divnewitems">
+                                            <input type="submit" class="btn btn1 btn-primary" id="btnAddnewitems" onclick="AddNewItemsForAmend()" value="Add New Items" />
+                                            <input type="submit" class="btn btn1 btn-primary" id="btnRemovenewitems" onclick="RemoveNewItemsForAmend()" value="Remove New Items" />
+                                        </div>
+                                        <div class="row change-tab" id="divitemDescGrid">
+                                            <div class="strike">
+                                                <span>New Item Description</span>
+                                            </div>
+                                            <div class="tabledynamic">
+                                                <br />
+                                                <table id="AmenditemDescTable" class="table order-list AmenditemDesc" cellspacing="1" cellpadding="1">
+                                                    <thead style="height:250px!important">
+                                                        <tr>
+                                                            <td class="tdcls"></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">S.No</label></td>
+                                                            <td style="text-align:center;color:#fff !important;padding:0px!important;width:500px"><label class="tdlabelcls">Item Description</label></td>
+
+                                                            <td class="tdcls"><label class="tdlabelcls">Unit</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Quantity</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Our Rate</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">PRW Rate</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Rate</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls">Amount</label></td>
+                                                            <td class="tdcls"><label class="tdlabelcls"></label></td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="text-center;" colspan="2"></td>
+                                                            <td></td>
+                                                            <td>
+                                                                <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoNewAmendSPPOOItemDescGrid();" />
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="divTotals" style="margin-top:10px">
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AmendMinusValue)
+                                                @Html.TextBoxFor(model => model.AmendMinusValue, new { @id = "txtNSpAemndPOMinusValue", @class = "form-control Minus", type = "text", value = "0",readOnly="true" })
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AmendPlusValue)
+                                                @Html.TextBoxFor(model => model.AmendPlusValue, new { @id = "txtNSpAemndPOPlusValue", @class = "form-control Plus", type = "text", value = "0", readOnly = "true" })
+                                            </div> <div class="col-md-1"></div>
+                                            <div class="col-md-3">
+                                                @Html.LabelFor(model => model.AmendTotalValue)
+                                                @Html.TextBoxFor(model => model.AmendTotalValue, new { @id = "txtNSpAemndTotalValue", @class = "form-control", type = "text", value = "0", readOnly = "true" })
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                        </div>
+                                        <div class="row" style="margin-top:10px">
+                                            <div class="change-tab" id="divSpAmendTACGrid">
+                                                <div class="strike">
+                                                    <span>Terms & Conditions</span>
+                                                </div>
+                                                <div class="tabledynamic">
+                                                    <br />
+                                                    <table id="AmendTACTable" class="table order-list amendtactable">
+                                                        <thead>
+                                                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important"></label></td>
+                                                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important">S.No</label></td>
+                                                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Terms & Conditions</label></td>
+                                                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important"></label></td>
+                                                                <td></td>
+                                                                <td class="hidden"></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>                                                            
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td class="text-center;"></td>
+                                                                <td></td>
+                                                                <td>
+                                                                    <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoAmendSPPOOTACGrid();" />
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-top:10px">
+                                            <div class="text-right" style="margin-right:12px">
+                                                <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewSPPOAmend" onclick="SubmitNewSPPOAmendData()" value="Submit" />
+                                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetSPPOAmend()" id="btnResetNewSPPOAmend" />                                               
+                                            </div>
+                                        </div>
+                                        <div class="row text-center" style="margin-top:10px">
+                                            <div id="divNewSppoAmendInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divNAmendDates").addClass("hidden");
+        $("#divOlditemDescGrid").addClass("hidden");
+        $("#divTotals").addClass("hidden");
+        $("#divnewitems").addClass("hidden");
+        $("#divitemDescGrid").addClass("hidden");
+        $("#txtNSpAemndPOMinusValue").css("color", "green");
+        $("#txtNSpAemndPOPlusValue").css("color", "red ");
+        $("#btnRemovenewitems").addClass("hidden");
+        $("#btnSubmitNewSPPOAmend").addClass("hidden"); 
+        $("#divSpAmendTACGrid").addClass("hidden");
+        $("#txtNSpAmendDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        }).datepicker("setDate", new Date());
+
+        $("table.order-list.olditemDesc").on("keyup", ".txtAmendPOQty", function (event) {
+            var currentRow = $(this).closest("tr");
+            var typeindex = currentRow.find(".typeddl option:selected").index();
+            var actualqty = currentRow.find(".txtQuantity").val();
+            var amendQty = currentRow.find(".txtAmendPOQty").val();
+
+            if (typeindex === 0) {
+                $("#divNewSppoAmendInfoMsg").text("");
+                $("#divNewSppoAmendInfoMsg").append("<div>Select Type Before Adding Quantity</div>");
+                $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+                currentRow.find(".txtAmendPOQty").val(0);
+                currentRow.find(".txtoldAmount").val(0);
+
+            }
+            else if (parseFloat(actualqty) < parseFloat(amendQty)) {
+                $("#divNewSppoAmendInfoMsg").text("");
+                $("#divNewSppoAmendInfoMsg").append("<div>Invalid Amend Quantity</div>");
+                $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+                currentRow.find(".txtAmendPOQty").val(0);
+                currentRow.find(".txtoldAmount").val(0);
+
+            }
+            else {
+                $("#divNewSppoAmendInfoMsg").text("");
+                $("#divNewSppoAmendInfoMsg").addClass("hidden");
+                var type = currentRow.find(".typeddl  option:selected").val();
+                var rate = currentRow.find(".txtoldRate").val();
+
+                var ramt = currentRow.find(".txtoldAmount");
+                var rowamount = 0;
+                if (amendQty !== 0 && amendQty !== "") {
+                    rowamount = parseFloat(rate) * parseFloat(amendQty);
+                    ramt.val(parseFloat(rowamount).toFixed(2));
+
+                }
+
+            }
+            ValidateAmendPOValue();
+        });
+
+
+        $("table.order-list.olditemDesc").on("change", ".typeddl", function (event) {
+            var currentRow = $(this).closest("tr");
+            var typeindex = currentRow.find(".typeddl option:selected").index();
+            if (typeindex === 0) {
+                $("#divNewSppoAmendInfoMsg").text("");
+                $("#divNewSppoAmendInfoMsg").append("<div>Select Type Before Adding Quantity</div>");
+                $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+                currentRow.find(".txtAmendPOQty").val(0);
+                currentRow.find(".txtoldAmount").val(0);
+                ValidateAmendPOValue();
+            }
+            else {
+                ValidateAmendPOValue();
+            }
+
+        });
+        //New item desc table
+        $("table.order-list.AmenditemDesc").on("click", ".ibtnAmendNsppoItemDescDel", function (event) {
+            var tablerowcount = $("#AmenditemDescTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoToAmenditemDescTable();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    RemoveNewItemsForAmend();
+
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoToAmenditemDescTable();
+
+                }
+
+
+            }
+            ValidateAmendPOValue();
+        });
+
+
+        $("table.order-list.amendtactable").on("click", ".ibtnNsppoAmendTACDel", function (event) {
+            var tablerowcount = $("#TACTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoAmendTAC();
+
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                   // BindEmptyRowtoNewSppoTACGrid();
+
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoAmendTAC();
+                }
+
+
+            }
+        });
+    });
+
+
+    function ValidateAmendPOValue() {
+
+        var plus = 0;
+        var Minus = 0;
+        var Total = 0;
+        var ActualPOValue = $("#txtNSpAemndPOValue").val();
+        $("#OlditemDescTable tbody tr").each(function () {
+
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var amt = currentRow.find("td").eq(8).find("input[type='text']").val();
+            var type = currentRow.find("td").eq(6).find("select  option:selected").val();
+            if (check === true) {
+                if (type === "Add") {
+                    plus = parseFloat(plus) + parseFloat(amt);
+                }
+                if (type === "Substract") {
+                    Minus = parseFloat(Minus) + parseFloat(amt);
+                }
+            }
+
+        });
+        var newitemsfinalamount = 0;
+        var count = $("#AmenditemDescTable tbody tr").length;
+        if (count > 0) {
+            $("#AmenditemDescTable tbody tr").each(function () {
+
+                var currentRow = $(this);
+                var rowquantity = currentRow.find("td").eq(4).find("input[type='text']").val();
+                //var rowPWR = currentRow.find("td").eq(6).find("input[type='text']").val();
+                var rowrate = currentRow.find("td").eq(7).find("input[type='text']").val();
+                var rowamount = currentRow.find("td").eq(8).find("input[type='text']");
+                //var rate = currentRow.find("td").eq(7).find("input[type='text']");
+                var rowtotal = 0;
+
+                if (rowquantity !== "" && rowrate !== "") {
+                    rowtotal = parseFloat(rowquantity) * parseFloat(rowrate);
+                    rowamount.val(rowtotal);
+                    newitemsfinalamount = parseFloat(newitemsfinalamount) + parseFloat(rowtotal);
+                }
+                else { rowamount.val(""); }
+            });
+        }
+
+        var totalPlusamount = parseFloat(plus) + parseFloat(newitemsfinalamount);
+        $("#txtNSpAemndPOPlusValue").val(totalPlusamount);
+        $("#txtNSpAemndPOMinusValue").val(parseFloat(Minus).toFixed(2));
+        Total = parseFloat(ActualPOValue) + parseFloat(totalPlusamount)-parseFloat(Minus);
+        //Total = parseFloat(ActualPOValue) + parseFloat(totalPlusamount) - parseFloat(Minus);
+        $("#txtNSpAemndTotalValue").val(parseFloat(Total).toFixed(2));
+        if (parseFloat(ActualPOValue) > parseFloat(Total)) {           
+            $("#txtNSpAemndTotalValue").css("color", "red");
+        }
+        else {            
+            $("#txtNSpAemndTotalValue").css("color", "green");
+        }
+
+    }
+
+    function CountAmendItemDescAmount() {
+
+        var finalamount = 0;
+        $("#AmenditemDescTable tbody tr").each(function () {
+
+            var currentRow = $(this);
+            var rowquantity = currentRow.find("td").eq(4).find("input[type='text']").val();
+            var rowPWR = currentRow.find("td").eq(6).find("input[type='text']").val();
+            var rowrate = currentRow.find("td").eq(7).find("input[type='text']").val();
+            var rowamount = currentRow.find("td").eq(8).find("input[type='text']");
+            //var rate = currentRow.find("td").eq(7).find("input[type='text']");
+            var rowtotal = 0;
+
+            if (parseFloat(rowPWR) < parseFloat(rowrate)) { currentRow.find("td").eq(7).find("input[type='text']").css({ 'color': 'red' }); }
+            else { currentRow.find("td").eq(7).find("input[type='text']").css({ 'color': 'black' }); }
+
+            if (rowquantity !== "" && rowrate !== "") {
+                rowtotal = parseFloat(rowquantity) * parseFloat(rowrate);
+                rowamount.val(rowtotal);
+                finalamount = parseFloat(finalamount) + parseFloat(rowtotal);
+            }
+            else { rowamount.val(""); }
+        });
+        ValidateAmendPOValue();
+    }
+    function NewSPPOAmendPOChange() {
+
+        var vendorid = $("#ddlNSpAmendVendor option:selected").val();
+        var cc = $("#ddlNSpAmendCC option:selected").val();
+        var poIndex = $("#ddlNSpAmendPONo option:selected").index();
+        var po = $("#ddlNSpAmendPONo option:selected").val();
+        if (poIndex === 0) {
+            $("#divNAmendDates").addClass("hidden");
+            $("#divNAmendDates").addClass("hidden");
+            $("#divOlditemDescGrid").addClass("hidden");
+            $("#divTotals").addClass("hidden");
+            $("#divnewitems").addClass("hidden");
+            $("#divitemDescGrid").addClass("hidden");
+            $("#txtNSpAemndPOMinusValue").css("color", "green");
+            $("#txtNSpAemndPOPlusValue").css("color", "red");
+            $("#btnRemovenewitems").addClass("hidden");
+            $("#btnSubmitNewSPPOAmend").addClass("hidden");
+            $("#divSpAmendTACGrid").addClass("hidden");
+            $("#OlditemDescTable tbody tr").remove();
+            $("#AmenditemDescTable tbody tr").remove();
+            $("#divitemDescGrid").addClass("hidden");
+            $("#btnRemovenewitems").addClass("hidden");
+            $("#btnAddnewitems").removeClass("hidden");
+            $("#AmendTACTable tbody tr").remove();
+            $("#txtNSpAemndPOMinusValue").val(0);
+            $("#txtNSpAemndPOPlusValue").val(0);
+            $("#txtNSpAemndTotalValue").val(0);
+            $("#txtNSpAemndPOValue").val(0);
+            $("#txtNSpAemndPOBalance").val(0);
+            $("#txtNSpAmendDate").val("");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetSPPObyNoForAmend",
+                data: '{ServicePONo:"' + po + '",CCCode:"' + cc + '",VendorCode:"' + vendorid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        $("#OlditemDescTable tbody tr").remove();
+                        $("#AmenditemDescTable tbody tr").remove();
+                        $("#AmendTACTable tbody tr").remove();
+                        $("#btnRemovenewitems").addClass("hidden");
+                        $("#btnAddnewitems").removeClass("hidden");
+
+                        $("#txtNSpAmendDate").datepicker("option", "maxDate", response.SPPOStartDate);
+                        $("#txtNSpAmendDate").datepicker("option", "setDate", response.SPPOStartDate);
+                        $("#txtNSpAemndPOValue").val(response.TotalValue);
+                        $("#txtNSpAemndTotalValue").val(response.TotalValue);
+
+                        $("#txtNSpAemndPOBalance").val(response.Balance);
+                        $("#divNewSppoAmendInfoMsg").text("");
+                        $("#divNewSppoAmendInfoMsg").addClass("hidden");
+                        $("#divNAmendDates").removeClass("hidden");
+                        $("#divOlditemDescGrid").removeClass("hidden");
+                        $("#divTotals").removeClass("hidden");
+                        $("#divnewitems").removeClass("hidden");
+                        $("#divitemDescGrid").addClass("hidden");
+                        $("#btnSubmitNewSPPOAmend").removeClass("hidden");
+                        $("#divSpAmendTACGrid").removeClass("hidden");
+                        console.log(response.ItemDescList);
+                        var rowno = 1;
+                        $.each(response.ItemDescList, function () {
+                            var newRow = $("<tr>");
+                            var cols = "";
+                            cols += '<td  class="tbodytdcls"><ul class="list-inline"><li class="eagle-checkbox">';
+                            cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" checked>';
+                            cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+                            cols += '<td  class="tbodytdcls"><label style="margin-top:10%">' + rowno + '</label></td>';
+                            cols += '<td  class="tbodytdcls" ><textarea class="form-control txtitemdesc" rows="1" cols="50" disabled>' + this['Description'] + '</textarea></td>';
+                            cols += '<td  class="tbodytdcls" ><input type="text" class="form-control txtUnit" value=' + this['Unit'] + ' readOnly="true" disabled/></td>';
+                            cols += '<td  class="tbodytdcls" ><input type="text" class="form-control txtQuantity" value=' + this['Quantity'] + '  disabled/></td>';
+                            cols += '<td  class="tbodytdcls" ><input type="text" class="form-control txtoldRate" value=' + this['Rate'] + '  disabled/></td>';
+                            cols += '<td  class="tbodytdcls" style="width:110px"><select class="form-control dropdown-toggle typeddl">';
+                            cols += '<option value="Select" select="selected" >Select</option><option value="Add">Add</option><option value="Substract">Substract</option>';
+                            cols += '</select></td>';
+                            cols += '<td  class="tbodytdcls"><input type="text" class="form-control txtAmendPOQty" value="0" onkeypress="return ValidateAmount(this,event);"/></td>';
+                            cols += '<td  class="tbodytdcls" ><input type="text" class="form-control txtoldAmount" value="0" disabled/></td>';
+                            cols += '<td  class="tbodytdcls hidden" >' + this['SPPOItemId'] + '</td>';
+                            //cols += '<td  class="tbodytdcls" ><input type="text" class="form-control txtAmount" value="" onkeypress="return ValidateAmount(this,event);" onkeyup="CountOldItemDescAmendAmount()"/></td>';                       
+                            newRow.append(cols);
+                            $("table.order-list.olditemDesc").append(newRow);
+                            rowno++;
+                        });
+                        console.log(response.TermsList);
+                        var count2 = 0;
+                        $.each(response.TermsList, function () {
+                            var rowno1 = count2 + 1;
+                            var newRow = $("<tr>");
+                            var cols = "";
+                            cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox">';
+                            cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" checked class="eagle-check-input" readOnly="true"  >';
+                            cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+                            cols += '<td style="text-align:center" ><label style="margin-top:10%">' + rowno1 + '</label></td>';
+                            cols += '<td style="text-align:center" ><textarea class="form-control txtAmendtac" rows="1" cols="50"  onkeypress="return RestrictPipeSymbol(this,event);" disabled>' + this['Term'] + '</textarea></td>';
+                            cols += '<td style="text-align:center"></td>';
+                            cols += '<td style="text-align:center" class="hidden">Old</td>';
+                            newRow.append(cols);
+                            $("table.order-list.amendtactable").append(newRow);
+                            count2++;
+                        });
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+    }
+    function SubmitNewSPPOAmendData() {
+        var errorMsg = "";
+        isValid = true;
+        var vendoridIndex = $("#ddlNSpAmendVendor option:selected").index();
+        var vendorid = $("#ddlNSpAmendVendor option:selected").val();
+        var ccIndex = $("#ddlNSpAmendCC option:selected").index();
+        var cc = $("#ddlNSpAmendCC option:selected").val();
+        var poIndex = $("#ddlNSpAmendPONo option:selected").index();
+        var po = $("#ddlNSpAmendPONo option:selected").val();
+        var podate = $("#txtNSpAmendDate").val();
+
+        if (vendoridIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor</p>";
+            isValid = false;
+        }
+        if (ccIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (poIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select PO Number</p>";
+            isValid = false;
+        }
+        if (podate === "" || podate === null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select PO Amend Date</p>";
+            isValid = false;
+        }
+
+        var amendqtyccount = 0, amenttypecount = 0, qtyvalidcount = 0,olditemcheckcount=0;
+
+        $("#OlditemDescTable tbody tr").each(function () {
+
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var typeindex = currentRow.find("td").eq(6).find("select  option:selected").index();
+            var actualqty = currentRow.find("td").eq(4).find("input[type='text']").val();
+            var amendQty = currentRow.find("td").eq(7).find("input[type='text']").val();
+            if (check == true) {
+                if (typeindex === 0) {
+                    amenttypecount = amenttypecount + 1;
+                }
+                if (amendQty === "" || parseInt(amendQty) === 0) {
+                    amendqtyccount = amendqtyccount + 1;
+                }
+                if (parseFloat(actualqty) < parseFloat(amendQty)) {
+                    qtyvalidcount = qtyvalidcount + 1;
+                }
+                olditemcheckcount = olditemcheckcount + 1;
+            }
+
+        });
+        if (olditemcheckcount == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'> Verify at least one Old Item</p>";
+            isValid = false;
+        }
+        if (amendqtyccount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'> Select Amend Quantity for Old Items</p>";
+            isValid = false;
+        }
+        if (amenttypecount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Amend Type for Old Items</p>";
+            isValid = false;
+        }
+        if (qtyvalidcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Amend Quantity</p>";
+            isValid = false;
+        }
+
+        var desctablerowcount = $("#AmenditemDescTable tbody tr").length;
+        if (desctablerowcount > 0) {
+            //Desc GRID
+            var desccheckcount = 0, desccount = 0, unitcount = 0, qtycount = 0, oratecount = 0, prwcount = 0, ratecount = 0, ratehighcount = 0;
+            $("#AmenditemDescTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                var desc = currentRow.find("td").eq(2).find("textarea").val();
+                var units = currentRow.find("td").eq(3).find("input[type='text']").val();
+                var qty = currentRow.find("td").eq(4).find("input[type='text']").val();
+                var ourrate = currentRow.find("td").eq(5).find("input[type='text']").val();
+                var prwrate = currentRow.find("td").eq(6).find("input[type='text']").val();
+                var rate = currentRow.find("td").eq(7).find("input[type='text']").val();
+                if (check === false) { desccheckcount = desccheckcount + 1; }
+                if (desc === "") { desccount = desccount + 1; }
+                if (units === "") { unitcount = unitcount + 1; }
+                if (qty === "") { qtycount = qtycount + 1; }
+                if (ourrate === "") { oratecount = oratecount + 1; }
+                if (prwrate === "") { prwcount = prwcount + 1; }
+                if (rate === "") { ratecount = ratecount + 1; }
+                if (prwrate !== "" && rate !== "" && parseFloat(prwrate) < parseFloat(rate)) {
+                    ratehighcount = ratehighcount + 1;
+                }
+
+            });
+
+            if (desccount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Description</p>";
+                isValid = false;
+            }
+            if (unitcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Units</p>";
+                isValid = false;
+            }
+            if (qtycount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Quantity</p>";
+                isValid = false;
+            }
+            if (oratecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Our Rate</p>";
+                isValid = false;
+            }
+            if (prwcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter PRW Rate</p>";
+                isValid = false;
+            }
+            if (ratecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Rate</p>";
+                isValid = false;
+            }
+            if (desccheckcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check Item Description </p>";
+                isValid = false;
+            }
+            if (ratehighcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Rate is greater than PWR Rate </p>";
+                isValid = false;
+            }
+        }
+        var checkcount = 0, tcacount = 0, newtacrowcount = 0;
+        $("#AmendTACTable tbody tr").each(function () {
+
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var tca = currentRow.find("td").eq(2).find("textarea").val();
+            var type = currentRow.find("td").eq(4).html();
+            if (check === false) { checkcount = checkcount + 1; }
+            if (type !== "Old") {
+                if (tca === "") { tcacount = tcacount + 1; }
+                newtacrowcount = newtacrowcount + 1;
+            }
+        });
+        if (parseInt(newtacrowcount) === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Atleast One Terms & Conditions </p>";
+            isValid = false;
+        }
+        else {
+            if (tcacount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Terms and Conditions</p>";
+                isValid = false;
+            }
+            if (checkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check Terms & Conditions </p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divNewSppoAmendInfoMsg").text("");
+            $("#divNewSppoAmendInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+            $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divNewSppoAmendInfoMsg").text("");
+            $("#divNewSppoAmendInfoMsg").addClass("hidden");
+            CheckNewItemDescription();
+        }
+    }
+    function CheckNewItemDescription() {
+        var result = "";
+        var desctablerowcount = $("#AmenditemDescTable tbody tr").length;
+        var NewDescriptions = "";
+        if (desctablerowcount > 0) {
+            $("#AmenditemDescTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var desc = currentRow.find("td").eq(2).find("textarea").val();
+                NewDescriptions += desc + ",";
+            });
+        }
+        var itemdata = {
+            VendorCode: $("#ddlNSpAmendVendor option:selected").val(),
+            CCCode: $("#ddlNSpAmendCC option:selected").val(),
+            SPPONo: $("#ddlNSpAmendPONo option:selected").val(),
+            SubstractAmount: $("#txtNSpAemndPOMinusValue").val(),
+            NewItemDescriptions: NewDescriptions
+        };
+        var addFailMsg = "Error Occured While Submiting Details";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/CheckSPPOAmendDescriptions',
+            data: { sppoData: itemdata },
+            success: function (response) {
+                if (response.saveStatus === "Exists" || response.saveStatus === "NotExists" || response.saveStatus === "Substract PO Value is Invalid") {
+                    result = response.saveStatus;
+                    if (result === "NotExists") {
+                        //alert("Submiting");
+                        $("#divNewSppoAmendInfoMsg").text("");
+                        $("#divNewSppoAmendInfoMsg").addClass("hidden");
+
+                        SaveSPPOAmend();
+                    }
+                    else {
+                        var msg = "";
+                        if (result === "Exists") {
+                            msg = "Some of New Item Descriptions Already Exists";
+                        }
+                        else {
+                            msg = result;
+                        }
+                        $("#divNewSppoAmendInfoMsg").text("");
+                        $("#divNewSppoAmendInfoMsg").append("<div>" + msg + "</div>");
+                        $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                        $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                }
+                else {
+                    $("#divNewSppoAmendInfoMsg").text(addFailMsg);
+                    $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                    $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                $("#divNewSppoAmendInfoMsg").text(addFailMsg);
+                $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+        //alert(result);
+        //return result;
+    }
+    function SaveSPPOAmend() {
+        var Vendorcode = $("#ddlNSpAmendVendor option:selected").val();
+        var CC = $("#ddlNSpAmendCC option:selected").val();
+        var AmendDate = $("#txtNSpAmendDate").val();
+        var PONO = $("#ddlNSpAmendPONo option:selected").val();
+        var Returnamount = $("#txtNSpAemndPOMinusValue").val();
+        var Amendamount = $("#txtNSpAemndPOPlusValue").val();
+
+        var olddescids = "", olddesc = "", Oldunit = "", Oldqty = "", Oldrate = "", Oldamounts = "", OldType = "";
+        $("#OlditemDescTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var desc = currentRow.find("td").eq(2).find("textarea").val();
+            var units = currentRow.find("td").eq(3).find("input[type='text']").val();
+            var qty = currentRow.find("td").eq(4).find("input[type='text']").val();
+            var rate = currentRow.find("td").eq(5).find("input[type='text']").val();
+            var type = currentRow.find("td").eq(6).find("select  option:selected").val();
+            var amendQty = currentRow.find("td").eq(7).find("input[type='text']").val();
+            var amt = currentRow.find("td").eq(8).find("input[type='text']").val();
+            var id = currentRow.find("td").eq(9).html();
+            if (check === true) {
+                olddesc += desc + ",";
+                Oldunit += units + ",";
+                Oldqty += amendQty + ",";
+                Oldrate += rate + ",";
+                Oldamounts += amt + ",";
+                OldType += type + ",";
+                olddescids += id + ",";
+            }
+        });
+
+        var Newdesc = "", Newunit = "", Newqty = "", Neworate = "", Newprw = "", Newrate = "", Newamounts = "";
+        var desctablerowcount = $("#AmenditemDescTable tbody tr").length;
+        if (desctablerowcount > 0) {
+            $("#AmenditemDescTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var desc = currentRow.find("td").eq(2).find("textarea").val();
+                var units = currentRow.find("td").eq(3).find("input[type='text']").val();
+                var qty = currentRow.find("td").eq(4).find("input[type='text']").val();
+                var ourrate = currentRow.find("td").eq(5).find("input[type='text']").val();
+                var prwrate = currentRow.find("td").eq(6).find("input[type='text']").val();
+                var rate = currentRow.find("td").eq(7).find("input[type='text']").val();
+                var amt = currentRow.find("td").eq(8).find("input[type='text']").val();
+
+                Newdesc += desc + ",";
+                Newunit += units + ",";
+                Newqty += qty + ",";
+                Neworate += ourrate + ",";
+                Newprw += prwrate + ",";
+                Newrate += rate + ",";
+                Newamounts += amt + ",";
+            });
+        }
+        var RemarksData = "";
+        $("#AmendTACTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var tca = currentRow.find("td").eq(2).find("textarea").val();
+            var type = currentRow.find("td").eq(4).html();
+            if (type === "New") {
+                RemarksData += tca + "|";
+            }
+        });       
+        var SpData = {
+            AmendDate: AmendDate,
+            AmendAmount: Amendamount,
+            SPPONo: PONO,
+            SubstractAmount: Returnamount,
+            CCCode: CC,
+            VendorCode: Vendorcode,
+            OldItemIds: olddescids,
+            OldItemDescs: olddesc,
+            OldItemUnits: Oldunit,
+            OldItemQtys: Oldqty,
+            OldItemRates: Oldrate,
+            OldItemAmounts: Oldamounts,
+            OldItemAmendTypes: OldType,
+            NewItemDescriptions: Newdesc,
+            NewItemUnits: Newunit,
+            NewItemQtys: Newqty,
+            NewItemRates: Newrate,
+            NewItemAmounts: Newamounts,
+            NewItemClientRates: Neworate,
+            NewItemPWRRate: Newprw,
+            Terms: RemarksData,
+            Action: 'Add'
+        };
+        debugger;
+        addFailMsg = "Error Occurred While Adding New SPPO Amend";
+        addSuccessMsg = "SPPO Amend Details Added Successfully.";
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveNewSPPOAmend',
+            data: { sppoData: SpData },
+            success: function (Data) {
+                if (Data.saveStatus === 'Submited') {
+                    $("#divNewSppoAmendInfoMsg").text(addSuccessMsg);
+                    $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-danger");
+                    $("#divNewSppoAmendInfoMsg").addClass("alert-success");
+                    //$("#btnSubmitNewVendor").prop("disabled", true);
+                }
+                else {
+                    $("#divNewSppoAmendInfoMsg").text(Data.saveStatus);
+                    $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                    $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+                    //$("#btnSubmitNewVendor").prop("disabled", true);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divNewSppoAmendInfoMsg").text(addFailMsg);
+                $("#divNewSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divNewSppoAmendInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+</script>

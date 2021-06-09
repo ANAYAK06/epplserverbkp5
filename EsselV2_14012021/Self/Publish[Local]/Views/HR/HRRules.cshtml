@@ -1,0 +1,273 @@
+﻿@model EsselTestLocalApplication.Models.HR.HRRules
+@{
+    ViewBag.Title = "HRRules";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .rowspace {
+        margin-top: 5px;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">HR Rules</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                <ul class="nav nav-tabs" id="tabHRRules" role="tablist">
+                                    <li class="active"><a data-toggle="tab" href="#EmployeeCategory">Employee Category</a></li>
+                                    <li id="SalMinWage"><a data-toggle="tab" href="#SalaryHeads">Salary/Min Wages</a></li>
+                                    <li  id="liPFESI"><a data-toggle="tab" href="#PFAndESIAndTDS">PF,ESI</a></li>
+                                    <li id="liHolidays"><a data-toggle="tab" href="#Holidays">Holidays</a></li>
+                                    <li  id="liELorPaidLeaveRules"><a data-toggle="tab" href="#ELorPaidLeaveRules">EL/Paid Leave</a></li>
+                                    <li id="liGratuityRules"><a data-toggle="tab" href="#Gratuity">Gratuity</a></li>
+                                    <li  id="liAdvanceRules"><a data-toggle="tab" href="#LTAAndSalaryAdvance">LTA & Salary Advance</a></li>
+                                    <li  id="liNPRules"><a data-toggle="tab" href="#NoticePeriod">Notice Period </a></li>
+                                    <li  id="liTax"><a data-toggle="tab" href="#Tax">ProfessionalTax</a></li>
+                                    @*<li><a data-toggle="tab" href="#TDSAndPT">TDS,PT</a></li>*@
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="EmployeeCategory" class="tab-pane fade in active">
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-2"> @Html.LabelFor(model => model.EmpCategorysData.CategoryName)</div>
+                                            <div class="col-md-3">
+                                                @Html.TextBoxFor(model => model.EmpCategorysData.CategoryName, htmlAttributes: new { @class = "form-control", @id = "txtCategoryName" })
+                                            </div>
+                                        </div>
+                                        <div class="row rowspace">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-4 ">
+                                                <br />
+                                                <button class="btn btn1 btn-success" id="btnCategorySubmit" onclick="SubmitCategoryData()">Submit</button>
+                                                <button class="btn btn1 btn-success" id="btnCategoryReset" onclick="ResetCategoryData()">Reset</button>
+                                            </div>
+                                        </div>
+                                        <div class="row rowspace">
+                                            <div class="text-center">
+                                                <br />
+                                                <div id="divCategoryInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-4">
+                                                <div id="divGridCategories">
+                                                    @Html.Action("GetAllEmpCategories", "HR")
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2"></div>
+                                        </div>
+                                    </div>
+                                    <div id="SalaryHeads" class="tab-pane fade">
+                                        @*SalaryHeads*@
+                                        @*@Html.Action("SalaryMinWages", "HR")*@
+                                    </div>
+                                    <div id="PFAndESIAndTDS" class="tab-pane fade">
+                                        @*PFAndESIAndTDS*@
+                                       
+                                    </div>
+                                    <div id="Holidays" class="tab-pane fade">
+                                       
+                                        @*Holidays*@
+                                    </div>
+                                    <div id="ELorPaidLeaveRules" class="tab-pane fade">
+                                        @*ELorPaidLeaveRules*@
+                                        @*@Html.Action("ELorPaidLeave", "HR")*@
+                                    </div>
+                                    <div id="Gratuity" class="tab-pane fade">
+                                        @*Gratuity*@
+                                        @*@Html.Action("GratuityRules", "HR")*@
+                                    </div>
+                                    <div id="LTAAndSalaryAdvance" class="tab-pane fade">
+                                        @*LTAAndSalaryAdvance*@
+                                        @*@Html.Action("AdvanceRules", "HR")*@
+                                    </div>
+                                    <div id="NoticePeriod" class="tab-pane fade">
+                                        @*NoticePeriodAndMinWages*@
+                                        @*@Html.Action("NoticePeriod", "HR")*@
+                                    </div>
+                                    <div id="Tax" class="tab-pane fade">
+                                        
+                                        @*@Html.Action("TaxRules", "HR")*@
+                                    </div>                                   
+                                    </div>
+                                </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+<script>
+    $(document).ready(function () {
+        $("#SalMinWage").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/SalaryMinWages", null, function (data) {
+                $('#SalaryHeads').html(data);
+            });
+        });
+        $("#liHolidays").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/HolidaysRules", null, function (data) {
+                $('#Holidays').html(data);
+            });
+        });
+        $("#liELorPaidLeaveRules").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/ELorPaidLeave", null, function (data) {
+                $('#ELorPaidLeaveRules').html(data);
+            });
+        });
+        $("#liGratuityRules").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/GratuityRules", null, function (data) {
+                $('#Gratuity').html(data);
+            });
+        });
+        $("#liAdvanceRules").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/AdvanceRules", null, function (data) {
+                $('#LTAAndSalaryAdvance').html(data);
+            });
+        });
+        $("#liNPRules").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/NoticePeriod", null, function (data) {
+                $('#NoticePeriod').html(data);
+            });
+        }); 
+        $("#liTax").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/TaxRules", null, function (data) {
+                $('#Tax').html(data);
+            });
+        });
+        $("#liPFESI").on("click", function () {
+            //alert("Tab Clicked!");             
+            $.get("/HR/PFESIRules", null, function (data) {
+                $('#PFAndESIAndTDS').html(data);
+            });
+        });        
+      
+        
+    });
+
+    //Start of Category *************************************************************
+    function SubmitCategoryData() {
+        var errorMsg = "";
+        isValid = true;
+        
+        var name = $("#txtCategoryName").val();
+        if (name === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Category Name</p>";
+            isValid = false;
+        }
+       
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCategoryInfoMsg").text("");
+            $("#divCategoryInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCategoryInfoMsg").addClass("alert-danger");
+            $("#divCategoryInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCategoryInfoMsg").text("");
+            $("#divCategoryInfoMsg").addClass("hidden");
+
+            let catdata = {                
+                CategoryName: name,
+                Action: 'New'
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertNewEmpCategory',
+                data: { CategoryData: catdata },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {                      
+                        $("#divGridCategories").load('/HR/GetAllEmpCategories');
+                    }                    
+                    else {
+                        $("#divCategoryInfoMsg").text(Data.saveStatus);
+                        $("#divCategoryInfoMsg").addClass("alert-danger");
+                        $("#divCategoryInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divSalaryHeadInfoMsg").text(addFailMsg);
+                    $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+                    $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+
+        }
+    }
+    function ResetCategoryData() {
+        $("#txtCategoryName").val("");
+    }
+   
+
+    function SubmitPFESITDSData() {
+
+    }
+    function ResetPFESITDSData() {
+        location.reload();
+        $('.nav-tabs li:eq(2) a').tab('show');
+    }
+
+    
+    //others
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function IsNumeric(evt) {
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((iKeyCode < 48 || iKeyCode > 57))
+            return false;
+    }
+    
+   
+</script>
+
+
+

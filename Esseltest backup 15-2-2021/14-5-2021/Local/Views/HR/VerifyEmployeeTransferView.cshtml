@@ -1,0 +1,194 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.EmployeeTransfer>
+@foreach (var item in Model)
+{
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Employee Id:</label>
+                        <input type="text" class="form-control" value="@item.EmployeeId" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label>Employee Name:</label>
+                        <input type="text" class="form-control" value="@item.EmployeeName" readOnly="readOnly" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Relieving Cost Center:</label>
+                        <input type="text" class="form-control" value="@item.FromCC" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Joining Cost Center:</label>
+                        <input type="text" class="form-control" value="@item.ToCC" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Relieving Date:</label>
+                        <input type="text" class="form-control" value="@item.RelievingDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Joining Date:</label>
+                        <input type="text" class="form-control" value="@item.JoiningDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Remarks:</label>
+                        <input rows="3" cols="60" type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "Select", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprtransstatus" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="ApprTransferNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveTransfer('@item.lid')">Submit</button>                      
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprTransferInfoMsg-@item.lid" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    break;
+}
+<script type="text/javascript">
+    $(document).ready(function () {        
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Apprtransstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] == 'Return') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        });
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+    });
+    function ApproveTransfer(lid) {
+        ////debugger;
+        var appstatus = $("#Apprtransstatus").val();
+        var ReturnText = $("#ApprTransferNote").val();
+        Rid = "divApprTransferInfoMsg-" + lid;
+        msg = $("#" + Rid + "");
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (ReturnText == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Notes</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            //debugger;
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            addFailMsg = "Error Occurred While Verification";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/HR/ApproveEmployeeTransfer",
+                data: '{Rowid:"' + lid + '",Appstatus:"' + appstatus + '",Approvalnote:"' + ReturnText + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus === "Submitted") {
+                        $('#ApproveTransferAppMsgModal').modal('show');
+                        var msg = "<div>Employee Transfer " + finalmsg + "</div>";
+                        $("#ApproveTransferAppMsgModal").on("hide.bs.modal", function () {
+                            $("#divApprTransferGrid").load('/HR/VerifyEmployeeTransferGrid');
+                        });
+                        $("#ApprTransferappMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#ApprTransferappMsg").html(msg1);
+                        $('#ApproveTransferAppMsgModal').modal('show');
+                    }
+                },
+                failure: function (response) {
+
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprTransferappMsg").html(msg);
+                    $('#ApproveTransferAppMsgModal').modal('show');
+                },
+                error: function (response) {
+
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprTransferappMsg").html(msg);
+                    $('#ApproveTransferAppMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

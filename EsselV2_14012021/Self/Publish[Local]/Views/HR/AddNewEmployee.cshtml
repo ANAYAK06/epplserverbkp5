@@ -1,0 +1,837 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.EmployeeRegistration
+
+<style>
+    .disabledTab {
+        pointer-events: none;
+    }
+
+
+    table > tbody > tr > td {
+        padding: 0px !important;
+        /*line-height: 1.42857143;*/
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+
+    .strike1 > span {
+        position: relative;
+        text-align: center;
+        /* margin-right: 80%; */
+        display: block;
+        font-size: 15px;
+        border-radius: 10px;
+        /* width: 80px; */
+        width: 22% !important;
+        /* height: 80px; */
+        right: -93px;
+        padding: 5px;
+        /* margin: 30px; */
+        font-weight: bold;
+        background: #fff;
+        border: 2px solid #666;
+    }
+
+    * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .Addmorecls {
+        background-color: #0b630b !important;
+        color: #fff;
+    }
+</style>
+<div class="container col-md-12">
+    <div class="row" id="divMainData">       
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JoiningType)
+                    @Html.DropDownListFor(model => model.JoiningType, new SelectList(Model.EmpJoiningTypeList, "EJoiningType", "EJoiningType"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpjoinType", onchange = "NewEmpJoiningTypeChange()" })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Category)
+                    @Html.DropDownListFor(model => model.Category, new SelectList(Model.EmpCategoryList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpCategory" })
+                </div>
+            </div>
+            <div class="col-md-2" id="divNewOldUser">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OldEmpUsername)
+                    @Html.EditorFor(model => model.OldEmpUsername, new { htmlAttributes = new { @class = "form-control", @id = "txtOldEmpSearch", @onkeyup = "onchangeeventOldEmp();",
+                   @onKeyDown = "preventBackspace();" ,@onpaste = "return false;" ,
+                   style = "text-transform:uppercase" } })
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Appointmenttype)
+                    @Html.DropDownListFor(model => model.Appointmenttype, new SelectList(Model.EmpAppointmenttypeList, "EAppointmenttype", "EAppointmenttype"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpAppointType" })
+                </div>
+            </div>
+
+           
+
+
+        </div>
+
+    </div>
+    <div class="row"><hr style="margin-top:0px !important" /></div>
+    <div class="row" id="divNewEmpTabData">
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FirstName)
+                @Html.TextBoxFor(model => model.FirstName, htmlAttributes: new { @class = "form-control", @id = "txtNEmpfirstname", onkeypress = "return isValidSpecialCharacters(event)" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.LastName)
+                @Html.TextBoxFor(model => model.LastName, htmlAttributes: new { @class = "form-control", @id = "txtNEmplastname", onkeypress = "return isValidSpecialCharacters(event)" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.MiddleName)
+                @Html.TextBoxFor(model => model.MiddleName, htmlAttributes: new { @class = "form-control", @id = "txtNEmpmiddlename", onkeypress = "return isValidSpecialCharacters(event)" })
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DateofBirth)
+                @Html.TextBoxFor(model => model.DateofBirth, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtNEmpDateofbirth", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-1 text-left">
+            @Html.LabelFor(model => model.EmpAge, htmlAttributes: new { @class = "hidelabel" })
+            @Html.TextBoxFor(model => model.EmpAge, htmlAttributes: new { @class = "form-control", @id = "txtNEmpAge", @readOnly = "true" })
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Gender)
+                @Html.DropDownListFor(model => model.Gender, new SelectList(Model.EmpSexList, "ESex", "ESex"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpSex" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.MartialStatus)
+                @Html.DropDownListFor(model => model.MartialStatus, new SelectList(Model.EmpMaritalStatusList, "EMaritalStatus", "EMaritalStatus"),  htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpMaritalStatus" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DateofMarriage)
+                @Html.TextBoxFor(model => model.DateofMarriage, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtNempDateofMarriage", @readOnly = "true" })
+            </div>
+        </div>
+
+        <div class="row"><hr /></div>
+        <div class="row">
+            @*Tab data*@
+            <ul class="nav nav-tabs" id="tabGroups" role="tablist">
+                <li class="active disabledTab"><a data-toggle="tab" href="#PersonalInfo">Personal Info</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#Qualification">Qualification Details</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#EmploymentHistory">Employment History</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#UploadDoc">Upload Documents</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#JoiningDetails">Joining Details</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="PersonalInfo" class="tab-pane fade in active">
+                    <div id="divFamilyGrid" class="row">
+                        <div class="col-md-12">
+                            <button class="btn btn1 btn-success  Addmorecls" id="btnewFamilyMember" onclick="ViewAddNewFamilyModel()">Add Family Member</button>
+                            <button class="btn btn1 btn-success Addmorecls" id="btnewChildMember" onclick="ViewAddNewChildModel()">Add Children</button>
+                        </div>
+                        <div class="col-md-12" id="divFamilyGridData">
+                            @Html.Action("FamilyMembersGrid", "HR")
+                        </div>
+                    </div>
+                    <div id="divChildGrid" class="row">
+                        <div class="col-md-12" id="divChildGridData">
+                            @Html.Action("ChildrenGrid", "HR")
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                        <div class="col-md-12">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Nominee Details</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12"><hr class="separationHr" /></div>
+                        </div>
+                        <div class="col-md-12">
+                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeName)
+                                    @Html.TextBoxFor(model => model.NomineeName, htmlAttributes: new { @class = "form-control", @id = "txtNEmpNomineeName", onkeypress = "return isValidSpecialCharacters(event)" })
+                                </div>
+                            </div>
+                           
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeRelation)
+                                    @Html.TextBoxFor(model => model.NomineeRelation, htmlAttributes: new { @class = "form-control", @id = "txtNEmpNomineeRelation" })
+                                </div>
+                            </div>                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeDateofBirth)
+                                    @Html.TextBoxFor(model => model.NomineeDateofBirth, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtNEmpNomineeDateofBirth", @readOnly = "true" })
+                                </div>
+                            </div>                           
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeAge)
+                                    @Html.TextBoxFor(model => model.NomineeAge, htmlAttributes: new { @class = "form-control", @id = "txtNEmpNomineeAge", @readOnly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Contact Information</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12"><hr class="separationHr" /></div>
+                        </div>
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactWorkPhone)
+                                    @Html.TextBoxFor(model => model.ContactWorkPhone, new { @id = "txtNEmpContactWorkPhone", @class = "form-control", @type = "text", maxlength = "10", onkeypress = "return IsNumeric(event)" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactMobile)
+                                    @Html.TextBoxFor(model => model.ContactMobile, new { @id = "txtNEmpPresentAddress", @class = "form-control", @type = "text", maxlength = "10", onkeypress = "return IsNumeric(event)" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PlaceofBirth)
+                                    @Html.TextBoxFor(model => model.PlaceofBirth, new { @id = "txtNEmpPlaceofBirth", @class = "form-control", @type = "text" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.WorkEmail)
+                                    @Html.TextBoxFor(model => model.WorkEmail, new { @id = "txtNEmpContactMobile", @class = "form-control", @type = "text" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PermanentAddress)
+                                    @Html.TextAreaFor(model => model.PermanentAddress, new { @id = "txtNEmpPresentAddress", @class = "form-control", @type = "text", @rows = "2" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PresentAddress)
+                                    @Html.TextAreaFor(model => model.PresentAddress, new { @id = "txtNEmpPresentAddress", @class = "form-control", @type = "text", @rows = "2" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right"> <button class="btn btn1 btn-success" id="btnewPINext" onclick="ShowQualificationTab()">Next</button></div>
+                </div>
+                <div id="Qualification" class="tab-pane fade">
+                    <div class="row">
+                        <button class="btn btn1 btn-success  Addmorecls" id="btnewAcademic" onclick="ViewAddNewAcademicModel()">Add AcademicQualification</button>
+                        <button class="btn btn1 btn-success Addmorecls" id="btnewTechnical" onclick="ViewAddNewTechnicalModel()">Add Technical Qualification</button>
+                    </div>
+                    <div class="row" id="divAcademicQualGridData">
+                        @Html.Action("AcademicQualificationGrid", "HR")
+                    </div>
+                    <div class="row" id="divTechnicalGrid">
+                        @Html.Action("TechnicalQualificationGrid", "HR")
+                    </div>                   
+                    <div class="row text-right">                       
+                        <button class="btn btn1 btn-success" id="btnewQualificationBack" onclick="ShowPITab()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewQualificationNext" onclick="ShowHistoryTab()">Next</button>
+                    </div>
+                </div>
+                <div id="EmploymentHistory" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4 text-center">
+                            <div class="form-group">
+                                <input id="rbtExperience" name="ExperiencHistory" value="Experience" type="radio" style="font-weight:bold;">Experience
+                                <input id="rbtFresher" name="ExperiencHistory" value="Fresher" type="radio" checked>Fresher
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <div class="row" id="divExperienceHistorGrid">                       
+                            <div class="col-md-12">
+                                <button class="btn btn1 btn-success  Addmorecls" id="btnewExpHistory" onclick="ViewAddNewExpHistoryModel()">Add Experience History</button>
+
+                            </div>
+                            <div class="col-md-12" id="divExperienceHistory">
+                                @Html.Action("ExperienceHistoryGrid", "HR")
+                            </div>
+                             
+
+                           
+                        </div>
+                    <div class="row text-right">
+                        
+                        <button class="btn btn1 btn-success" id="btnewEmpHistoryBack" onclick="ShowQualificationTab()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewEmpHistoryNext" onclick="ShowUplDocTab()">Next</button>
+                    </div>
+                </div>
+                <div id="UploadDoc" class="tab-pane fade">
+                    <div class="col-md-12">
+                        <button class="btn btn1 btn-success  Addmorecls" id="btnewExp?Doc" onclick="ViewAddNewEmpDocumentModel()">Add Documents</button>
+
+                    </div>
+                    <div class="col-md-12" id="divDocuments">
+                        @Html.Action("EmpDocumentGrid", "HR")
+                    </div>                   
+                    <div class="row text-right">                       
+                        <button class="btn btn1 btn-success" id="btnewEmpUpDocBack" onclick="ShowHistoryTab()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewEmpUpDocNext" onclick="ShowJoiningDataTab()">Next</button>
+                    </div>
+                </div>
+                <div id="JoiningDetails" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DesignatedAs)
+                                @Html.DropDownListFor(model => model.DesignatedAs, new SelectList(Model.EmpRoleList, "UserRoleID", "UserRoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpDesignatedAs" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JoiningDate)
+                                @Html.TextBoxFor(model => model.JoiningDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtNEmpJoiningDate", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JobType)
+                                @Html.DropDownListFor(model => model.JobType, new SelectList(Model.EmpJobTypeList, "EJobType", "EJobType"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpJobType" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransitDay)
+                                @Html.DropDownListFor(model => model.TransitDay, new SelectList(Model.EmpTransitDaysList, "ETransitdayno", "ETransitdayno"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpTransitdays" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right">                     
+                        <button class="btn btn1 btn-success" id="btnewEmpJoiningDataBack" onclick="ShowUplDocTab()">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divAddNewEmpInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="FemilyMemberModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="ChildMemberModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="AcademicQualModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="TechnicalQualModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="ExperienceHistoryModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="EmpDocumentModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#divNewEmpTabData").addClass("hidden");
+        $("#divExperienceHistorGrid").addClass("hidden");
+        $("#divMainData").removeClass("hidden");
+        $("#divNewOldUser").addClass("hidden");
+        $('.nav-tabs li:eq(0) a').tab('show');
+        //$('.nav-tabs li:eq(1) a').addClass('disabledTab');
+        //$('.nav-tabs li:eq(2) a').addClass('disabledTab');
+        //$('.nav-tabs li:eq(3) a').addClass('disabledTab');
+        //$('.nav-tabs li:eq(4) a').addClass('disabledTab');
+        //$('.nav-tabs li:eq(5) a').addClass('disabledTab');
+        $("#txtNEmpDateofbirth").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+            onClose: function (selectedDate) {
+                empagecal();
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtNempDateofMarriage").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+        }).datepicker("setDate", new Date());
+        $("#txtNEmpNomineeDateofBirth").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+            onClose: function (selectedDate) {
+                EmpNomineeagecal();
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtNEmpJoiningDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+        }).datepicker("setDate", new Date());
+
+
+        $("#FemilyMemberModel").on("hidden.bs.modal", function () {
+            $("#divFamilyGridData").load('/HR/FamilyMembersGrid');
+        });
+        $("#ChildMemberModel").on("hidden.bs.modal", function () {
+            $("#divChildGridData").load('/HR/ChildrenGrid');
+        });
+        $("#AcademicQualModel").on("hidden.bs.modal", function () {
+            $("#divAcademicQualGridData").load('/HR/AcademicQualificationGrid');
+        });
+        $("#TechnicalQualModel").on("hidden.bs.modal", function () {
+            $("#divTechnicalGrid").load('/HR/TechnicalQualificationGrid');
+        });
+        $("#ExperienceHistoryModel").on("hidden.bs.modal", function () {
+            $("#divExperienceHistory").load('/HR/ExperienceHistoryGrid');
+        });
+        $("#EmpDocumentModel").on("hidden.bs.modal", function () {
+            $("#divDocuments").load('/HR/EmpDocumentGrid');
+        });
+        
+        $("input:radio[name='ExperiencHistory']").change(function () {
+            let expval = $(this).val();
+            if (expval === "Experience") {
+                $("#divExperienceHistorGrid").removeClass("hidden");
+            }
+            else {
+                $("#divExperienceHistorGrid").addClass("hidden");
+            }
+            ClearExpGrid();
+        });
+      
+      
+
+
+    });
+    
+    function ShowPITab() {
+        $('.nav-tabs li:eq(0) a').tab('show');
+    }
+    function ShowQualificationTab() {
+        $('.nav-tabs li:eq(1) a').tab('show');
+    }
+    function ShowHistoryTab() {
+        $('.nav-tabs li:eq(2) a').tab('show');
+    }
+    function ShowUplDocTab() {
+        $('.nav-tabs li:eq(3) a').tab('show');
+    }
+    function ShowJoiningDataTab() {
+        $('.nav-tabs li:eq(4) a').tab('show');
+    }
+    function NewEmpJoiningTypeChange() {
+        let jtypeindex = $("#ddlNEmpjoinType select:option").index();
+        let jtype = $("#ddlNEmpjoinType option:selected").val();
+        if (jtypeindex === 0) {
+            $("#divNewOldUser").addClass("hidden");
+        }
+        else if (jtype === "New") {
+            $("#divNewOldUser").addClass("hidden");
+        } else { $("#divNewOldUser").removeClass("hidden"); }
+    }
+    function empagecal() {
+        if ($("#txtNEmpDateofbirth").val() != "") {
+            var From_date = new Date($("#txtNEmpDateofbirth").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtNEmpAge").val(years);
+        }
+        else {
+            //alert("Select Date of Birth");
+            $("#txtNEmpAge").val("");
+            return false;
+        }
+    }
+    function EmpNomineeagecal() {
+        if ($("#txtNEmpNomineeDateofBirth").val() != "") {
+            var From_date = new Date($("#txtNEmpNomineeDateofBirth").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtNEmpNomineeAge").val(years);
+        }
+        else {
+            //alert("Select Date of Birth");
+            $("#txtNEmpNomineeAge").val("");
+            return false;
+        }
+    }
+    function IsNumeric(evt) {
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((iKeyCode < 48 || iKeyCode > 57))
+            return false;
+    }
+    
+    function ClearExpGrid() {
+        $("#ExperienceTable tbody tr").each(function () {
+            let currentRow = $(this);
+            currentRow.find("td").eq(1).find("input[type='text']").val("");
+            currentRow.find("td").eq(2).find("input[type='text']").val("");
+            currentRow.find("td").eq(3).find("input[type='text']").val("");
+            currentRow.find("td").eq(4).find("input[type='text']").val("");
+        });
+    }
+    ///end of Experience info grid//
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function isValidSpecialCharacters(event) {
+        var character = String.fromCharCode(event.keyCode);
+        return !/[~`!#$%\^&*()+=\-\[\]\\';,/{}|\\":<>\?]/g.test(character);
+    }
+    function ViewAddNewFamilyModel() {
+        debugger;
+        var empgenderindex = $("#ddlNEmpSex option:selected").index();
+        if (empgenderindex === 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append( "<div>Select Employee Gender</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/HR/AddEmpFamilyMember",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#FemilyMemberModel').html(data);
+                    $('#FemilyMemberModel').modal();
+                }
+            });
+
+            ClearNewFamilyMemberModel();
+        }
+    }
+
+    function ClearNewFamilyMemberModel() {
+       
+        $("#btnewFMSubmit").prop('disabled', false);
+        $("#divAddNewFMInfoMsg").text("");
+        $("#divAddNewFMInfoMsg").addClass("hidden");
+        $("#txtfamilymembername").val("");
+        $("#txtfamilymemberdob").val("");
+        $('#txtfamilymemberage').val("");
+        $("#ddlfamilymembergender").prop('selectedIndex', 0);;
+        $("#ddlfamilymemberrelation").prop('selectedIndex', 0);;
+        $("#txtfamilymemberwork").val("");
+        $("#txtfamilymembermobileno").val("");
+    }
+    function ViewAddNewChildModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpChildMember",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#ChildMemberModel').html(data);
+                $('#ChildMemberModel').modal();
+            }
+        });
+
+        ClearChildMemberModel();
+    }
+    function ClearChildMemberModel() {
+        $("#btnewChildSubmit").prop('disabled', false);
+        $("#divAddChildInfoMsg").text("");
+        $("#divAddChildInfoMsg").addClass("hidden");
+        $("#txtChildName").val("");
+        $("#txtChildDateofBirth").val("");
+        $('#txtChildAge').val("");
+        $("#ddlChildGender").prop('selectedIndex', 0);
+        $("#ddlChildmaritalstatus").prop('selectedIndex', 0);
+    }
+
+    function ViewAddNewAcademicModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpAcademicQualification",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#AcademicQualModel').html(data);
+                $('#AcademicQualModel').modal();
+            }
+        });
+
+        ClearNewAcademicQualificationModel();
+    }
+    function ClearNewAcademicQualificationModel() {
+        $("#divAddNewAQInfoMsg").text("");
+        $("#divAddNewAQInfoMsg").addClass("hidden");
+        //$("#txtAQAcademicClass").val("");
+        $("#ddlNEmpDegreeName").prop('selectedIndex', 0);
+        //$("#ddlChildmaritalstatus").prop('selectedIndex', 0);
+        $("#txtAQNameofUniversity").val(""); 
+        //$('#txtAQFromYear').val("");
+        //$('#txtAQToYear').val("");
+        $("#ddlAQFromYear").prop('selectedIndex', 0);
+        $("#ddlAQToYear").prop('selectedIndex', 0);
+        $('#txtAQPercentage').val("");
+        $("#btnewAQSubmit").prop('disabled', false);
+    }
+    function ViewAddNewTechnicalModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpTechnicalQualification",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#TechnicalQualModel').html(data);
+                $('#TechnicalQualModel').modal();
+            }
+        });
+
+        ClearNewTechnicalQualificationModel();
+    }
+    function ClearNewTechnicalQualificationModel() { 
+        $("#divAddNewtQInfoMsg").text("");
+        $("#divAddNewtQInfoMsg").addClass("hidden");
+        $("#txtTechnicalSkill").val("");
+        $("#txtExperienceYears").val("");
+        $("#btnewTQSubmit").prop('disabled', false);
+    }
+
+    function ViewAddNewExpHistoryModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpExperienceHistory",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#ExperienceHistoryModel').html(data);
+                $('#ExperienceHistoryModel').modal();
+            }
+        });
+
+        ClearNewExperienceHistorynModel();
+    }
+    function ClearNewExperienceHistorynModel() {
+        $("#divAddNewEHInfoMsg").text("");
+        $("#divAddNewEHInfoMsg").addClass("hidden");
+        $("#txtOrganisationName").val("");
+        //$("#txtExpHistoryFromYear").val("");
+        //$("#txtExpHistoryToYear").val("");
+        $("#ddlExpHistoryFromYear").prop('selectedIndex', 0);
+        $("#ddlExpHistoryToYear").prop('selectedIndex', 0);
+        $("#txtExpHistoryRole").val("");
+        $("#btnewEHSubmit").prop('disabled', false);
+    }
+    function ViewAddNewEmpDocumentModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpDocument",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#EmpDocumentModel').html(data);
+                $('#EmpDocumentModel').modal();
+            }
+        });
+
+        ClearNewDocumentModel();
+    }
+    function ClearNewDocumentModel() {
+        $("#divAddNewDocInfoMsg").text("");
+        $("#divAddNewDocInfoMsg").addClass("hidden");
+       
+        $("#DocumentId").val("");
+        $("#ddlNDocumentName").prop('selectedIndex', 0);
+        //$("#txtDocName").val("");
+        $("#txturl").val("");
+        $("#btnewDocSubmit").prop('disabled', false);
+        $('#user_img').attr('src', "");
+    }
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+    function onchangeeventOldEmp() {
+        var catindex = $("#ddlNEmpCategory option:selected").val();
+        var cat = $("#ddlNEmpCategory option:selected").text();
+        var previxvalue = $("#txtOldEmpSearch").val();
+        if (catindex === 0) { }        
+        else {
+            debugger;
+            if (previxvalue != "") {
+                //$("#divIndentLDInfoMsg").text("");
+                //$("#divIndentLDInfoMsg").addClass("hidden");
+                $("#txtOldEmpSearch").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/HR/GetOldEmpForRejoin',
+                            data: '{prefix:"' + request.term + '", Category:"' + cat + '"}',
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    debugger;
+                                    return { label: item.FirstName, value: item.FirstName };
+                                }))
+                            },
+                            error: function (data) {
+                                alert(data.responseText);
+                            },
+                            failure: function (data) {
+                                alert(data.responseText);
+                            }
+                        });
+                    },
+                });
+            }
+            //else {
+            //    $("#ddlLDItemSelectiontype").prop('selectedIndex', 0);
+            //    $("#divIndentLDInfoMsg").text("");
+            //    $("#divIndentLDInfoMsg").addClass("hidden");
+            //}
+        }
+    }
+                
+        
+    
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

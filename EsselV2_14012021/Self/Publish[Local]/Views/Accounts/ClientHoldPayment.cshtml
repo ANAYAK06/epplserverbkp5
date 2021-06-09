@@ -1,0 +1,400 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.HoldPayment
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ClientHoldPayment</title>
+</head>
+<body>
+    <div class="row">
+        <form onsubmit="return false">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" value="@Model.BankTransactionRefNo" id="txttransrefno" />
+                    @if (Model.Action=="Update")
+                    {
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientCode)
+                                @Html.TextBoxFor(model => model.ClientCode, new { @id = "txtHoldPayClient", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divRetPaySubclient">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubClientCode)
+                                @Html.TextBoxFor(model => model.SubClientCode, new { @id = "txtHoldPaySubClient", @class = "form-control" })
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientCode)
+                                @Html.DropDownListFor(model => model.ClientCode, new SelectList(Model.HoldClientList, "ClientCode", "ClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPayClient", onchange = "HoldPayClientChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divHoldPaySubclient">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubClientCode)
+                                @Html.DropDownListFor(model => model.SubClientCode, new SelectList(Model.HoldsubClientList, "SubClientCode", "SubClientCodename"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPaysubClient", onchange = "HoldPaySubClientChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divHoldPayCC">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CCCode)
+                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.HoldCCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPayCC", onchange = "HoldCCChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divHoldPayPO">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PO)
+                                @Html.DropDownListFor(model => model.PO, new SelectList(Model.HoldPOList, "ClientPOId", "PONumber"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPayPO", onchange = "HoldPayPOChange()" })
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-12" id="divHoldpayIncDetails">
+                    <div class="strike">
+                        <span>Invoice Details</span>
+                    </div>
+                    <div class="">
+                        <div class="tabledynamic">
+                            <br />
+                            <table id="HoldPayInvTable" class="table order-list holdpayinv" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="Holdhdrowcount hidden">Invoice No</td>
+                                        <td style="text-align:center;font-weight:bold" class="Holdhdcheckall">
+                                            <ul class="list-inline">
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input chkholdselectall" id="idHoldchkselectall" name="Holdchkselectall">
+                                                        <span class="eagle-check-indicator"></span>
+                                                        <span class="eagle-check-description"></span>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="Holdhdinvno">Invoice No</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="Holdhdinvpo">PO Number</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="Holdhdinvdate">Invoice Date</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="Holdhdinvbalance">Hold Balance</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Action == "Update")
+                                    {
+                                        foreach (var item in Model.HoldInvoiceList)
+                                        {
+                                            <tr>
+                                                <td style="text-align:center" class="hidden"></td>
+                                                <td style="text-align:center">
+                                                    <ul class="list-inline">
+                                                        <li class="eagle-checkbox">
+                                                            <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chkRetpayInv" id="idchkselectall" name="chkselectall"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                                <td style="text-align:center">@item.ClientInvoiceNo</td>
+                                                <td style="text-align:center">@item.PONumber</td>
+                                                <td style="text-align:center">@item.InvoiceDate</td>
+                                                <td style="text-align:center">@item.HoldBalance</td>
+                                            </tr>
+                                        }
+
+                                    }
+                                </tbody>
+                                <tfoot>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12" id="divHoldPaymentsection">
+                    <div class="col-md-12">
+                        <hr style="margin-top:0px;margin-bottom:2px" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">                                
+                                    @Html.LabelFor(model => model.BankName)
+                                    @Html.DropDownListFor(model => model.BankName, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPayBank", onchange = "HoldPaymodeChange()" })                              
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">                             
+                                    @Html.LabelFor(model => model.ModeOfPay)
+                                    @Html.DropDownListFor(model => model.ModeOfPay, new SelectList(Model.HoldModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPaymode", onchange = "HoldPaymodeChange()" })
+                              
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">                               
+                                    @Html.LabelFor(model => model.No)
+                                    @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtHoldPayNo" })
+                                    <select class="form-control dropdown-toggle RetPayNo" id="ddlHoldPayNo">
+                                        <option selected="selected" value="Select">-Select-</option>
+                                    </select>                               
+                                </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReturnPayDate)
+                                @Html.TextBoxFor(model => model.ReturnPayDate, "{0:dd/MM/yyyy}", new { @id = "txtHoldPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtHoldPayRemarks", @class = "form-control", @rows = "3" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PaymentAmount)
+                                @Html.TextBoxFor(model => model.PaymentAmount, new { @id = "txtHPayAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", value="" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <input type="text" value="0" id="txtClientHoldRoleId" style="display:none" />
+                            @if (Model.Action != "Update")
+                            {
+                                <button class="btn btn1 btn-success" id="btnHoldPaySubmit" onclick="SubmitHoldayData()">Submit</button>
+                                <button class="btn btn1 btn-success" id="btnHoldPayReset" onclick="ResetHoldPayData()">Reset</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn1 btn-success" id="btnUpHoldPaySubmit" onclick="UpdateHoldPayData(@Model.BankTransactionRefNo)">Submit</button>
+                                <input id="txtUpmodeofpay" type="hidden" value="@Model.ModeOfPay" />
+                                <input id="txtUpbank" type="hidden" value="@Model.Bank" />
+                            }
+                            <input id="txtHoldpaydate" value="" style="width:1px;display:none" />
+                            <input id="txtHoldinvtotal" value="" style="width:1px;display:none" />
+                            <input id="txtoldinvoicenos" value="" style="width:1px;display:none" />
+                            <input id="txtoldholdamounts" value="" style="width:1px;display:none" />
+                            <input id="txtHoldCreatedby" style="width:1px;display:none" />
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <br/>
+                            <div id="divHoldPayInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+       // alert(@Model.BankTransactionRefNo);
+        var Sessioncreated = '@Session["Createdby"]';
+        var RoleID = '@Session["Roleid"]';
+        $("#txtClientHoldRoleId").val(RoleID);
+        $("#txtHoldCreatedby").val(Sessioncreated); 
+        if ('@Model.Action' == "New") {
+            $("#txtHoldPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtHoldpaydate").val(selectedDate);
+                    HoldPaymentDateValidation();
+                }
+            }).datepicker("setDate", new Date());
+        }
+        //alert('@Model.Action');
+        if ('@Model.Action' == "Update") {           
+           // var date = '@Model.PaymentDate';
+            //var date1 = date.split('');            
+            //var idate = date.toString().split(' ');
+            //var idate1 = idate.toString().split(' '); 
+            //var tdate = "'" + idate1 + "'";
+            //var tdate1 = moment(tdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+
+            $("#txtHoldPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtHoldpaydate").val(selectedDate);
+                    HoldPaymentDateValidation();
+                }
+            }).datepicker("setDate", '@Model.ReturnPayDate');
+            //alert('@Model.PaymentDate');
+            var mode = '@Model.ModeOfPay';
+            var bank = '@Model.Bank';
+
+            var fulltotal = $("#txtHPayAmount").val();
+            var total = parseFloat(fulltotal).toFixed(2);
+            $("#txtHPayAmount").val(total);
+            $("#ddlHoldPaymode").find("option:contains('" + mode+ "')").each(function () {
+                if ($(this).text() == mode) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#ddlHoldPayBank").find("option:contains('" + bank + "')").each(function () {
+                if ($(this).text() == bank) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            
+            $("#btnHoldPayReset").addClass('hidden');
+            var rowno = 1;
+            var oldinvoiceno = '', oldholdamounts = '';
+            $("#HoldPayInvTable tbody tr").each(function () {               
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(rowno);
+                currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                var invoiceno = currentRow.find("td").eq(2).html();
+                var amount = currentRow.find("td").eq(5).html();
+                oldinvoiceno += invoiceno + ",";
+                oldholdamounts += amount + ",";
+                rowno++;
+            });
+            $("#txtoldinvoicenos").val(oldinvoiceno);
+            $("#txtoldholdamounts").val(oldholdamounts);
+            $("#HoldPayInvTable thead tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+            });
+            //show or hide payemnt txt or ddl
+            var modeofpay = $("#txtUpmodeofpay").val();
+            if (modeofpay== "Cheque") {
+                $("#txtHoldPayNo").addClass('hidden');
+                $("#ddlHoldPayNo").removeClass('hidden');
+                var bank = $("#txtUpbank").val();
+                var chequeno = $("#txtHoldPayNo").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetChequeNos",
+                    data: '{bankname:"' + bank + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        if (count > 0) {
+                            var ddlHoldPayNo = $("#ddlHoldPayNo");
+
+                            ddlHoldPayNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                var dbno = this['Cheque_No'];
+                                if (chequeno == dbno) {
+                                    ddlHoldPayNo.append($("<option selected='selected'></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                                }
+                                else { ddlHoldPayNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No'])); }
+
+                            });
+                            ddlHoldPayNo.append($("<option selected='selected'></option>").val(@Model.chequeid).html(chequeno));
+                        }
+                   
+                    },
+                    failure: function (response) {
+                    
+                    },
+                    error: function (response) {
+                     
+                    }
+                });
+
+            }
+            else {
+                $("#txtHoldPayNo").removeClass('hidden');
+                $("#ddlHoldPayNo").addClass('hidden');
+            }
+        }
+        else {
+            //alert('New');
+            $("#divCRec_InsType").addClass('hidden');
+            $("#divRetpayIncDetails").addClass('hidden');
+            $("#divRetentionPayment").addClass("hidden");
+            $("#divRetPaymentsection").addClass("hidden");
+            $('#txtHoldPayDate').css('background-color', 'transparent');
+            $("#divHoldPayment").addClass('hidden');
+
+            $("#HoldPayInvTable thead tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+            });
+        }
+        $('#HoldPayInvTable').on('change', '.chkholdpayInv', function () {
+            var row = $(this).closest('tr'); // get the row
+            var checkbox = row.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+            if (checkbox == false) {
+                $("#HoldPayInvTable thead tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            else {
+
+                var noofrows = $("#HoldPayInvTable tbody tr").length;
+                var checkedrows = 0;
+                $("#HoldPayInvTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    if (checkbox == true) {
+                        checkedrows = parseInt(checkedrows) + 1;
+                    }
+                });
+                ///  alert(noofrows + "---" + checkedrows);
+                if (parseInt(noofrows) == parseInt(checkedrows)) {
+                    $("#HoldPayInvTable thead tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                        currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                    });
+
+                }
+
+            }
+            //var rowamount = currentRow.find("td").eq(5).html();
+            CountHoldPayTotal();
+        });
+        $('#HoldPayInvTable thead tr').on('change', '.chkholdselectall', function () {
+            
+            var row = $(this).closest('tr'); // get the row
+            var headcheckbox = row.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+            if (headcheckbox == true) {
+                $("#HoldPayInvTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                });
+            }
+            else {
+                $("#HoldPayInvTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            CountHoldPayTotal();
+        });
+      
+    });
+   
+</script>

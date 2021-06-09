@@ -1,0 +1,246 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AmendCCBudget
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CCAmendBudgetView</title>
+    @Scripts.Render("~/bundles/Budget")
+    <script>
+        $(document).ready(function () {
+            if (@Model.Status != "0") {
+                var Roleid = '@Session["Roleid"]';
+                var Mid = $("#txtMOID").val();
+               // alert(Mid);
+                $.ajax({
+                    type: "POST",
+                    url: "/AccountsApproval/GetApprovalstatus",
+                    data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        if (count > 0) {
+                            var ddlaprovalstatus = $("#AppCCAmendstatus");
+                            ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                            $.each(response, function () {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            });
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+            var cid = $("#currentccAmendid").val();
+            //amenddateid = "Amenddate-" + cid;
+            //amenddate = $("#" + amenddateid + "").val();
+            ////alert(amenddate);
+            //var adate = "'" + amenddate + "'";
+            //var adate1 = moment(adate, "DDMMYYYY").format('DD-MMM-YYYY');
+            //$("#" + amenddateid + "").val(adate1);
+            //$("#currentccAmendid").val("");
+        });
+    </script>
+</head>
+<body>
+    <div class="col-md-12 verifydiv">
+        <br />
+        @if (Model.Status != "0")
+        {
+            <form onsubmit="return false">
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Cost Center Code:</lable>
+                            <input type="text" class="form-control" value=@Model.CCCode readOnly="readOnly" id="apprccamendCCCode" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Amended Value:</lable>
+                            <input type="text" class="form-control" value=@Model.CCName readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Budget:</lable>
+                            <input type="text" class="form-control" value=@Model.OldBudget readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Balance:</lable>
+                            <input type="text" class="form-control" value=@Model.OldBudgetBalance readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Amended Value:</lable>
+                            <input type="text" class="form-control" value=@Model.AmendedValue readOnly="readOnly" id="Amendvalue-@Model.CCBudgetAmendmentid" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Type:</lable>
+                            <input type="text" class="form-control" value=@Model.AmendmentType readOnly="readOnly" id="Amendtype" />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    @*<div class="col-md-3">
+                            <div class="form-group">
+                                <lable>Created Date:</lable>
+                                @Html.TextBoxFor(model => Model.AmendmentDate, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text" })
+                            </div>
+                        </div>*@
+                    @if (Model.CCType == "Non-Performing" || Model.CCType == "Capital")
+                    {
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <lable>Financial Year:</lable>
+                                <input type="text" class="form-control" value=@Model.FYYear readOnly="readOnly" id="Amendyear-@Model.CCBudgetAmendmentid" />
+                            </div>
+                        </div>
+                    }
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" value=@Model.BudgetId readOnly="readOnly" id="ccbudgetid-@Model.CCBudgetAmendmentid" />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => Model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppCCAmendstatus" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divAppAmendCCNote-@Model.CCBudgetAmendmentid">
+                        <div class="form-group">
+                            <label>Notes</label><br />
+                            <textarea rows="3" cols="60" id="AppAmendCCNote-@Model.CCBudgetAmendmentid"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <br /><button onClick="ApproveCCAmend('@Model.CCBudgetAmendmentid')">Submit</button>
+                            <input type="hidden" value=@Model.CCBudgetAmendmentid id="ccAmendid-@Model.CCBudgetAmendmentid" />
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApproveCCAmendInfoMsg-@Model.CCBudgetAmendmentid" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <select class="form-control dropdown-toggle WdNo" id="ddlCCAmendType" onchange="CCAmendTypeChange()">
+                            @if (Model.AmendmentType == "Add")
+                            {
+                                <option value="Add" selected="selected">Add</option>
+                            }
+                            else
+                            {
+                                <option value="Substract" selected="selected">Substract</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="divAmendCC">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Cost Center Code:</label>
+                            <label id="lblCcAmendCode">@Model.CCCode</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Cost Center Name:</label>
+                        <label id="lblCcAmendName">@Model.CCName</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Cost Center Type:</label>
+                        <label id="lblCcAmendType">@Model.CCType</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Budget Value:</label>
+                        <label id="lblCcAmendBudget">@Model.OldBudget</label>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Budget Balance:</label>
+                        <label id="lblCcAmendBudgetBalance">@Model.OldBudgetBalance</label>
+                    </div>
+                    @if (Model.CCType == "Non-Performing" || Model.CCType == "Capital")
+                    {
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <lable>Financial Year:</lable>
+                                <input type="text" class="form-control" value=@Model.FYYear readOnly="readOnly" id="Amendyear-@Model.CCBudgetAmendmentid" />
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Amount:</label>
+                            <input type="text" id="AmendCCBudgetAmount" class="form-control" value="@Model.AmendedValue" onkeypress="return ValidateAmount(this,event);" , onKeyup="ReturnUpAmendCCVerification()" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <button class="btn btn1 btn-success" id="btnAmendCCSubmit" onclick="UpdateAmendCCData('@Model.CCBudgetAmendmentid','@Model.AmendmentType','@Model.FYYear','@Model.CCType')">Submit</button>
+                        <input type="hidden" id="txtCCBudgetid" value="@Model.BudgetId" />
+                        <input type="hidden" id="txtCCBudgetold" value="@Model.OldBudget" />
+                        <input type="hidden" id="txtCCBalanceOld" value="@Model.OldBudgetBalance" />
+                        <input type="hidden" id="txtoldAmend" value="@Model.AmendedValue" />
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <br />
+                        <div id="divAmendCCInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</body>
+</html>

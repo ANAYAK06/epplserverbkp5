@@ -1,0 +1,641 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.ClientRecievables
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<script src="~/Scripts/moment.js"></script>
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Client Reciepts</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.PaymentType)
+                                                            @Html.DropDownListFor(model => model.PaymentType, new SelectList(Model.PaymentTypesList, "PaymentTypeID", "PaymentTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ClRecCategoryddl", onchange = "BindInvoiceType()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4" id="divCRec_InsType">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.PaymentType)
+                                                            @Html.DropDownListFor(model => model.PaymentType, new SelectList(Model.InvoiceTypesList, "CCInvoiceTypeId", "CCInvoiceTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlClRecInvoiceType", onchange = "ClientRecddlClRecInvoiceTypeChange()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <div class="form-group" style="align-content:center">                                                            
+                                                            <button class="btn btn-default  btn-block" style="width:70px"  id="btnRecReset" onclick="ResetCData()">Reset</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="divClietRecPayment">
+                                                <div id="ClientPayment">
+                                                    <div class="row" id="divCCCodehr">
+                                                        <div class="col-md-12"><hr class="separationHr" /></div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12" id="divCcPoInv">
+                                                            <div class="col-md-4" id="divCC">
+                                                                <div class="form-group">
+                                                                    <label>Cost Center Code</label>
+                                                                    <select id="ddlClCccode" class="form-control dropdown-toggle" onchange="ClientRecddlCCChange()"></select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" id="divPO">
+                                                                <div class="form-group">
+                                                                    <label>Purchase Order No</label>
+                                                                    <select id="ddlClPo" class="form-control dropdown-toggle" onchange="ClientRecddlClPoChange()"></select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" id="divInvNo">
+                                                                <div class="form-group">
+                                                                    <label>Invoice No</label>
+                                                                    <select id="ddlInvNo" class="form-control dropdown-toggle" onchange="ClientRecddlInvNoChange()"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" id="divDetialshr">
+                                                        <div class="col-md-12">
+                                                            <hr class="separationHr" />
+                                                        </div>
+                                                    </div>
+                                                    <div id="divDetials" class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Client)
+                                                                    @Html.TextBoxFor(model => model.Client, htmlAttributes: new { @class = "form-control", @id = "txtClientID", @readonly = "true" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.SubClient)
+                                                                    @Html.TextBoxFor(model => model.SubClient, htmlAttributes: new { @class = "form-control", @id = "txtSubClientID", @readonly = "true" })
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.RANo)
+                                                                    @Html.TextBoxFor(model => model.RANo, htmlAttributes: new { @class = "form-control", @id = "txtRANo", @readonly = "true" })
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.InvoiceDate)
+                                                                    @Html.TextBoxFor(model => model.InvoiceDate, "{0:dd/MM/yyyy}", new { @id = "txtPayInvoiceDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.InvoiceMakingDate)
+                                                                    @Html.TextBoxFor(model => model.InvoiceMakingDate, "{0:dd/MM/yyyy}", new { @id = "txtPayInsMakingDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Basic_Value)
+                                                                    @Html.TextBoxFor(model => model.Basic_Value, "{0:n2}", htmlAttributes: new { @class = "form-control", @id = "txtBasicValue", @value = "", @readonly = "true" })
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12 change-tab" id="divClientRecTaxGrid">
+                                                            <div class="strike">
+                                                                <span>TaxDetails</span>
+                                                            </div>
+                                                            <div class="">
+                                                                <div class="tabledynamic">
+                                                                    <br />
+                                                                    <table id="ClientRecTaxTable" class="table order-list tax" style="width:100%">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="taxamount">IsCreditable</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="taxamount">Cost Center</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="taxamount">Account Head</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="taxamount">Sub Account Head</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="taxamount">Tax Name</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="taxamount">Tax Amount</td>
+
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody></tbody>
+                                                                        <tfoot>
+                                                                            <tr>
+                                                                                <td style="text-align:center"></td>
+                                                                                <td style="text-align:center"></td>
+                                                                                <td style="text-align:center"></td>
+                                                                                <td style="text-align:center"></td>
+                                                                                <td style="text-align:center"></td>
+                                                                                <td style="text-align:left"></td>
+                                                                            </tr>
+                                                                            <tr></tr>
+                                                                        </tfoot>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="divDeduction">
+                                                            <div class="col-md-12" style="margin-top:15px">
+                                                                <hr />
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-3"></div>
+                                                                <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <div class="col-md-4 text-center">
+                                                                            <div class="form-group">
+                                                                                <input id="chkDedY" name="ClientRecDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                                                                <input id="chkDedN" name="ClientRecDeduction" value="No" type="radio" checked>No
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-1"></div>
+                                                            </div>
+                                                            <div class="col-md-12 change-tab" id="divdeductiongrid">
+                                                                <div class="strike">
+                                                                    <span>Add Deduction</span>
+                                                                </div>
+                                                                @*<div class="">*@
+                                                                <div class="tabledynamic">
+                                                                    <br />
+                                                                    <table id="ClientRecDCAGrid" class="table order-list DCAgrid" style="width:100%">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="hidden">No</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="hidden">No</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important" class="hidden">No</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important">Is deducted from other CC</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important">Cost Center</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important">Account Head</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important">SubAccount Head </td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important">Amount</td>
+                                                                                <td style="text-align:center;font-weight:bold;color:#fff !important">Check</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @*<tr>
+                                                                                    <td style="text-align:center" class="hidden">1</td>
+
+                                                                                    <td style="text-align:center">
+                                                                                        <select class="form-control dropdown-toggle OtherCC" id="ddl_ClRecOtherCCddl" onchange="DeductionFromCcChange()">
+                                                                                            <option selected="selected" value="0">-Select-</option>
+                                                                                            <option value="Yes">Yes</option>
+                                                                                            <option value="No">No</option>
+                                                                                        </select>
+                                                                                    </td>
+                                                                                    <td style="text-align:center"><select class="form-control dropdown-toggle CC" id="ddl_ClRecDiductionCC_code"><option selected="selected" value="Select">-Select-</option></select></td>
+                                                                                    <td style="text-align:center"><select class="form-control dropdown-toggle DCA" id="ddl_ClRecDiductionDCA_code"><option selected="selected" value="Select">-Select-</option></select></td>
+                                                                                    <td style="text-align:center"><select class="form-control dropdown-toggle SubDCA" id="ddl_ClRecDiductionSubDCA_code"><option selected="selected" value="Select">-Select-</option></select></td>
+                                                                                    <td style="text-align:center"><input type="text" value="" id="txtDiductionAmount" class="form-control DcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountClientRec_DCATotal()" /></td>
+                                                                                    <td style="text-align:center">
+
+                                                                                        <ul class="list-inline">
+                                                                                            <li class="eagle-checkbox">
+                                                                                                <label class="eagle-check custom-checkbox">
+                                                                                                    <input type="checkbox" class="eagle-check-input" id="chkDeduction" name="chkDeduction">
+                                                                                                    <span class="eagle-check-indicator"></span>
+                                                                                                    <span class="eagle-check-description"></span>
+                                                                                                </label>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </td>
+                                                                                </tr>*@
+                                                                        </tbody>
+                                                                        <tfoot>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                                <td></td>
+                                                                                <td></td>
+                                                                                <td>
+                                                                                    <input type="button" class="btn btn-default  btn-block" id="addDeduction" value="Add More Deduction Dca" onclick="ClientRec_BindNewRowtoGrid();" />
+                                                                                </td>
+                                                                                <td></td>
+                                                                                <td></td>
+                                                                                <td></td>
+                                                                                <td></td>
+
+                                                                            </tr>
+                                                                        </tfoot>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12" style="margin-top:15px">
+                                                            <hr />
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 change-tab" id="divPayment">
+                                                                <div class="col-md-12">
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Advance)
+                                                                            @Html.TextBoxFor(model => model.Advance, new { @id = "txtAdvance", @class = "form-control", onkeyup = "ClientRec_FinalAmount();", onkeypress = "return ValidateAmount(this,event);" })
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Rentention)
+                                                                            @Html.TextBoxFor(model => model.Rentention, new { @id = "txtRentention", @class = "form-control", onkeyup = "ClientRec_FinalAmount();", onkeypress = "return ValidateAmount(this,event);" })
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Hold)
+                                                                            @Html.TextBoxFor(model => model.Hold, new { @id = "txtHold", @class = "form-control", onkeyup = "ClientRec_FinalAmount();", onkeypress = "return ValidateAmount(this,event);" })
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Bank)
+                                                                            @Html.DropDownListFor(model => model.Bank, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ClRecBankddl" })
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Number)
+                                                                            @Html.TextBoxFor(model => model.Number, new { @id = "txtNo", @class = "form-control" })
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.TransactionDate)
+                                                                            @Html.TextBoxFor(model => model.TransactionDate, "{0:dd/MM/yyyy}", new { @id = "txtClientPayDate", @class = "form-control date-picker", @type = "text", @readonly = "true" })
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Remarks)
+                                                                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtRemarks", @class = "form-control", @rows = "2" })
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <div class="form-group">
+                                                                            @Html.LabelFor(model => model.Amount)
+                                                                            @Html.TextBoxFor(model => model.Amount, new { @id = "txtFinalAmount", @class = "form-control", @readonly = "true" })
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="text-right">
+                                                                        <input type="text" value="0" id="txtTaxPlusBasic" style="width:1px;display:none" />
+                                                                        <input type="hidden" value="0" id="txtDeductionExist" />
+                                                                        <input type="text" value="0" id="txtMinusAmount" style="width:1px;display:none" />
+                                                                        <input type="text" value="false" id="txtShowingDeduction" style="width:1px;display:none" />
+                                                                        <input type="text" value="false" id="txtoldfinalamount" style="width:1px;display:none" />
+                                                                        <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                                                        <input type="text" value="0" id="txtRoleId" style="display:none" />
+                                                                        <button class="btn btn1 btn-success" id="btnClientRecSubmit" onclick="SubmitClientRecievableData()">Submit</button>
+                                                                        <button class="btn btn1 btn-success" id="btnClientRecReset" onclick="ResetClientRecievableData()">Reset</button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="text-center">
+                                                                        <br />
+                                                                        <div id="divClientRecInfoMsg" class="alert alert-danger hidden">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div id="divRetentionPayment">
+                                        @Html.Action("ClientRetentionPayment", "Accounts", new { TransRefno = "000" })
+                                    </div>
+
+                                    <div id="divHoldPayment">
+                                        @Html.Action("HoldPayment", "Accounts", new { TransRefno = "000" })
+                                    </div>
+                                    <div id="divAdvancePayment">
+                                        @Html.Action("ClientAdvancePayment", "Accounts", new { Transactionid = 0 })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+        $(document).ready(function () {
+         var RoleID = '@Session["Roleid"]';
+            $("#txtRoleId").val(RoleID);
+        $('#txtPayInvoiceDate').css('background-color', 'transparent');
+        $('#txtPayInsMakingDate').css('background-color', 'transparent');
+        $('#txtBasicValue').css('background-color', 'transparent');
+        $('#txtFinalAmount').css('background-color', 'transparent');
+        $('#txtClientPayDate').css('background-color', 'transparent');
+        $('#txtClientID').css('background-color', 'transparent');
+        $('#txtSubClientID').css('background-color', 'transparent');
+        $('#txtRANo').css('background-color', 'transparent');
+        $("#divCRec_InsType").addClass("hidden");
+        $("#divCCCodehr").addClass("hidden");
+        $("#divCcPoInv").addClass("hidden");
+        $("#divDetialshr").addClass("hidden");
+        $("#divDetials").addClass("hidden");
+        //$("#btnRemoveDeduction").addClass('hidden');
+        $("#btnClientRecSubmit").addClass('hidden');
+        $("#btnClientRecReset").addClass('hidden');
+        $("#divPayment").addClass('hidden');
+
+        $("#divRetentionPayment").addClass("hidden");
+        $("#divAdvancePayment").addClass("hidden");
+        $("#divHoldPayment").addClass("hidden");
+            $("#divdeductiongrid").addClass("hidden");
+            clearforDeduction();
+
+            //$("#chkDedY").prop("checked", false);
+            //$("#chkDedN").prop("checked", true);
+            //$("#ClientRecDCAGrid tbody tr").remove();
+        //$("#txtPayInvoiceDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //    maxDate: 'dateToday'
+        //}).datepicker("setDate", new Date());
+
+        //$("#txtPayInsMakingDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //    maxDate: 'dateToday'
+        //}).datepicker("setDate", new Date());
+
+        $("#txtClientPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", new Date());
+        $("#txtPayInvoiceDate").datepicker("option", "disabled", true);
+        $("#txtPayInsMakingDate").datepicker("option", "disabled", true);
+         var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+
+    $('#ClientRecDCAGrid').on('change', '.OtherCC', function () {
+
+        var index = $(this).find("option:selected").index();
+        var selectedCC = $("#ddlClCccode option:selected").val();
+        var selectedCCText = $("#ddlClCccode option:selected").text();
+        var selecteddcalist = [];
+        var row = $(this).closest('tr'); // get the row
+        var ddlCC = row.find('.CC'); // get the other select in the same row
+        var ddlDCA = row.find('.DCA');
+        var ddlSubDCA = row.find('.SubDCA');
+        var amount = row.find('.DcaAmount');
+        //$("#ClientRecDCAGrid tbody tr").each(function () {
+        //    var currentRow = $(this);
+        //    var DedCC = currentRow.find("td").eq(2).find("select option:selected").index();
+        //    if (DedCC !== 0) {
+        //        selecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+        //        //alert(currentRow.find("td").eq(2).find("select option:selected").val());
+        //    }
+        //});
+        if (index == 0) {
+            ddlCC.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            amount.val("");
+
+        }
+        else if (index == 2) {
+            ddlCC.empty().append('<option selected="selected" value="0">-Select-</option>');
+            ddlCC.append($("<option></option>").val(selectedCC).html(selectedCCText));
+        }
+        else {
+
+            ddlCC.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindClientRec_Deduction_CCcodes",
+                data: '{ CC_code:"' + selectedCC + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    ddlCC.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    $.each(response, function () {
+                        //var status = checkValueInArray(this['CC_Code'], selecteddcalist);
+                        //if (status === false) {
+                            ddlCC.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                        //}
+
+                    });
+
+
+                },
+                failure: function (response) {
+
+
+                },
+                error: function (response) {
+
+
+                }
+            });
+        }
+    });
+    $('#ClientRecDCAGrid').on('change', '.CC', function () {
+        var ddlCC = $(this).find("option:selected").val();
+        var row = $(this).closest('tr'); // get the row
+        var ddlDCA = row.find('.DCA'); // get the other select in the same row
+        var ddlSubDCA = row.find('.SubDCA');
+        var amount = row.find('.DcaAmount');
+        if ($(this).find("option:selected").index() == 0) {
+           // alert("select");
+            ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            amount.val("");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindClientRec_Deduction_DCA",
+                data: '{ CC_code:"' + ddlCC + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    $.each(response, function () {
+                        ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+
+
+    });
+    $('#ClientRecDCAGrid').on('change', '.DCA', function () {
+        var ddlDCA = $(this).find("option:selected").val();
+        var row = $(this).closest('tr'); // get the row
+        var ddlSubDCA = row.find('.SubDCA'); // get the other select in the same row
+        var amount = row.find('.DcaAmount');
+        if ($(this).find("option:selected").index() == 0) {
+            ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            amount.val("");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetSubDCAForCleintInvDeductionbycode",
+                data: '{ DCACode:"' + ddlDCA + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    $.each(response, function () {
+                        ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+
+
+
+    });
+    $("table.order-list.DCAgrid").on("click", ".ibtnDel", function (event) {
+
+        var rowcount = $("#ClientRecDCAGrid tbody tr").length;
+
+                if (rowcount==1) {
+                    $("#chkDedY").prop("checked", false);
+                    $("#chkDedN").prop("checked", true);
+                    clearforDeduction();
+                }
+                $(this).closest("tr").remove();
+                CountClientRec_DCATotal();
+                ClientRec_FinalAmount();
+
+          });
+
+            $("input:radio[name='ClientRecDeduction']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+                var DedExist = _val;
+                if (DedExist == "Yes") {
+                    clearforDeduction();
+                    $("#divdeductiongrid").removeClass("hidden");
+                    BindEmptyrowtoDeduction();
+                }
+                else if (DedExist == "No") {
+                    $("#divdeductiongrid").addClass("hidden");
+
+                    clearforDeduction();
+                }
+                CountClientRec_DCATotal();
+                ClientRec_FinalAmount();
+
+        });
+
+        });
+
+        function clearforDeduction() {
+            $("#divdeductiongrid").addClass("hidden");
+
+            //$("#chkDedY").prop("checked", false);
+            //$("#chkDedN").prop("checked", true);
+            $("#ClientRecDCAGrid tbody tr").remove();
+            $("#ClientRecDCAGrid tfoot tr").each(function () {
+                var footerRow = $(this);
+                footerRow.find("td").eq(4).html("Total Deduction:");
+                footerRow.find("td").eq(5).html(0);
+                $("#txtDeductionExist").val(0);
+            });
+        }
+
+        function BindEmptyrowtoDeduction() {
+
+            var count = $("#ClientRecDCAGrid tbody tr").length;
+            var rowno = 0;
+            rowno = count + 1;
+            var newRow = $("<tr>");
+            var cols = "";
+            cols += '<td style="text-align:center" class="hidden">' + rowno+'</td>';
+            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle OtherCC" id="ddl_ClRecOtherCCddl" onchange="DeductionFromCcChange()">';
+            cols += '<option selected="selected" value="0">-Select-</option> <option value="Yes">Yes</option><option value="No">No</option></select></td>';
+            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle CC" id="ddl_ClRecDiductionCC_code"><option selected="selected" value="Select">-Select-</option></select></td>';
+            cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle DCA" id="ddl_ClRecDiductionDCA_code"><option selected="selected" value="Select">-Select-</option></select></td>';
+            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle SubDCA" id="ddl_ClRecDiductionSubDCA_code"><option selected="selected" value="Select">-Select-</option></select></td>';
+            cols += '<td style="text-align:center"><input type="text" value="" id="txtDiductionAmount" class="form-control DcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountClientRec_DCATotal()" /></td>';
+            cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox"><label class="eagle-check custom-checkbox">';
+            cols += '<input type="checkbox" class="eagle-check-input" id="chkDeduction" name="chkDeduction"><span class="eagle-check-indicator"></span>';
+            cols += '<span class="eagle-check-description"></span></label></li></td>';
+            cols += '<td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+            newRow.append(cols);
+            $("table.order-list.DCAgrid").append(newRow);
+            $("#ClientRecDCAGrid tfoot tr").each(function () {
+                var footerRow = $(this);
+                footerRow.find("td").eq(4).html("Total Deduction:");
+                footerRow.find("td").eq(5).html(0);
+                $("#txtDeductionExist").val(0);
+            });
+    }
+    function ResetCData() {
+        location.reload();
+    }
+</script>

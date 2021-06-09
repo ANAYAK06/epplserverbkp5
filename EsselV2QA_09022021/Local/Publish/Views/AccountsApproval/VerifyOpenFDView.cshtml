@@ -1,0 +1,305 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.FDPayments
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.Status != "0")
+    {
+        <div id="divApprove">
+            <form onsubmit="return false">
+                <div class="col-md-12">
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>FD Number:</label>
+                            <input type="text" class="form-control" value="@Model.FDRNo" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Begin Date:</label>
+                            <input type="text" class="form-control" value="@Model.ReturnFromDate" readOnly="readOnly" id="apprfdfromdate" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>End Date:</label>
+                            <input type="text" class="form-control" value="@Model.ReturnToDate" readOnly="readOnly" id="apprfdtodate" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Rate of Intrest(%):</label>
+                            <input type="text" class="form-control" value="@Model.FDRROI" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>FD Value:</label>
+                            <input type="text" class="form-control" value="@Model.FDRAmount" readOnly="readOnly" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Bank Name:</label>
+                            <input type="text" class="form-control" value="@Model.BankName" readOnly="readOnly" id="ApprfdBank" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Transaction Number:</label>
+                            <input type="text" class="form-control" value="@Model.No" readOnly="readOnly" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Transaction Date:</label>
+                            <input type="text" class="form-control" value="@Model.ReturnPayDate" readOnly="readOnly" id="apprfdtransdate" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Transaction Amount:</label>
+                            <input type="text" class="form-control" value="@Model.PaymentAmount" readOnly="readOnly" id="Apprfdtransamount" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appropenfdstatus" })
+                            @*<select class="form-control dropdown-toggle" id="Appropenfdstatus">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Verify">Verify</option>
+                                    <option value="Approve">Approve</option>
+                                    <option value="Return">Return</option>
+                                    <option value="Reject">Reject</option>
+                                </select>*@
+                        </div>
+                    </div>
+                    <div class="col-md-6 ">
+                        <div class="form-group">
+                            <label>Notes:</label><br />
+                            <textarea rows="3" cols="60" class="form-control" id="AppropenfdNote"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <br /><br /><button onClick="ApproveOpenfd('@Model.BankTransactionRefNo')">Submit</button>
+                            <input type="hidden" id="ApprOpenfdbankid" value="@Model.Bankid" />
+
+
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApproepnfdInfoMsg" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    }
+    else
+    {
+        <div id="divupdate">
+
+            <form onsubmit="return false">
+                <div class="col-md-12">
+                    <div class="col-md-4" id="divfdrno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FDRNo)
+                            @Html.TextBoxFor(model => model.FDRNo, htmlAttributes: new { @class = "form-control", @id = "txtfdrnos", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="divfdrtodate">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ReturnFromDate)
+                            @Html.TextBoxFor(model => model.ReturnFromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfdfromdate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="divfdrfromdate">
+                        @*divclosingdate*@
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ReturnToDate)
+                            @Html.TextBoxFor(model => model.ReturnToDate, "{0:dd-MMM-yyyy}", new { @id = "txtfdtodate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-12">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FDRROI)
+                            @Html.TextBoxFor(model => model.FDRROI, new { @id = "txtfdrroi", @class = "form-control", onkeypress = "return ValidateUpdateAmount(this,event);" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FDRAmount)
+                            @Html.TextBoxFor(model => model.FDRAmount, new { @id = "txtfdramount", @class = "form-control", onkeypress = "return ValidateUpdateAmount(this,event);", onkeyup = "CountOpenFdTotal()" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.BankName)
+                            @Html.DropDownListFor(model => model.BankName, new SelectList(Model.PaymentBankList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_fdrpaymentbank" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ModeofPay)
+                            @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.FDPaymentmodeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_FDPaymentMode", onchange = "FDRPayModeChange()" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.No, htmlAttributes: new { @id = "lblfdchqNo" })
+                            @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtfdchqNo" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ReturnPayDate)
+                            @Html.TextBoxFor(model => model.ReturnPayDate, "{0:dd-MMM-yyyy}", new { @id = "txtFDRPaymentDate", @class = "form-control  date-picker", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Remarks)
+                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtFDRRemarks", @class = "form-control", @rows = "3" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PaymentAmount)
+                            @Html.TextBoxFor(model => model.FDRAmount, new { @id = "txtFDRAmount", @class = "form-control", onkeypress = "return ValidateUpdateAmount(this,event);", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <button class="btn btn1 btn-success" id="btnUpdateFd" onclick="UpdateOpenfdData('@Model.BankTransactionRefNo')">Submit</button>
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <br />
+                        <div id="divFDRInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+</div>
+
+
+<script>
+    $(document).ready(function () {       
+        var status = '@Model.Status';
+        if (status == "0") {
+            var mode = '@Model.ModeofPay';
+            var bank = '@Model.BankName';
+            $("#ddl_FDPaymentMode").find("option:contains('" + mode+ "')").each(function () {
+                if ($(this).text() == mode) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#ddl_fdrpaymentbank").find("option:contains('" + bank + "')").each(function () {
+                if ($(this).text() == bank) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#txtfdfromdate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtfdtodate").datepicker("option", "minDate", selectedDate);
+                    $("#txtFDRPaymentDate").datepicker("option", "minDate", selectedDate);
+                },
+            });
+            $("#txtfdtodate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: '+1825 d',
+                minDate:'@Model.ReturnFromDate',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            });
+
+            $("#txtFDRPaymentDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                minDate:'@Model.ReturnFromDate',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+            });
+        }
+        else {
+            //var fdate = $("#apprfdfromdate").val();
+            //var fdate1 = "'" + fdate + "'";
+            //var fdate2 = moment(fdate1, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#apprfdfromdate").val(fdate2);
+            //var edate = $("#apprfdtodate").val();
+            //var edate1 = "'" + edate + "'";
+            //var edate2 = moment(edate1, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#apprfdtodate").val(edate2);
+            //var tdate = $("#apprfdtransdate").val();
+            //var tdate1 = "'" + tdate + "'";
+            //var tdate2 = moment(tdate1, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#apprfdtransdate").val(tdate2);
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appropenfdstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                 
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                   
+                }
+            });
+        }
+        
+         });
+</script>

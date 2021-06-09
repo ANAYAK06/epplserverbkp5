@@ -1,0 +1,318 @@
+﻿
+@model EsselTestLocalApplication.Models.ReportParameters.VendorInvoiceReport
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}<style>
+    .readonlytxt {
+        background-color: #fff !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12 ">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <a href="#" class="pull-left" onclick="ShowSuplierPODetails(@serializer.Serialize(Model))" style="color: #000;
+              font-weight: 600;">Show PO Details</a>
+                <a href="#" class="pull-right" onclick="ShowSupplierPOPayments(@serializer.Serialize(Model))" style="color: #000;
+              font-weight: 600;">Show Payments</a>
+            </div>
+            <div class="col-md-4">
+            </div>
+
+        </div>
+        <div>
+            <hr />
+        </div>
+        @*<div class="row">
+            <br />
+            <div class="table-responsive">
+                <table id="tblPOGrid" style="width:100%;overflow:hidden" class="hover stripe nowrap example dataTable no-footer">
+                    <thead>
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            
+                            <th class="tdcls">ItemCode</th>
+                            <th class="tdcls">ItemName</th>
+                            <th class="tdcls">Specification</th>
+                            <th class="tdcls">AccountHead</th>
+                            <th class="tdcls">SubAccountHead</th>
+                            <th class="tdcls">Units</th>
+                            <th class="tdcls">RcvQty</th>
+                            <th width="50px" class="tdcls">New Purchase Price</th>
+                            <th class="tdcls">Amount</th>
+                            <th width="50px" class="tdcls hidden">CGST%</th>
+                            <th class="tdcls  hidden">CGSTAmt</th>
+                            <th width="50px" class="tdcls hidden">SGST%</th>
+                            <th class="tdcls hidden">SGSTAmt</th>
+                            <th width="50px" class="tdcls hidden">IGST%</th>
+                            <th class="tdcls hidden">IGSTAmt</th>
+                            <th class="tdcls hidden">ID</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model.SupplierData.MRRItemData)
+                        {
+                            <tr>
+                               
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.itemcode)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.itemname)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.specification)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.dcacode)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.subdcacode)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.units)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.Requestedqty)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.NewBasicprice)
+                                </td>
+                                <td class="datacls">
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+
+                                <td class="datacls hidden">
+                                    @Html.DisplayFor(modelItem => item.CGSTpercent)
+                                </td>
+                                <td class="datacls hidden">
+                                    @Html.DisplayFor(modelItem => item.CGSTAmt)
+                                </td>
+                                <td class="datacls hidden">
+                                    @Html.DisplayFor(modelItem => item.SGSTpercent)
+                                </td>
+                                <td class="datacls hidden">@Html.DisplayFor(modelItem => item.SGSTAmt)</td>
+
+                                <td class="datacls hidden">
+                                    @Html.DisplayFor(modelItem => item.IGSTpercent)
+                                </td>
+                                <td class="datacls hidden">@Html.DisplayFor(modelItem => item.IGSTAmt)</td>
+                                <td class="datacls hidden">@Html.DisplayFor(modelItem => item.Id)</td>
+                            </tr>
+
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>                           
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="datacls">@Model.SupplierData.ItemTotal</td>
+                            <td class="datacls hidden"></td>
+                            <td class="datacls hidden">@Model.SupplierData.CGSTTotal</td>
+                            <td class="datacls hidden"></td>
+                            <td style="text-align:center" class="datacls hidden">@Model.SupplierData.SGSTTotal</td>
+                            <td class="datacls hidden"></td>
+                            <td class="datacls hidden">@Model.SupplierData.IGSTTotal</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>*@
+        <div class="row" id="divtransport" style="margin-top:10px;">
+            <div class="row">
+                <div class="col-md-12">
+                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%;font-size:15px">Transportation</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12"><hr class="separationHr" style="margin-top:10px;" /></div>
+            </div>
+            <div id="divShowTransport" class="row">
+
+                <div class="col-lg-2">
+                    @Html.LabelFor(model => model.SupplierData.TransportDCA)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportDCA, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportAmount", @readOnly = true })
+                </div>
+                <div class="col-lg-2">
+                    @Html.LabelFor(model => model.SupplierData.TransportSubDCA)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportSubDCA, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportAmount", @readOnly = true })
+                </div>
+                <div class="col-lg-2">
+                    @Html.LabelFor(model => model.SupplierData.TransportAmount)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportAmount, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportAmount", @readOnly = true })
+                </div>
+                <div class="col-lg-1">
+                    @Html.LabelFor(model => model.SupplierData.TransportCGSTpercent)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportCGSTpercent, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportCGSTpercent", @readOnly = true })
+                </div>
+                <div class="col-lg-1">
+                    @Html.LabelFor(model => model.SupplierData.TransportCGSTAmt)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportCGSTAmt, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportCGSTAmt", @readOnly = true })
+                </div>
+                <div class="col-lg-1">
+                    @Html.LabelFor(model => model.SupplierData.TransportSGSTpercent)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportSGSTpercent, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportSGSTpercent", @readOnly = true })
+                </div>
+                <div class="col-lg-1">
+                    @Html.LabelFor(model => model.SupplierData.TransportSGSTAmt)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportSGSTAmt, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportSGSTAmt", @readOnly = true })
+                </div>
+                <div class="col-lg-1">
+                    @Html.LabelFor(model => model.SupplierData.TransportIGSTpercent)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportIGSTpercent, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportIGSTPercent", @readOnly = true })
+                </div>
+                <div class="col-lg-1">
+                    @Html.LabelFor(model => model.SupplierData.TransportIGSTAmt)
+                    @Html.TextBoxFor(model => model.SupplierData.TransportIGSTAmt, htmlAttributes: new { @class = "form-control readonlytxt", @id = "txtPOTransportIGSTAmount", @readOnly = true })
+                </div>
+
+            </div>
+        </div>
+        @if (Model.SupplierData.OtherChargeList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvChargetable">
+                    <div class="strike">
+                        <span>Other Charges</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.SupplierData.OtherChargeList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.SupplierData.ChargesTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.SupplierData.DeductionList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvDeductiontable">
+                    <div class="strike">
+                        <span>Deductions</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.SupplierData.DeductionList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.SupplierData.DeductionTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+    </form>
+    <div class="modal fade" id="ModalSupplierPayData" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="ModalSupplierPOData" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+</div>
+<script>
+    function ShowSupplierPOPayments(Model) {
+        console.log(Model);
+        $.ajax({
+            type: 'POST',
+            url: "/Reports/ShowSupplierPOInvPayments",
+            data: { InvData: Model },
+            dataType: 'html',
+            success: function (response) {
+                //alert(response);
+                $('#ModalSupplierPayData').html(response);
+                $('#ModalSupplierPayData').modal();
+            },
+            error: function () {
+            }
+        });
+    }
+    function ShowSuplierPODetails(Model) {
+        //console.log(Model);
+        //alert(Model.SupplierData.SPPONo);
+        ////debugger;
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/InvoiceSupplierPOView',
+            data: { PONo: Model.SupplierData.PONo },
+            dataType: 'html',
+            success: function (response) {
+                //alert(response);
+                $('#ModalSupplierPOData').html(response);
+                $('#ModalSupplierPOData').modal();
+            },
+            error: function () {
+            }
+        });
+    }
+</script>

@@ -1,0 +1,63 @@
+﻿@model List<EsselTestLocalApplication.Models.WorkFlowLevels>
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="table-responsive col-md-12">
+    <table id="tblWorkFlowLevel" class="table order-list">
+        <thead>
+            <tr>
+                <td class="hidden">Row No</td>
+                <td>Row No</td>
+                <td style="text-align:center">Master Operation</td>
+                <td style="text-align:center">Work Flow</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int count=1; }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="text-align:center">@count</td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.MasterOperationID)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.MasterOperationDescription)
+                    </td>
+                    <td>
+                        <ol>
+                            @foreach (var level in item.lstFlowDetails)
+                            {
+                                <li>@Html.DisplayFor(levelItem => level.UserRoleCode)</li>
+                            }
+                        </ol>
+                    </td>
+
+                    <td>
+                        @if (item.VerificationPendingExist==false)
+                        {
+                            <select class="form-control dropdown-toggle" id="ddlworkflowaction" onchange="WorkFlowActionChange(@serializer.Serialize(item),this)">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="E">Edit</option>
+                                <option value="D">Delete</option>
+                            </select>
+                        }
+                        </td>
+                </tr>
+               count++;
+            }
+        </tbody>
+    </table>
+</div>
+@*<div id="UpdateHierarchyModal"></div>*@
+<div class="modal fade" id="UpdateWorkflow" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+    
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        InitializeHierachyGrid();
+    });
+   
+</script>

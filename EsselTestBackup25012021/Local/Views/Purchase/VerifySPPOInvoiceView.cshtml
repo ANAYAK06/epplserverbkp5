@@ -1,0 +1,507 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoice
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+
+}
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorName)
+                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPONo)
+                    @Html.TextBoxFor(model => model.SPPONo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <div class="col-md-12" style="margin-top:-5px !important">
+            <hr />
+        </div>
+        <div class="col-md-12" id="divPOData">
+            <div class="col-md-4">
+                <div class="col-md-5 text-right" style="margin-top:5px">@Html.LabelFor(model => model.CCCode)</div>
+                <div class="col-md-5 text-left" style="margin-left:-10px!important">@Html.TextBoxFor(model => model.CCCode, new { @id = "txtNSpInvCCCode", @class = "form-control", type = "text", @readonly = true })</div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-6 text-right" style="margin-top:5px">  @Html.LabelFor(model => model.DCACode)</div>
+                <div class="col-md-6 text-left" style="margin-left:-10px!important">  @Html.TextBoxFor(model => model.DCACode, new { @id = "txtNSpInvDCACode", @class = "form-control", type = "text", @readonly = true })</div>
+            </div>
+            <div class="col-md-4">
+                <div class="col-md-6 text-right" style="margin-top:5px">  @Html.LabelFor(model => model.SubDCACode)</div>
+                <div class="col-md-6 text-left" style="margin-left:-10px!important">  @Html.TextBoxFor(model => model.SubDCACode, new { @id = "txtNSpInvSubDcaCode", @class = "form-control", type = "text", @readonly = true })</div>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="margin-top:-5px !important">
+            <hr />
+        </div>
+        <div class="col-md-12" style="margin-top:-5px !important">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOInvoiceNo)
+                    @Html.TextBoxFor(model => model.SPPOInvoiceNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOInvoiceDate)
+                    @Html.TextBoxFor(model => model.SPPOInvoiceDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOInvoiceMakingDate)
+                    @Html.TextBoxFor(model => model.SPPOInvoiceMakingDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOBasicValue)
+                    @Html.TextBoxFor(model => model.SPPOBasicValue, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.GSTType)
+                    @Html.TextBoxFor(model => model.GSTType, htmlAttributes: new { @class = "form-control", @readOnly = "true",@id="txtApprGsttype" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CompanyGST)
+                    @Html.TextBoxFor(model => model.CompanyGST, htmlAttributes: new { @class = "form-control", @readOnly = "true", @id = "txtApprCompanyGSt" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorGST)
+                    @Html.TextBoxFor(model => model.VendorGST, htmlAttributes: new { @class = "form-control", @readOnly = "true", @id = "txtApprVendorGSt" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <hr />
+        </div>
+        @if (Model.Taxdcas != null)
+        {
+            <div id="divSPInvTaxGrid">
+                <div class="col-md-12 change-tab" id="TaxGrid">
+                    <div class="strike" style="margin-bottom:10px">
+                        <span>Taxes</span>
+                    </div>
+
+                    <div class="tabledynamic col-md-12" id="divSameStateGrid" >
+                        <br />
+                        <div class="col-md-12 text-center">
+                            @if (Model.Statecheck == true)
+                            {
+                                <div class="col-md-2" id="divcgstdca">
+
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                        <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Taxdcas" id="txtTaxDCA1" style="font-size:12px" disabled/>
+                                    </div>
+
+                                </div>
+                            }
+                            @if (Model.Statecheck == false)
+                            {
+                                <div class="col-md-3" id="divigstdca">
+                                    <div class="form-group">
+                                        <label>Account Head</label>
+                                        <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Taxdcas" id="txtTaxDCA2" disabled/>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Statecheck == true)
+                            {
+                                <div id="divcgst">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">CGST Sub Account Head</label>
+                                            <input type="text" class="form-control sppotaxCGSTsdca" value="@Model.Cgstsdca" id="txtTaxCGSTSDCA" style="font-size:12px" disabled/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">CGST Amount</label>
+                                            <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Cgstsdcaamt" id="txtTaxCGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">SGST Sub Account Head</label>
+                                            <input type="text" class="form-control sppotaxSGSTsdca" value="@Model.Sgstsdca" id="txtTaxSGSTSDCA" style="font-size:12px" disabled/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">SGST Amount</label>
+                                            <input type="text" class="form-control sppotaxSGSTsdcaamount" value="@Model.Sgstsdcaamt" id="txtTaxSGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled/>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Statecheck == false)
+                            {
+                                <div id="divigst">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>IGST Sub Account Head</label>
+                                            <input type="text" class="form-control sppotaxIGSTsdca" value="@Model.Igstsdca" id="txtTaxIGSTSDCA" disabled/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>IGST Amount</label>
+                                            <input type="text" class="form-control sppotaxIGSTsdcaamount" value="@Model.Igstsdcaamt" id="txtTaxIGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" disabled/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }@if (Model.Statecheck == true)
+                            {
+                                <div class="col-md-2" id="divcgstotal">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Total Tax</label>
+                                        <input type="text" class="form-control sppotaxamountTotal" value="@Model.TaxTotal" id="txtTaxTotalGSTSDCAamt" disabled style="font-size:12px" />
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Statecheck == false)
+                            {
+                                <div class="col-md-3" id="divigstotal">
+                                    <div class="form-group">
+                                        <label>Total Tax</label>
+                                        <input type="text" class="form-control sppotaxamountTotal" value="@Model.TaxTotal" id="txtTaxTotalGSTSDCAamt1" disabled />
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        } @*@if (Model.TaxList.Count > 0)
+            {
+                <div class="col-md-12">
+                    <div class="row change-tab text-right" id="divapprSPPOInvtaxtable">
+                        <div class="strike">
+                            <span>Taxes</span>
+                        </div>
+                        <div class="tabledynamic">
+                            <br />
+                            <table style="width:100%;border:1px solid gray" class="table order-list">
+                                <thead>
+                                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                        <th style="text-align:center;color:#fff">S.No</th>
+                                        <th style="text-align:center;color:#fff">Type</th>
+                                        <th style="text-align:center;color:#fff">CostCenter</th>
+                                        <th style="text-align:center;color:#fff">Account Head </th>
+                                        <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                        <th style="text-align:center;color:#fff">Tax Number</th>
+                                        <th style="text-align:center;color:#fff">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int count = 1; }
+                                    @foreach (var item in Model.TaxList)
+                                    {
+                                        <tr>
+                                            <td class="tbodytdcls">@count</td>
+                                            <td class="tbodytdcls">@item.TaxType</td>
+                                            <td class="tbodytdcls">@item.CCCode</td>
+                                            <td class="tbodytdcls">@item.DCACode</td>
+                                            <td class="tbodytdcls">@item.SubDCACode</td>
+                                            <td class="tbodytdcls">@item.TaxNo</td>
+                                            <td class="tbodytdcls">@item.Amount</td>
+                                        </tr>
+                                        count++;
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>SubTotal:@Model.TaxTotal</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            }*@
+        @if (Model.OtherChargeList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvChargetable">
+                    <div class="strike">
+                        <span>Other Charges</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.OtherChargeList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.ChargesTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.DeductionList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvDeductiontable">
+                    <div class="strike">
+                        <span>Deductions</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.DeductionList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.DeductionTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Advance)
+                    @Html.TextBoxFor(model => model.Advance, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Retention)
+                    @Html.TextBoxFor(model => model.Retention, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Hold)
+                    @Html.TextBoxFor(model => model.Hold, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            @*<div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceValue)
+                        @Html.TextBoxFor(model => model.InvoiceValue, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>*@
+            <div class="col-md-8">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Description)
+                    @Html.TextAreaFor(model => model.Description, htmlAttributes: new { @class = "form-control", @rows = "2", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NetAmount)
+                    @Html.TextBoxFor(model => model.NetAmount, new { @class = "form-control", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <table style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                        <th style="text-align:center;color:#fff">Action </th>
+                        <th style="text-align:center;color:#fff">Role Name</th>
+                        <th style="text-align:center;color:#fff">Employee </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int count2 = 1; }
+                    @foreach (var item in Model.ApprUserList)
+                    {
+                        <tr>
+                            <th style="text-align:center" class="hidden">count2</th>
+                            @if (count2 == 1)
+                            {
+                                <th style="text-align:center">Created By </th>
+                            }
+                            else
+                            {
+                                <th style="text-align:center">Verified By </th>
+                            }
+                            <th style="text-align:center">@item.Rolename</th>
+                            <th style="text-align:center">@item.Empname </th>
+
+                        </tr>
+                        count2++;
+                    }
+                </tbody>
+            </table>
+            <br />
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppsppoInvstatus" })
+
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppSPPOInvNote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveSPPOInvoice(@serializer.Serialize(Model))">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprSPPOInvInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#AppsppoInvstatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        if (this['Type'] !== 'Return') {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        }
+                    });
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    });
+
+</script>

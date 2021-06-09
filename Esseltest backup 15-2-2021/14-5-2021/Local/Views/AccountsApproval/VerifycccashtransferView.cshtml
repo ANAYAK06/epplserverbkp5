@@ -1,0 +1,219 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.CCCashTransferDetails>
+@foreach (var item in Model)
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Self Cost Center:</label>
+                    <input type="text" class="form-control" value="@item.SelfCCCodename" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="text" class="form-control" value="@item.InvoiceDate" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Other Cost Center:</label>
+                    <input type="text" class="form-control" value="@item.OtherCCCodename" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label>Remarks :</label>
+                    <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Amount:</label>
+                    <input type="text" class="form-control" value="@item.Amount" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprcccashtransferstatus" })
+
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="Apprcccashtransferstatus-@item.Voucherno"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br />
+                    <button onClick="Approvecccashtran('@item.Voucherno')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprcccashtransferInfoMsg-@item.Voucherno" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {            
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Apprcccashtransferstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                       
+                    }
+                  
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                
+                }
+            });
+    });
+    function Approvecccashtran(Voucherno) {           
+        appstatusid = "Apprcccashtransferstatus-" + Voucherno;
+        var appstatus = $("#Apprcccashtransferstatus option:selected").text();
+        var retnoteid = "Apprcccashtransferstatus-" + Voucherno;
+        retnote = $("#" + retnoteid + "").val();
+        Bankid = "divApprcccashtransferInfoMsg-" + Voucherno;
+        msg = $("#" + Bankid + "");
+        isValid = true;
+
+        var errorMsg = "";
+        if (appstatus == "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            //var VerifyGeneralCC = {
+            //    Voucherno: Voucherno,
+            //    Approvalstatus: appstatus,
+            //    ApprovalRemarks: retnote,
+            //    Createdby: $("#txtApprcccashtransferCreatedby").val(),
+            //    RoleId: $("#txtApprcccashtransferRole").val()
+            //};
+            addFailMsg = "Error Occurred While CC Cash Transfer Verification";
+            //addSuccessMsg = "CC Cash Transfer Verified Successfully.";
+            var addSuccessMsg;
+            if (appstatus === 'Verify') { addSuccessMsg = 'Verified Successfully'; }
+            else if (appstatus === 'Approve') { addSuccessMsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { addSuccessMsg = 'Returned for Update'; }
+            else if (appstatus === 'Reject') { addSuccessMsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/ApproveCCCashTransfer",
+                data: '{Voucherno:"' + Voucherno + '",Appstatus:"' + appstatus + '",AppRemarks:"' + retnote + '",Crtdby:"' + $("#txtApprcccashtransferCreatedby").val() + '",RId:"' + $("#txtApprcccashtransferRole").val() + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg1 = response.saveStatus;
+                    //alert(msg);
+                    //if (msg == "Submitted") {
+                    if (response.saveStatus == "Submitted") {
+                        var msg = '';
+                        $('#ApprovecccashtransferMsgModal').modal('show');
+                        //var msg = "<div>CC Cash Transfer: Verified Successfully</div>";
+                        msg = "<div>CC Cash Transfer: " + addSuccessMsg + "</div>";
+                        $("#ApprcccashtransferMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + addFailMsg + "</div>";
+                        $("#ApprcccashtransferMsg").html(msg1);
+                        $('#ApprovecccashtransferMsgModal').modal('show');
+                    }         
+                },
+                failure: function (response) {
+                    var msg1 = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcccashtransferMsg").html(msg1);
+                    $('#ApprovecccashtransferMsgModal').modal('show');
+                  
+                },
+                error: function (response) {
+                    var msg1 = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcccashtransferMsg").html(msg1);
+                    $('#ApprovecccashtransferMsgModal').modal('show');
+                  
+                }
+            });
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/AccountsApproval/ApproveCCCashTransfer",
+            //    data: JSON.stringify({ apprgeneral: VerifyGeneralCC }),
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",              
+            //    success: function (response) {
+            //        var msg = response.saveStatus;
+            //        //alert(msg);
+            //        if (msg == "Submitted") {
+            //            $('#ApprovecccashtransferMsgModal').modal('show');
+            //            var msg = "<div>CC Cash Transfer: Verified Successfully</div>";
+            //            $("#ApprcccashtransferMsg").html(msg);
+            //        }
+            //        else {
+            //            var msg = "<div>" + addFailMsg + "</div>";
+            //            $("#ApprcccashtransferMsg").html(msg);
+            //            $('#ApprovecccashtransferMsgModal').modal('show');
+            //        }                   
+            //    },
+            //    failure: function (response) {          
+            //        alert("Failure");
+            //        var msg = "<div>" + addFailMsg + "</div>";
+            //        $("#ApprcccashtransferMsg").html(msg);
+            //        $('#ApprovecccashtransferMsgModal').modal('show');
+            //    },
+            //    error: function (response) {    
+            //        alert("error");
+            //        var msg = "<div>" + addFailMsg + "</div>";
+            //        $("#ApprcccashtransferMsg").html(msg);
+            //        $('#ApprovecccashtransferMsgModal').modal('show');
+            //    }
+            //});
+        }
+    }
+</script>

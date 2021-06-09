@@ -1,0 +1,155 @@
+﻿@model EsselTestLocalApplication.Models.UserInformation
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Home | Login</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+    @*<link rel="stylesheet" href="css/bootstrap.min.css">*@
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/EsselStyles/responsive.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+    @Scripts.Render("~/bundles/Login")
+</head>
+<body style="  overflow:hidden;
+    background: rgba(204, 204, 204, 0.5607843137254902);">
+
+    <div class="">
+        <div class="login-page login-page1" style="margin-top:10%;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-10 login_wrapper clearfix" style="padding: 0; box-shadow: 1px 1px 16px rgba(0, 0, 0, 0.1607843137254902);">
+
+                        <div class="col-md-6" style="padding-right: 0px; padding-left: 0;">
+                            <div class="login_img">
+                                <img src="https://sim-switchgear.com/wp-content/uploads/2019/10/dsc2348-w500.jpg" llass="img-responsive" style="height:426px; width:100%;">
+                                <div class="login-content">
+                                    <h4>Welcome to Essel</h4>
+                                    <div class="line-btm"></div>
+                                    <div class="line-btm2"></div>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla libero metus, euismod nec lobortis at, laoreet gravida erat. Maecenas sagittis augue at quam vulputate scelerisque sed eget nisl. Suspendisse in auctor nulla. Praesent ornare ac quam quis volutpat. Aenean fermentum diam sit amet nibh hendrerit gravida. Nullam consequat lacinia neque, ac semper nibh semper nec.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-xs-12">
+                            <div class="log-box">
+                                <div class="row">
+
+                                    <div class="card" style="margin-bottom:0px;">
+                                        <div class="body">
+                                            <div class="login-img">
+                                                <a href="index.html">
+                                                    <img src="~/Content/EsselImages/logo.jpg" class="img-responsive">
+                                                </a>
+                                            </div>
+                                            @*<br />*@
+                                            <div>
+                                                @using (Html.BeginForm("AuthenticateLogin", "Login", FormMethod.Post))
+                                                {                                                  
+                                                        @*<div id="Employeelogin">*@
+
+                                                            <div class="log-body m-tb-40">
+                                                                <div class="form-group myr-top">
+                                                                    <label>User Name</label>
+                                                                    @Html.TextBoxFor(m => m.EmpUsername, new { @class = "form-control custom", @placeholder = "User Name", @id = "txtEmpUsername" })
+                                                                    @Html.ValidationMessageFor(m => m.EmpUsername, "", new { @class = "error" })
+
+                                                                </div>
+                                                                <div class="form-group myr-top">
+                                                                    <label>Password</label>
+                                                                    @Html.PasswordFor(m => m.EmpPassword, new { @class = "form-control custom", @placeholder = "Password", @id = "txtEmpPwd" })
+                                                                    @Html.ValidationMessageFor(m => m.EmpPassword, "", new { @class = "error" })
+                                                                </div>
+                                                                <div class="log-bottom-cotent">
+                                                                    <a href="#" class="pull-right" onclick="ShowEmpForgotPwdModel()" style="color: #000;
+                                                                font-weight: 600;"><i class="fa fa-lock" style="margin-right:8px;"></i>Forgot Password</a>
+                                                                </div>
+
+                                                                <div class="clearfix"></div>
+                                                                <div class="log-btn text-center">
+                                                                    <button type="submit" class="btn btn1 btn-success">Login</button>
+                                                                </div>
+
+                                                            </div>
+
+                                                        @*</div>*@
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @Scripts.Render("~/bundles/jquery")
+                                    @Scripts.Render("~/bundles/jqueryval")
+                                    @if (@ViewBag.Message != null)
+                                    {
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                alert("@ViewBag.Message")
+                                            });
+                                        </script>
+                                    }
+                                  
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end login page wrapper-->
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <div id="ModelEmpForgotPwd" class="modal log-box" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-body" style="overflow:hidden">
+                    @Html.Action("EmpForgotPwd", "Login")
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>
+<script>
+    $(document).ready(function () {       
+        //$('.nav-tabs > li:first-child > a')[0].click(); 
+        //$('.nav-tabs li:eq(1) a')[0].click(); 
+        //$("#txtRoleUsername").val("");
+        //$("#txtRolePwd").val("");
+        $("#txtEmpUsername").val("");
+        $("#txtEmpPwd").val("");
+        //$('#tabLogin').tabs({
+        //    beforeActivate: function (event, ui) {
+        //        $(this).find('form').trigger('reset');
+        //    }
+        //});
+    });
+    function ShowEmpForgotPwdModel() {
+        $("#ModelEmpForgotPwd").modal('show');
+        $("#txtEmpFPUsername").val("");
+        $("#divEmpFPInfoMsg").text("");
+        $("#divEmpFPInfoMsg").addClass("hidden");
+
+    }
+    //function ClearEmpTab() {
+    //    $("#txtEmpUsername").val("");
+    //    $("#txtEmpPwd").val("");}
+    //function ClearRoleTab() {
+    //    $("#txtRoleUsername").val("");
+    //    $("#txtRolePwd").val("");
+    //}
+</script>

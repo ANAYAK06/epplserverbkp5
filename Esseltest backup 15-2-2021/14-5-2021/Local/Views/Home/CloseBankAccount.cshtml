@@ -1,0 +1,413 @@
+﻿@model EsselTestLocalApplication.Models.AddBankDetails
+@if (Model.CloseNotificationExist == 0 || (Model.CloseStatus == "Rejected" && Model.CloseNotificationExist == 1))
+{
+    if (Model.CloseLevelAccess == "Creation" || Model.CloseLevelAccess == "FirstAndLastLevel")
+    {
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Close Bank Account</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+                    <div>
+                        <form onsubmit="return false">
+                            <div class="col-md-12">
+
+                                <div class="col-md-3" style="display:none">
+                                    <div class="form-group">
+                                        <lable>Bank Id:</lable>
+                                        <input type="text" class="form-control" value="@Model.Bankid" readOnly="readOnly" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.BankName)
+                                        @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACName", @readonly = "true" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Accountno)
+                                        @Html.TextBoxFor(model => model.Accountno, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACNo", @readonly = "true" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ClosingDate)
+                                        @Html.TextBoxFor(model => model.ClosingDate, "{0:dd-MMM-yyyy}", new { @id = "txtClosingAson", @class = "form-control  date-picker", @readonly = "true" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            @if (Model.BankPendingList.Count > 0)
+                            {
+                                <div class="col-md-12">
+                                    <h5>Verifications pending for this Bank are:</h5>
+                                </div>
+                                <div class="col-md-12">
+                                    @{ int rowNo = 1; }
+                                    <table cellspacing="2" cellpadding="2" style="width:100%;" id="tableBankclosenotify" class="hover stripe nowrap example dataTable">
+                                        <thead>
+                                            <tr>
+                                                <td class="hidden">RowNo</td>
+                                                <td class="hidden">MasterId</td>
+                                                <td class="hidden">Paymenttype</td>
+                                                <td>Master Operation</td>
+                                                <td>Number of Pendings</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.BankPendingList)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center" class="hidden">
+                                                        @rowNo
+                                                    </td>
+                                                    <td class="hidden">@item.WorkFlowLevelId</td>
+                                                    <td class="hidden">@item.PaymentTypeName</td>
+                                                    <td style="text-align:left;width:60%">@item.MasterOperationDescription</td>
+                                                    <td style="text-align:left"><h5>@item.NoofPendings</h5></td>
+
+                                                    @{rowNo++;}
+                                                </tr>
+
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            <div class="col-md-12" id="divclremdstatus">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Remarks:</label><br />
+                                        <textarea rows="3" cols="60" class="form-control" id="txtCCCloseNote">@Model.CloseRemarks</textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <br /><button class="btn btn-default  btn-block" id="btnNotify" onClick="NotifyPendings(@Model.Bankid,'@Model.CloseLevelAccess')">Notify To All</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <div class="text-center">
+                                    <br />
+                                    <div id="divCloseBankDetilsInfoMsg" class="alert alert-danger hidden row">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Close Bank Account</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+                    <div class="alert alert-danger text-center">Close Bank Account Request Not Yet Initiated</div>
+
+                </div>
+            </div>
+        </div>
+    }
+}
+else if (Model.CloseNotificationExist == 1 && Model.CloseStatus != "Rejected")
+{
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Close Bank Account</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div>
+                    <form onsubmit="return false">
+                        <div class="col-md-12">
+
+                            <div class="col-md-3" style="display:none">
+                                <div class="form-group">
+                                    <lable>Bank Id:</lable>
+                                    <input type="text" class="form-control" value="@Model.Bankid" readOnly="readOnly" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BankName)
+                                    @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACName", @readonly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Accountno)
+                                    @Html.TextBoxFor(model => model.Accountno, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACNo", @readonly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ClosingDate)
+                                    @Html.TextBoxFor(model => model.ClosingDate, "{0:dd-MMM-yyyy}", new { @id = "txtClosingAson", @class = "form-control  date-picker", @readonly = "true" })
+                                </div>
+                            </div>
+
+
+                        </div>
+                        @if (Model.BankPendingList.Count > 0)
+                        {
+                            <div class="col-md-12">
+                                <h5>Verifications pending for this Bank are:</h5>
+                            </div>
+                            <div class="col-md-12">
+                                @{ int rowNo = 1; }
+                                <table cellspacing="2" cellpadding="2" style="width:100%;" id="tableBankclosenotify" class="hover stripe nowrap example dataTable">
+                                    <thead>
+                                        <tr>
+                                            <td class="hidden">RowNo</td>
+                                            <td class="hidden">MasterId</td>
+                                            <td class="hidden">Paymenttype</td>
+                                            <td>Master Operation</td>
+                                            <td>Number of Pendings</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.BankPendingList)
+                                        {
+                                            <tr>
+                                                <td style="text-align:center" class="hidden">
+                                                    @rowNo
+                                                </td>
+                                                <td class="hidden">@item.WorkFlowLevelId</td>
+                                                <td class="hidden">@item.PaymentTypeName</td>
+                                                <td style="text-align:left;width:60%">@item.MasterOperationDescription</td>
+                                                <td style="text-align:left"><h5>@item.NoofPendings</h5></td>
+
+                                                @{rowNo++;}
+                                            </tr>
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        @if (Model.CloseLevelAccess == "ApproveLevel" || Model.CloseLevelAccess == "VerificationLevel")
+                        {
+                            <div class="col-md-12" id="divclremdstatus">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Remarks:</label><br />
+                                        <textarea rows="3" cols="60" class="form-control" id="txtCCCloseNote">@Model.CloseRemarks</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="form-control dropdown-toggle" id="ddlCloseBankAccstatus">
+                                            <option selected="selected" value="Select">Select</option>
+                                            @if (Model.CloseLevelAccess == "VerificationLevel")
+                                            {
+                                                <option value="Verify">Verify</option>
+                                            }
+                                            else if (Model.CloseLevelAccess == "ApproveLevel" || Model.CloseLevelAccess == "FirstAndLastLevel")
+                                            {
+                                                <option value="Approve">Approve</option>
+                                                <option value="Reject">Reject</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <br /><button class="btn btn-default  btn-block" id="btnNotify" onClick="NotifyPendings(@Model.Bankid,'@Model.CloseLevelAccess')">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divCloseBankDetilsInfoMsg" class="alert alert-danger hidden row">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ClsoeBankGrid = null;
+        var RoleAccess = '@Model.CloseLevelAccess';
+        var Status = '@Model.CloseStatus';
+        var currentlevel = '@Model.CurrentRoleLevel';
+        var minlevel = '@Model.CloseMinRoleLevel';
+        var maxlevel = '@Model.CloseMaxRoleLevel';
+        InitializecloseBankGrid();
+        //debugger;
+        if (@Model.CloseNotificationExist == 1 && Status != 'Rejected') {
+            if (RoleAccess == 'ApproveLevel' && maxlevel == currentlevel && Status == minlevel && (parseInt(minlevel) + 1) == currentlevel) {
+                //if approval the show current date and give update permission by datepicker with existing close date
+                $("#txtClosingAson").datepicker({
+                    dateFormat: 'dd-M-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showOn: "button",
+                    minDate: 'dateToday',
+                    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                    onClose: function (selectedDate) {
+                    }
+                });
+
+                $("#divclremdstatus").removeClass("hidden");
+                $("#btnNotify").removeClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && maxlevel == currentlevel && (Status != 'Approved') && (minlevel < Status && Status < maxlevel) && Status != minlevel) {
+
+                $("#txtClosingAson").datepicker({
+                    dateFormat: 'dd-M-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showOn: "button",
+                    minDate: 'dateToday',
+                    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                    onClose: function (selectedDate) {
+                    }
+                });
+
+                $("#divclremdstatus").removeClass("hidden");
+                $("#btnNotify").removeClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && (Status == 'Approved' || Status == 'Rejected')) {
+
+                $("#btnNotify").addClass("hidden");
+                $("#divclremdstatus").addClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && (Status == 'Approved' || Status == 'Rejected')) {
+
+                $("#btnNotify").addClass("hidden");
+                $("#divclremdstatus").addClass("hidden");
+            }
+            else if (RoleAccess == 'ApproveLevel' && Status == minlevel && (parseInt(minlevel) + 1) != currentlevel) {
+
+                $("#btnNotify").addClass("hidden");
+                $("#divclremdstatus").addClass("hidden");
+            }
+            if (RoleAccess == 'VerificationLevel') {
+                //recordexist
+                if (Status == currentlevel || (Status == 'Approved' || Status == 'Rejected') && Status > currentlevel) {
+                    $("#divclremdstatus").addClass("hidden");
+                    $("#btnNotify").addClass("hidden");
+
+                }
+                else {
+
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                }
+
+            }
+            if (RoleAccess == 'Creation') {
+                if (RoleAccess == 'Creation' && Status == 'Rejected') {
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                    $("#txtClosingAson").datepicker({
+                        dateFormat: 'dd-M-yy',
+                        changeMonth: true,
+                        changeYear: true,
+                        showOn: "button",
+                        minDate: 'dateToday',
+                        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                        onClose: function (selectedDate) {
+
+                        }
+                    });
+                }
+                else if (Status >= currentlevel) {
+                    //record exist visiting again for creation
+                    $("#btnNotify").addClass("hidden");
+                    $("#divclremdstatus").addClass("hidden");
+                }
+                else {
+
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                }
+            }
+            if (RoleAccess == 'FirstAndLastLevel') {
+                if (Status == 'Approved') {
+
+                    $("#btnNotify").addClass("hidden");
+                    $("#divclremdstatus").addClass("hidden");
+                }
+                else {
+                    //new record with approval
+                    $("#divclremdstatus").removeClass("hidden");
+                    $("#btnNotify").removeClass("hidden");
+                }
+            }
+        }
+        else if(@Model.CloseNotificationExist == 0  || (@Model.CloseNotificationExist == 1 && Status == 'Rejected')) {
+            //if 0 level or 0 level is the  approval then give permission to  create close date with current date
+
+            $("#txtClosingAson").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                minDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                }
+            }).datepicker("setDate", new Date());
+        }
+
+        });
+    function InitializecloseBankGrid() {
+        ClsoeBankGrid = $('#tableBankclosenotify').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Bank Accounts Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+    }
+</script>

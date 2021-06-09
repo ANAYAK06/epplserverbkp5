@@ -1,0 +1,133 @@
+﻿@model List<EsselTestLocalApplication.Models.DCAdetails>
+@{
+    ViewBag.Title = "ViewDCAGrid";
+
+}
+
+
+
+    <div class="table-responsive">
+        <table id="tblDCAList" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="hidden"></th>
+                    <th>DCA Code</th>
+                    <th>DCA Name</th>
+                    <th>DCA Type</th>
+                    <th class="hidden">IT Code</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.BasicDCAInfo.DCAID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BasicDCAInfo.DCACode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BasicDCAInfo.DCAName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BasicDCAInfo.DCATypeName)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.BasicDCAInfo.ITCodeName)
+                        </td>
+                        @if (item.BasicDCAInfo.Status == "Approved" && (item.BasicDCAInfo.DCACloseStatus == "Rejected" || item.BasicDCAInfo.DCACloseStatus == null))
+                        {
+                            <td>
+                                <select class="form-control dropdown-toggle" id="ddlDCAActions" onchange="DCAActionschange(@item.BasicDCAInfo.DCAID, @item.BasicDCAInfo.DCATypeID, '@item.BasicDCAInfo.DCACode', '@item.BasicDCAInfo.DCAName', @item.BasicDCAInfo.ITCodeID,' @item.BasicDCAInfo.DCATypeName',this)">
+                                    <option selected="selected" value="Select">Select</option>
+                                    @*<option value="Edit">Edit</option>
+                                        <option value="Close">Delete</option>*@
+                                </select>
+                                <input type="hidden" id="txtuproleid" />
+                                @*@if (item.BasicDCAInfo.DCATypeID == 1)
+                                    {
+                                        <a title="Edit" href="javascript:void(0)" data-toggle="modal" onclick="EditGeneralDCA(@item.BasicDCAInfo.DCAID, @item.BasicDCAInfo.DCATypeID, '@item.BasicDCAInfo.DCACode', '@item.BasicDCAInfo.DCAName', @Html.Raw(Json.Encode(item.CCTypes)), @item.BasicDCAInfo.ITCodeID);"> <span class="fa fa-pencil small-icon icon-btn-blue"></span> </a>
+                                    }
+                                    else if (item.BasicDCAInfo.DCATypeID == 2)
+                                    {
+                                        <a title="Edit" href="javascript:void(0)" data-toggle="modal" onclick="EditTaxDCA(@item.BasicDCAInfo.DCAID, @item.BasicDCAInfo.DCATypeID ,'@item.BasicDCAInfo.DCACode','@item.BasicDCAInfo.DCAName',@Html.Raw(Json.Encode(item.CCTypes)), @item.BasicDCAInfo.ITCodeID,@Html.Raw(Json.Encode(item.TaxNos)),@item.BasicDCAInfo.TypeOfTaxID,@item.BasicDCAInfo.NatureOfTaxID)"><span class="fa fa-pencil small-icon icon-btn-blue"></span></a>
+                                    }*@
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+<div id="divEditGeneralDCAPopup">
+
+
+</div>
+
+<div id="divEditTaxDCAPopup">
+</div>
+<div class="modal fade" id="closeDCAConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dcaGrid = null;
+        InitializeDCAGrid();
+    }); //order: [[0, "asc"]],
+
+    function InitializeDCAGrid() {
+        var dcaGrid = $('#tblDCAList').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,           
+            language: {
+                "emptyTable": "No DCAs Found"
+            },
+            "createdRow": function (row, data, index) {
+
+                var ddlAction = $('td:eq(5)', row).find("select");
+                ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                var Roleid = '@Session["Roleid"]';
+                var Mid = 'Account Head';
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GetApprovalstatusDCA",
+                    data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        if (count > 0) {
+                            $.each(response, function () {
+                                ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                            });
+                        }
+                    },
+                    failure: function (response) {
+                       alert(response.responseText);
+                        //alert("from dca tab1");
+                    },
+                    error: function (response) {
+                       alert(response.responseText);
+                        //alert("from dca tab2");
+                    }
+                });
+            },
+        
+        });
+    }
+</script>
+

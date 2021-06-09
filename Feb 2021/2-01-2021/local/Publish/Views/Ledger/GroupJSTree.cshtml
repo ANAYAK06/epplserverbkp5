@@ -1,0 +1,28 @@
+﻿@model EsselTestLocalApplication.Models.Ledger.Employee
+@{
+    /**/
+
+    ViewBag.Title = "GroupJSTree";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+
+
+<h2>GroupJSTree</h2>
+<div id="divtree">
+    <ul id="tree">
+        <li>
+            <a href="#" class="usr">@Model.Name</a>
+            @Html.Partial("Childrens", Model)
+        </li>
+    </ul>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {       
+        $('#divtree').jstree();
+    });
+</script>
+

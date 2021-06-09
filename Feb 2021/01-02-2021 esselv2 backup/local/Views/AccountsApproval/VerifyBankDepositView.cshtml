@@ -1,0 +1,194 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.DepositDetails>
+@foreach (var item in Model)
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="text" class="form-control" value="@item.Date" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Bank Name:</label>
+                    <input type="text" class="form-control" value="@item.Bank" readOnly="readOnly" id="Apprdepositname-@item.Id" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Cost Center:</label>
+                    <input type="text" class="form-control" value="@item.TransferCostCenter" readOnly="readOnly" />
+                </div>
+            </div>
+            @*<div class="col-md-3">
+                    <div class="form-group">
+                        <label>Remarks:</label>
+                        <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                    </div>
+                </div>*@
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label>Remarks:</label>
+                    <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Amount :</label>
+                    <input type="text" class="form-control" value="@item.Amount" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "Select", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprDepositstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprDepositNote-@item.Id"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveDeposit('@item.Id')">Submit</button>
+                    @**@
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprDepositInfoMsg-@item.Id" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+    @**@
+</div>
+    
+}
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprDepositstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                        ddlaprovalstatus.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+                    }
+                 
+
+                },
+                failure: function (response) {
+             
+                },
+                error: function (response) {
+                
+                }
+            });
+    });
+
+    function ApproveDeposit(Apprid) {     
+        appstatusid = "ApprDepositstatus-" + Apprid;
+        var appstatus = $("#ApprDepositstatus option:selected").text();
+        var retnoteid = "ApprDepositNote-" + Apprid;
+        retnote = $("#" + retnoteid + "").val();
+        Bankid = "divApprDepositInfoMsg-" + Apprid;
+        msg = $("#" + Bankid + "");
+        isValid = true;
+
+        var errorMsg = "";
+        if (appstatus == "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var verifydeposit = {
+                Id: Apprid,
+                Approvalstatus: appstatus,
+                ApprovalRemarks: retnote,
+                //Createdby: $("#txtApprBankWithdrawnCreatedby").val(),
+                //RoleId: $("#txtApprBankWithdrawnRole").val()
+            };
+            addFailMsg = "Error Occurred While BankDeposit Verification";
+            addSuccessMsg = "BankDeposit  Verified Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/ApproveBankDeposit",
+                data: JSON.stringify({ apprdeposit: verifydeposit }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    if (msg == "Submitted") {
+                        $('#ApproveBankDepositMsgModal').modal('show');
+                        var msg = "<div>BankDeposit: Verified Successfully</div>";
+                        $("#ApprBankDepositMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + msg + "</div>";
+                        $("#ApprBankDepositMsg").html(msg);
+                        $('#ApproveBankDepositMsgModal').modal('show');
+                    }
+                 
+                },
+                failure: function (response) {
+                  
+                    // alert(response.responseText);
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprBankDepositMsg").html(msg);
+                    $('#ApproveBankDepositMsgModal').modal('show');
+                },
+                error: function (response) {
+                  
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprBankDepositMsg").html(msg);
+                    $('#ApproveBankDepositMsgModal').modal('show');
+                }
+            });
+        }
+
+    }
+
+</script>

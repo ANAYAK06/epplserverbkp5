@@ -1,0 +1,719 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.Miscellaneous
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date)
+                    @Html.TextBoxFor(model => model.Date, new { @id = "txtMiscDate", @class = "form-control", @readonly = "true", @type = "text" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Intrest_type)
+                    @Html.DropDownListFor(model => model.Intrest_type, new SelectList(Model.MiscIntrestTypesList, "Type", "Type_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestType", onchange = "MiscIntrestttypechange()", disabled = "disabled" })
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+        <div class="col-md-12" id="divclientandsunclient">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.clientid)
+                    @Html.DropDownListFor(model => model.clientid, new SelectList(Model.Clientlist, "ClientCode", "ClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Miscclient", onchange = "GetMiscSubClient()", disabled = "disabled" })
+
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Subclient)
+                    @Html.DropDownListFor(model => model.Subclient, new SelectList(Model.Subclientlist, "SubClientCode", "SubClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscSubclient", disabled = "disabled" })
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Misc_CC_Code)
+                    @Html.DropDownListFor(model => model.Misc_CC_Code, new SelectList(Model.MiscCcCodesList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscCcCode", onchange = "GetMiscDca()", disabled = "disabled" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Misc_DCA_Code)
+                    @Html.DropDownListFor(model => model.Misc_DCA_Code, new SelectList(Model.MiscDcaCodesList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscDCACode", onchange = "GetMiscSDca()", disabled = "disabled" })
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Misc_Sub_DCA_Code)
+                    @Html.DropDownListFor(model => model.Misc_Sub_DCA_Code, new SelectList(Model.MiscSdcaCodesList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscSDCACode", disabled = "disabled" })
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MiscAmount)
+                    @Html.TextBoxFor(model => model.MiscAmount, new { @id = "txtMiscAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountMiscTotal()" })
+
+                </div>
+            </div>
+        </div>
+        @if (Model.MiscDedCCCode != "")
+        {
+            <div class="col-md-12 change-tab" id="divIntrestTable">
+                <div class="strike">
+                    <span>Add Intrest</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="IntrestTable" class="table order-list" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDed_CC_Code)</td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDed_DCA_Code)</td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDed_Sub_DCA_Code)</td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDedAmount)</td>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="text-align:center">
+                                <td>
+                                    @Html.DropDownListFor(model => model.MiscDed_CC_Code, new SelectList(Model.MiscDedCcCodesList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestCcCode", onchange = "GetMiscDedDca()", disabled = "disabled" })
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(model => model.MiscDed_DCA_Code, new SelectList(Model.MiscDcaCodesList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestDCACode", onchange = "GetMiscDedSDca()", disabled = "disabled" })
+                                </td>
+
+                                <td>
+                                    @Html.DropDownListFor(model => model.MiscDed_Sub_DCA_Code, new SelectList(Model.MiscSdcaCodesList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestSDCACode", disabled = "disabled" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.MiscDedAmount, new { @id = "txtMiscIntrestAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountMiscTotal()" })
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        <div class="col-md-12 change-tab">
+            <div class="col-md-12" style="text-align:left;margin-bottom:0px;">
+                <h5 style="font-weight:bold;">Payment Details</h5>
+                <hr style="margin-top:0%;margin-bottom:0%" />
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Misc_Name)
+                        @Html.TextBoxFor(model => model.Misc_Name, htmlAttributes: new { @class = "form-control", @id = "txtMiscName" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MiscBank)
+                        @Html.DropDownListFor(model => model.MiscBank, new SelectList(Model.MiscBanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlMiscBank" })  @*onchange = "MiscPayModeChange()"*@
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Mode_of_Pay)
+                        @Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.MiscPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscPayMode" }) @*onchange = "MiscPayModeChange()"*@
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Misc_No)
+                        @Html.TextBoxFor(model => model.Misc_No, htmlAttributes: new { @class = "form-control", @id = "txtMiscNo" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Remarks)
+                        @Html.TextAreaFor(model => model.Remarks, new { @id = "txtMiscReamarks", @class = "form-control", @type = "text", @rows = "3" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentDate)
+                        @Html.TextBoxFor(model => model.PaymentDate, "{0:dd-MMM-yyyy}", new { @id = "txtMiscPayDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Misc_final_Amount)
+                        @Html.TextBoxFor(model => model.Misc_final_Amount, new { @id = "txtMiscFinalAmount", @class = "form-control", @type = "text", @readonly = "true" })
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <button class="btn btn1 btn-success" id="btnMiscSubmit" onclick="btnReturnmiscData('@Model.Refno')">Submit</button>  @*onclick="SubmitMiscData()"*@
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <div id="divMiscreturnInfoMsg1" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+<div id="MiscIntrestConfirmModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Intrest is Required or Not?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    @*<p>Do you really want to delete Cost Center: </p><label id="lbldelCCCode"></label>
+                        <p>This process cannot be undone.</p>*@
+                </div>
+                @*<div id="divDeleteCostCenterInfoMsg" class="alert alert-danger hidden">
+                    </div>*@
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-info" onclick="ContinueSubmitData()">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="CancelSubmitData()">ok</button>
+                    @Html.TextBoxFor(m => m.MiscDed_CC_Code, new { style = "display: none;", @id = "txtclickcheck" })
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        ////debugger;
+        var Date = '@Model.Date';
+        $("#txtMiscDate").val(Date);
+        //$("#txtMiscDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    maxDate: 'dateToday',
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //    onClose: function (selectedDate) {
+        //        $("#txtMiscDate").val(selectedDate);
+        //    }
+        //});
+        var PayDate = '@Model.PaymentDate';
+        $("#txtMiscPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtMiscPayDate").val(selectedDate);
+            }
+        });
+        var index = '';
+        var client = '@Model.clientid';
+        if (client != '') {
+            var Type = 'Intrest From Clients';
+            index = '1';
+            $("#ddl_MiscIntrestType").val(Type);
+            var Client = '@Model.ClientIdVAL';
+            $("#ddl_Miscclient").val(Client);
+            var SubClient = $("#ddl_MiscSubclient");
+            var SubClientVal = '@Model.SubClientIdVAL';
+            $("#divclientandsunclient").removeClass("hidden")
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Accounts/BindMiscsubclient',
+                data: { Clientid: Client },
+                success: function (response) {
+                    SubClient.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        SubClient.append($("<option></option>").val(this['SubClientCode']).html(this['SubClientName']));
+                        SubClient.val(SubClientVal);
+                    });
+                  
+                },
+            });
+        }
+        else {
+            var Type = 'Intrest From Others';
+            $("#ddl_MiscIntrestType").val(Type);
+            $("#divclientandsunclient").addClass("hidden")
+            index = '2';
+        }
+        var IntCC = '@Model.Misc_CC_CodeVal';
+        $("#ddl_MiscCcCode").val(IntCC);
+        var IntDCAVAL = '@Model.Misc_DCA_CodeVal';
+        var IntDCA = $("#ddl_MiscDCACode");
+        var IntSDCAVAL = '@Model.Misc_Sub_DCA_CodeVal';
+        var IntSDCA = $("#ddl_MiscSDCACode");
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/BindMiscDCA',
+            data: { CC_code: IntCC, date: Date },
+            success: function (response) {
+                IntDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                $.each(response, function () {
+                    IntDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                    IntDCA.val(IntDCAVAL);
+                });
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/Accounts/BindMiscSDCA',
+                    data: { DCA: IntDCAVAL },
+                    success: function (response) {
+                        IntSDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            IntSDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            IntSDCA.val(IntSDCAVAL);
+                        });
+                      
+                    },
+                });
+            },
+        });
+        var MisAmount = '@Model.MiscAmount';
+        $("#txtMiscAmount").text(MisAmount);
+        var DedCCVAL = '@Model.MiscDed_CC_CodeVal';
+        var DedCC = $("#ddl_MiscIntrestCcCode");
+        if (DedCCVAL != "") {
+            $("#divIntrestTable").removeClass("hidden")
+            if (index == '1') {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/Accounts/BindMiscDedCC',
+                    data: { Value: Type },
+                    success: function (response) {
+                        DedCC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            DedCC.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                            DedCC.val(DedCCVAL);
+                        });
+                    
+                    },
+                });
+
+            }
+            else {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/Accounts/BinddednormalCC',
+                    data: { Value: Type },
+                    success: function (response) {
+                        DedCC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            DedCC.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                            DedCC.val(DedCCVAL);
+                        });
+                      
+                    },
+                });
+            }
+            var DeddcaVAL = '@Model.MiscDed_DCA_CodeVal';
+            var Deddca = $("#ddl_MiscIntrestDCACode");
+            var DedsdcaVAL = '@Model.MiscDed_Sub_DCA_CodeVal';
+            var Dedsdca = $("#ddl_MiscIntrestSDCACode");
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Accounts/BindMiscDCA',
+                data: { CC_code: DedCCVAL, date: Date },
+                success: function (response) {
+                    Deddca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        Deddca.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        Deddca.val(DeddcaVAL);
+                    });
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: '/Accounts/BindMiscSDCA',
+                        data: { DCA: DeddcaVAL },
+                        success: function (response) {
+                            Dedsdca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                Dedsdca.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                Dedsdca.val(DedsdcaVAL);
+                            });
+                          
+                        },
+                    });
+                  
+                },
+            });
+
+        }
+        else {
+            $("#divIntrestTable").addClass("hidden")
+        }
+        var BankId = '@Model.BankID';
+        $("#ddlMiscBank").val(BankId);
+        var Total = '@Model.Misc_final_Amount';
+        $("#txtMiscFinalAmount").text(Total);
+    });
+
+</script>
+<script type="text/javascript">
+    function MiscIntrestttypechange() {
+        ////debugger;
+        //$("#divclientandsunclient").hide();
+        var IntrestModeval = $("#ddl_MiscIntrestType option:selected").val();
+        if ($("#txtMiscDate").val() == "") {
+            alert("Select Date");
+            $('#ddl_MiscIntrestType').get(0).selectedIndex = 0
+            return false;
+        }
+        else if (IntrestModeval == "Intrest From Clients") {
+            $("#divclientandsunclient").removeClass("hidden")
+            //$('#ddl_Miscclient').get(0).selectedIndex = 0;
+            //$('#ddl_MiscSubclient').get(0).selectedIndex = 0;
+            $("#txtMiscDate").datepicker("disable");
+            GetMiscDedCC();
+        }
+        else if (IntrestModeval == "Intrest From Others") {
+            $("#divclientandsunclient").addClass("hidden");
+            $("#txtMiscDate").datepicker("disable");
+            GetMiscDedNormalCC();
+        }
+        else if (IntrestModeval == "Intrest From Clients" || IntrestModeval == "Intrest From Others") {
+            var errorMsg = "";
+            isValid = true;
+            if ($("#txtMiscDate").val() == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+                $('#ddl_MiscIntrestType').get(0).selectedIndex = 0
+                isValid = false;
+            }
+            else {
+                $("#txtMiscDate").datepicker("disable");
+                isValid = true;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divMiscreturnInfoMsg1").text("");
+                $("#divMiscreturnInfoMsg1").append(finalerror + errorMsg + "</div>");
+                $("#divMiscreturnInfoMsg1").addClass("alert-danger");
+                $("#divMiscreturnInfoMsg1").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divMiscreturnInfoMsg1").text("");
+                $("#divMiscreturnInfoMsg1").addClass("hidden");
+            }
+        }
+        else {
+            $("#txtMiscDate").datepicker("enable");
+            return true;
+        }
+    }
+    function GetMiscSubClient() {
+        var index = $("#ddl_Miscclient option:selected").index();
+        var ClientVal = $("#ddl_Miscclient option:selected").val();
+        if (index != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindMiscsubclient",
+                data: '{Clientid:"' + ClientVal + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var Subclient = $("#ddl_MiscSubclient");
+                    Subclient.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        Subclient.append($("<option></option>").val(this['SubClientCode']).html(this['SubClientName']));
+                    });
+                 
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                   
+                }
+            });
+        }
+    }
+    function GetMiscDca() {
+        var index = $("#ddl_MiscCcCode option:selected").index();
+        var CCVal = $("#ddl_MiscCcCode option:selected").val();
+        var Date = $("#txtMiscDate").val();
+        if ($("#txtMiscDate").val() != "") {
+            if (index != 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindMiscDCA",
+                    data: '{CC_code:"' + CCVal + '",date:"' + Date + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var dca = $("#ddl_MiscDCACode");
+                        dca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            dca.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        });
+                   
+                    },
+                    failure: function (response) {
+                    
+                    },
+                    error: function (response) {
+                    
+                    }
+                });
+            }
+        }
+        else {
+            alert("Please Select Date");
+            $('#ddl_MiscCcCode').get(0).selectedIndex = 0;
+            return false;
+        }
+    }
+    function GetMiscSDca() {
+        var chkstring = "YES";
+        var index = $("#ddl_MiscDCACode option:selected").index();
+        var DCAVal = $("#ddl_MiscDCACode option:selected").val();
+        if (index != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindMiscSDCA",
+                data: '{DCA:"' + DCAVal + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var sdca = $("#ddl_MiscSDCACode");
+                    sdca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        sdca.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                
+                },
+                failure: function (response) {
+                
+                },
+                error: function (response) {
+                   
+                }
+            });
+        }
+    }
+    function CountMiscTotal() {
+        var amount = $("#txtMiscAmount").val();
+        var final = $("#txtMiscFinalAmount").val();
+        var InterestExist = $("#txtMiscIntrestAmount").val();
+        var total = 0;
+        if (InterestExist != "" && amount != "") {
+            $("#IntrestTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var Interest = currentRow.find("td").eq(3).find("input[type='text']").val();
+                if (Interest != "") {
+                    total = parseFloat(amount) - parseFloat(Interest);
+                }
+                else {
+                    total = parseFloat(amount);
+                }
+            });
+        }
+        if (InterestExist == 0 && amount != "") {
+            total = parseFloat(amount);
+        }
+        if (InterestExist == "" && amount != "") {
+            total = parseFloat(amount);
+        }
+        if (InterestExist != "" && amount == "") {
+            $("#IntrestTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var Interest = currentRow.find("td").eq(3).find("input[type='text']").val();
+                total = parseFloat(Interest);
+                if (Interest != "") {
+                    total = parseFloat(Interest);
+                }
+                else {
+                    total = 0;
+                }
+            });
+        }
+        if (InterestExist == 0 && amount == "") {
+            total = 0;
+        }
+        $("#txtMiscFinalAmount").val(total);
+
+    }
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function GetMiscDedDca() {
+        var index = $("#ddl_MiscIntrestCcCode option:selected").index();
+        var CCVal = $("#ddl_MiscIntrestCcCode option:selected").val();
+        var Date = $("#txtMiscDate").val();
+        if ($("#txtMiscDate").val() != "") {
+            if (index != 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindMiscDCA",
+                    data: '{CC_code:"' + CCVal + '",date:"' + Date + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var dca = $("#ddl_MiscIntrestDCACode");
+                        dca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            dca.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        });
+
+                    },
+                    failure: function (response) {
+                     
+                    },
+                    error: function (response) {
+                     
+                    }
+                });
+            }
+        }
+        else {
+            alert("Please Select Date");
+            $('#ddl_MiscIntrestCcCode').get(0).selectedIndex = 0;
+            return false;
+        }
+    }
+    function GetMiscDedSDca() {
+        var chkstring = "YES";
+        var index = $("#ddl_MiscIntrestDCACode option:selected").index();
+        var DCAVal = $("#ddl_MiscIntrestDCACode option:selected").val();
+        if (index != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindMiscSDCA",
+                data: '{DCA:"' + DCAVal + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var sdca = $("#ddl_MiscIntrestSDCACode");
+                    sdca.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        sdca.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                 
+                }
+            });
+        }
+    }
+    function GetMiscDedCC() {
+        var index = $("#ddl_MiscIntrestType option:selected").index();
+        var Value = $("#ddl_MiscIntrestType option:selected").val();
+        if (index == 1) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindMiscDedCC",
+                data: '{Value:"' + Value + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var dedcc = $("#ddl_MiscIntrestCcCode");
+                    dedcc.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        dedcc.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                    });
+                 
+                },
+                failure: function (response) {
+               
+                },
+                error: function (response) {
+             
+                }
+            });
+        }
+    }
+    function GetMiscDedNormalCC() {
+        ////debugger;
+        var index = $("#ddl_MiscIntrestType option:selected").index();
+        var Value = $("#ddl_MiscIntrestType option:selected").val();
+
+        if (index == 2) {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BinddednormalCC",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var dedcc = $("#ddl_MiscIntrestCcCode");
+                    dedcc.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        dedcc.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                    });
+                   
+                },
+                failure: function (response) {
+                   
+                },
+                error: function (response) {
+                
+                }
+            });
+        }
+    }
+    var chkstring = "";
+    function ContinueSubmitData() {
+        ////debugger;
+        $('#txtclickcheck').val("NO");
+        $('#MiscIntrestConfirmModel').modal('hide')
+    }
+    function CancelSubmitData() {
+        ////debugger;
+        $('#txtclickcheck').val("YES");
+        $('#MiscIntrestConfirmModel').modal('hide')
+
+    }
+</script>

@@ -1,0 +1,208 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.NewAdvanceBalance)
+            @Html.TextBoxFor(model => model.NewAdvanceBalance, htmlAttributes: new { @class = "form-control", @id = "txtAdvanceBalance", readOnly = true })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <br />
+            <br />
+            <a href="#ModalAdvPayments" data-toggle="modal" style="color:darkslateblue">Advance Paid Till Date</a>
+        </div>
+    </div>
+</div>
+<div class="col-md-12" id="divGPPaymentDetails" style="margin-top:10px">
+    <div class="row">
+        <div class="col-md-12">
+            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Payment Details</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12"><hr class="separationHr" /></div>
+    </div>
+    <div class="row">
+        @Html.Action("VendorPayDetailsGrid", "Purchase", new { VendorName = Model.Name, VendorType = Model.VendorType, Paymenttype = Model.Paytype, Maxinvdate = Model.MaxInvoiceDate })
+        <input type="hidden" id="txtadvinvdate" value="@Model.MaxInvoiceDate" />
+    </div>
+    @*<div class="col-md-12">
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtAdvPayName" })
+                </div>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BankId)
+                    @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayBank", onchange = "VendorAdvPayModeChange()" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ModeofPay)
+                    @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvPayMode", onchange = "VendorAdvPayModeChange()" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Number)
+                    @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtAdvPayPaymentNo" })
+                    <select class="form-control dropdown-toggle" id="ddlAdvPaymentNo">
+                        <option selected="selected" value="Select">-Select-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionDate)
+                    @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtAdvPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txtAdvPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionAmount)
+                    @Html.TextBoxFor(model => model.TransactionAmount, new { @id = "txtAdvPayFinalAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);",
+                   onkeyup = "CheckAdvAmount()"
+               })
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <button class="btn btn1 btn-success" id="btnAdvPaySubmit" onclick="SubmitVendorAdvancePayData()">Submit</button>
+            <input type="hidden" id="txtadvinvdate" value="@Model.MaxInvoiceDate" />
+
+        </div>*@
+</div>
+@*<div class="col-md-12">
+    <div class="text-center">
+        <br />
+        <div id="divAdvPayInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+</div>*@
+<div class="modal fade" id="ModalAdvPayments" role="dialog" data-backdrop="static" data-keyboard="false">
+    <style>
+        .tdclass {
+            text-align: center;
+        }
+    </style>
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="height:50px">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div>
+                    @if (Model.AdvPaymentlist.Count > 0)
+                    {
+                        <div class="col-md-12">
+                            <div class="row change-tab text-right" id="divSPPOInvtaxtable">
+                                <div class="tabledynamic">
+                                    <br />
+                                    <table style="width:100%;border:1px solid gray" class="table order-list">
+                                        <thead>
+                                            <tr style="background-color:rgba(255,255,255,0.1)!important">                                               
+                                                
+                                                <th style="text-align:center;color:#fff">PaymentDate</th>
+                                                <th style="text-align:center;color:#fff">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{ int count = 1; }
+                                            @foreach (var item in Model.AdvPaymentlist)
+                                            {
+                                                <tr>                                                    
+                                                    <td class="tdclass">@item.TransactionDate</td>
+                                                    <td class="tdclass">@item.Amount</td>
+                                                </tr>
+                                                count++;
+                                            }
+                                        </tbody>
+                                        <tfoot>                                           
+                                        </tfoot>
+                                    </table>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>No Data Found</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {       
+        @*$("#txtAdvPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            minDate:'@Model.MaxInvoiceDate',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                AdvancePaymentDateValidation();
+            }
+        }).datepicker("setDate", new Date());*@
+    });
+    function AdvancePaymentDateValidation() {
+        var paydate = $("#txtAdvPayDate").val();
+        var invdate = '@Model.MaxInvoiceDate';
+        if (new Date(paydate) < new Date(invdate)) {           
+            $("#divAdvPayInfoMsg").text("");
+            $("#divAdvPayInfoMsg").append("<div>Payment Date must be greater than Invoice Date</div>");
+            $("#divAdvPayInfoMsg").addClass("alert-danger");
+            $("#divAdvPayInfoMsg").removeClass("hidden alert-success");
+            $("#divAdvPayInfoMsg").datepicker("setDate", 'dateToday');
+        }
+        else {
+            $("#divAdvPayInfoMsg").text("");
+            $("#divAdvPayInfoMsg").addClass("hidden");
+        }
+
+    }
+    //function CheckAdvAmount() {
+    //    var balanceAmount = $("#txtAdvanceBalance").val();
+    //    var payAmount = $("#txtAdvPayFinalAmount").val();
+    //    if (parseFloat(balanceAmount) < parseFloat(payAmount)) {
+    //        $("#divAdvPayInfoMsg").text("");
+    //        $("#divAdvPayInfoMsg").append("<div>You are excessing the Advance Amount</div>");
+    //        $("#divAdvPayInfoMsg").addClass("alert-danger");
+    //        $("#divAdvPayInfoMsg").removeClass("hidden alert-success");
+    //        return false;
+    //    }
+    //    else {
+    //        $("#divAdvPayInfoMsg").text("");
+    //        $("#divAdvPayInfoMsg").addClass("hidden");
+    //    }
+    //}
+    
+</script>

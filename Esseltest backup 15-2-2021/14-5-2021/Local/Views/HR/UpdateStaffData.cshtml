@@ -1,0 +1,2388 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.EmployeeRegistration
+<style>
+    .disabledTab {
+        pointer-events: none;
+    }
+
+    table > tbody > tr > td {
+        padding: 0px !important;
+        /*line-height: 1.42857143;*/
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+
+    .strike1 > span {
+        position: relative;
+        text-align: center;
+        /* margin-right: 80%; */
+        display: block;
+        font-size: 15px;
+        border-radius: 10px;
+        /* width: 80px; */
+        width: 22% !important;
+        /* height: 80px; */
+        right: -93px;
+        padding: 5px;
+        /* margin: 30px; */
+        font-weight: bold;
+        background: #fff;
+        border: 2px solid #666;
+    }
+
+    * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .Addmorecls {
+        background-color: #0b630b !important;
+        color: #fff;
+    }
+</style>
+<div class="row"><hr style="margin-top:0px !important" /></div>
+@if (Model != null)
+{
+    <div id="divNewEmpTabData">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FirstName)
+                    @Html.TextBoxFor(model => model.FirstName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpfirstname", onkeypress = "return isValidSpecialCharacters(event)", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LastName)
+                    @Html.TextBoxFor(model => model.LastName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmplastname", onkeypress = "return isValidSpecialCharacters(event)" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MiddleName)
+                    @Html.TextBoxFor(model => model.MiddleName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpmiddlename", onkeypress = "return isValidSpecialCharacters(event)" })
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DateofBirth)
+                    @Html.TextBoxFor(model => model.DateofBirth, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtUpEmpDateofbirth", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-1 text-left">
+                @Html.LabelFor(model => model.EmpAge, htmlAttributes: new { @class = "hidelabel" })
+                @Html.TextBoxFor(model => model.EmpAge, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpAge", @readOnly = "true" })
+
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Gender)
+                    @Html.DropDownListFor(model => model.Gender, new SelectList(Model.EmpSexList, "ESex", "ESex"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpSex" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MartialStatus)
+                    @Html.DropDownListFor(model => model.MartialStatus, new SelectList(Model.EmpMaritalStatusList, "EMaritalStatus", "EMaritalStatus"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpMaritalStatus", onchange = "EmpUpMaritalStatusChange()" })
+                </div>
+            </div>
+            <div class="col-md-3" id="divUpDateofMarriage">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DateofMarriage)
+                    @Html.TextBoxFor(model => model.DateofMarriage, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtUpempDateofMarriage", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AdharNo)
+                    @Html.TextBoxFor(model => model.AdharNo, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpAdharNo", maxlength = "12", onkeypress = "return IsNumeric(event)" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PanNo)
+                    @Html.TextBoxFor(model => model.PanNo, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpPanNo", maxlength = "10", onkeypress = "return AlphanumericOnly(this);" })
+                </div>
+            </div>
+            @*<div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Appointmenttype)
+                @Html.DropDownListFor(model => model.Appointmenttype, new SelectList(Model.EmpAppointmenttypeList, "EAppointmenttype", "EAppointmenttype"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpAppointType" })
+            </div>
+        </div>*@
+        </div>
+        <div class="row"><hr /></div>
+        <div class="row">
+            @*Tab data*@
+            <ul class="nav nav-tabs" id="tabGroups" role="tablist">
+                <li class="active disabledTab"><a data-toggle="tab" href="#UpPersonalInfo">Personal Info</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#UpQualification">Qualification Details</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#UpEmploymentHistory">Employment History</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#UpUploadDoc">Upload Documents</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#UpJoiningDetails">Joining Details</a></li>
+                <li class="disabledTab"><a data-toggle="tab" href="#UpBankDetails">Bank Details</a></li>
+                @if (Model.SalaryAccess == "Exist")
+                {
+                    <li class="disabledTab"><a data-toggle="tab" href="#UpSalaryDetails">Salary Details</a></li>
+                }
+
+                @*<li class="active"><a data-toggle="tab" href="#UpPersonalInfo">Personal Info</a></li>
+                    <li ><a data-toggle="tab" href="#UpQualification">Qualification Details</a></li>
+                    <li ><a data-toggle="tab" href="#UpEmploymentHistory">Employment History</a></li>
+                    <li ><a data-toggle="tab" href="#UpUploadDoc">Upload Documents</a></li>
+                    <li ><a data-toggle="tab" href="#UpJoiningDetails">Joining Details</a></li>
+                    <li ><a data-toggle="tab" href="#UpBankDetails">Bank Details</a></li>
+                    @if (Model.SalaryAccess == "Exist")
+                    {
+                        <li><a data-toggle="tab" href="#UpSalaryDetails">Salary Details</a></li>
+                    }*@
+            </ul>
+            <div class="tab-content">
+                <div id="UpPersonalInfo" class="tab-pane fade in active">
+                    <div id="divFamilyGrid" class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2"> <button class="btn btn1 btn-success  Addmorecls" id="btnewFamilyMember" onclick="ViewEditFamilyModel()">Add Family Member</button></div>
+                            <div class="col-md-2"><button class="btn btn1 btn-success Addmorecls" id="btnewChildMember" onclick="ViewEditChildModel()">Add Children</button></div>
+                            <br />
+
+                        </div>
+                        <div class="col-md-12" id="divUpdateFamilyGridData" style="margin-top:30px">
+                            @Html.Action("FamilyMembersGrid", "HR")
+                        </div>
+                    </div>
+                    <div id="divChildGrid" class="row" style="margin-top:10px">
+                        <br />
+                        <div class="col-md-12" id="divUpdateChildGridData">
+                            @Html.Action("ChildrenGrid", "HR")
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                        <div class="col-md-12">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Nominee Details</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12"><hr class="separationHr" /></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeName)
+                                    @Html.TextBoxFor(model => model.NomineeName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeName", onkeypress = "return isValidSpecialCharacters(event)" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeRelation)
+                                    @Html.TextBoxFor(model => model.NomineeRelation, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeRelation" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeDateofBirth)
+                                    @Html.TextBoxFor(model => model.NomineeDateofBirth, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtUpEmpNomineeDateofBirth", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeAge)
+                                    @Html.TextBoxFor(model => model.NomineeAge, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeAge", @readOnly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Contact Information</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12"><hr class="separationHr" /></div>
+                        </div>
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactWorkPhone)
+                                    @Html.TextBoxFor(model => model.ContactWorkPhone, new { @id = "txtUpEmpContactWorkPhone", @class = "form-control", @type = "text", maxlength = "10", onkeypress = "return IsNumeric(event)" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactMobile)
+                                    @Html.TextBoxFor(model => model.ContactMobile, new { @id = "txtUpEmpMobileNo", @class = "form-control", @type = "text", maxlength = "10", onkeypress = "return IsNumeric(event)" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PlaceofBirth)
+                                    @Html.TextBoxFor(model => model.PlaceofBirth, new { @id = "txtUpEmpPlaceofBirth", @class = "form-control", @type = "text" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.WorkEmail)
+                                    @Html.TextBoxFor(model => model.WorkEmail, new { @id = "txtUpEmpWorkEmail", @class = "form-control", @type = "text" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PermanentAddress)
+                                    @Html.TextAreaFor(model => model.PermanentAddress, new { @id = "txtUpEmpPermanentAddress", @class = "form-control", @type = "text", @rows = "2" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PresentAddress)
+                                    @Html.TextAreaFor(model => model.PresentAddress, new { @id = "txtUpEmpPresentAddress", @class = "form-control", @type = "text", @rows = "2" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right"> <button class="btn btn1 btn-success" id="btnewPINext" onclick="ShowEditQualificationTabNext()">Next</button></div>
+                </div>
+                <div id="UpQualification" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-2"><button class="btn btn1 btn-success  Addmorecls" id="btnewAcademic" onclick="ViewEditAcademicModel()">Add Academic</button></div>
+                        <div class="col-md-2"> <button class="btn btn1 btn-success Addmorecls" id="btnewTechnical" onclick="ViewEditTechnicalModel()">Add Technical </button></div>
+                    </div>
+                    <div class="row" id="divUpdateAcademicQualGridData" style="margin-top:20px">
+                        @Html.Action("AcademicQualificationGrid", "HR")
+                    </div>
+                    <div class="row" id="divUpdateTechnicalGrid" style="margin-top:10px">
+                        @Html.Action("TechnicalQualificationGrid", "HR")
+                    </div>
+                    <div class="row text-right">
+                        <button class="btn btn1 btn-success" id="btnewQualificationBack" onclick="ShowEditPITab()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewQualificationNext" onclick="ShowEditHistoryTabNext()">Next</button>
+                    </div>
+                </div>
+                <div id="UpEmploymentHistory" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4 text-center">
+                            <div class="form-group">
+                                <input id="rbtUpExperience" name="UpExperiencHistory" value="Experience" type="radio" style="font-weight:bold;">Experience
+                                <input id="rbtUpFresher" name="UpExperiencHistory" value="Fresher" type="radio" checked>Fresher
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <div class="row" id="divUpExperienceHistorGrid">
+                        <div class="col-md-12">
+                            <button class="btn btn1 btn-success  Addmorecls" id="btnewExpHistory" onclick="ViewEditExpHistoryModel()">Add Experience History</button>
+                        </div>
+                        <div class="col-md-12" id="divUpdateExperienceHistory" style="margin-top:20px">
+                            @Html.Action("ExperienceHistoryGrid", "HR")
+                        </div>
+                    </div>
+                    <div class="row text-right">
+                        <button class="btn btn1 btn-success" id="btnewEmpHistoryBack" onclick="ShowEditQualificationTabBack()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewEmpHistoryNext" onclick="ShowEditUplDocTabNext()">Next</button>
+                    </div>
+                </div>
+                <div id="UpUploadDoc" class="tab-pane fade">
+                    <div class="col-md-12">
+                        <button class="btn btn1 btn-success  Addmorecls" id="btnewExp?Doc" onclick="ViewEditEmpDocumentModel()">Add Documents</button>
+
+                    </div>
+                    <div class="col-md-12" id="divUpdateDocuments" style="margin-top:20px">
+                        @Html.Action("EmpDocumentGrid", "HR")
+                    </div>
+                    <div class="row text-right">
+                        <button class="btn btn1 btn-success" id="btnewEmpUpDocBack" onclick="ShowEditHistoryTabBack()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewEmpUpDocNext" onclick="ShowJoiningDataTabNext()">Next</button>
+                    </div>
+                </div>
+                <div id="UpJoiningDetails" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DesignatedAs)
+                                <a href="javascript:void(0)" onclick="ShowDesignationModel()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add Designation</a>
+
+                                @Html.DropDownListFor(model => model.DesignatedAs, new SelectList(Model.DesignationList, "DesignationId", "DesignationName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpDesignatedAs" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JoiningDate)
+                                @Html.TextBoxFor(model => model.JoiningDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtUpEmpJoiningDate", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JobType)
+                                @Html.DropDownListFor(model => model.JobType, new SelectList(Model.EmpJobTypeList, "EJobType", "EJobType"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpJobType" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JoiningCostCenter)
+                                @Html.DropDownListFor(model => model.JoiningCostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpJoiningCostCenter", onchange = "EmpUpJoiningCCChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransitDay)
+                                @Html.DropDownListFor(model => model.TransitDay, new SelectList(Model.EmpTransitDaysList, "ETransitdayno", "ETransitdayno"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpTransitdays" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReportTo)
+                                @Html.DropDownListFor(model => model.ReportTo, new SelectList(Model.ReporttoEmplist, "EmpRefNo", "FirstName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpReportToCategory" })
+
+                                @*@Html.DropDownListFor(model => model.ReportTo, new SelectList(Model.ReportToCategoryList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpReportToCategory" })*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Department)
+                                @Html.DropDownListFor(model => model.Department, new SelectList(Model.EmpDeptList, "DepartmentId", "DepartmentName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpDepartment" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right">
+                        <button class="btn btn1 btn-success" id="btnewEmpJoiningDataBack" onclick="ShowEditUplDocTabBack()">Back</button>
+                        <button class="btn btn1 btn-success" id="btnewEmpJoiningDataNext" onclick="ShowEditBankDataTabNext()">Next</button>
+                    </div>
+                </div>
+                <div id="UpBankDetails" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankName)
+                                <a href="javascript:void(0)" onclick="ShowBankModel()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add New Bank</a>
+
+                                @Html.DropDownListFor(model => model.BankName, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpBank" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankAccountNo)
+                                @Html.TextBoxFor(model => model.BankAccountNo, new { @id = "txtUpEmpBankAccountNo", @class = "form-control", @type = "text" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IFSCcode)
+                                @Html.TextBoxFor(model => model.IFSCcode, new { @id = "txtUpEmpBankIFSC", @class = "form-control", @type = "text" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankAddress)
+                                @Html.TextAreaFor(model => model.BankAddress, new { @id = "txtUpEmpBankAddress", @class = "form-control", @type = "text", @rows = "2" })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row text-right">
+                        <button class="btn btn1 btn-success" id="btnewEmpJoiningDataBack" onclick="ShowEditJoiningDataTabBack()">Back</button>
+                        @if (Model.SalaryAccess == "Exist")
+                        {
+                            <button class="btn btn1 btn-success" id="btnewEmpSalaryNext" onclick="ShowEditSalaryDataTabNext()">Next</button>
+                        }
+                    </div>
+                </div>
+                @if (Model.SalaryAccess == "Exist")
+                {
+                    <div id="UpSalaryDetails" class="tab-pane fade">
+                        <div class="row">
+                            <div class="col-md-12  text-center">
+                                <table id="UpSalaryTable" class="table order-list UpSaltable" style="border:1px solid #f0f0f0;text-transform:uppercase;">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important">EARNINGS</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important;border-right:1px solid #fff;">Rs</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important" class="hidden">AmtType</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important">DEDUCTIONS</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important">Rs</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important" class="hidden">AmtType</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="border-right:1px solid #f0f0f0;"><b>GROSS SALARY</b></td>
+                                            <td style="text-align:center;border-right:1px solid #f0f0f0;"></td>
+                                            <td style="border-right:1px solid #f0f0f0;"><b>TOTAL DEDUCTIONS</b></td>
+                                            <td style="text-align:center"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <br />
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <div class="col-md-6 text-left">
+                                </div>
+                                <div class="col-md-6 text-right"> <b style="font-size:15px;">NET PAY:<label id="lblUpNetPay"></label></b></div>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                        <div class="row text-right">
+                            <button class="btn btn1 btn-success" id="btnewEmpSalaryBack" onclick="ShowEditBankDataTabBank()">Back</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <br />
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                @if (Model.UANExist == false)
+                                {
+                                    <input type="checkbox" class="eagle-check-input" id="chkUpUANExist">
+                                }
+                                else
+                                { <input type="checkbox" class="eagle-check-input" id="chkUpUANExist" checked>}
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">Employee Has Any UAN(Universal Account Number)?</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="divPFNo">
+                <div class="col-md-12">
+                    @*<div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PFNumber)
+                @Html.TextBoxFor(model => model.PFNumber, new { @id = "txtUpEmpPFNumber", @class = "form-control", @type = "text", style = "text-transform:uppercase;", onkeypress = "return isValidSpecialCharacters(event)" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ESINumber)
+                @Html.TextBoxFor(model => model.ESINumber, new { @id = "txtUpEmpESINumber", @class = "form-control", @type = "text", style = "text-transform:uppercase;", onkeypress = "return isValidSpecialCharacters(event)" })
+            </div>
+        </div>*@
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.UANNumber)
+                            @Html.TextBoxFor(model => model.UANNumber, new { @id = "txtUpEmpUANNumber", @class = "form-control", @type = "text", style = "text-transform:uppercase;", maxlength = "18" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <button class="btn btn1 btn-success" id="btnEditEmpSubmit" onclick="UpdateStaffRegistrationData('@Model.EmpRefNo')">Submit</button>
+        <input type="hidden" value="" id="UpdateHiddenFamilyMemebersData" />
+        <input type="hidden" value="" id="UpdateHiddenChildData" />
+        <input type="hidden" value="" id="UpdateHiddenAcademicData" />
+        <input type="hidden" value="" id="UpdateHiddenTechnicalData" />
+        <input type="hidden" value="" id="UpdateHiddenDocumentsData" />
+        <input type="hidden" value="" id="UpdateHiddenExperienceHistory" />
+        <input type="hidden" id="txtUpSalaryAccess" value="@Model.SalaryAccess" />
+        <input type="hidden" id="txtUpSalaryRuleStatus" value="" />
+        <input type="hidden" value="" id="txtUpSalBasic" />
+    </div>
+    <div class="modal fade" id="UpdateFemilyMemberModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateChildMemberModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateAcademicQualModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateTechnicalQualModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateExperienceHistoryModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateEmpDocumentModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateEmpDesignationModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="UpdateEmpBankModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlUpEmpDesignatedAs").prop('selectedIndex', 0);
+        $("#ddlUpEmpJobType").prop('selectedIndex', 0);
+        $("#ddlUpEmpJoiningCostCenter").prop('selectedIndex', 0);
+        $("#ddlUpEmpTransitdays").prop('selectedIndex', 0);
+        $("#ddlUpEmpReportToCategory").prop('selectedIndex', 0);
+        $("#ddlUpEmpDepartment").prop('selectedIndex', 0);
+        $("#ddlUpEmpBank").prop('selectedIndex', 0);
+        $("#txtUpEmpBankIFSC").val("");
+        $("#txtUpEmpBankAddress").val("");
+        $("#txtUpEmpBankAccountNo").val("");
+        $("#txtUpEmpJoiningDate").datepicker("setDate", "");
+        var maritalstatus = '@Model.MartialStatus';
+        if (maritalstatus === 'Married') {
+            $("#divUpDateofMarriage").removeClass('hidden');
+        }
+        else {
+            $("#divUpDateofMarriage").addClass('hidden');
+        }
+        var exp = '@Model.Experience';
+        if (exp === 'Fresher') {
+            $("#divUpExperienceHistorGrid").addClass("hidden");
+            $("#rbtUpExperience").prop("checked", false);
+            $("#rbtUpFresher").prop("checked", true);
+        }
+        else {
+            $("#rbtUpExperience").prop("checked", true);
+            $("#rbtUpFresher").prop("checked", false);
+            $("#divUpExperienceHistorGrid").removeClass("hidden");
+        }
+        $("#txtUpEmpDateofbirth").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+            onClose: function (selectedDate) {
+                Eidtempagecal();
+            }
+        });
+        $("#txtUpempDateofMarriage").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+        });
+        $("#txtUpEmpNomineeDateofBirth").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+            onClose: function (selectedDate) {
+                EditEmpNomineeagecal();
+            }
+        });
+        $("#txtUpEmpJoiningDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",            
+            yearRange: "-100:+1",
+        }).datepicker("setDate", new Date());
+        //debugger;
+        var uanexist = '@Model.UANExist';
+        if (uanexist == "True") { $("#divPFNo").removeClass("hidden"); } else { $("#divPFNo").addClass("hidden");}
+
+        $("#UpdateFemilyMemberModel").on("hidden.bs.modal", function () {
+            $("#divUpdateFamilyGridData").load('/HR/FamilyMembersGrid');
+        });
+        $("#UpdateChildMemberModel").on("hidden.bs.modal", function () {
+            $("#divUpdateChildGridData").load('/HR/ChildrenGrid');
+        });
+        $("#UpdateAcademicQualModel").on("hidden.bs.modal", function () {
+            $("#divUpdateAcademicQualGridData").load('/HR/AcademicQualificationGrid');
+        });
+        $("#UpdateTechnicalQualModel").on("hidden.bs.modal", function () {
+            $("#divUpdateTechnicalGrid").load('/HR/TechnicalQualificationGrid');
+        });
+        $("#UpdateExperienceHistoryModel").on("hidden.bs.modal", function () {
+            $("#divUpdateExperienceHistory").load('/HR/ExperienceHistoryGrid');
+        });
+        $("#UpdateEmpDocumentModel").on("hidden.bs.modal", function () {
+            $("#divUpdateDocuments").load('/HR/EmpDocumentGrid');
+        });
+
+        @*var Designation = '@Model.DesignatedAs';
+        $("#ddlUpEmpDesignatedAs").find("option:contains('" + Designation + "')").each(function () {
+            if ($(this).text() == Designation) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var ReportTo = '@Model.ReportTo';
+        $("#ddlUpEmpReportToCategory").find("option:contains('" + ReportTo + "')").each(function () {
+            if ($(this).text() == ReportTo) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var Department = '@Model.Department';
+        $("#ddlUpEmpDepartment").find("option:contains('" + Department + "')").each(function () {
+            if ($(this).text() == Department) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var Bank = '@Model.BankName';
+        $("#ddlUpEmpBank").find("option:contains('" + Bank + "')").each(function () {
+            if ($(this).text() == Bank) {
+                $(this).attr("selected", "selected");
+            }
+        });*@
+
+        $("input:radio[name='UpExperiencHistory']").change(function () {
+            let expval = $(this).val();
+            if (expval === "Experience") {
+                $("#divUpExperienceHistorGrid").removeClass("hidden");
+            }
+            else {
+                $("#divUpExperienceHistorGrid").addClass("hidden");
+
+            }
+            ClearUpExpGrid();
+        });
+
+        $("table.order-list.UpSaltable").on("keyup", "input[type='text']", function (event) {
+            var currentRow = $(this).closest("tr");
+            var colIndex = $(this).parent().index();
+            var rowindex = $(this).closest('tr').index();
+            //var CurrentAmt = $(this).closest("tr").val();
+            var CurrentEarningHead = $.trim($(this).closest("tr").find("td").eq(0).html());
+            var CurrentAmt = $(this).closest("tr").find("td").eq(1).find("input[type='text']").val();
+
+            //alert("colindex:" + colIndex + "/rowindex:" + rowindex);
+
+            if (colIndex == 1) {//Earning  textbox
+                if (CurrentEarningHead == "Basic Pay") {//For basicpay  in earning
+                    var minsal = $("#txtUpSalBasic").val();
+                    if (parseFloat(CurrentAmt) < parseFloat(minsal)) {//Check if entered basic pay is greaterthan or equal to min basic pay entered in hrrules
+                        $("#divAddNewEmpInfoMsg").text("Basic Pay Should Not be Less Than the Min Basic Salary");
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text("");
+                        $("#divAddNewEmpInfoMsg").addClass("hidden");
+                    }
+                }
+            }
+            CalculateUpGrossAndNetSalary();
+        });
+
+        $('#chkUpUANExist').change(function () {
+            if (this.checked) {
+               //alert("Checked");
+                $("#divPFNo").removeClass("hidden");
+            }
+            else {
+               // alert("UnChecked");
+                $("#divPFNo").addClass("hidden");
+            }
+            //$("#txtUpEmpPFNumber").val("");
+            //$("#txtUpEmpESINumber").val("");
+            $("#txtUpEmpUANNumber").val("");
+        });
+        //$("#txtUpEmpPanNo").on("keypress", function (event) {
+        //    var englishAlphabetAndWhiteSpace = /[A-Z0-9]/g;
+        //    var key = String.fromCharCode(event.which);
+        //    if (englishAlphabetAndWhiteSpace.test(key)) {
+        //        return true;
+        //    }
+        //    return false;
+        //});
+        $("#txtUpEmpUANNumber").on("keypress", function (event) {
+            var englishAlphabetAndWhiteSpace = /[A-Z0-9]/g;
+            var key = String.fromCharCode(event.which);
+            if (englishAlphabetAndWhiteSpace.test(key)) {
+                return true;
+            }
+            return false;
+        });
+    });
+    function ClearUpExpGrid() {
+        $("#UpdateHiddenExperienceHistory").val("");
+       // $("#ExperienceTable tbody tr").remove();
+        $.ajax({
+            type: "POST",
+            url: "/HR/ClearExperienceData",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                //if (response.saveStatus === "Exists") { //alert("ExperienceRemoved"); }
+                //else { alert(response.saveStatus);}
+                $("#divUpdateExperienceHistory").load('/HR/ExperienceHistoryGrid');
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    }
+    function IsNumeric(evt) {
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((iKeyCode < 48 || iKeyCode > 57))
+            return false;
+    }
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function isValidSpecialCharacters(event) {
+        var character = String.fromCharCode(event.keyCode);
+        return !/[~`!#$%\^&*()+=\-\[\]\\';,/{}|\\":<>\?]/g.test(character);
+    }
+    function Eidtempagecal() {
+        //debugger;
+        if ($("#txtUpEmpDateofbirth").val() != "") {
+            var From_date = new Date($("#txtUpEmpDateofbirth").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtUpEmpAge").val(years);
+        }
+        else {
+            //alert("Select Date of Birth");
+            $("#txtUpEmpAge").val("");
+            return false;
+        }
+    }
+    function EditEmpNomineeagecal() {
+        if ($("#txtUpEmpNomineeDateofBirth").val() != "") {
+            var From_date = new Date($("#txtUpEmpNomineeDateofBirth").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtUpEmpNomineeAge").val(years);
+        }
+        else {
+            //alert("Select Date of Birth");
+            $("#txtUpEmpNomineeAge").val("");
+            return false;
+        }
+    }
+    function EmpUpMaritalStatusChange() {
+        var StatusIndex = $("#ddlUpEmpMaritalStatus option:selected").index();
+        var MaritalStatus = $("#ddlUpEmpMaritalStatus option:selected").val();
+        if (StatusIndex === 0) {
+            $("#divUpDateofMarriage").addClass("hidden");
+        }
+        else {
+            if (MaritalStatus === "Married") {
+                $("#divUpDateofMarriage").removeClass("hidden");
+            }
+            else {
+                $("#divUpDateofMarriage").addClass("hidden");
+            }
+        }
+        $("#txtUpempDateofMarriage").val("");
+    }
+    function ShowEditQualificationTabNext() {
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+        let joiningtypeindex = $("#ddlNEmpjoinType option:selected").index();
+        let categoryindex = $("#ddlNEmpCategory option:selected").index();
+        let appointtypeindex = $("#ddlNEmpAppointType option:selected").index();
+        let firstname = $("#txtUpEmpfirstname ").val();
+        let lastname = $("#txtUpEmplastname").val();
+        let middlename = $("#txtUpEmpmiddlename").val();
+        let dateofbirth = $("#txtUpEmpDateofbirth").val();
+        let age = $("#txtUpEmpAge").val();
+        let genderindex = $("#ddlUpEmpSex option:selected").index();
+        let StatusIndex = $("#ddlUpEmpMaritalStatus    option:selected").index();
+        let MaritalStatus = $("#ddlUpEmpMaritalStatus option:selected").val();
+        let dateofmarriage = $("#txtUpempDateofMarriage").val();
+        let AdharNo = $("#txtUpEmpAdharNo").val();
+
+        let nomineename = $("#txtUpEmpNomineeName").val();
+        let nomineerelation = $("#txtUpEmpNomineeRelation").val();
+        let nomineedob = $("#txtUpEmpNomineeDateofBirth").val();
+        let nomineeage = $("#txtUpEmpNomineeAge").val();
+
+        let workphone = $("#txtUpEmpContactWorkPhone").val();
+        let mobileno = $("#txtUpEmpMobileNo").val();
+        let placeofbirth = $("#txtUpEmpPlaceofBirth").val();
+        let workemail = $("#txtUpEmpWorkEmail").val();
+        let permanentaddress = $("#txtUpEmpPermanentAddress").val();
+        let presentaddress = $("#txtUpEmpPresentAddress").val();
+
+        if (joiningtypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Type</p>";
+            isValid = false;
+        }
+        else if (joiningtypeindex === 2) {
+            var oldusername = $("#txtOldEmpSearch").val();
+            if (oldusername === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Old UserName </p>";
+                isValid = false;
+            }
+        }
+        if (categoryindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+            isValid = false;
+        }
+        if (appointtypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Appointment Type</p>";
+            isValid = false;
+        }
+        if (firstname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter First Name </p>";
+            isValid = false;
+        }
+        if (lastname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Last Name </p>";
+            isValid = false;
+        }
+        //if (middlename === "") {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Middel Name </p>";
+        //    isValid = false;
+        //}
+
+        if (dateofbirth === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Date Of Birth </p>";
+            isValid = false;
+        }
+        if (age === "" || age === "0" || age === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Date Of Birth </p>";
+            isValid = false;
+        }
+        if (genderindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Gender </p>";
+            isValid = false;
+        }
+        if (StatusIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Marital Status </p>";
+            isValid = false;
+        }
+        else {
+            if (MaritalStatus === "Married" && dateofmarriage === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date Of Marriage</p>";
+                isValid = false;
+            }
+        }
+        if (AdharNo === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter AadharNo</p>";
+            isValid = false;
+        }
+        else if (AdharNo.length !== 12) {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid  AadharNo</p>";
+            isValid = false;
+        }
+        let PanNo = $("#txtUpEmpPanNo").val();
+        if (PanNo != "" && PanNo.length !== 10) {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid  PAN No</p>";
+            isValid = false;
+        }
+        //nominees
+        if (nomineename === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Name </p>";
+            isValid = false;
+        }
+        if (nomineerelation === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Relation </p>";
+            isValid = false;
+        }
+        if (nomineedob === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Date Of Birth</p>";
+            isValid = false;
+        }
+        else if (nomineeage === "" || nomineeage === "0" || nomineeage === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Nominee Date Of Birth </p>";
+            isValid = false;
+        }
+        if (workphone === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Work Contact Phone No </p>";
+            isValid = false;
+        }
+        else if (workphone.length !== 10) {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Work Contact Phone No </p>";
+            isValid = false;
+        }
+        if (mobileno === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Mobile No </p>";
+            isValid = false;
+        } else if (mobileno.length !== 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Mobile No </p>";
+            isValid = false;
+        }
+        if (placeofbirth === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Place Of Birth</p>";
+            isValid = false;
+        }
+        if (workemail === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Email ID </p>";
+            isValid = false;
+        }
+        if (workemail != "") {
+            var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+            if (!expr.test(workemail)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Work Email id</p>";
+                isValid = false;
+            }
+        }
+        if (permanentaddress === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Permanent Address </p>";
+            isValid = false;
+        }
+        if (presentaddress === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Present Address</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $('.nav-tabs li:eq(1) a').tab('show');
+        }
+        //$('.nav-tabs li:eq(1) a').tab('show');
+    }
+    function ShowEditPITab() {
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        $('.nav-tabs li:eq(0) a').tab('show');
+    }
+    function ShowEditQualificationTabBack() {
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+        if ($("#rbtUpExperience").is(':checked') === true) {
+            var historyData = $("#UpdateHiddenExperienceHistory").val();
+
+            var historycount = JSON.parse(historyData).length;
+            if (historycount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Experience Details</p>";
+                isValid = false;
+                if (!isValid) {
+                    var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divAddNewEmpInfoMsg").text("");
+                    $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    $("#divAddNewEmpInfoMsg").text("");
+                    $("#divAddNewEmpInfoMsg").addClass("hidden");
+                    $('.nav-tabs li:eq(1) a').tab('show');
+                }
+            }
+            else { $('.nav-tabs li:eq(1) a').tab('show'); }
+        }
+        else { $('.nav-tabs li:eq(1) a').tab('show'); }
+    }
+    function ShowEditHistoryTabNext() {
+
+        $('.nav-tabs li:eq(2) a').tab('show');
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+    }
+    function ShowEditHistoryTabBack() {
+
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+        var DocumentsData = JSON.parse($("#UpdateHiddenDocumentsData").val());
+        console.log(DocumentsData);
+        var RequiredDocumentslist = [];
+        if (DocumentsData.length > 0) {
+            $.each(DocumentsData, function () {
+                console.log(this["DocName"]);
+                if (this["DocName"] === "Photo" || this["DocName"] === "BankDetails" || this["DocName"] === "Aadhar Card") {
+                    RequiredDocumentslist.push(this["DocName"]);
+                }
+            });
+        }
+        if (DocumentsData.length === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Upload Documents</p>";
+            isValid = false;
+        }
+        else {
+            if (RequiredDocumentslist.indexOf("Photo") === -1) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload Photo</p>";
+                isValid = false;
+                //console.log("Upload Photo");
+            }
+            if (RequiredDocumentslist.indexOf("BankDetails") === -1) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload BankDetails</p>";
+                isValid = false;
+                //console.log("Uplaod BankDetails");
+            }
+            if (RequiredDocumentslist.indexOf("Aadhar Card") === -1) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload Aadhar Card</p>";
+                isValid = false;
+                console.log(RequiredDocumentslist.indexOf("Aadhar Card"));
+            }
+
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $('.nav-tabs li:eq(2) a').tab('show');
+        }
+
+    }
+    function ShowEditUplDocTabNext() {
+
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+        if ($("#rbtUpExperience").is(':checked') === true) {
+            var historyData = $("#UpdateHiddenExperienceHistory").val();
+            // console.log($("#HiddenExperienceHistory").val());
+            var historycount = JSON.parse(historyData).length;
+            if (historycount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Experience Details</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").addClass("hidden");
+                $('.nav-tabs li:eq(3) a').tab('show');
+            }
+        }
+        else { $('.nav-tabs li:eq(3) a').tab('show'); }
+
+
+        ////$('.nav-tabs li:eq(3) a').tab('show');
+    }
+    function ShowEditUplDocTabBack() {
+
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        //validation for joining data
+        var errorMsg = "";
+        isValid = true;
+        let Designationindex = $("#ddlUpEmpDesignatedAs option:selected").index();
+        let joiningdate = $("#txtUpEmpJoiningDate").val();
+        let jobtypeindex = $("#ddlUpEmpJobType option:selected").index();
+        let joiningCCindex = $("#ddlUpEmpJoiningCostCenter option:selected").index();
+        let transitdaysindex = $("#ddlUpEmpTransitdays option:selected").index();
+        let reporttocategoryindex = $("#ddlUpEmpReportToCategory option:selected").index();
+        let departmentindex = $("#ddlUpEmpDepartment option:selected").index();
+
+        if (Designationindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Designation</p>";
+            isValid = false;
+        }
+        if (joiningdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Joining Data</p>";
+            isValid = false;
+        }
+        if (jobtypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Job Type</p>";
+            isValid = false;
+        }
+        if (joiningCCindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining CostCenter</p>";
+            isValid = false;
+        } if (transitdaysindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Transit Days</p>";
+            isValid = false;
+        }
+        if (reporttocategoryindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Report To</p>";
+            isValid = false;
+        }
+        if (departmentindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Department</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $('.nav-tabs li:eq(3) a').tab('show');
+        }
+
+    }
+    function ShowJoiningDataTabNext() {
+
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+
+        var errorMsg = "";
+        isValid = true;
+        var DocumentsData = JSON.parse($("#UpdateHiddenDocumentsData").val());
+        console.log(DocumentsData);
+        var RequiredDocumentslist = [];
+        if (DocumentsData.length > 0) {
+            $.each(DocumentsData, function () {
+                console.log(this["DocName"]);
+                if (this["DocName"] === "Photo" || this["DocName"] === "BankDetails" || this["DocName"] === "Aadhar Card") {
+                    RequiredDocumentslist.push(this["DocName"]);
+                }
+            });
+        }
+        if (DocumentsData.length === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Upload Documents</p>";
+            isValid = false;
+        }
+        else {
+            if (RequiredDocumentslist.indexOf("Photo") === -1) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload Photo</p>";
+                isValid = false;
+                //console.log("Upload Photo");
+            }
+            if (RequiredDocumentslist.indexOf("BankDetails") === -1) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload BankDetails</p>";
+                isValid = false;
+                //console.log("Uplaod BankDetails");
+            }
+            if (RequiredDocumentslist.indexOf("Aadhar Card") === -1) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload Aadhar Card</p>";
+                isValid = false;
+                console.log(RequiredDocumentslist.indexOf("Aadhar Card"));
+            }
+
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $('.nav-tabs li:eq(4) a').tab('show');
+        }
+
+        //$('.nav-tabs li:eq(4) a').tab('show');
+    }
+    function ShowEditJoiningDataTabBack() {
+        //Validation for BankDetails
+        // $('.nav-tabs li:eq(4) a').tab('show');
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+
+        let accno = $("#txtUpEmpBankAccountNo").val();
+        let bankname = $("#ddlUpEmpBank option:selected").index();
+        let ifsccode = $("#txtUpEmpBankIFSC").val();
+        let BankAddress = $("#txtUpEmpBankAddress").val();
+
+        if (accno === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Bank Account No</p>";
+            isValid = false;
+        }
+        if (bankname === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+            isValid = false;
+        }
+        if (ifsccode === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter IFSC Code</p>";
+            isValid = false;
+        }
+        if (BankAddress === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Address</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $('.nav-tabs li:eq(4) a').tab('show');
+        }
+    }
+    function ShowEditBankDataTabNext() {
+        //validation for joining data
+        //$('.nav-tabs li:eq(5) a').tab('show');
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+        let Designationindex = $("#ddlUpEmpDesignatedAs option:selected").index();
+        let joiningdate = $("#txtUpEmpJoiningDate").val();
+        let jobtypeindex = $("#ddlUpEmpJobType option:selected").index();
+        let joiningCCindex = $("#ddlUpEmpJoiningCostCenter option:selected").index();
+        let transitdaysindex = $("#ddlUpEmpTransitdays option:selected").index();
+        let reporttocategoryindex = $("#ddlUpEmpReportToCategory option:selected").index();
+        let departmentindex = $("#ddlUpEmpDepartment option:selected").index();
+
+        if (Designationindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Designation</p>";
+            isValid = false;
+        }
+        if (joiningdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Joining Data</p>";
+            isValid = false;
+        }
+        if (jobtypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Job Type</p>";
+            isValid = false;
+        }
+        if (joiningCCindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining CostCenter</p>";
+            isValid = false;
+        } if (transitdaysindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Transit Days</p>";
+            isValid = false;
+        }
+        if (reporttocategoryindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Report To</p>";
+            isValid = false;
+        }
+        if (departmentindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Department</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $('.nav-tabs li:eq(5) a').tab('show');
+        }
+    }
+
+    function ShowEditBankDataTabBank() {
+        $("#divAddNewEmpInfoMsg").text("");
+        $("#divAddNewEmpInfoMsg").addClass("hidden");
+        var errorMsg = "";
+        isValid = true;
+        let salaryAccess = $("#txtUpSalaryAccess").val();
+        let rulestatus = $("#txtUpSalaryRuleStatus").val();
+        if (salaryAccess === "Exist" && rulestatus === "RuleExist") {
+            let emptyearningcount = 0, emptydeductioncount = 0;
+            $("#UpSalaryTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var earninghead = $.trim(currentRow.find("td").eq(0).html());
+                var deductionhead = $.trim(currentRow.find("td").eq(3).html());
+                var earning = 0, deducion = 0;
+                if (earninghead != "" && earninghead != null) {
+                    earning = currentRow.find("td").eq(1).find("input[type='text']").val();
+                    if (earning === "") {
+                        emptyearningcount++;
+                    }
+                }
+                if (deductionhead !== "" && deductionhead !== null) {
+                    deducion = currentRow.find("td").eq(4).find("input[type='text']").val();
+                    if (deducion === "") {
+                        emptydeductioncount++;
+                    }
+                }
+            });
+            var netvalue = $("#lblUpNetPay").html();
+            if (parseFloat(netvalue) < 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amounts For Salary</p>";
+                isValid = false;
+            }
+            if (emptyearningcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Earnings Amount</p>";
+                isValid = false;
+            }
+            if (emptydeductioncount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Deductions Amount</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").addClass("hidden");
+                $('.nav-tabs li:eq(5) a').tab('show');
+            }
+        }
+        else {
+            $('.nav-tabs li:eq(5) a').tab('show');
+        }
+    }
+
+
+    function ShowEditSalaryDataTabNext() {
+        let joiningCCindex = $("#ddlUpEmpJoiningCostCenter option:selected").index();
+        let rulestatus = $("#txtUpSalaryRuleStatus").val();
+        if (joiningCCindex === 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append("<div>Select Joining CostCenter</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (rulestatus!=="RuleExist") {
+            $("#divAddNewEmpInfoMsg").text("Configure Salary Rule In HRRules For this Employee Category");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            $("#btnEditEmpSubmit").prop('disabled', true);
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            var errorMsg = "";
+            isValid = true;
+
+            let accno = $("#txtUpEmpBankAccountNo").val();
+            let bankname = $("#ddlUpEmpBank option:selected").index();
+            let ifsccode = $("#txtUpEmpBankIFSC").val();
+            let BankAddress = $("#txtUpEmpBankAddress").val();
+
+            if (accno === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Bank Account No</p>";
+                isValid = false;
+            }
+            if (bankname === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+                isValid = false;
+            }
+            if (ifsccode === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter IFSC Code</p>";
+                isValid = false;
+            }
+            if (BankAddress === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Address</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").addClass("hidden");
+                $('.nav-tabs li:eq(6) a').tab('show');
+            }
+        }
+    }
+    function ViewEditFamilyModel() {
+        var empgenderindex = $("#ddlUpEmpSex option:selected").index();
+        if (empgenderindex === 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append("<div>Select Employee Gender</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $.ajax({
+                type: "POST",
+                url: "/HR/AddEmpFamilyMember",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#UpdateFemilyMemberModel').html(data);
+                    $('#UpdateFemilyMemberModel').modal();
+                }
+            });
+
+            ClearNewFamilyMemberModel();
+        }
+    }
+
+    function ClearNewFamilyMemberModel() {
+
+        $("#btnewFMSubmit").prop('disabled', false);
+        $("#divAddNewFMInfoMsg").text("");
+        $("#divAddNewFMInfoMsg").addClass("hidden");
+        $("#txtfamilymembername").val("");
+        $("#txtfamilymemberdob").val("");
+        $('#txtfamilymemberage').val("");
+        $("#ddlfamilymembergender").prop('selectedIndex', 0);;
+        $("#ddlfamilymemberrelation").prop('selectedIndex', 0);;
+        $("#txtfamilymemberwork").val("");
+        $("#txtfamilymembermobileno").val("");
+    }
+    function ViewEditChildModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpChildMember",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#UpdateChildMemberModel').html(data);
+                $('#UpdateChildMemberModel').modal();
+            }
+        });
+
+        ClearChildMemberModel();
+    }
+    function ClearChildMemberModel() {
+        $("#btnewChildSubmit").prop('disabled', false);
+        $("#divAddChildInfoMsg").text("");
+        $("#divAddChildInfoMsg").addClass("hidden");
+        $("#txtChildName").val("");
+        $("#txtChildDateofBirth").val("");
+        $('#txtChildAge').val("");
+        $("#ddlChildGender").prop('selectedIndex', 0);
+        $("#ddlChildmaritalstatus").prop('selectedIndex', 0);
+    }
+
+    function ViewEditAcademicModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpAcademicQualification",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#UpdateAcademicQualModel').html(data);
+                $('#UpdateAcademicQualModel').modal();
+            }
+        });
+
+        ClearNewAcademicQualificationModel();
+    }
+    function ClearNewAcademicQualificationModel() {
+        $("#divAddNewAQInfoMsg").text("");
+        $("#divAddNewAQInfoMsg").addClass("hidden");
+        //$("#txtAQAcademicClass").val("");
+        $("#ddlNEmpDegreeName").prop('selectedIndex', 0);
+        //$("#ddlChildmaritalstatus").prop('selectedIndex', 0);
+        $("#txtAQNameofUniversity").val("");
+        //$('#txtAQFromYear').val("");
+        //$('#txtAQToYear').val("");
+        $("#ddlAQFromYear").prop('selectedIndex', 0);
+        $("#ddlAQToYear").prop('selectedIndex', 0);
+        $('#txtAQPercentage').val("");
+        $("#btnewAQSubmit").prop('disabled', false);
+    }
+    function ViewEditTechnicalModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpTechnicalQualification",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#UpdateTechnicalQualModel').html(data);
+                $('#UpdateTechnicalQualModel').modal();
+            }
+        });
+
+        ClearNewTechnicalQualificationModel();
+    }
+    function ClearNewTechnicalQualificationModel() {
+        $("#divAddNewtQInfoMsg").text("");
+        $("#divAddNewtQInfoMsg").addClass("hidden");
+        $("#txtTechnicalSkill").val("");
+        $("#txtExperienceYears").val("");
+        $("#btnewTQSubmit").prop('disabled', false);
+    }
+
+    function ViewEditExpHistoryModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpExperienceHistory",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#UpdateExperienceHistoryModel').html(data);
+                $('#UpdateExperienceHistoryModel').modal();
+            }
+        });
+
+        ClearNewExperienceHistorynModel();
+    }
+    function ClearNewExperienceHistorynModel() {
+        $("#divAddNewEHInfoMsg").text("");
+        $("#divAddNewEHInfoMsg").addClass("hidden");
+        $("#txtOrganisationName").val("");
+        //$("#txtExpHistoryFromYear").val("");
+        //$("#txtExpHistoryToYear").val("");
+        $("#ddlExpHistoryFromYear").prop('selectedIndex', 0);
+        $("#ddlExpHistoryToYear").prop('selectedIndex', 0);
+        $("#txtExpHistoryRole").val("");
+        $("#btnewEHSubmit").prop('disabled', false);
+    }
+    function ViewEditEmpDocumentModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpDocument",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#UpdateEmpDocumentModel').html(data);
+                $('#UpdateEmpDocumentModel').modal();
+            }
+        });
+
+        ClearNewDocumentModel();
+    }
+    function ClearNewDocumentModel() {
+        $("#divAddNewDocInfoMsg").text("");
+        $("#divAddNewDocInfoMsg").addClass("hidden");
+
+        $("#DocumentId").val("");
+        $("#ddlNDocumentName").prop('selectedIndex', 0);
+        //$("#txtDocName").val("");
+        $("#txturl").val("");
+        $("#btnewDocSubmit").prop('disabled', false);
+        $('#user_img').attr('src', "");
+    }
+    function ShowDesignationModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpDesignation",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#UpdateEmpDesignationModel').html(data);
+                $('#UpdateEmpDesignationModel').modal();
+            }
+        });
+    }
+    function UpdateStaffRegistrationData(EmpID) {
+
+        let salaryAccess = $("#txtUpSalaryAccess").val(), rulestatus = $("#txtUpSalaryRuleStatus").val();
+        if (salaryAccess === "NotConfigured") {
+            $("#divAddNewEmpInfoMsg").text("Configure Salary Access Role Does Not Congigured");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            $("#btnEditEmpSubmit").prop('disabled', true);
+        }
+        else if (salaryAccess === "Exist" && rulestatus === "RuleNotExist") {
+            $("#divAddNewEmpInfoMsg").text("Salary Rules Does Not Exist");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            $("#btnEditEmpSubmit").prop('disabled', true);
+        }
+        else {
+            $("#btnEditEmpSubmit").prop('disabled', false);
+            var errorMsg = "";
+            isValid = true;
+            let joiningtypeindex = $("#ddlNEmpjoinType option:selected").index();
+            let categoryindex = $("#ddlNEmpCategory option:selected").index();
+            let appointtypeindex = $("#ddlNEmpAppointType option:selected").index();
+            let firstname = $("#txtUpEmpfirstname ").val();
+            let lastname = $("#txtUpEmplastname").val();
+            let middlename = $("#txtUpEmpmiddlename").val();
+            let dateofbirth = $("#txtUpEmpDateofbirth").val();
+            let age = $("#txtUpEmpAge").val();
+            let genderindex = $("#ddlUpEmpSex option:selected").index();
+            let StatusIndex = $("#ddlUpEmpMaritalStatus    option:selected").index();
+            let MaritalStatus = $("#ddlUpEmpMaritalStatus option:selected").val();
+            let dateofmarriage = $("#txtUpempDateofMarriage").val();
+            let AdharNo = $("#txtUpEmpAdharNo").val();
+
+            let nomineename = $("#txtUpEmpNomineeName").val();
+            let nomineerelation = $("#txtUpEmpNomineeRelation").val();
+            let nomineedob = $("#txtUpEmpNomineeDateofBirth").val();
+            let nomineeage = $("#txtUpEmpNomineeAge").val();
+
+            let workphone = $("#txtUpEmpContactWorkPhone").val();
+            let mobileno = $("#txtUpEmpMobileNo").val();
+            let placeofbirth = $("#txtUpEmpPlaceofBirth").val();
+            let workemail = $("#txtUpEmpWorkEmail").val();
+            let permanentaddress = $("#txtUpEmpPermanentAddress").val();
+            let presentaddress = $("#txtUpEmpPresentAddress").val();
+
+
+
+            if (joiningtypeindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Type</p>";
+                isValid = false;
+            }
+            else if (joiningtypeindex === 2) {
+                var oldusername = $("#txtOldEmpSearch").val();
+                if (oldusername === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Old UserName</p>";
+                    isValid = false;
+                }
+            }
+            if (categoryindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+                isValid = false;
+            }
+            if (appointtypeindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Appointment Type</p>";
+                isValid = false;
+            }
+            if (firstname === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter First Name</p>";
+                isValid = false;
+            }
+            if (lastname === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Last Name</p>";
+                isValid = false;
+            }
+            //if (middlename === "") {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Middel Name</p>";
+            //    isValid = false;
+            //}
+            if (dateofbirth === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date Of Birth</p>";
+                isValid = false;
+            }
+            if (age === "" || age === "0" || age === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Date Of Birth </p>";
+                isValid = false;
+            }
+            if (genderindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Gender </p>";
+                isValid = false;
+            }
+            if (StatusIndex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Marital Status </p>";
+                isValid = false;
+            }
+            else {
+                if (MaritalStatus === "Married" && dateofmarriage === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Date Of Marriage</p>";
+                    isValid = false;
+                }
+            }
+            if (AdharNo === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter AadharNo</p>";
+                isValid = false;
+            }
+            else if (AdharNo.length !== 12) {
+
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid  AadharNo</p>";
+                isValid = false;
+            }
+            let PanNo = $("#txtUpEmpPanNo").val();
+            if (PanNo != "" && PanNo.length !== 10) {
+
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid  PAN No</p>";
+                isValid = false;
+            }
+            //nominees
+            if (nomineename === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Name</p>";
+                isValid = false;
+            }
+            if (nomineerelation === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Relation</p>";
+                isValid = false;
+            }
+            if (nomineedob === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Date Of Birth</p>";
+                isValid = false;
+            }
+            else if (nomineeage === "" || nomineeage === "0" || nomineeage === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Nominee Date Of Birth</p>";
+                isValid = false;
+            }
+            if (workphone === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Work Contact Phone No</p>";
+                isValid = false;
+            }
+            else if (workphone.length !== 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Work Contact Phone No</p>";
+                isValid = false;
+            }
+            if (mobileno === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Mobile No</p>";
+                isValid = false;
+            } else if (mobileno.length !== 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Mobile No</p>";
+                isValid = false;
+            }
+            if (placeofbirth === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Place Of Birth</p>";
+                isValid = false;
+            }
+            if (workemail === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Email ID</p>";
+                isValid = false;
+            }
+            if (workemail != "") {
+                var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if (!expr.test(workemail)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Work Email id</p>";
+                    isValid = false;
+                }
+            }
+            if (permanentaddress === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Permanent Address</p>";
+                isValid = false;
+            }
+            if (presentaddress === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Present Address</p>";
+                isValid = false;
+            }
+            //debugger;
+            var historyData = $("#UpdateHiddenExperienceHistory").val();
+
+            var historycount = JSON.parse(historyData).length;
+
+            var DocumentsData = JSON.parse($("#UpdateHiddenDocumentsData").val());
+            console.log(DocumentsData);
+            var RequiredDocumentslist = [];
+            if (DocumentsData.length > 0) {
+                $.each(DocumentsData, function () {
+                    console.log(this["DocName"]);
+                    if (this["DocName"] === "Photo" || this["DocName"] === "BankDetails" || this["DocName"] === "Aadhar Card") {
+                        RequiredDocumentslist.push(this["DocName"]);
+                    }
+                });
+            }
+
+            //var familygridcount = $("#ExperienceTable tbody tr").length;
+            //var childgridcount = $("#ChildrenTable tbody tr").length;
+            //var academicgridcount = $("#AcademicTable tbody tr").length;
+            //var techgridcount = $("#TechnicalQuaTable tbody tr").length;
+            if ($("#rbtUpExperience").is(':checked') === true) {
+                if (historycount == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Experience Details</p>";
+                    isValid = false;
+                }
+            }
+            if (DocumentsData.length === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Upload Documents</p>";
+                isValid = false;
+            }
+            else {
+                if (RequiredDocumentslist.indexOf("Photo") === -1) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Upload Photo</p>";
+                    isValid = false;
+                    //console.log("Upload Photo");
+                }
+                if (RequiredDocumentslist.indexOf("BankDetails") === -1) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Upload BankDetails</p>";
+                    isValid = false;
+                    //console.log("Uplaod BankDetails");
+                }
+                if (RequiredDocumentslist.indexOf("Aadhar Card") === -1) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Upload Aadhar Card</p>";
+                    isValid = false;
+                    console.log(RequiredDocumentslist.indexOf("Aadhar Card"));
+                }
+
+            }
+            let Designationindex = $("#ddlUpEmpDesignatedAs option:selected").index();
+            let joiningdate = $("#txtUpEmpJoiningDate").val();
+            let jobtypeindex = $("#ddlUpEmpJobType option:selected").index();
+            let joiningCCindex = $("#ddlUpEmpJoiningCostCenter option:selected").index();
+            let transitdaysindex = $("#ddlUpEmpTransitdays option:selected").index();
+            let reporttocategoryindex = $("#ddlUpEmpReportToCategory option:selected").index();
+            let departmentindex = $("#ddlUpEmpDepartment option:selected").index();
+
+            if (Designationindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Designation</p>";
+                isValid = false;
+            }
+            if (joiningdate === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Joining Data</p>";
+                isValid = false;
+            }
+            if (jobtypeindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Job Type</p>";
+                isValid = false;
+            }
+            if (joiningCCindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Joining CostCenter</p>";
+                isValid = false;
+            } if (transitdaysindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Transit Days</p>";
+                isValid = false;
+            }
+            if (reporttocategoryindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Report To</p>";
+                isValid = false;
+            }
+            if (departmentindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Department</p>";
+                isValid = false;
+            }
+            let accno = $("#txtUpEmpBankAccountNo").val();
+            let bankname = $("#ddlUpEmpBank option:selected").index();
+            let ifsccode = $("#txtUpEmpBankIFSC").val();
+            let BankAddress = $("#txtUpEmpBankAddress").val();
+
+            if (accno === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Bank Account No</p>";
+                isValid = false;
+            }
+            if (bankname === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+                isValid = false;
+            }
+            if (ifsccode === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter IFSC Code</p>";
+                isValid = false;
+            }
+            if (BankAddress === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Address</p>";
+                isValid = false;
+            }
+            if (salaryAccess === "Exist" && rulestatus === "RuleExist") {
+                let emptyearningcount = 0, emptydeductioncount = 0;
+                $("#UpSalaryTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var earninghead = $.trim(currentRow.find("td").eq(0).html());
+                    var deductionhead = $.trim(currentRow.find("td").eq(3).html());
+                    var earning = 0, deducion = 0;
+                    if (earninghead != "" && earninghead != null) {
+                        earning = currentRow.find("td").eq(1).find("input[type='text']").val();
+                        if (earning === "") {
+                            emptyearningcount++;
+                        }
+                    }
+                    if (deductionhead !== "" && deductionhead !== null) {
+                        deducion = currentRow.find("td").eq(4).find("input[type='text']").val();
+                        if (deducion === "") {
+                            emptydeductioncount++;
+                        }
+                    }
+                });
+
+                if (emptyearningcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Earnings Amount</p>";
+                    isValid = false;
+                }
+                if (emptydeductioncount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Deductions Amount</p>";
+                    isValid = false;
+                }
+                var netvalue = $("#lblUpNetPay").html();
+                if (parseFloat(netvalue) < 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amounts For Salary</p>";
+                    isValid = false;
+                }
+            }
+            //debugger;
+            //let pfno = $("#txtUpEmpPFNumber").val();
+            //let esino = $("#txtUpEmpESINumber").val();
+            //// alert($("#chkUANExist").is(":checked") );
+            //if ($("#chkUpUANExist").is(":checked") === true) {
+            //    if (pfno === "") {
+            //        errorMsg += "<p style='margin-top:-5px!important;'>Enter EPF Number</p>";
+            //        isValid = false;
+            //    }
+
+            //}
+            let uanno = $("#txtUpEmpUANNumber").val();
+            // alert($("#chkUANExist").is(":checked") );
+            if ($("#chkUpUANExist").is(":checked") === true) {
+                if (uanno === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter UAN Number</p>";
+                    isValid = false;
+                }
+
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").addClass("hidden");
+                EditStaffData(EmpID);
+            }
+        }
+    }
+    function EditStaffData(EmpID) {
+        //  alert("Editing");
+        let joiningtype = $("#ddlNEmpjoinType option:selected").val();
+        let category = $("#ddlNEmpCategory option:selected").text();
+        let appointtype = $("#ddlNEmpAppointType option:selected").val();
+
+        let firstname = $("#txtUpEmpfirstname ").val();
+        let lastname = $("#txtUpEmplastname").val();
+        let middlename = $("#txtUpEmpmiddlename").val();
+        let dateofbirth = $("#txtUpEmpDateofbirth").val();
+        let age = $("#txtUpEmpAge").val();
+        let gender = $("#ddlUpEmpSex option:selected").val();
+        let Status = $("#ddlUpEmpMaritalStatus    option:selected").val();
+        let MaritalStatus = $("#ddlUpEmpMaritalStatus    option:selected").val();
+        let dateofmarriage = $("#txtUpempDateofMarriage").val();
+        let AdharNo = $("#txtNEmpAdharNo").val();
+        let AdharNo = $("#txtUpEmpAdharNo").val();
+        let PanNo = $("#txtUpEmpPanNo").val();
+
+        let nomineename = $("#txtUpEmpNomineeName").val();
+        let nomineerelation = $("#txtUpEmpNomineeRelation").val();
+        let nomineedob = $("#txtUpEmpNomineeDateofBirth").val();
+        let nomineeage = $("#txtUpEmpNomineeAge").val();
+
+        let workphone = $("#txtUpEmpContactWorkPhone").val();
+        let mobileno = $("#txtUpEmpMobileNo").val();
+        let placeofbirth = $("#txtUpEmpPlaceofBirth").val();
+        let workemail = $("#txtUpEmpWorkEmail").val();
+        let permanentaddress = $("#txtUpEmpPermanentAddress").val();
+        let presentaddress = $("#txtUpEmpPresentAddress").val();
+        let FMNames = "", FMDOBs = "", FMAges = "", FMGenders = "", FMRelations = "", FMWorkPhonenos = "", FMMobilenos = "";
+        let ChildNames = "", ChildDOBs = "", ChildAges = "", ChildGenders = "", ChildMaritals = "";
+        let AdClasses = "", AdUniversities = "", AdFromyears = "", AdToyears = "", AdPercents = "";
+        let TechSkills = "", TechExperiences = "";
+        let HTOrganisations = "", HTFromyears = "", HTToyears = "", HTRoles = "";
+        let DocNames = "", DocImages = "";
+
+        var FamilyMemebersData = JSON.parse($("#UpdateHiddenFamilyMemebersData").val());
+        console.log(FamilyMemebersData);
+        if (FamilyMemebersData.length > 0) {
+            $.each(FamilyMemebersData, function () {
+                FMNames += this["FMName"] + ",";
+                FMDOBs += this["FMDateofBirth"] + ",";
+                FMAges += this["FMAge"] + ",";
+                FMGenders += this["FMGender"] + ",";
+                FMRelations += this["FMRelation"] + ",";
+                FMWorkPhonenos += this["FMWork"] + ",";
+                FMMobilenos += this["FMMobileNo"] + ",";
+            });
+        }
+        var ChildData = JSON.parse($("#UpdateHiddenChildData").val());
+        console.log(ChildData);
+        if (ChildData.length > 0) {
+            $.each(ChildData, function () {
+                //console.log(this["ChildName"]);
+                ChildNames += this["ChildName"] + ",";
+                ChildDOBs += this["ChildDateofBirth"] + ",";
+                ChildAges += this["ChildAge"] + ",";
+                ChildGenders += this["ChildGender"] + ",";
+                ChildMaritals += this["ChildMaritalStatus"] + ",";
+            });
+        }
+        var AcademicData = JSON.parse($("#UpdateHiddenAcademicData").val());
+        console.log(AcademicData);
+        if (AcademicData.length > 0) {
+           // //debugger;
+            $.each(AcademicData, function () {
+                //console.log(this["AcademicClass"]);
+                AdClasses += this["AcademicClass"] + ",";
+                AdUniversities += this["NameofUniversity"] + ",";
+                AdFromyears += this["FromYear"] + ",";
+                AdToyears += this["ToYear"] + ",";
+                AdPercents += this["Percentage"] + ",";
+            });
+        }
+        var TechnicalData = JSON.parse($("#UpdateHiddenTechnicalData").val());
+        console.log(TechnicalData);
+        if (TechnicalData.length > 0) {
+            $.each(TechnicalData, function () {
+                //console.log(this["TechnicalSkill"]);
+                TechSkills += this["TechnicalSkill"] + ",";
+                TechExperiences += this["ExperienceYears"] + ",";
+            });
+        }
+        var exp = "";
+        if ($("#rbtUpExperience").is(':checked') === false) { exp = "Fresher" }
+        if ($("#rbtUpExperience").is(':checked') === true) {
+            var historyData = $("#UpdateHiddenExperienceHistory").val();
+            console.log($("#UpdateHiddenExperienceHistory").val());
+            var historycount = JSON.parse(historyData).length;
+            if (historycount > 0) {
+                $.each(JSON.parse(historyData), function () {
+                    //console.log(this["OrganisationName"]);
+                    HTOrganisations += this["OrganisationName"] + ",";
+                    HTFromyears += this["FromYear"] + ",";
+                    HTToyears += this["ToYear"] + ",";
+                    HTRoles += this["Role"] + ",";
+                });
+            }
+            exp = "Experienced";
+        }
+        var DocumentsData = JSON.parse($("#UpdateHiddenDocumentsData").val());
+        console.log(DocumentsData);
+        var RequiredDocumentslist = [];
+        if (DocumentsData.length > 0) {
+            $.each(DocumentsData, function () {
+                //console.log(this["DocName"]);
+                DocNames += this["DocName"] + ",";
+                DocImages += this["DocBinaryData"] + ",";
+            });
+        }
+
+        let Designationid = $("#ddlUpEmpDesignatedAs option:selected").val();
+        let joiningdate = $("#txtUpEmpJoiningDate").val();
+        let jobtype = $("#ddlUpEmpJobType option:selected").val();
+        let joiningCC = $("#ddlUpEmpJoiningCostCenter option:selected").val();
+        let transitdays = $("#ddlUpEmpTransitdays option:selected").val();
+        let reporttocategory = $("#ddlUpEmpReportToCategory option:selected").val();
+        let departmentId = $("#ddlUpEmpDepartment option:selected").val();
+        let accno = $("#txtUpEmpBankAccountNo").val();
+        let bankname = $("#ddlUpEmpBank option:selected").text();
+        let ifsccode = $("#txtUpEmpBankIFSC").val();
+        let bankAddress = $("#txtUpEmpBankAddress").val();
+        let HeadNames = "", HeadAmounts = "", HeadTypes = "";
+        let salaryAccess = $("#txtUpSalaryAccess").val(), rulestatus = $("#txtUpSalaryRuleStatus").val();
+        if (salaryAccess === "Exist" && rulestatus === "RuleExist") {
+            $("#UpSalaryTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var earninghead = $.trim(currentRow.find("td").eq(0).html());
+                var deductionhead = $.trim(currentRow.find("td").eq(3).html());
+                var earninghead = $.trim(currentRow.find("td").eq(0).html());
+                //var deductionhead = $.trim(currentRow.find("td").eq(3).html());
+                var earning = 0, deducion = 0;
+                if (earninghead != "" && earninghead != null) {
+                    earning = currentRow.find("td").eq(1).find("input[type='text']").val();
+                    if (earning !== "") {
+                        HeadNames += earninghead + '|';
+                        HeadAmounts += earning + '|';
+                        HeadTypes += "Earning" + '|';
+                    }
+
+                }
+            });
+            $("#UpSalaryTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var deductionhead = $.trim(currentRow.find("td").eq(3).html());
+                var deducion = 0;
+                if (deductionhead != "" && deductionhead != null) {
+                    deduction = currentRow.find("td").eq(4).find("input[type='text']").val();
+                    if (deduction !== "") {
+                        HeadNames += deductionhead + '|';
+                        HeadAmounts += deduction + '|';
+                        HeadTypes += "Deduction" + '|';
+                    }
+                }
+            });
+        }
+        let pfno = $("#txtUpEmpPFNumber").val();
+        let esino = $("#txtUpEmpESINumber").val();
+        let uanexist = false;
+        // alert($("#chkUANExist").is(":checked") );
+        if ($("#chkUpUANExist").is(":checked") === true) {
+            uanexist = true;
+        }
+
+        //debugger;
+        var EmpData = {
+            JoiningType: joiningtype,
+            Category: category,
+            Appointmenttype: appointtype,
+            FirstName: firstname,
+            LastName: lastname,
+            MiddleName: middlename,
+            DateofBirth: dateofbirth,
+            EmpAge: age,
+            Gender: gender,
+            MartialStatus: MaritalStatus,
+            DateofMarriage: dateofmarriage,
+            NomineeName: nomineename,
+            NomineeRelation: nomineerelation,
+            NomineeDateofBirth: nomineedob,
+            NomineeAge: nomineeage,
+            ContactWorkPhone: workphone,
+            ContactMobile: mobileno,
+            PlaceofBirth: placeofbirth,
+            WorkEmail: workemail,
+            PermanentAddress: permanentaddress,
+            PresentAddress: presentaddress,
+            Experience: exp,
+            DesignationId: Designationid,
+            JoiningDate: joiningdate,
+            JobType: jobtype,
+            JoiningCostCenter: joiningCC,
+            TransitDay: transitdays,
+            ReportTo: reporttocategory,
+            DepartmentId: departmentId,
+            BankName: bankname,
+            BankAccountNo: accno,
+            IFSCcode: ifsccode,
+            BankAddress: bankAddress,
+            FMName: FMNames,
+            FMDateofBirth: FMDOBs,
+            FMAge: FMAges,
+            FMGender: FMGenders,
+            FMRelation: FMRelations,
+            FMWork: FMWorkPhonenos,
+            FMMobileNo: FMMobilenos,
+            ChildName: ChildNames,
+            ChildDateofBirth: ChildDOBs,
+            ChildAge: ChildAges,
+            ChildGender: ChildGenders,
+            ChildMaritalStatus: ChildMaritals,
+            AcademicClass: AdClasses,
+            NameofUniversity: AdUniversities,
+            FromYear: AdFromyears,
+            ToYear: AdToyears,
+            Percentage: AdPercents,
+            TechnicalSkill: TechSkills,
+            ExperienceYears: TechExperiences,
+            OrganisationName: HTOrganisations,
+            ExpFromYear: HTFromyears,
+            ExpToYear: HTToyears,
+            Role: HTRoles,
+            //DocName: DocNames,
+            //DocBinaryData: DocImages,
+            EmpRefNo: EmpID,
+            SalaryHeads: HeadNames,
+            SalHeadAmounts: HeadAmounts,
+            SalaryHeadTypes: HeadTypes,
+            Status: '1',
+            Action: "New",
+            ESINumber: esino,
+            PFNumber: pfno,
+            UANExist: uanexist,
+            AdharNo: AdharNo,
+            PanNo: PanNo
+        }
+        addFailMsg = "Error Occurred While Adding.";
+        addSuccessMsg = "Staff Added Details Successfully.";
+        //alert('submit');
+        $("#btnEditEmpSubmit").prop('disabled', true);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/HR/UpdateStaffRegistration1',
+            data: { empReg: EmpData },
+            success: function (Data) {
+                if (Data.saveStatus == 'Submited') {
+             
+                    $("#divAddNewEmpInfoMsg").text(addSuccessMsg);
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-danger");
+                    $("#divAddNewEmpInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnEditEmpSubmit").prop('disabled', false);
+                    $("#divAddNewEmpInfoMsg").text(Data.saveStatus);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnEditEmpSubmit").prop('disabled', false);
+                $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+
+    }
+    function EmpUpJoiningCCChange() {
+
+        let salaryAccess = '@Model.SalaryAccess';
+        if (salaryAccess == "NotConfigured") { }
+        else if (salaryAccess == "Exist") {
+
+            let joiningCC = $("#ddlUpEmpJoiningCostCenter option:selected").val();
+            let joiningCCindex = $("#ddlUpEmpJoiningCostCenter option:selected").index();
+            let categoryid = $("#ddlNEmpCategory option:selected").val();
+            //alert(joiningCC);
+            if (joiningCCindex === 0) {
+                ClearUpSalaryGrid();
+            }
+            else {
+                ClearUpSalaryGrid();
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/GetSalaryHeadsForCategory",
+                    data: '{ CategoryId:"' + categoryid + '",CCCode:"' + joiningCC + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        let rulestatus = response.RuleStatus;
+                        $("#txtUpSalaryRuleStatus").val(rulestatus);
+
+                        if (rulestatus === "RuleExist") {
+                            $.each(response.AllSalaryHeadList, function () {
+                               // //debugger;
+                                console.log(this["EarningHeadName"] + "," + this["EarningHeadAmount"] + "," + this["EarningAmountType"] + "," + this["DeductionHeadName"] + "," + this["DeductionHeadAmount"] + "," + this["DeductionAmountType"]);
+                                var newRow = $("<tr>");
+                                var cols = "";
+                                if (this["EarningHeadName"] != "" && this["EarningHeadName"] != null) {
+                                    cols += '<td style="text-align:left;font-size:11px;vertical-align:middle">' + this["EarningHeadName"] + '</td>';
+                                    cols += '<td style="text-align:center;border-right:1px solid #f0f0f0;">';
+                                    cols += '<input type="text"class="form-control" onkeypress = "return ValidateAmount(this,event);" value="' + this["EarningHeadAmount"] + '"/></td>';
+                                    cols += '<td style="text-align:left;font-size:11px;vertical-align:middle"  class="hidden">' + this["EarningAmountType"] + '</td>';
+                                }
+                                else {
+                                    cols += '<td></td>';
+                                    cols += '<td></td>';
+                                    cols += '<td  class="hidden"></td>';
+                                }
+                                if (this["DeductionHeadName"] != "" && this["DeductionHeadName"] != null) {
+                                    cols += '<td style="text-align:left;font-size:11px;vertical-align:middle">' + this["DeductionHeadName"] + '</td>';
+                                    cols += ' <td style="text-align:center;border-right:1px solid #f0f0f0;">';
+                                    cols += '<input type="text" class="form-control" onkeypress = "return ValidateAmount(this,event);" value="' + this["DeductionHeadAmount"] + '"/></td>';
+                                    cols += '<td style="text-align:left;font-size:11px;vertical-align:middle"  class="hidden">' + this["DeductionAmountType"] + '</td>';
+                                }
+                                else {
+                                    cols += '<td></td>';
+                                    cols += '<td></td>';
+                                    cols += '<td  class="hidden"></td>';
+                                }
+                                newRow.append(cols);
+                                $("table.order-list.UpSaltable").append(newRow);
+                            });
+                            $("#UpSalaryTable tfoot tr").each(function () {
+                                var footerRow = $(this);
+                                footerRow.find("td").eq(1).html("<b>"+parseFloat(response.GrossAmount).toFixed(2) + "</b>");
+                                footerRow.find("td").eq(3).html("<b>"+parseFloat(response.TotalDeduction).toFixed(2)+ "</b>");
+                            });
+                            $("#lblUpNetPay").html(response.NetAmount);
+                            //debugger;
+                            $("#txtUpSalBasic").val(response.Basic);
+                            $("#btnEditEmpSubmit").prop('disabled', false);
+                        }
+                        else {
+                            $("#divAddNewEmpInfoMsg").text("Configure Salary Rule In HRRules For this Employee Category");
+                            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                            $("#btnEditEmpSubmit").prop('disabled', true);
+                        }
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        }
+    }
+    function ClearUpSalaryGrid() {
+        $("#UpSalaryTable tbody tr").remove();
+        $("#UpSalaryTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            footerRow.find("td").eq(1).html(0);
+            footerRow.find("td").eq(3).html(0);
+        });
+    }
+    function CalculateUpGrossAndNetSalary() {
+        let totalEarnings = 0;
+        let totalDeduction = 0;
+        let netpay = 0;
+        $("#UpSalaryTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var earninghead = $.trim(currentRow.find("td").eq(0).html());
+            var deductionhead = $.trim(currentRow.find("td").eq(3).html());
+            var earning = 0, deducion = 0;
+            if (earninghead != "" && earninghead != null) {
+                earning = currentRow.find("td").eq(1).find("input[type='text']").val();
+                if (earning !== "") {
+                    totalEarnings = parseFloat(totalEarnings) + parseFloat(earning);
+                }
+                else {
+                    totalEarnings = parseFloat(totalEarnings);
+                }
+            }
+            if (deductionhead !== "" && deductionhead !== null) {
+                deducion = currentRow.find("td").eq(4).find("input[type='text']").val();
+                if (deducion !== "") {
+                    totalDeduction = parseFloat(totalDeduction) + parseFloat(deducion);
+                }
+                else {
+                    totalDeduction = parseFloat(totalDeduction);
+                }
+            }
+        });
+
+        if (!isNaN(totalEarnings) && !isNaN(totalDeduction)) {
+            $("#UpSalaryTable tfoot tr").each(function () {
+                var footerRow = $(this);
+                if (!isNaN(totalEarnings)) {
+                    footerRow.find("td").eq(1).html("<b>" + parseFloat(totalEarnings).toFixed(2) + "</b>");
+                }
+                else {
+                    footerRow.find("td").eq(1).html(0);
+                }
+                if (!isNaN(totalDeduction)) {
+                    footerRow.find("td").eq(3).html("<b>" + parseFloat(totalDeduction).toFixed(2) + "</b>");
+                }
+                else {
+                    footerRow.find("td").eq(3).html(0);
+                }
+            });
+            netpay = gsttotal = parseFloat(totalEarnings) - parseFloat(totalDeduction);
+            if (!isNaN(netpay)) {
+                $("#lblUpNetPay").html(parseFloat(netpay).toFixed(2));
+            }
+            else { $("#lblUpNetPay").html(0); }
+            //console.log("E:" + totalEarnings + ",D:" + totalDeduction + ",N:" + netpay );
+        }
+
+        }
+        function ShowBankModel() {
+            $.ajax({
+                type: "POST",
+                url: "/HR/AddEmployeeBank",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#UpdateEmpBankModel').html(data);
+                    $('#UpdateEmpBankModel').modal();
+                }
+            });
+        }
+    </script>
+}
+else
+{
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprStaffRegInfoMsg" class="alert alert-danger"><b>Enployee ID Does Not Exist</b></div>
+        </div>
+    </div>
+
+}

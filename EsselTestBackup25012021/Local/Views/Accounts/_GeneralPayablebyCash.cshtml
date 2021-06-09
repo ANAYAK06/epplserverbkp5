@@ -1,0 +1,320 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPayablebyCash
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">General Payable by Cash</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_TransactionMode)
+                                                            @Html.DropDownListFor(model => model.GPCash_TransactionMode, new SelectList(Model.GICashTransactionmode, "GICashPaymentModeid", "GICashPaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPCPaymentmode", onchange = "BindCashCCCode()" })  @*, onchange = "BindCashCCCode()"*@
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4" id="divacccashcccode">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.OtherCash_CCCode)
+                                                            @Html.DropDownListFor(model => model.OtherCash_CCCode, new SelectList(Model.AccountantCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlACCCCCode", onchange = "BindCashCCCode()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4" id="divcashcccode">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_CCCode)
+                                                            @Html.DropDownListFor(model => model.GPCash_CCCode, new SelectList(Model.GICashCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashCCCode", onchange = "BindCashDcaCode()" })
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row" id="divcashinvoiceno">
+                                                <div class="col-md-12">
+                                                    @*<div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.GPCash_InvoiceNo)
+                                                                @Html.DropDownListFor(model => model.GPCash_InvoiceNo, new SelectList(Model.GICashInvoiceno, "GICashInvNoId", "GICashInvoiceNos"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashinvoicenos" })
+                                                            </div>
+                                                        </div>*@
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_Date)
+                                                            @Html.TextBoxFor(model => model.GPCash_Date, "{0:dd-MMM-yyyy}", new { @id = "txtGPCashdate", @class = "form-control  date-picker", @readonly = "true", @type = "text", value = "" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_PaidDate)
+                                                            @Html.TextBoxFor(model => model.GPCash_PaidDate, "{0:dd-MMM-yyyy}", new { @id = "txtGPCashpaiddate", @class = "form-control  date-picker", @readonly = "true", @type = "text", value = "" })
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row" id="divaccounthead">
+                                                <div class="col-md-12">
+
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_DCACode)
+                                                            @Html.DropDownListFor(model => model.GPCash_DCACode, new SelectList(Model.GICashAccountHead, "GICashDCACodeID", "GICashDCACodeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashDCACode", onchange = "BindCashSDcaCode()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_SDCACode)
+                                                            @Html.DropDownListFor(model => model.GPCash_SDCACode, new SelectList(Model.GICashSubAccountHead, "GICashSDCACodeID", "GICashSDCACodeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGICashSDCACode" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_Name)
+                                                            @Html.TextBoxFor(model => model.GPCash_Name, new { @id = "txtGPCashName", @class = "form-control", @type = "text" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="divremarksamt">
+                                                <div class="col-md-12">
+
+                                                    <div class="col-md-9">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_Remarks)
+                                                            @Html.TextBoxFor(model => model.GPCash_Remarks, new { @id = "txtGPCashRemarks", @class = "form-control", @type = "text" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.GPCash_Amount)
+                                                            @Html.TextBoxFor(model => model.GPCash_Amount, new { @id = "txtGPCashAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @type = "text" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="divsubmitbtn">
+                                                <div class="col-md-12">
+                                                    <div class="text-right">
+                                                        <input type="text" value="0" id="txtGeneralSessionCC" style="display:none" />
+                                                        <input type="text" value="0" id="txtGeneralcashRoleId" style="display:none" />
+                                                        <input type="text" value="0" id="txtcreatedbygeneralpayment" style="display:none" />
+                                                        <button class="btn btn1 btn-success" id="btnsubmitgeneralcashinv" onclick="btngeneralinvocicecash()">Submit</button>
+                                                        <button class="btn btn1 btn-success" id="btnresetgeneralcashinvoice" onclick="btnresetgeneralinvocicecash()">Reset</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row col-md-12 text-center">
+                                                <div id="divcashgeneralinvoiceInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    
+    //script for general invoice cash Starts
+    function btngeneralinvocicecash() {
+        debugger;
+        var errorMsg = "";
+        isValid = true;
+        var GPCPaymentmode = $("#ddlGPCPaymentmode option:selected").index();
+        var GPSessionCCCode = $("#ddlACCCCCode option:selected").index();
+        var GPCCCode = $("#ddlGICashCCCode option:selected").index();
+        var GPCashInvoiceno = $("#ddlGICashinvoicenos option:selected").index();
+        var GPCdate = $("#txtGPCashdate").val();
+        var GPCashpaiddate = $("#txtGPCashpaiddate").val();
+        var GPCDcacode = $("#ddlGICashDCACode option:selected").index();
+        var GPCSdcacode = $("#ddlGICashSDCACode option:selected").index();
+        var GPCname = $("#txtGPCashName").val();
+        var GPCRemarks = $("#txtGPCashRemarks").val();
+        var GPCTotalAmount = $("#txtGPCashAmount").val();
+        if (GPCPaymentmode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Mode of Transaction</p>";
+            isValid = false;
+        }
+        if (GPSessionCCCode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Self Cost Center</p>";
+            isValid = false;
+        }
+        if (GPCPaymentmode == 2) {
+            if (GPCCCode == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Other Cost Center</p>";
+                isValid = false;
+            }
+        }
+        if (GPCashInvoiceno == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice No</p>";
+            isValid = false;
+        }
+        if (GPCdate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        if (GPCashpaiddate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Paid Date</p>";
+            isValid = false;
+        }
+        if (GPCDcacode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Account Head</p>";
+            isValid = false;
+        }
+        if (GPCSdcacode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Sub-Account Head</p>";
+            isValid = false;
+        }
+        if (GPCname == "" || GPCname == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+            isValid = false;
+        }
+        if (GPCRemarks == "" || GPCRemarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (GPCTotalAmount == "" || GPCTotalAmount == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Amount</p>";
+            isValid = false;
+        }
+        if (GPCTotalAmount == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divcashgeneralinvoiceInfoMsg").text("");
+            $("#divcashgeneralinvoiceInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divcashgeneralinvoiceInfoMsg").addClass("alert-danger");
+            $("#divcashgeneralinvoiceInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divcashgeneralinvoiceInfoMsg").text("");
+            $("#divcashgeneralinvoiceInfoMsg").addClass("hidden");
+            AddGeneralcashpaymentDetails();
+
+        }
+    }
+    function AddGeneralcashpaymentDetails() {       
+        var GPCPaymentmode = $("#ddlGPCPaymentmode option:selected").index();
+        if (GPCPaymentmode == 1) {
+            var GeneralcashpaymentDetails = {
+                GPCash_TransactionMode: $("#ddlGPCPaymentmode option:selected").text(),
+                GPCash_Date: $("#txtGPCashdate").val(),
+                GPCash_PaidDate: $("#txtGPCashpaiddate").val(),
+                GPCash_DCACode: $("#ddlGICashDCACode option:selected").val(),
+                GPCash_SDCACode: $("#ddlGICashSDCACode option:selected").val(),
+                GPCash_Name: $("#txtGPCashName").val(),
+                GPCash_Remarks: $("#txtGPCashRemarks").val(),
+                GPCash_Amount: $("#txtGPCashAmount").val(),
+                RoleID: $("#txtGeneralcashRoleId").val(),
+                GPSessionCCCode: $("#ddlACCCCCode option:selected").val(),
+                Createdby: $("#txtcreatedbygeneralpayment").val()
+
+            };
+        }
+        else if (GPCPaymentmode == 2) {
+            var GeneralcashpaymentDetails = {
+                GPCash_TransactionMode: $("#ddlGPCPaymentmode option:selected").text(),
+                GPCash_CCCode: $("#ddlGICashCCCode option:selected").val(),
+                GPCash_Date: $("#txtGPCashdate").val(),
+                GPCash_PaidDate: $("#txtGPCashpaiddate").val(),
+                GPCash_DCACode: $("#ddlGICashDCACode option:selected").val(),
+                GPCash_SDCACode: $("#ddlGICashSDCACode option:selected").val(),
+                GPCash_Name: $("#txtGPCashName").val(),
+                GPCash_Remarks: $("#txtGPCashRemarks").val(),
+                GPCash_Amount: $("#txtGPCashAmount").val(),
+                RoleID: $("#txtGeneralcashRoleId").val(),
+                GPSessionCCCode: $("#ddlACCCCCode option:selected").val(),
+                Createdby: $("#txtcreatedbygeneralpayment").val()
+
+            };
+        }
+        addFailMsg = "Error Occurred While Adding General Payment Details.";
+        addSuccessMsg = "General Payment Added Successfully.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/NewSaveGeneralCashPaymentDetails',
+            data: { newGeneralcashpaymentDetails: GeneralcashpaymentDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Approved SuccessFully") {
+                    $("#divcashgeneralinvoiceInfoMsg").text(addSuccessMsg);
+                    $("#divcashgeneralinvoiceInfoMsg").removeClass("hidden alert-danger");
+                    $("#divcashgeneralinvoiceInfoMsg").addClass("alert-success");
+                    $("#btnsubmitgeneralcashinv").prop("disabled", true);
+                }
+                else {
+                    $("#divcashgeneralinvoiceInfoMsg").text(Data.saveStatus);
+                    $("#divcashgeneralinvoiceInfoMsg").addClass("alert-danger");
+                    $("#divcashgeneralinvoiceInfoMsg").removeClass("hidden alert-success");
+                    $("#btnsubmitgeneralcashinv").prop("disabled", false);
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divcashgeneralinvoiceInfoMsg").text(addFailMsg);
+                $("#divcashgeneralinvoiceInfoMsg").addClass("alert-danger");
+                $("#divcashgeneralinvoiceInfoMsg").removeClass("hidden alert-success");
+                $("#btnsubmitgeneralcashinv").prop("disabled", false);
+
+            }
+        });
+
+    }
+</script>
+<script>
+     $(document).ready(function () {
+         var Sessioncreated = '@Session["SessionCostCenter"]';
+         $("#txtGeneralSessionCC").val(Sessioncreated);
+         var RoleID = '@Session["Roleid"]';
+         $("#txtGeneralcashRoleId").val(RoleID);
+         var createdby = '@Session["Createdby"]';
+         $("#txtcreatedbygeneralpayment").val(createdby);
+         $("#txtGPCashdate").datepicker({
+             dateFormat: 'dd-M-yy',
+             changeMonth: true,
+             changeYear: true,
+             showOn: "button",
+             minDate: -365,
+             maxDate: 0,
+             buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+             onClose: function (selectedDate) {
+                 $("#txtGPCashpaiddate").datepicker("option", "minDate", selectedDate);
+             }
+         }).datepicker("setDate", new Date());
+
+         $("#txtGPCashpaiddate").datepicker({
+             dateFormat: 'dd-M-yy',
+             changeMonth: true,
+             changeYear: true,
+             showOn: "button",
+             buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+             maxDate: 'dateToday'
+         }).datepicker("setDate", new Date());
+    });
+</script>

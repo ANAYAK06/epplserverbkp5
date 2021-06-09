@@ -1,0 +1,102 @@
+﻿@model EsselTestLocalApplication.Models.HomePageReport
+<div class="container ">
+    @*<div class="row" style="float:left">
+            <div class="panel panel-default">
+                <div class="panel-body  text-center chartpanel"> </div>
+            </div>
+
+        </div>*@
+    <div id="piechart" class="piechart"></div>
+    @*<div id="piechart1" class="piechart"></div>*@
+    <div class="col-md-12">
+        <div class="text-center">
+            <br />
+            <div id="divDCABudgetChartInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+</div>
+
+@foreach (var item in Model.BRData.CCBudget)
+{
+    <input type="hidden" value="@item.CC_Name" id="txtBRCCName" />
+    <input type="hidden" value="@item.BudgetValue" id="txtBRCCBudget" />
+    <input type="hidden" value="@item.BalanceBudget" id="txtBRCCBalance" />
+}
+<script>
+
+  
+
+    function drawChart() {
+
+       
+       
+
+            var Data =@Html.Raw(Json.Encode(@Model.chartData));
+            var data = google.visualization.arrayToDataTable(@Html.Raw(Json.Encode(@Model.chartData)));
+       
+
+
+        var options = {
+            title: $('<div class="text-center">' + Heading + '</div>').html(),
+
+        //    chartArea: { left: "20%", top: "20%", width: "80%", height: "80%",float:"left",overflow:"auto" }
+            chartArea: { width: "60%", height: "60%", float: "left", overflow: "auto" }
+        };
+        //};
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+    }
+
+    //$(window).on("throttledresize", function (event) {
+    //    var options = {
+    //        width: '100%',
+    //        height: '100%'
+    //    };
+
+    //    var data = google.visualization.arrayToDataTable([]);
+    //    drawChart(data, options);
+    //});
+     @*function drawChart1() {
+
+
+        var Data=@Html.Raw(Json.Encode(@Model.chartData));
+        var data = google.visualization.arrayToDataTable(@Html.Raw(Json.Encode(@Model.chartData)));
+
+
+        var options = {
+            title: $('<div class="text-center">' + Heading + '</div>').html(),
+
+            chartArea: { left: 0, top: 0, width: "80%", height: "80%" }
+        };
+
+         var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
+
+        chart.draw(data, options);
+    }*@
+
+    //google.charts.load('current', { 'packages': ['corechart'] });
+    if (@Model.chartData.Count> 0) {
+
+          var dbcccode = '@Model.BRData.CCCode';
+    var trimStr = $.trim(dbcccode);
+    var typeArr = trimStr.split('-');
+    var c1 = typeArr[0];
+    var c2 = typeArr[0];
+    //var c1 = dbcccode.substring(0, 2);
+    //var c2 = dbcccode.substring(3, 2);
+
+    var ccbudget = $("#txtBRCCBudget").val();
+    var code = c1 +'&#150'+c2;
+    var Heading = 'Cost Center(' + code + ') Budget:' + ccbudget+'';
+        google.charts.setOnLoadCallback(drawChart);
+      
+    }
+   
+
+    //google.charts.setOnLoadCallback(drawChart1);
+
+
+</script>

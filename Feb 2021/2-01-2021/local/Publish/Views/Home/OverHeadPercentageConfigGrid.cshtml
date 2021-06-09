@@ -1,0 +1,51 @@
+﻿@model List<EsselTestLocalApplication.Models.CCOverheadDepreciation>
+<div class="table-responsive">
+    <table id="tblconfigGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>               
+                <th>Cost Center</th>               
+                <th>Cost Center Name</th>
+                <th>Percentage</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CostCenter)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCName)
+                    </td>                  
+                    <td>
+                        @Html.DisplayFor(modelItem => item.overheadpercent)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var configGrid = null;
+        InitializeconfigGrid();
+    });
+    function InitializeconfigGrid() {
+        configGrid = $('#tblconfigGrid').DataTable({
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            pagingType: false,
+            ordering: false,
+            formatNumber: false,
+            language: {
+                "emptyTable": "No Records Found"
+            },
+        });
+    }
+
+</script>

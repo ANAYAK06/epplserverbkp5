@@ -1,0 +1,211 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ItemCodeCreation
+
+@{
+    ViewBag.Title = "ViewItemCodes";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Item Codes</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.TransactionType)
+                                        @Html.DropDownListFor(model => model.TransactionType, new SelectList(Model.ItemCategoryList, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemCategory", onchange = "GetMajorcode()" })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    @Html.LabelFor(model => model.Majorgroupcode)
+                                    @Html.DropDownListFor(model => model.Majorgroupcode, new SelectList(Model.MajorgroupcodeList, "Majorgroupval", "Majorgrouptext"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Majorgroupcode" })
+
+                                </div>
+                                <div class="col-md-4" id="divBdgRptBtns">
+                                    <div class="form-group">
+                                        <br />
+                                        <br />
+                                        <div class="row">
+                                            <div class="col-md-3  text-center">
+                                                <input type="submit" value="View" id="btnviewitemcodes" onclick="SubmitViewItems()" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divItemCodeSubmitDetails">
+                            </div>
+                            <div id="divItemCodeGrid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divItemCodeSubmitDetails").addClass('hidden');
+        $("#divItemCodeGrid").addClass('hidden');
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewItemCodesGrid',
+            data: {},
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divItemCodeGrid").html(Data);
+                    $("#divItemCodeGrid").removeClass('hidden');
+                }
+                else {
+                    $("#divItemCodeGrid").html('No Data Found');
+                    $("#divItemCodeGrid").addClass('hidden');
+                    $("#divItemCodeSubmitDetails").addClass('hidden');
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+
+    });
+    function GetMajorcode() {
+        var ttypeINDEX = $("#ddl_ItemCategory option:selected").index();
+        var ttypeval = $("#ddl_ItemCategory option:selected").val();
+        var itemcatname = $("#ddl_ItemCategory option:selected").text();
+        var nameArr = itemcatname.split(',');
+        var catnameonly = nameArr[1];
+        if (ttypeINDEX != "0" && ttypeINDEX != "Select All") {
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetMajougroupcode",
+                data: '{val:"' + ttypeval + '",txt:"' + catnameonly + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        $.each(response, function () {
+                            ddlmajorgroup = $("#ddl_Majorgroupcode");
+                            ddlmajorgroup.empty().append('<option selected="selected" value="Select">Select</option>');
+                            ddlmajorgroup.append('<option value="Select All">Select All</option>');
+                            $.each(response, function () {
+                                ddlmajorgroup.append($("<option></option>").val(this['Majorgroupval']).html(this['Majorgrouptext']));
+                            });
+                        });
+                    }
+                    else {
+                        ddlmajorgroup = $("#ddl_Majorgroupcode");
+                        ddlmajorgroup.empty().append('<option selected="selected" value="Select">Select</option>');
+                        ddlmajorgroup.append('<option value="Select All">Select All</option>');
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+        else {
+
+        }
+    }
+    function SubmitViewItems() {        
+        isValid = true;
+        var errorMsg = "";
+        var Catid = $("#ddl_ItemCategory option:selected").index();
+        var ttypeval = $("#ddl_ItemCategory option:selected").val();        
+        if (Catid == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Item Category Code</p>";
+            isValid = false;
+        }
+        if (Catid != 0 && ttypeval != "Select All") {
+            var GroupName = $("#ddl_Majorgroupcode option:selected").index();
+            if (GroupName == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Majour Group</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");           
+            var ItemCategory = $("#ddl_ItemCategory option:selected").val();
+            var Majorgroup = $("#ddl_Majorgroupcode option:selected").val();
+            if (ttypeval != "Select All") {                
+                $.ajax({
+                    type: "GET",
+                    url: "/Reports/ViewItemCodesGridDetail",
+                    data: { ItemCategoryCode: ItemCategory, Majorgroupcode: Majorgroup },
+                    dataType: 'html',
+                    success: function (response) {                      
+                        var count1 = Object.keys(response).length;
+                        var msg = "";                       
+                        if (count1 > 0) {                         
+                            $("#divItemCodeGrid").html(response);
+                            $("#divItemCodeGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divItemCodeGrid").html('No Data Found');
+                            $("#divItemCodeGrid").removeClass('hidden');
+                            $("#divItemCodeSubmitDetails").addClass('hidden');
+                        }
+                    },                    
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {    
+                        alert("error");
+                    }
+                });
+            }
+            else {             
+                $.ajax({
+                    type: "GET",
+                    url: "/Reports/ViewItemCodesGrid",                   
+                    dataType: 'html',
+                    data: {},
+                    success: function (response) {  
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {                          
+                            $("#divItemCodeGrid").html(response);
+                            $("#divItemCodeGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divItemCodeGrid").html('No Data Found');
+                            $("#divItemCodeGrid").addClass('hidden');
+                            $("#divItemCodeSubmitDetails").addClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {                     
+                    }
+                })
+            }
+        }
+
+    }
+</script>
+

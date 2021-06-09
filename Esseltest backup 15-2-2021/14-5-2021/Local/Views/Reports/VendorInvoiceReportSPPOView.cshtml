@@ -1,0 +1,297 @@
+﻿
+@model EsselTestLocalApplication.Models.ReportParameters.VendorInvoiceReport
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<style>
+    .readonlytxt {
+        background-color: #fff !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    @*<br />*@
+    <form onsubmit="return false">
+        <div class="col-md-12 ">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <a href="#" class="pull-left" onclick="ShowSPPODetails(@serializer.Serialize(Model))" style="color: #000;
+              font-weight: 600;">Show PO Details</a>
+                <a href="#" class="pull-right" onclick="ShowSPPOPayments(@serializer.Serialize(Model))" style="color: #000;
+              font-weight: 600;">Show Payments</a>
+            </div>
+            <div class="col-md-4">
+            </div>
+
+        </div>
+        <div>
+            <hr />
+        </div>       
+        @if (Model.SPPOData.TaxApplicable == "Yes")
+        {
+            if (Model.SPPOData.Taxdcas != null)
+            {<br />
+                <div id="divSPInvTaxGrid">
+                    <div class="col-md-12 change-tab" id="TaxGrid">
+                        <div class="strike" style="margin-bottom:10px">
+                            <span>Taxes</span>
+                        </div>
+
+                        <div class="tabledynamic col-md-12" id="divSameStateGrid">
+                            <br />
+                            <div class="col-md-12 text-center">
+                                @if (Model.SPPOData.Statecheck == true)
+                                {
+                                    <div class="col-md-2" id="divcgstdca">
+
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                            <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Taxdcas" id="txtTaxDCA1" style="font-size:12px" disabled />
+                                        </div>
+
+                                    </div>
+                                }
+                                @if (Model.SPPOData.Statecheck == false)
+                                {
+                                    <div class="col-md-3" id="divigstdca">
+                                        <div class="form-group">
+                                            <label>Account Head</label>
+                                            <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Taxdcas" id="txtTaxDCA2" disabled />
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.SPPOData.Statecheck == true)
+                                {
+                                    <div id="divcgst">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">CGST Sub Account Head</label>
+                                                <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Cgstsdca" id="txtTaxCGSTSDCA" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">CGST Amount</label>
+                                                <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Cgstsdcaamt" id="txtTaxCGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">SGST Sub Account Head</label>
+                                                <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Sgstsdca" id="txtTaxSGSTSDCA" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">SGST Amount</label>
+                                                <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Sgstsdcaamt" id="txtTaxSGSTSDCAamt"  style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.SPPOData.Statecheck == false)
+                                {
+                                    <div id="divigst">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>IGST Sub Account Head</label>
+                                                <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Igstsdca" id="txtTaxIGSTSDCA" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>IGST Amount</label>
+                                                <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.Igstsdcaamt" id="txtTaxIGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" disabled />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }@if (Model.SPPOData.Statecheck == true)
+                                {
+                                    <div class="col-md-2" id="divcgstotal">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">Total Tax</label>
+                                            <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.TaxTotal" id="txtTaxTotalGSTSDCAamt" disabled style="font-size:12px" />
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.SPPOData.Statecheck == false)
+                                {
+                                    <div class="col-md-3" id="divigstotal">
+                                        <div class="form-group">
+                                            <label>Total Tax</label>
+                                            <input type="text" class="form-control readonlytxt" value="@Model.SPPOData.TaxTotal" id="txtTaxTotalGSTSDCAamt1" disabled />
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+        }
+        @if (Model.SPPOData.OtherChargeList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvChargetable">
+                    <div class="strike">
+                        <span>Other Charges</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.SPPOData.OtherChargeList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="tbodytdcls">SubTotal:@Model.SPPOData.ChargesTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.SPPOData.DeductionList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvDeductiontable">
+                    <div class="strike">
+                        <span>Deductions</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.SPPOData.DeductionList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="tbodytdcls">SubTotal:@Model.SPPOData.DeductionTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOData.Advance)
+                    @Html.TextBoxFor(model => model.SPPOData.Advance, new { @class = "form-control readonlytxt", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOData.Retention)
+                    @Html.TextBoxFor(model => model.SPPOData.Retention, new { @class = "form-control readonlytxt", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOData.Hold)
+                    @Html.TextBoxFor(model => model.SPPOData.Hold, new { @class = "form-control readonlytxt", type = "text", @readOnly = "true" })
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+    <div class="modal fade" id="ModalSPPOPayData" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <div class="modal fade" id="ModalServicePOData" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+</div>
+<script>
+    function ShowSPPOPayments(Model) {
+        console.log(Model);
+        $.ajax({
+            type: 'POST',
+            url: "/Reports/ShowSPPOInvPayments",          
+            data: { InvData: Model },
+            dataType: 'html',
+            success: function (response) {
+                //alert(response);
+                $('#ModalSPPOPayData').html(response);
+                $('#ModalSPPOPayData').modal();
+            },
+            error: function () {
+            }
+        });
+    }
+    function ShowSPPODetails(Model) {
+        //console.log(Model);
+       // alert(Model.SPPOData.SPPONo);
+        ////debugger;
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/InvoiceServicePOView',
+            data: { ServicePONo: Model.SPPOData.SPPONo, CCCode: Model.SPPOData.CCCode, VendorCode: Model.SPPOData.VendorCode },
+            dataType: 'html',
+            success: function (response) {
+                //alert(response);
+                $('#ModalServicePOData').html(response);
+                $('#ModalServicePOData').modal();
+            },
+            error: function () {
+            }
+        });
+    }
+
+</script>

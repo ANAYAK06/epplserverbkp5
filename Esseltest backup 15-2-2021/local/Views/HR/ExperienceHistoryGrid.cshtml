@@ -1,0 +1,101 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.ExperienceHistory>
+@if (Model.Count > 0)
+{<div class="col-md-12 change-tab">
+        <div class="strike1">
+            <span>Experience Details</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <table id="ExperienceTable" class="table order-list experiencetable">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;color:#fff !important">S.No</td>
+                        <td style="text-align:center;color:#fff !important">Name of Organisation</td>
+                        <td style="text-align:center;color:#fff !important">From</td>
+                        <td style="text-align:center;color:#fff !important">To</td>
+                        <td style="text-align:center;color:#fff !important">Role/Designation</td>
+                        <td style="text-align:center;color:#fff !important"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int count4 = 1; }
+
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="text-align:center">@count4</td>
+                            <td style="text-align:center">
+                                @Html.DisplayFor(modelItem => item.OrganisationName)
+                            </td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.FromYear)</td>
+                            <td style="text-align:center">
+                                @Html.DisplayFor(modelItem => item.ToYear)
+                            </td>
+                            <td style="text-align:center">@Html.DisplayFor(modelItem => item.Role)</td>
+                            <td style="text-align:center"><input type="button" class="ibtnAddHistorydelete btn btn-md btn-danger" value="Delete"></td>
+                        </tr>
+                        count4++;
+                    }
+                    </tbody>
+                @*<tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <input type="button" class="btn btn-default  btn-block" value="Add More" onclick="AddExperiencegridnewrow()" />
+                        </td>
+                </tfoot>*@
+            </table>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("table.order-list.experiencetable").on("click", ".ibtnAddHistorydelete", function (event) {
+                var row = $(this).closest("tr");
+                var organisation = $.trim(row.find("td").eq(1).html());
+                var rowno = $.trim(row.find("td").eq(0).html());
+                addFailMsg = "Error Occurred While Deleting.";
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/DeleteExperienceHistoryData',
+                    data: { OrganisationName: organisation },
+                    success: function (Data) {
+                        //alert("Hi");
+                        if (Data.saveStatus === "Deleted") {
+                            row.remove();
+                            if (rowno == 1 || rowno === "1") {
+                                $("#divExperienceHistory").load('/HR/ExperienceHistoryGrid');
+                            }
+                            else { ReassignRowNoforEHGrid(); }
+                        }
+                        else {
+                            $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            });
+        });
+        function ReassignRowNoforEHGrid() {
+            var rowno = 1;
+            $("#ExperienceTable tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(rowno);
+                rowno++;
+            });
+
+        }
+    </script>
+
+}

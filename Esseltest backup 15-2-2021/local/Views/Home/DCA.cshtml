@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Account Head Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button class="btn btn1 btn-success" id="btnAddNew" onclick="ViewAddEditDCAModel()">New Account Head And Sub Account Head</button>
+                                        <input type="hidden" id="txtDCACreatedby" />
+
+                                        <div id="divDCADtailsGrid">
+                                            @Html.Action("ViewDCAGrid", "Home")
+                                        </div>
+
+                                    </div>
+                                    <div id="AddNewDCASubDCAModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Add Account Head and Sub Account Head</h4>
+                                                </div>
+                                                <div class="modal-body" style="overflow-x:hidden" id="AddEditDCAView">
+                                                    @Html.Action("AddEditDCAView", "Home")
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function ViewAddEditDCAModel() {
+        $('#AddNewDCASubDCAModal').on('hidden.bs.modal', function () {
+            $(this).removeData();
+        })
+        $.get("/Home/AddEditDCAView", null, function (data) {
+            $('#AddEditDCAView').html(data);
+            $("#AddNewDCASubDCAModal").modal('show');
+
+        });
+
+        //$("#AddNewDCASubDCAModal").modal('show');
+        //$('.AddDCARd:first').attr('checked', false);
+        //$("input[name='AddDCARd']:checked").val("");
+    }
+
+</script>

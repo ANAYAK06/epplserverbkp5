@@ -1,0 +1,232 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.Vendor
+
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Type)
+                    @Html.TextBoxFor(model => model.Type, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            @if (Model.Type == "Service Provider")
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PanNo)
+                        @Html.TextBoxFor(model => model.PanNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PFRegNo)
+                        @Html.TextBoxFor(model => model.PFRegNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+            }
+            else
+            {<div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CstNo)
+                        @Html.TextBoxFor(model => model.CstNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>}
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorName)
+                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Phoneno)
+                    @Html.TextBoxFor(model => model.Phoneno, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MobileNo)
+                    @Html.TextBoxFor(model => model.MobileNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+
+                    @Html.LabelFor(model => model.BankName)
+                    @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountNo)
+                    @Html.TextBoxFor(model => model.AccountNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IFSCode)
+                    @Html.TextBoxFor(model => model.IFSCode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NatureGroupName)
+                    @Html.TextBoxFor(model => model.NatureGroupName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MasterGroup)
+                    @Html.TextBoxFor(model => model.MasterGroup, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            @if (Model.SubGroupId != 0)
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubGroup)
+                        @Html.TextBoxFor(model => model.SubGroup, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+            }
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorStatus)
+                    @Html.TextBoxFor(model => model.VendorStatus, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.GstApplicable)
+                    @Html.TextBoxFor(model => model.GstApplicable, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address)
+                    @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @rows = "2", @readOnly = "true" })
+                </div>
+            </div>
+            @if (Model.Type == "Service Provider")
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TDSApplicable)
+                        @Html.TextBoxFor(model => model.TDSApplicable, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+            }
+            @if (Model.Type == "Service Provider" && Model.TDSApplicable == "Yes")
+            {
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TDSCode)
+                        @Html.TextBoxFor(model => model.TDSCode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+            }
+        </div>
+        @if (Model.GstApplicable == "YES")
+        {
+            <div class="col-md-12">
+                <table style="width:100%;border:1px solid gray" class="table order-list">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center">TaxNo</th>
+                            <th style="text-align:center">State Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.VendorGSTData)
+                        {
+                            <tr>
+                                <td style="text-align:center">@Html.DisplayFor(modelItem => item.StateName) </td>
+                                <td style="text-align:center">@Html.DisplayFor(modelItem => item.TaxNo) </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+            </div>
+        }
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appvendirstatus" })
+
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppVendorNote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveVendor('@Model.VendorCode','@Model.VendorStatus','@Model.VendorName')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprVendorInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appvendirstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                              @*if ('@Model.C' == "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else {*@
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        //}
+                        });
+                        //ddlaprovalstatus.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+                    }
+
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+    });
+</script>

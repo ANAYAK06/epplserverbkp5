@@ -1,0 +1,180 @@
+﻿@model List<EsselTestLocalApplication.Models.MenuItems>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 col-md-2 p-0">
+        </div>
+        <div class="col-lg-3  col-md-3 hidden-xs hidden-sm p-0">
+            <div class="mainmenu hme-mainmenu">
+                <nav class="text-left">
+                    <ul class="menu1">
+                        <li class="Admin" id="Adminli">                         
+                        </li>
+                        <li class="ReportsAdmin" id="Reportsli">
+                        </li>
+                        <li class="ConfigurationsAdmin" id="Configurationli">
+                        </li>                       
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col-md-7 header-right">
+
+            <div class="col-md-6">
+                <div class="header-lable-text">
+                    <p id="lblroledetails"></p>
+                </div>
+            </div>
+            <div class="col-md-6 pd-rht-0">
+                <div class="drpdwn-header">
+                    <form>
+                        <select class="form-control" id="ApprMasterMenuCC">                          
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>      
+    </div>
+</div>
+<script>
+    $(document).ready(function () {  
+        $("#Adminli").addClass("hidden");        
+        $("#Reportsli").addClass("hidden");
+        $("#Configurationli").addClass("hidden");
+        var Roleid = '@Session["Role"]';
+        var User = '@Session["UserID"]';       
+            $("#lblroledetails").html(Roleid + ' , ' + User);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/GetMenuItems',
+                success: function (Data) {
+                    //alert(Data);
+                    if (Data != null) {
+                        var count1 = Object.keys(Data).length;
+
+                        if (count1 > 0) {
+                            const result = [];
+                            const reportResult = [];
+                            const configurationResult = [];
+                            if (Data != null) {
+                        
+                                const map = new Map();
+                                for (const item of Data) {
+                                    if (item.Type == 'Admin') {
+                                        if (!map.has(item.LI)) {
+                                            map.set(item.LI, true);    // set any value to Map
+                                            result.push({
+                                                LI: item.LI
+                                            });
+                                            $("#Adminli").removeClass("hidden");
+                                        }
+                                    }
+                                    else if (item.Type == 'Reports') {
+                                        if (!map.has(item.LI)) {
+                                            map.set(item.LI, true);    // set any value to Map
+                                            reportResult.push({
+                                                LI: item.LI
+                                            });
+                                            $("#Reportsli").removeClass("hidden");
+                                        }
+                                    }
+                                    else if (item.Type == 'Configuration') {
+                                        if (!map.has(item.LI)) {
+                                            map.set(item.LI, true);    // set any value to Map
+                                            configurationResult.push({
+                                                LI: item.LI
+                                            });
+                                            $("#Configurationli").removeClass("hidden");
+
+                                        }
+                                    }
+                                }
+                                var nav = "<a href='#'>Admin</a><div class='mega-menu'>";
+                                for (const itemLI of result) {
+                                    nav = nav + "<span>";
+                                    nav = nav + "<a href='#' class='mega-title'>" + itemLI.LI + "</a>";
+                                    for (const DataLI of Data) {
+                                        if (DataLI.LI == itemLI.LI) {
+                                            var activetab = DataLI.Path + "?activetab=" + DataLI.Page;
+                                            if (DataLI.Page != null) { nav = nav + "<a href='" + activetab + "' data-toggle='modal'>" + DataLI.SUBLI + "</a>"; }
+                                            else { nav = nav + "<a href='" + DataLI.Path + "' data-toggle='modal'>" + DataLI.SUBLI + "</a>"; }
+                                        }
+                                    }
+                                    nav = nav + "</span>";
+                                }
+                                nav = nav + "</div>";
+                                $(".Admin").append(nav);
+                                if (reportResult != null) {
+                                    var nav = "<a href='#'>Reports</a><div class='mega-menu'>";
+                                    for (const itemLI of reportResult) {
+                                        nav = nav + "<span>";
+                                        nav = nav + "<a href='#' class='mega-title'>" + itemLI.LI + "</a>";
+                                        for (const DataLI of Data) {
+                                            if (DataLI.LI == itemLI.LI) {
+                                                var activetab = DataLI.Path + "?activetab=" + DataLI.Page;
+                                                if (DataLI.Page != null) { nav = nav + "<a href='" + activetab + "' data-toggle='modal'>" + DataLI.SUBLI + "</a>"; }
+                                                else { nav = nav + "<a href='" + DataLI.Path + "' data-toggle='modal'>" + DataLI.SUBLI + "</a>"; }
+                                            }
+                                        }
+                                        nav = nav + "</span>";
+                                    }
+                                    nav = nav + "</div>";
+                                    $(".ReportsAdmin").append(nav);
+
+                                }
+                                if (configurationResult != null) {
+                                    var nav = "<a href='#'>Configurations</a><div class='mega-menu'>";
+                                    for (const itemLI of configurationResult) {
+                                        nav = nav + "<span>";
+                                        nav = nav + "<a href='#' class='mega-title'>" + itemLI.LI + "</a>";
+                                        for (const DataLI of Data) {
+                                            if (DataLI.LI == itemLI.LI) {
+                                                var activetab = DataLI.Path + "?activetab=" + DataLI.Page;
+                                                if (DataLI.Page != null) { nav = nav + "<a href='" + activetab + "' data-toggle='modal'>" + DataLI.SUBLI + "</a>"; }
+                                                else { nav = nav + "<a href='" + DataLI.Path + "' data-toggle='modal'>" + DataLI.SUBLI + "</a>"; }
+                                            }
+                                        }
+                                        nav = nav + "</span>";
+                                    }
+                                    nav = nav + "</div>";
+                                    $(".ConfigurationsAdmin").append(nav);
+                                }
+                            }
+                            else {
+                                $("#Adminli").addClass("hidden");
+                            }
+                        }
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   alert("error from menu");
+                }
+            });
+
+
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetAllSessionCC",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        //$("#ApprMasterMenuCC").removeClass("hidden");
+                        $("#ApprMasterMenuCC option").remove();
+                        $.each(response, function (index, value) {
+                            $('#ApprMasterMenuCC').append('<option >' + value.SessionCCText + '</option>');
+                        });
+                        $('#ApprMasterMenuCC').append($("<option selected='Click to view cost centers'></option>").val('Click to view cost centers').html('Click to view cost centers'));
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+     
+    });
+</script>

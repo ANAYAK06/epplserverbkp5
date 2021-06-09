@@ -1,0 +1,195 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.CCCashTransfer
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Cash Transfer</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.OtherCash_CCCode)
+                                                            @Html.DropDownListFor(model => model.OtherCash_CCCode, new SelectList(Model.AccountantCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlcashTransferCCCode", onchange = "BindCashTransferCCCode()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <label>Self CC Balance:</label>
+                                                            @Html.TextBoxFor(model => model.CCBalance, new { @id = "txtcccashbalance", @class = "form-control", @type = "text", @readonly = "true" })
+                                                            @*<input type="text" class="form-control" value="@Model.SessionCCBalance" readOnly="readOnly" />*@
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.CashTransferCCCode)
+                                                            @Html.DropDownListFor(model => model.CashTransferCCCode, new SelectList(Model.CashtransferCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCashCCCode" }) @*, onchange = "BindCash()" *@
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="Cashdetailscontent">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.CCTransferDate)
+                                                                @Html.TextBoxFor(model => model.CCTransferDate, "{0:dd-MMM-yyyy}", new { @id = "txtCCCashdate", @class = "form-control  date-picker", @readonly = "true", @type = "text", value = "" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.CCTransferRemarks)
+                                                                @Html.TextBoxFor(model => model.CCTransferRemarks, new { @id = "txtCCCashRemarks", @class = "form-control", @type = "text" })
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-9">
+                                                            <div class="form-group">
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+
+                                                                @Html.LabelFor(model => model.CCTransferAmount)
+                                                                @Html.TextBoxFor(model => model.CCTransferAmount, new { @id = "txtCCCashAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @type = "text" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="text-right">
+                                                            <input type="text" value="0" id="txtcccasttransferRoleId" style="display:none" />
+                                                            <input type="text" value="0" id="txtGeneralSessionCCTransfer" style="display:none" />
+                                                            <input type="text" value="0" id="txtGeneralceratedbyCCTransfer" style="display:none" />
+                                                            <button class="btn btn1 btn-success" id="btnsubmitcccashtransfer" onclick="btncccashtransfercash()">Submit</button>
+                                                            <button class="btn btn1 btn-success" id="btnresetcccashtransfer" onclick="resetcccashtransfer()">Reset</button>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row col-md-12 text-center">
+                                                <div id="divcccashtransferInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#txtCCCashdate").datepicker({
+        dateFormat: 'dd-M-yy',
+        changeMonth: true,
+        changeYear: true,
+        showOn: "button",
+        minDate: -365,
+        maxDate: 0,
+        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+    }).datepicker("setDate", new Date());
+</script>
+<script>
+     $(document).ready(function () {
+         var Sessioncreated = '@Session["SessionCostCenter"]';
+         $("#txtGeneralSessionCCTransfer").val(Sessioncreated);
+         var RoleID = '@Session["Roleid"]';
+         $("#txtcccasttransferRoleId").val(RoleID);
+           var Createdby = '@Session["Createdby"]';
+         $("#txtGeneralceratedbyCCTransfer").val(Createdby);
+         $("#Cashdetailscontent").addClass("hidden");
+    });
+
+    function BindCashTransferCCCode() {
+        var index = $("#ddlcashTransferCCCode option:selected").index();
+        var CC = $("#ddlCashCCCode");
+        $("#txtcccashbalance").val("0");
+        if (index != 0) {
+            //debugger;
+            var CCVal = $("#ddlcashTransferCCCode option:selected").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetAllCashCC",
+                    data: '{cc:"' + CCVal + '" ,Type:"' + index + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        CC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            CC.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                        });
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/GetCash",
+                            data: '{Cashcc:"' + CCVal + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                $.each(response, function () {                                
+                                    if (isNaN(this['SessionCCBalance'])) {                                       
+                                        $("#Cashdetailscontent").addClass("hidden");
+                                    }
+                                    else {
+                                        $("#txtcccashbalance").val(this['SessionCCBalance']);
+                                        $("#Cashdetailscontent").removeClass("hidden");
+                                    }
+                                });
+                            },
+                            failure: function (response) {
+                                alert(response.responseText);
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+
+                });
+
+        }
+        else {
+            alert("Select Self CostCenter");
+            $("#txtcccashbalance").val("");
+            return false;
+        }
+
+
+    }
+</script>

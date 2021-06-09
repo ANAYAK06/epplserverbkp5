@@ -1,0 +1,231 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Purchase.Vendor>
+<div class="table-responsive">
+    <table id="tblVendorDetailsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">VendorId</th>
+                <th class="hidden">VendorCode</th>
+                <th>Type</th>
+                <th>VendorName</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.VendorId)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.VendorCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VendorName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Address)
+                    </td>
+                    @if (item.Status == "Approved" && (item.CloseStatus == "Rejected" || item.CloseStatus == null))
+                    {
+                        <td>
+                            <select class="form-control dropdown-toggle" onchange="VendorgridActionChange('@item.VendorCode', this)">
+                                <option selected="selected" value="Select">Select</option>
+                                <option  value="Edit">Edit</option>
+                                 <option value="Close">Delete</option>
+                            </select>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+@*<div class="modal fade" id="closeITcodeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>*@
+<div class="modal fade" id="EditVendorModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<input type="hidden" id="txtviewvendordata">
+
+<script src="~/Scripts/moment.js"></script>
+<script>
+    $(document).ready(function () {
+        var VendorGrid = null;
+        InitializeVendorDetailsGrid();
+
+    });
+    function InitializeVendorDetailsGrid() {
+        VendorGrid = $('#tblVendorDetailsGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: true,
+            language: {
+                "emptyTable": "No Vendors Found"
+            },
+            "createdRow": function (row, data, index) {
+                @*var ddlAction = $('td:eq(6)', row).find("select");
+                ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                var Roleid = '@Session["Roleid"]';
+                var Mid = 'Vendor';*@
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Home/GetApprovalstatusIT",
+                //    data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (response) {
+                //        var count = Object.keys(response).length;
+                //        //alert(count);
+                //        if (count > 0) {
+                //            $.each(response, function () {
+                //                ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                //            });
+                //        }
+                //    },
+                //    failure: function (response) {
+                //      //  alert(response.responseText);
+                //    },
+                //    error: function (response) {
+                //        //alert(response.responseText);
+                //    }
+                //});
+            },
+            pageLength: 10
+        });
+        $('#tblVendorDetailsGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = VendorGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatVendor(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+    }
+    function formatVendor(d) {
+        var vendorcode,id;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                id = value;
+            if (index == 2)
+                vendorcode = value;
+        });
+        var divid = "divVendorData" + id;
+        var divid1 = $("#" + divid + "");
+
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/GetVendorbyCode",
+            data: '{VendorCode:"' + vendorcode + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Data) {
+                var htmldata = '<div class="col-md-12 verifydiv"><div style="width:100%;margin-top:-1% !important" > <br /><table cellpadding="5" cellspacing="0"   style="padding-left:50px;width:100%;">';
+                htmldata += '<tr><td>Type:&nbsp;<b>' + Data.Type + '</b></td>';
+                htmldata += '<td>VendorName:&nbsp;<b>' + Data.VendorName + '</b></td>';
+                htmldata += '<td>Address:&nbsp;<b>' + Data.Address + '</b></td></tr>';
+                htmldata += '<tr><td>Phoneno:&nbsp;<b>' + Data.Phoneno + '</b></td>';
+                htmldata += '<td>MobileNo:&nbsp;<b>' + Data.MobileNo + '</b></td>';
+                htmldata += '<td>BankName:&nbsp;<b>' + Data.BankName + '</b></td></tr>';
+                htmldata += '<tr><td>AccountNo:&nbsp;<b>' + Data.AccountNo + '</b></td>';
+                htmldata += '<td>IFSCode:&nbsp;<b>' + Data.IFSCode + '</b></td>';
+                htmldata += '<td>NatureGroupName:&nbsp;<b>' + Data.NatureGroupName + '</b></td></tr>';
+                htmldata += '<tr><td>MasterGroup:&nbsp;<b>' + Data.MasterGroup + '</b></td>';
+                if (Data.SubGroupId != 0) {
+                    htmldata += '<td>SubGroup:&nbsp;<b>' + Data.SubGroup + '</b></td>';
+                }
+                else { htmldata += '<td>SubGroup:&nbsp;<b></b></td>';}
+                if (Data.Type == 'Service Provider') {
+                    htmldata +='<td>PanNo:&nbsp;<b>' + Data.PanNo + '</b></td></tr>';
+                    //htmldata += '<tr><td>PanNo:&nbsp;<b>' + Data.PFRegNo + '</b></td>' 
+                      }
+                else { htmldata += '<td>CstNo:&nbsp;<b>' + Data.CstNo + '</b></td></tr>'; }
+
+                htmldata += '<tr><td>GstApplicable:&nbsp;<b>' + Data.GstApplicable + '</b></td>';
+                htmldata += '<td>Address:&nbsp;<b>' + Data.Address + '</b></td>';
+                if (Data.Type == 'Service Provider') { htmldata += '<td>PFRegNo:&nbsp;<b>' + Data.PFRegNo + '</b></td></tr>' }
+                else {
+                    htmldata += '</tr>';
+                }
+
+               
+                htmldata += '</table></div>';
+                if (Data.VendorGSTData.length > 0) {
+                    htmldata += '<div style="width:80%;left:20%"><table  style="width:100%;border:1px solid gray" class="table order-list"><thead><tr><td>StateName</td><td>GSTNo</td></tr></thead><tbody>';
+                    $.each(Data.VendorGSTData, function () {
+                        
+                       // cols += '<td>' + this['State_ID'] + '' + this['State_Name'] + '</option>';
+                        htmldata += '<tr><td>' + this['StateName'] + '</td><td>' + this['TaxNo']+'</td></tr>';
+                      
+
+                    });
+                    htmldata += '</tbody></table></div>';
+
+                }
+                htmldata += '</div>';
+               // $("#divid1").append("<b>Appended text</b>");
+                //$(divid1).html(htmldata);
+                var divid2 = "divVendorData" + id;
+                var divid3 = $("#" + divid2 + "");
+                $("#txtviewvendordata").val(htmldata);
+                $(divid3).html($("#txtviewvendordata").val());
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+      //  $(divid1).append($("#txtviewvendordata").val());
+        return '<div id="divVendorData' + id + '"></div>';
+
+        //    var Group, SubGroup, Balance, BalanceDate;
+        //    $.each(d, function (index, value) {
+        //        // Get value in alert
+        //        if (index == 6)
+        //            Group = value;
+        //        if (index == 7)
+        //            SubGroup = value;
+        //        if (index == 9)
+        //            Balance = value;
+        //        if (index == 10)
+
+
+        //        BalanceDate = value;
+        //    });
+
+
+        //    var typeArr = BalanceDate.toString().split(' ');
+        //    //alert(typeArr[0]);
+        //    var d3 = typeArr[0];
+        //    var t1 = "'" + d3 + "'";
+        //    var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+
+        //    return '<div><table cellpadding="5" cellspacing="0" border="1px" style="padding-left:50px;width:100%">' +
+        //        '<tr><td>Group:&nbsp;<b>' + Group + '</b></td>' +
+        //        '<td>Sub Group:&nbsp;<b>' + SubGroup + '</b></td></tr>' +
+        //        '<tr><td>Balance:&nbsp;<b>' + Balance + '</b></td>' +
+        //        '<td>Balance Date:&nbsp;<b>' + bldate1 + '</b></td></tr>' +
+        //        '</table></div>';
+    }
+</script>

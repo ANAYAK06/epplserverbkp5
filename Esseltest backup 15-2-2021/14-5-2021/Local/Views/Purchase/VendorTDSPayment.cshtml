@@ -1,0 +1,627 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.VendorTDSPayment
+@{
+    ViewBag.Title = "VendorTDSPayment";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+@*<h2>VendorTDSPayment</h2>*@
+<style>
+    .separationHr {
+      /*margin-top:1px !important;*/
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Vendor TDS Payment </h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CostCenter)
+                                        @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCTDSList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlTDSCC" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ItemCategoryCode)
+                                        @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.SearchCategoryList, "CATID", "CATVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TdsCategory", onchange = "CategoryChange()" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3" id="divsubdca">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Subdca)
+                                        @Html.DropDownListFor(model => model.Subdca, new SelectList(Model.SearchSubdcaList, "SUBID", "SUBVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Tdssubdca" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3" id="divitcode">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ITCode)
+                                        @Html.DropDownListFor(model => model.ITCode, new SelectList(Model.SearchitcodeList, "ITID", "ITVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Tdsitcode" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FromDate)
+                                        @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ToDate)
+                                        @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttoDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    </br>
+                                    <input type="submit" value="View" class="btn btn1 btn-success" id="btngetItems" onclick="GETTDSItems()" />
+                                    <button class="btn btn1 btn-success" id="btnReset" onclick="ClearTDSPAy()">Reset</button>
+                                </div>
+                                <div id="divTdsDetailsGrid" class="col-md-12">
+                                </div>
+                                <div class="col-md-12" id="divPaymentDetails">
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Payment Details</h5>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12"><hr class="separationHr" /></div>
+                                    </div>                                   
+                                    <div class="col-md-12">
+                                        @*<div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name)
+                @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtName" })
+            </div>
+        </div>*@
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.BankId)
+                                                @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBank" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.ModeofPay)
+                                                @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.PayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPayMode" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Number)
+                                                @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtPaymentNo" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.TransactionDate)
+                                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Remarks)
+                                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtReamarks", @class = "form-control", @type = "text", @rows = "3" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.TransactionAmount)
+                                                @Html.TextBoxFor(model => model.TransactionAmount, new { @id = "txtFinalAmount", @class = "form-control", @type = "text", @readOnly = "true" })
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 text-right">  
+                                            <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitTDSPayData()">Submit</button>                                   
+                                        
+                                    </div>
+
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divTDSPayInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divTdsDetailsGrid").addClass('hidden');
+        $("#divPaymentDetails").addClass('hidden');
+        $("#divsubdca").addClass('hidden');
+        $("#divitcode").addClass('hidden');
+        $("#txtfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txttoDate").datepicker("option", "minDate", selectedDate);
+            },
+        }).datepicker("setDate", "");
+        $("#txttoDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", "");
+
+        $("#txtPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", new Date());
+    });
+    function CategoryChange() {
+        var Catval = $("#ddl_TdsCategory option:selected").val();
+        var Catid = $("#ddl_TdsCategory option:selected").index();
+        if (Catid == 2)//subdca
+        {
+            $("#divsubdca").removeClass('hidden');
+            $("#divitcode").addClass('hidden');
+            $.ajax({
+                type: "POST",
+                url: "/Reports/BindTDSSubdca",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var subdca = $('#ddl_Tdssubdca');
+                    subdca.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    $.each(response, function () {
+                        subdca.append($("<option></option>").val(this['SUBID']).html(this['SUBVAL']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+        else if (Catid == 3)//itcode
+        {
+            $("#divsubdca").addClass('hidden');
+            $("#divitcode").removeClass('hidden');
+            $.ajax({
+                type: "POST",
+                url: "/Reports/BindTDSITCode",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var itcode = $('#ddl_Tdsitcode');
+                    itcode.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    $.each(response, function () {
+                        itcode.append($("<option></option>").val(this['ITID']).html(this['ITVAL']));
+                    });
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+        }
+        else {
+            $("#divsubdca").addClass('hidden');
+            $("#divitcode").addClass('hidden');
+        }
+
+    }
+    function GETTDSItems() {
+        isValid = true;
+        var errorMsg = "";
+        var CCCode = $("#ddlTDSCC option:selected").index();
+        var Catid = $("#ddl_TdsCategory option:selected").index();
+        var Fromdate = $("#txtfromDate").val();
+        var Todate = $("#txttoDate").val();
+
+        if (CCCode == 0) {
+            $("#divTdsDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (Catid == 0) {
+            $("#divTdsDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+            isValid = false;
+        }
+        if (Catid == 2) {
+            var Subdca = $("#ddl_Tdssubdca option:selected").index();
+            if (Subdca == 0) {
+                $("#divTdsDetailsGrid").addClass('hidden');
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+                isValid = false;
+            }
+        }
+        if (Catid == 3) {
+            var Itcode = $("#ddl_Tdsitcode option:selected").index();
+            if (Itcode == 0) {
+                $("#divTdsDetailsGrid").addClass('hidden');
+                errorMsg += "<p style='margin-top:-5px!important;'>Select IT Code</p>";
+                isValid = false;
+            }
+        }
+        if (Fromdate == "") {
+            $("#divTdsDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (Todate == "") {
+            $("#divTdsDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divTDSPayInfoMsg").text("");
+            $("#divTDSPayInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divTDSPayInfoMsg").addClass("alert-danger");
+            $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divTDSPayInfoMsg").text("");
+            $("#divTDSPayInfoMsg").addClass("hidden");
+            ////debugger;
+            $("#divTdsDetailsGrid").text("");
+            $("#divTdsDetailsGrid").addClass("hidden");
+            var ccindex = $("#ddlTDSCC option:selected").index();
+            var ccval = $("#ddlTDSCC option:selected").val();
+            var Catid = $("#ddl_TdsCategory option:selected").val();
+            var Catindex = $("#ddl_TdsCategory option:selected").index();
+            if (Catindex == 2) {
+                var itsubdca = $("#ddl_Tdssubdca option:selected").val();
+            }
+            else if (Catindex == 3) {
+                var itsubdca = $("#ddl_Tdsitcode option:selected").val();
+            }
+            var FromDate = $("#txtfromDate").val();
+            var ToDate = $("#txttoDate").val();
+            var Type = "Payment";
+            if (ccindex != 0) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Purchase/VendorTDSPaymentGrid",
+                    data: { CCVal: ccval, Catid: Catid, FromDate: FromDate, ToDate: ToDate, Type: Type, ItSdca: itsubdca},
+                    dataType: 'html',
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divTdsDetailsGrid").html(response);
+                            var currentrowcount2 = $("#tblTDSPayGrid tbody tr").length;
+                            if (currentrowcount2 > 0) {
+                                $("#divTdsDetailsGrid").removeClass('hidden');
+                                $("#divPaymentDetails").removeClass('hidden');
+                                disableAll();
+                            }
+                            else {
+                                $("#divTdsDetailsGrid").html('No Data Found');
+                                $("#divTdsDetailsGrid").removeClass('hidden');
+                                disableAll();
+                            }
+                        }
+                        else {
+                            $("#divTdsDetailsGrid").html('No Data Found');
+                            $("#divTdsDetailsGrid").removeClass('hidden');
+                            disableAll();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divTdsDetailsGrid").addClass("hidden");
+                //alert("Select Cost Center");
+                return false;
+            }
+        }
+
+    }
+    function ClearTDSPAy() {
+        location.reload();
+    }
+
+    function disableAll() {
+        $("#ddlTDSCC").prop('disabled', true);
+        $("#ddl_TdsCategory").prop('disabled', true);
+        $("#ddl_Tdssubdca").prop('disabled', true);
+        $("#ddl_Tdsitcode").prop('disabled', true);
+        $("#txtfromDate").prop('disabled', true);
+        $("#txttoDate").prop('disabled', true);
+        $("#btngetItems").prop('disabled', true);
+    }
+    function SubmitTDSPayData() {
+
+        var tablerowcount = $("#tblTDSPayGrid tbody tr").length;
+        if (tablerowcount > 0) {
+
+            isValid = true;
+            var errorMsg = "";
+            var selectedcheck = 0;
+            var invalidamountcount = 0;
+            var emptyamount = 0;
+
+            $("#tblTDSPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(11).find("input[type='text']").val();
+                var Balance = $.trim($(this).closest("tr").find("td").eq(10).html());
+                if (checkbox == true) {
+                    selectedcheck = selectedcheck + 1;
+
+                    if (rowamount === "" || rowamount == "0" || rowamount == "0.00") {
+                        emptyamount = emptyamount + 1;
+
+                    }
+                    else if (parseFloat(rowamount) > parseFloat(Balance)) { 
+                        invalidamountcount = invalidamountcount+1
+
+                    }
+                }
+            });
+            if (selectedcheck == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check Invoice Numbers</p>";
+                isValid = false;
+            }
+            if (emptyamount>0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Payment Amount</p>";
+                isValid = false;
+            }
+            if (invalidamountcount >0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Payment Amount is Greater Than Balance</p>";
+                isValid = false;
+            }
+            //var name = $("#txtName").val();
+            var bank = $("#ddlBank option:selected").val();
+            var Mode = $("#ddlPayMode option:selected").text();
+            var bankindex = $("#ddlBank option:selected").index();
+            var Modeindex = $("#ddlPayMode option:selected").index();
+            var date = $("#txtPayDate").val();
+            var remarks = $("#txtReamarks").val();
+            var amount = $("#txtFinalAmount").val();
+           
+            //if (name == "") {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+            //    isValid = false;
+            //}
+            if (bankindex == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+                isValid = false;
+            }
+            if (Modeindex == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Mode Of Pay</p>";
+                isValid = false;
+            }
+           
+            var cheque = $("#txtPaymentNo").val();
+                if (cheque == "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Transaction No</p>";
+                    isValid = false;
+                }
+
+            
+            if (date == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+                isValid = false;
+            }
+            if (remarks == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                isValid = false;
+            }
+            if (amount == "" || amount === "0" || amount==="0.00") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amount</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divTDSPayInfoMsg").text("");
+                $("#divTDSPayInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divTDSPayInfoMsg").addClass("alert-danger");
+                $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                var paydate = date;
+                $("#tblTDSPayGrid tbody tr").each(function () {
+                    //debugger;
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+                    var invdate = $.trim(currentRow.find("td").eq(2).html());
+                    if (checkbox == true) {
+                        if (new Date(date) < new Date(invdate)) {
+                            isValid = false;
+                        }
+                    }
+
+                });
+                if (!isValid) {
+                    var finalerror1 = "<div style='align:center'><p>Payment date must be greater than invoice Date</p>";
+                    $("#divTDSPayInfoMsg").text("");
+                    $("#divTDSPayInfoMsg").append(finalerror1 + "</div>");
+                    $("#divTDSPayInfoMsg").addClass("alert-danger");
+                    $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    $("#divTDSPayInfoMsg").text("");
+                    $("#divTDSPayInfoMsg").addClass("hidden");
+                    //Insert DCA Budget in to db
+                   // alert("Submiting");
+                    // SaveRetentionPayment();
+
+                    let ids = '', amounts = '', invnos = '', dates = '';
+                    $("#tblTDSPayGrid tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+                        var rowamount = currentRow.find("td").eq(11).find("input[type='text']").val();
+                        var no = $.trim(currentRow.find("td").eq(3).html());
+                        var date = $.trim(currentRow.find("td").eq(2).html());
+                        var taxid = $.trim(currentRow.find("td").eq(0).html());
+                        if (checkbox == true) {
+                            ids += taxid + ",";
+                            amounts += rowamount + ",";
+                            invnos += no + ',';
+                            dates += date + ',';
+                        }
+
+                    });
+                    var checkdata = {
+                        Ids: ids,
+                        Amounts: amounts                        
+                    };
+                    //debugger;
+                    addFailMsg = "Error Occurred While Adding Payment";
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: '/Purchase/CheckTDSbudget',
+                        data: { TDSPay: checkdata },
+                        success: function (response) {
+                           
+                            //alert(response.saveStatus);
+                            result = response.saveStatus;
+                            //debugger;
+                            if (result=== "Sufficent") {                                
+                               
+                                    //alert("Submiting");
+                                    $("#divTDSPayInfoMsg").text("");
+                                    $("#divTDSPayInfoMsg").addClass("hidden");
+                                    //alert("Save data");
+                                    SaveTDS();
+                                }
+                                else {
+                                   // msg = result;
+                                    $("#divTDSPayInfoMsg").text("");
+                                    $("#divTDSPayInfoMsg").append("<div>" + result + "</div>");
+                                    $("#divTDSPayInfoMsg").addClass("alert-danger");
+                                    $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+                                    return false;
+                                }
+                            
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            $("#divTDSPayInfoMsg").text(addFailMsg);
+                            $("#divTDSPayInfoMsg").addClass("alert-danger");
+                            $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+                        }
+                    });
+                    
+
+                }
+            }
+        }
+
+
+
+    }
+
+    function SaveTDS() {
+
+        //var name = $("#txtName").val();
+        var bank = $("#ddlBank option:selected").val();
+        var Mode = $("#ddlPayMode option:selected").text();       
+        var date = $("#txtPayDate").val();
+        var remarks = $("#txtReamarks").val();
+        var amount = $("#txtFinalAmount").val();
+        var cheque = $("#txtPaymentNo").val();
+
+        let ids = '', amounts = '', invnos = '', dates = '';
+        $("#tblTDSPayGrid tbody tr").each(function () {
+            var currentRow = $(this);
+            var checkbox = currentRow.find("td").eq(12).find("input[type='checkbox']").is(":checked");
+            var rowamount = currentRow.find("td").eq(11).find("input[type='text']").val();
+            var no = $.trim(currentRow.find("td").eq(3).html());
+            var date = $.trim(currentRow.find("td").eq(2).html());
+            var taxid = $.trim(currentRow.find("td").eq(0).html());
+            if (checkbox == true) {
+                ids += taxid + ",";
+                amounts += rowamount + ",";
+                invnos += no + ',';
+                dates += date + ',';
+            }
+        });
+        var payData = {
+            Ids: ids,
+            Amounts: amounts,
+            Inovicenos: invnos,
+            InoviceDates: dates,
+            TransactionDate: date,
+            Remarks: remarks,
+            ModeofPay: Mode,
+            BankId: bank,
+            Number: cheque,
+            TransactionAmount: amount
+        };
+        //debugger; $("#btnSubmit").prop("disabled", true);
+        addFailMsg = "Error Occurred While Adding Payment";
+        addSuccessMsg = "Payment Details Added Successfully.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveTDSPayment',
+            data: { TDSPay: payData },
+            success: function (Data) {
+                var typeArr = Data.saveStatus.toString().split('$');
+                var result = typeArr[0];
+                if (result === 'Submited') {
+                    addSuccessMsg = 'Transaction Ref No. ' + typeArr[1] + ' Created Successfully';
+                    $("#divTDSPayInfoMsg").text(addSuccessMsg);
+                    $("#divTDSPayInfoMsg").removeClass("hidden alert-danger");
+                    $("#divTDSPayInfoMsg").addClass("alert-success");
+                   
+                }
+                else {
+                    $("#divTDSPayInfoMsg").text(Data.saveStatus);
+                    $("#divTDSPayInfoMsg").addClass("alert-danger");
+                    $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+                     $("#btnSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divTDSPayInfoMsg").text(addFailMsg);
+                $("#divTDSPayInfoMsg").addClass("alert-danger");
+                $("#divTDSPayInfoMsg").removeClass("hidden alert-success");
+                $("#btnSubmit").prop("disabled", false);
+            }
+        });
+
+    }
+</script>

@@ -1,0 +1,140 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.Withdrawal
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtWdName" })
+                </div>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <hr style="margin-top:0px;margin-bottom:2px" />
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.From)
+                    @Html.DropDownListFor(model => model.From, new SelectList(Model.WdBanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_WdFrom", onchange = "WithdrawPayModeChange()" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Mode_of_Pay)
+                    @Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.WdPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_WdPayNode", onchange = "WithdrawPayModeChange()" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.No)
+                    @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtWdNo" })
+                    @Html.DropDownListFor(model => model.Chequeid, new SelectList(Model.WdChequesList, "Cheque_Id", "Cheque_No"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Wdchequenos" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date)
+                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtWdDate", @class = "form-control  date-picker", @readonly = "true" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txtWdRemarks", @class = "form-control", @rows = "3" })
+
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Amount)
+                    @Html.TextBoxFor(model => model.Amount, new { @id = "txtWdAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-right">
+                <button class="btn btn1 btn-success" id="btnWdSubmit" onclick="btnreturnWithDraw('@Model.Id')">Submit</button>
+
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <div id="divWithdrawalupdateInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+          var Date = '@Model.Date';
+        $("#txtWdDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtWdDate").val(selectedDate);
+            }
+        });
+        if (@Model.Id != null || @Model.Id != '') {            
+            var BankTID = '@Model.Id';
+            var Bank = '@Model.From';
+            var Bankname = '@Model.BankName';
+            var Mode = '@Model.Mode_of_Pay';
+            $("#txtWdNo").val('@Model.No');
+            var chequeno = '@Model.No';
+            $("#ddl_WdFrom").val(Bank);
+            $("#ddl_WdPayNode").val(Mode);
+            if (Mode == 'Cheque') {
+                $("#ddl_Wdchequenos").removeClass('hidden');
+                $("#txtWdNo").addClass("hidden"); 
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindWdCheques",
+                    data: '{BankName:"' + Bankname + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        if (count > 0) {
+                            var ddlRetPayNo = $("#ddl_Wdchequenos");
+                            ddlRetPayNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                 ddlRetPayNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No']));                               
+                            });
+                            ddlRetPayNo.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+                        }
+
+                      
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+            else {
+                $("#ddl_Wdchequenos").addClass("hidden");
+                $("#txtWdNo").removeClass('hidden');}
+            }
+    });
+    
+</script>

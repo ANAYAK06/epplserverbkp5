@@ -1,0 +1,63 @@
+﻿
+@model EsselTestLocalApplication.Models.CCAllClientInvoiceDetials
+@if (Model.InvDetails.Count == 0)
+{
+    <div style="text-align:center;font-weight:600">No Data Found</div>
+    @*<script type="text/javascript">
+            alert("Model empty");
+        </script>*@
+}
+else{
+    <div class="table-responsive">
+        <table class="hover stripe nowrap example dataTable no-footer" id="tblCCAllInvDetails">
+            <thead>
+                <tr>
+                   
+                    <th>ClientInvoiceNo</th>
+                    <th>InvoiceDate</th>
+                    <th>PONumber</th>
+                    <th>BasicValue</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.InvDetails)
+                {
+                    <tr>
+                        <td> @Html.DisplayFor(modelItem => item.ClientInvoiceNo)</td>
+                        <td> @Html.DisplayFor(modelItem => item.InvoiceDate)</td>
+                        <td> @Html.DisplayFor(modelItem => item.PONumber)</td>
+                        <td> @Html.DisplayFor(modelItem => item.BasicValue)</td>                        
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var InvGrid = null;
+        InitializeCCInvoicesGrid();
+    });
+
+
+    function InitializeCCInvoicesGrid() {
+        InvGrid = $('#tblCCAllInvDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 10,
+            "initComplete": function (settings, json) {
+            }
+        });
+    }
+
+</script>
+}

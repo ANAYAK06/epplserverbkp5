@@ -1,0 +1,154 @@
+﻿@model EsselTestLocalApplication.Models.BasicFirmInfo
+
+@{
+                /**/
+
+                ViewBag.Title = "BasicBusinessInfo";
+                //Layout = "~/Views/Shared/_BusinessInfoSetup.cshtml";
+}
+<script src="~/Scripts/AccountsScripts/Accounts.js"></script>
+<div class="col-md-12">
+    @using (Html.BeginForm(new { onsubmit = "return false" }))
+    {
+        @*<h4>Firm Information</h4>*@
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <form onsubmit="return false">
+                <div class="col-md-12">
+                    <div class="col-md-4" id="divTransCC">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.firmName, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                            @Html.EditorFor(model => model.firmName, new { htmlAttributes = new { @class = "form-control", @id = "BusInfofirmNameId" } })
+                            @Html.ValidationMessageFor(model => model.firmName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="divTransferCCAmount">
+                        @Html.LabelFor(model => model.firmDescription, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                        @Html.EditorFor(model => model.firmDescription, new { htmlAttributes = new { @class = "form-control", @id = "BusInfoFirmDescId" } })
+                        @Html.ValidationMessageFor(model => model.firmDescription, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="col-md-12" id="divTranferDetails">
+                    <div class="col-md-12">
+                        <hr style="margin-top:0px;margin-bottom:2px" />
+                    </div>
+                    <div class="col-md-4" id="divTransBank">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.firmFunctionalAreaID, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                            @Html.DropDownListFor(model => model.firmFunctionalAreaID, new SelectList(Model.firmFunctionalAreasList, "firmFunctionalAreaID", "firmFunctionalAreaName"), "-Please Select-", htmlAttributes: new { @class = "form-control", @id = "BusInfoFirmfnAreaId" })
+                            @Html.ValidationMessageFor(model => model.firmFunctionalAreaID, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4" id="divdepdate">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.firmRegionId, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                            @Html.DropDownListFor(model => model.firmRegionId, new SelectList(Model.firmRegionsList, "firmRegionID", "firmRegionName"), "-Please Select-", htmlAttributes: new { @class = "form-control", @id = "BusInfoFirmRegionId" })
+                            @Html.ValidationMessageFor(model => model.firmRegionId, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group" id="divdepamt">
+                            <label class="control-label">Firm Logo</label><span style="color:red">*</span>
+                            <div class="form-group form-horizontal">
+                                <input type="file" class="form-control col-md-2" title="search image" id="BusInfoFirmLogoId" name="file" onchange="show(this)" />
+                                <img id="user_img" class="col-md-3" height="40" width="100" />
+                                <img id="user_img1" class="col-md-3" height="40" width="100" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+
+                    <div class="col-md-12" id="divdepbtns">
+
+                        <div class="text-right">
+                            <input type="button" value="Submit" class="btn btn-default firmbtns-hover" onclick="SaveBasicFirmInfo();" />
+                            
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divFirmInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        @*<div class="form-horizontal">
+                <h4>Firm Information</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.firmName, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                    <div class="">
+                        @Html.EditorFor(model => model.firmName, new { htmlAttributes = new { @class = "form-control", @id = "BusInfofirmNameId" } })
+                        @Html.ValidationMessageFor(model => model.firmName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.firmDescription, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                    <div class="">
+                        @Html.EditorFor(model => model.firmDescription, new { htmlAttributes = new { @class = "form-control", @id = "BusInfoFirmDescId" } })
+                        @Html.ValidationMessageFor(model => model.firmDescription, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.firmFunctionalAreaID, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.firmFunctionalAreaID, new SelectList(Model.firmFunctionalAreasList, "firmFunctionalAreaID", "firmFunctionalAreaName"), "-Please Select-", htmlAttributes: new { @class = "form-control", @id = "BusInfoFirmfnAreaId" })
+                        @Html.ValidationMessageFor(model => model.firmFunctionalAreaID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.firmRegionId, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.firmRegionId, new SelectList(Model.firmRegionsList, "firmRegionID", "firmRegionName"), "-Please Select-", htmlAttributes: new { @class = "form-control", @id = "BusInfoFirmRegionId" })
+                        @Html.ValidationMessageFor(model => model.firmRegionId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-horizontal">
+                        <label class="control-label">Firm Logo</label><span style="color:red">*</span>
+                        <div class="form-group form-horizontal">
+                            <input type="file" class="form-control col-md-2" title="search image" id="BusInfoFirmLogoId" name="file" onchange="show(this)" />
+                            <img id="user_img" class="col-md-3" height="40" width="100" />
+                            <img id="user_img1" class="col-md-3" height="40" width="100" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" value="Submit" class="btn btn-default firmbtns-hover" onclick="SaveBasicFirmInfo();" />
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                <div id="divFirmInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>*@
+    }
+</div>
+    <script type="text/javascript">
+        function show(input) {
+            if (input.files && input.files[0]) {
+                var filerdr = new FileReader();
+
+                filerdr.onload = function (e) {
+                    $('#user_img').attr('src', e.target.result);
+                    //alert(e.target.result);
+                }
+                filerdr.readAsDataURL(input.files[0]);
+            }
+        }
+
+    </script>

@@ -1,0 +1,81 @@
+﻿
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CostCenter</title>
+    @Scripts.Render("~/bundles/datepicker/js")
+        @Styles.Render("~/bundles/datepicker/css")
+        @Scripts.Render("~/bundles/Accounts")
+        @Styles.Render("~/bundles/Accounts/css")
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align:left;font-weight:bold">Cost Center Creation</h4>
+                    </div>
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <!-- Example Tabs Left-->
+                                <div class="card-inner">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <button class="btn btn1 btn-success" id="btnAddNew" onclick="ViewAddCostCenterModel()">Add Cost Center</button>
+                                            <input type="hidden" id="txtCCCreatedby" />
+                                            <div id="divCCDtailsGrid">
+                                                @Html.Action("ViewCostCentersGrid", "Home")
+                                            </div>
+                                        </div>
+                                        <div id="AddNewCCModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                            <div class="modal-dialog modal-lg">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        <h4 class="modal-title">Add Cost Center</h4>
+                                                    </div>
+                                                    <div class="modal-body" style="overflow-x:hidden" id="AddCostCenter">
+                                                        @Html.Action("AddCostCenter", "Home")
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div id="ShowCloseMsgModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                            <div class="modal-dialog modal-lg">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        <h4 class="modal-title">Close Cost Center</h4>
+                                                    </div>
+                                                    <div class="modal-body" style="overflow-x:hidden">
+                                                        <div id="ShowCloseInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+</body>
+</html>

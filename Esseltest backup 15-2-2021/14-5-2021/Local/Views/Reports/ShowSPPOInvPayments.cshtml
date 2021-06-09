@@ -1,0 +1,219 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.VendorInvoiceReport
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .wrapcls1 {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 12px;
+        border-left: 1px solid white;
+        background: #202447;
+        color: #fff !important;
+    }
+
+    .tdalign1 {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 12px;
+        border-left: 1px solid white;
+    }
+</style>
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div class="row">
+                @if (Model.BankPayList != null)
+                {
+                    if (Model.BankPayList.Count > 0 )
+                    {
+                        <div class="col-md-10">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Bank Payments</h5>
+                        </div>
+                        <div class="col-md-10"><hr class="separationHr" /></div>
+
+                        <div class="col-md-12 table-responsive">
+
+
+                            <table id="tblSPPOBankPayGrid" class="hover stripe nowrap example dataTable no-footer">
+                                <thead>
+                                    <tr>
+
+                                        <th class="wrapcls1">Transaction RefNo</th>
+                                        <th class="wrapcls1">Bank Name</th>
+                                        <th class="wrapcls1">Transaction Type</th>
+                                        <th class="wrapcls1">Number</th>
+                                        <th class="wrapcls1">Transaction Amount</th>
+                                        <th class="wrapcls1">Transaction Date</th>
+                                        <th class="wrapcls1">Remarks</th>
+                                        <th class="wrapcls1">Payment Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.BankPayList)
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionRefNo)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.BankName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionType)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Number)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionDate)
+                                            </td>
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Remarks)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PaymentType)
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr></tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                    }
+                }
+                @if (Model.CashPayList != null)
+                {
+                    if (Model.CashPayList.Count > 0)
+                    {
+                        <div class="col-md-10">
+                            <br />
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Cash Payments</h5>
+                        </div>
+                        <div class="col-md-10"><hr class="separationHr" /></div>
+                        <div class="col-md-12 table-responsive">
+
+                            <table id="tblSPPOCashPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                                <thead>
+                                    <tr>
+
+                                        <th class="wrapcls1">Transaction RefNo</th>
+                                        <th class="wrapcls1">Paid To</th>
+                                        <th class="wrapcls1">TransactionDate</th>
+                                        <th class="wrapcls1">Transaction Amount</th>
+                                        <th class="wrapcls1">Transaction Type</th>
+                                        <th class="wrapcls1">Payment Type</th>
+                                        <th class="wrapcls1">Paid Against</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.CashPayList)
+                                    {
+
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionRefNo)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.CCCode)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionDate)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionType)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.TransactionAmount)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.PaymentType)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.OtherCCCode)
+                                            </td>
+
+                                        </tr>
+
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr></tr>
+                                </tfoot>
+                            </table>
+                            @*</div>
+                    </div>*@
+                        </div>
+                    }
+                }
+                @if (Model.BankPayList == null && Model.CashPayList == null) {
+
+                    <div class="text-center">No Payments Available</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var SPPOInvPayGrid = null;
+        InitializeSPPOInvPayGrid();
+        var SPPOInvCashPayGrid = null;
+        InitializeSPPOInvCashPayGrid();
+    });
+    function InitializeSPPOInvPayGrid() {
+        SPPOInvPayGrid = $('#tblSPPOBankPayGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Payments Found"
+            },
+            pageLength: 20,
+            "initComplete": function (settings, json) {
+
+
+            },
+            "dom": '<"toolbar">frtip'
+        });
+
+    }
+    function InitializeSPPOInvCashPayGrid() {
+        SPPOInvCashPayGrid = $('#tblSPPOCashPayGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Payments Found"
+            },
+            pageLength: 20,
+            "initComplete": function (settings, json) {
+
+
+            },
+            "dom": '<"toolbar">frtip'
+        });
+
+    }
+</script>

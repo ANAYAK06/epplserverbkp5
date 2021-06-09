@@ -1,0 +1,70 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.CreateTaxes
+<form onsubmit="return false">
+    <div class="row ">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaxName)
+                    @Html.TextBoxFor(model => model.TaxName, htmlAttributes: new { @class = "form-control", @id = "txtgstaxname" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ApplicableFrom)
+                    @Html.TextBoxFor(model => model.ApplicableFrom, "{0:dd-MMM-yyyy}", new { @id = "txtgsTaxdate", @class = "form-control", type = "text" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaxFor)
+                    @Html.DropDownListFor(model => model.TaxFor, new SelectList(Model.DcaCodeList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgstaxdcacode" })
+                    @*, onchange = "GstTaxDcaChange()"*@
+                </div>
+            </div>
+
+            @*<div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubDCA)
+                    @Html.DropDownListFor(model => model.SubDCA, new SelectList(Model.SDcaCodeList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgstaxsubdca" })
+                </div>
+            </div>*@
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaxNo)
+                    @Html.TextBoxFor(model => model.TaxNo, htmlAttributes: new { @class = "form-control", @id = "txtgstaxno" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.StateId)
+                    @Html.DropDownListFor(model => model.StateId, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgstaxstate" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtgsdescription", @rows = "3" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-right">
+                <input type="text" value="0" id="txtGsttaxRoleId" style="display:none" />
+                <button class="btn btn1 btn-success" id="btnSubmitGsttax" onclick="SubmitGstTaxes()">Submit</button>
+                
+            </div>
+        </div>
+        <div class="col-md-12 text-center">
+            <br />
+            <div id="divAddGstTaxInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+     $(document).ready(function () {
+        var RoleID = '@Session["Roleid"]';
+         $("#txtGsttaxRoleId").val(RoleID);
+        });
+</script>

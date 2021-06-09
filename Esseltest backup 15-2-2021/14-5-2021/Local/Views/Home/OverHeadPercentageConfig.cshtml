@@ -1,0 +1,174 @@
+﻿@model EsselTestLocalApplication.Models.CCOverheadDepreciation
+@{
+    ViewBag.Title = "OverHeadPercentageConfig";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Overhead Percentage</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row" id="divAdd">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCCoverhead", onchange = "ddlccChangees()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.InterestRate, new { @id = "lblInterestRate" })
+                                            @Html.TextBoxFor(model => model.InterestRate, htmlAttributes: new { @class = "form-control", @id = "txtInterestRate", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" id="divvalue">
+                                        <div class="form-group">
+                                            @*@Html.LabelFor(model => model.Value)
+                                            @Html.TextBoxFor(model => model.Value, htmlAttributes: new { @class = "form-control", @id = "txtValue", onkeypress = "return ValidateAmount(this,event)" })*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnAdd" onclick="Submitoverhead()">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="row" id="divGrid">
+                                </div>
+                                <div class="row text-center" id="divMsg">
+                                    <div id="divCCAccurateInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#lblInterestRate").html("Over Head %");
+        RebindBindGrid();
+    });
+    function ddlccChangees() {
+        var rtypeindex = $("#ddlCCoverhead option:selected").index();
+        var rtype = $("#ddlCCoverhead option:selected").val();
+        if (rtypeindex != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetCCOverheadpercent",
+                data: '{CCCvalue:"' + rtype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txtInterestRate").val(this['ccvalue']);
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }      
+        //RebindCC();
+    }
+    function RebindBindGrid() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Home/OverHeadPercentageConfigGrid',
+            data: { Type: "Overhead" },
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divGrid").html(Data);
+                }
+                else {
+                    $("#divGrid").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    }
+    function Submitoverhead() {       
+        isValid = true;
+        var errorMsg = "";
+        var ccindex = $("#ddlCCoverhead option:selected").index();
+        var interest = $("#txtInterestRate").val();       
+        if (ccindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (interest === "" || interest === "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Overhead Percentage</p>";
+            isValid = false;
+        }       
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCCAccurateInfoMsg").addClass("alert-danger");
+            $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").addClass("hidden");
+            addFailMsg = "Error Occurred While Adding  Details.";           
+            var saveData = {
+                Id: 0,
+                ReportType: "Overhead",
+                CostCenter: $("#ddlCCoverhead option:selected").val(),
+                Value: $("#txtInterestRate").val()               
+            };
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/SaveCCOverheadValues',
+                data: { CCOD: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == "Submited") {
+                        $("#divCCAccurateInfoMsg").text("");
+                        $("#divCCAccurateInfoMsg").addClass("hidden");
+                        location.reload();
+                        //OverHeadPercentageConfigGrid("Overhead");
+                        //ClearFields();
+                        //RebindBindGrid();
+                        //AccruedInterestCCConfig();
+                    }
+                    else {
+                        $("#divCCAccurateInfoMsg").text(Data.saveStatus);
+                        $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                        $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCCAccurateInfoMsg").text(addFailMsg);
+                    $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                    $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    function ClearFields() {
+        $("#txtInterestRate").val("");
+       
+        $("#ddlCCoverhead").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+    }
+</script>

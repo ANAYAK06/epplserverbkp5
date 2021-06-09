@@ -1,0 +1,226 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.FDPayments
+@{
+    ViewBag.Title = "VerifyFDInterestView";
+}
+<div class="col-md-12">
+    <br />
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FDRNo)
+
+            @Html.TextBoxFor(model => model.FDRNo, new { @id = "txtIntFdNos", @class = "form-control", @readonly = "true" })
+
+        </div>
+    </div>
+    <div id="divfdinterest">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.IntDate)
+                @Html.TextBoxFor(model => model.IntDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtFdIntdate", @type = "text", @readonly = "true" })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.IntAmount)
+                @Html.TextBoxFor(model => model.IntAmount, new { @id = "txtFDIntAmount", @class = "form-control", @readonly = "true" })
+            </div>
+        </div>
+    </div>
+    <div id="divfdinterestDed" class="col-md-12">
+
+        <div class="strike">
+            <span>Deduction Amount</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <table id="FDIntDedTable" class="table order-list fdintdedgrid">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;width:20%" class="hidden">Row No</td>
+                        <td style="text-align:center;font-weight:bold;width:20%">Cost Center</td>
+                        <td style="text-align:center;font-weight:bold;width:20%">Account Head</td>
+                        <td style="text-align:center;font-weight:bold;width:20%">Sub Account Head</td>
+                        <td style="text-align:center;font-weight:bold;width:20%">Amount</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.FDDeductionList)
+                    {
+                        <tr>
+                            <td style="text-align:center;">@item.CCCode</td>
+                            <td style="text-align:center;">@item.DCACode</td>
+                            <td style="text-align:center;">@item.SubDCACode</td>
+                            <td style="text-align:center;">@item.DeductionValue</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center;"><b>Total</b></td>
+                        <td style="text-align:center;"></td>
+                    </tr>
+
+                </tfoot>
+            </table>
+        </div>
+        <div id="divIntfdpayment">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.PaymentBankName)
+                @Html.TextBoxFor(model => model.PaymentBankName, new { @id = "txtfdIntpaymentbank", @class = "form-control", @readonly = "true" })
+
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentModeofPay)
+                    @Html.TextBoxFor(model => model.PaymentModeofPay, new { @id = "txtFdIntPayMode", @class = "form-control", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentNo)
+                    @Html.TextBoxFor(model => model.PaymentNo, htmlAttributes: new { @class = "form-control", @id = "txtfdIntchqNo", @readonly = "true" })
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRPaymentDate)
+                    @Html.TextBoxFor(model => model.FDRPaymentDate, "{0:dd-MMM-yyyy}", new { @id = "txtFDIPayDate", @class = "form-control  date-picker", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentRemarks)
+                    @Html.TextAreaFor(model => model.PaymentRemarks, new { @id = "txtFDIntRemarks", @class = "form-control", @rows = "3", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentAmount)
+                    @Html.TextBoxFor(model => model.PaymentAmount, new { @id = "txtFDIPayAmount", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprfdistatus" })
+
+                        @*<select class="form-control dropdown-toggle" id="Apprfdistatus">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Verify">Verify</option>
+                                <option value="Approve">Approve</option>
+                                <option value="Return">Return</option>
+                                <option value="Reject">Reject</option>
+                            </select>*@
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="ApprfdiNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br />
+                        <button id="btnapproveFDIntSubmit" onclick="ApproveFDIntData('@Model.BankTransactionRefNo','@Model.Bankid')">Submit</button>
+                        <input id="txtIntCC" type="hidden" />
+                        <input id="txtIntDCA" type="hidden" />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <br />
+                    <div id="divFDIntInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+          var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+
+        var count = @Model.FDDeductionList.Count;
+        //alert(count);
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Apprfdistatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        GetIntAppSettings();
+        var deductiontotal = 0;
+
+        if (count > 0) {
+            $("#FDIntDedTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var amount = currentRow.find("td").eq(3).html();
+                deductiontotal = parseFloat(deductiontotal) + parseFloat(amount);
+            });
+            $("#FDIntDedTable tfoot tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(3).html(parseFloat(deductiontotal).toFixed(2));
+            });
+            var TotalAmount = parseFloat('@Model.IntAmount') + parseFloat(deductiontotal);
+            $("#txtFDIntAmount").val(parseFloat(TotalAmount).toFixed(2));
+
+            var finalamount=parseFloat(TotalAmount).toFixed(2)-parseFloat(deductiontotal).toFixed(2)
+             $("#txtFDIPayAmount").val(parseFloat(finalamount).toFixed(2));
+        }
+        else {
+
+            $("#txtFDIPayAmount").val(parseFloat('@Model.IntAmount').toFixed(2));
+        }
+    });
+    function GetIntAppSettings() {
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/GetAppSetting",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $.each(response, function () {
+                    $("#txtIntCC").val(this['ParIntCC']);
+                    $("#txtIntDCA").val(this['FDIntDeductionDCA']);
+
+                });
+           
+            },
+            failure: function (response) {
+ 
+            },
+            error: function (response) {
+         
+            }
+        });
+    }
+</script>

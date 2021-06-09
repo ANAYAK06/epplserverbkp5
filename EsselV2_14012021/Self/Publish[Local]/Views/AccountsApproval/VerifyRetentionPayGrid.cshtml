@@ -1,0 +1,168 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.RetentionPayment>
+<div class="table-responsive">
+    <table id="tblApproveRetPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">BankTransactionRefNo</th>
+                <th>Client Code</th>
+                <th>Transaction Date</th>
+                <th>Amount</th>
+                <th>Bank</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.BankTransactionRefNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReturnPayDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PaymentAmount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bank)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveRetGrid = null;
+            InitializeApprRetGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppRetCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+          //  alert($("#roleid").val() + "-"+Sessionroleid);
+        });
+    function InitializeApprRetGrid() {
+        ApproveRetGrid = $('#tblApproveRetPayGrid').DataTable({
+                destroy: true,
+                paging: true,
+                lengthChange: false,
+                searching: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {               
+                    //var bldate = $('td:eq(3)', row).html();
+                    //var trimStr = $.trim(bldate);
+                    //var typeArr = trimStr.split(' ');
+                    //var d3 = typeArr[0];
+                    //var t1 = "'" + d3 + "'";
+                    //var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+                    //$('td:eq(3)', row).html(bldate1);
+                    var oldstatus = $('td:eq(6)', row).html();
+                    if (oldstatus == 1) {
+                        $('td:eq(6)', row).html("Verification Pending");
+                    }
+                    else { $('td:eq(6)', row).html("Return");}
+                },
+                pageLength: 10
+            });
+        $('#tblApproveRetPayGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveRetGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveRetGrid, tr);
+                    // Open this row
+                    row.child(formatRetPay(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatRetPay(d) {
+       
+        var htmltext;
+        var transstatus, refno;
+            $.each(d, function (index, value) {                
+                if (index == 6)
+                    transstatus = value;
+                if (index == 1)
+                    refno = value;
+            });
+        var divid = "divapprRet" + refno;
+        var divid1 = $("#" + divid + "");       
+        $("#currentRetTransno").val(refno);
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Accounts/ClientRetentionPayment',
+                data: { TransRefno: refno },
+                success: function (Data) {
+                    var divid2 = "divapprRet" + refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/GetVerificationRetentionDetailsbyRefno',
+                data: { TransRefno: refno },
+                success: function (Data) {
+                    var divid2 = "divapprRet" + refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                 
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                }
+            });
+
+        }
+        return '<div id="divapprRet' + refno + '" class="col-md-12 verifydiv"><br/></div>';
+        }
+</script>

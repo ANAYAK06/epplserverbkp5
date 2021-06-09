@@ -1,0 +1,69 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.SupplierPO>
+<style>
+    .tdclass {
+        text-align: center;
+    }
+</style>
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                @if (Model.Count > 0)
+                {
+                    <div class="col-md-12">
+                        <div class="row change-tab text-right" id="divSPPOInvtaxtable">
+                            <div class="tabledynamic">
+                                <br />
+                                <table style="width:100%;border:1px solid gray" class="table order-list">
+                                    <thead>
+                                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                            <th style="text-align:center;color:#fff">Vendor Name</th>
+                                            <th style="text-align:center;color:#fff">CCCode</th>
+                                            <th style="text-align:center;color:#fff">BasicPrice </th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int count = 1; }
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>      
+                                                <td class="tdclass">@item.VendorName</td>
+                                                <td class="tdclass">@item.CCCode</td>
+                                                <td class="tdclass">@item.BasicPrice</td>                                               
+                                            </tr>
+                                            count++;
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="tdclass"></td>
+                                            <td class="tdclass"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div>No Data Found</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

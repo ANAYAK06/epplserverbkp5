@@ -1,0 +1,197 @@
+﻿
+@model EsselTestLocalApplication.Models.Users
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+   
+</head>
+<body>
+    <div class="col-md-12" style="border:1px ! important;">
+        @if (Model.Status != "0")
+        {
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>User Name: </label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.Username' />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>User Role: </label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.UserRole' />
+                            </div>
+                        </div>
+                    </div>
+                        @if (Model.RoleID == 100 || Model.RoleID == 110)
+                        {
+                    <div class="col-md-12">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <label>Cost Centers:</label>
+                                <ol>
+                                    @foreach (var list in Model.UserCCList)
+                                    {
+
+                                        <li>@Html.DisplayFor(listItem => list.CC_Name)</li>
+                                    }
+                                </ol>
+                            </div>                            
+                            </div>
+                        </div>
+                        }
+
+                        <div class="col-md-12">
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                                    <label>Status</label>
+                                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appstatus" })
+                                </div>
+                            </div>
+                            <div class="col-md-5" id="divApprITRetNote">
+                                <div class="form-group">
+                                    <lable>Note:</lable><br />
+                                    <textarea rows="3" cols="50" id="ApprUserRetNote"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-left">
+                                    <br />
+                                    <input type="submit" id="btnApproveUser" onclick="ApproveUser('@Model.Userid','@Model.RoleID')" value="Submit" />
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-1">
+                            </div>
+                            <div class="row col-md-10 text-center">
+                                <br />
+                                <div id="divApproveUserInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </form>
+        }
+        else
+        {
+            <form onsubmit="return false">
+                <div class="col-md-9">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Username)
+                            @Html.TextBoxFor(model => model.Username, htmlAttributes: new { @class = "form-control", @id = "txtUpNUsername",  @title = "Enter Email Address" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.UserRole)
+                            @Html.DropDownListFor(model => model.UserRole, new SelectList(Model.UserRoleList, "UserRoleID", "UserRoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpUserRole", onchange = "ddlNUserRoleChange()" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Password)
+                            @Html.TextBoxFor(model => model.CongfirmPassword, htmlAttributes: new
+                       {
+                           @class = "form-control",
+                           @id = "txtNPwd",
+                           @title = "Password must contain at least 1 capital letter,\n\n1 small letter, 1 number and 1 special character.\n\nFor special characters you can pick one of these -,(,!,@,#,$,),%,<,",
+                           onkeyup = "PasswordValidator(this)",
+                           @type = "password",
+                       })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CongfirmPassword)
+                            @Html.TextBoxFor(model => model.CongfirmPassword, htmlAttributes: new
+                       {
+                           @class = "form-control",
+                           @id = "txtNConfPwd",
+                           @type = "password",
+                           onchange = "ValidateConfirmPassword()"
+                       })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divCCCodes">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SelectedCCCode)
+                            @Html.ListBoxFor(model => model.SelectedCCCode, new SelectList(Model.UserCCList, "CC_Code", "CC_Name"), new { @class = "listbox form-control", @id = "ddlUpMultiCCCode" })
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewUser" onclick="UpdateUserData('')" value="Submit" />
+                            <input type="button" class="btn btn1 btn-success" id="btnResetNewUser" onclick="ClearNewUser()" value="Reset" />
+                            
+                            <input type="hidden" value="0" id="txtSelectedrole" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <br />
+                            <div id="divUpUserInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (@Model.Status != "0") {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {        
+            $('.listbox').multiselect({
+                includeSelectAllOption: false
+            });
+            var Role = '@Model.UserRole';               
+            $("#ddlUpUserRole").find("option:contains('" + Role + "')").each(function () {
+                if ($(this).text() == Role) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+       }
+    });
+</script>

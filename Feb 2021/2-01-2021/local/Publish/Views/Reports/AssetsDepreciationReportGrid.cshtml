@@ -1,0 +1,163 @@
+﻿
+@model EsselTestLocalApplication.Models.ReportParameters.AssetsDepreciation
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        /*border-left: 1px solid white;*/
+    }
+    .tdalign {
+        text-align: center !important;
+       
+    }
+    </style>
+<div align="right" class="col-md-12">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelAssetDepreciationGrid();" />
+    <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfAssetDepreciationGrid();" />
+
+</div>
+<div class="table-responsive col-md-12">
+    <table id="tblAseetDepGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th>Item Code</th>
+                <th>Subdca Code</th>
+                <th>Item Name</th>
+                <th class="wrapcls">UPDATED PRICE OF THE ITEM</th>
+                <th class="wrapcls">DAYS COUNTED FOR DEPRECITAION FOR CURRENT FY</th>
+                <th class="wrapcls">DAYS COUNTED FOR DEPRECITAIN UP TO PREVIOUS FY</th>
+                <th class="wrapcls">DEPRECIATION VALUE FOR CURRENT FY</th>
+                <th class="wrapcls">DEPRECIATION VALUE UP TO PREVIOUS FY</th>
+                <th class="wrapcls">CUM.DEPRICITOIN  VALUE UP TO DATE</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach (var item in Model.AssetDepDataList)
+            {
+                <tr>
+
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.ItemCode)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.subdcacode)
+                    </td>
+                    <td class="tdalign"   style="white-space: pre-wrap !important;word-wrap: break-word !important;">
+                        @Html.DisplayFor(modelItem => item.itemname)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.basicprice)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.DaysforCurrentFy)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.DaysforPreviousFy)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.DecpreciationValueForCurrentFy)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.DecpreciationValueForPreviousFy)
+                    </td>
+                    <td class="tdalign">
+                        @Html.DisplayFor(modelItem => item.cudepvalue)
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            @if (Model.AssetDepDataList.Count > 0)
+            {
+                <tr>
+
+                    <td class="tdalign"></td>
+                    <td class="tdalign"></td>
+                    <td class="tdalign"></td>
+                    <td class="tdalign"></td>
+                    <td class="tdalign"></td>
+                    <td class="tdalign"></td>
+                    <td class="tdalign"> @Model.CurrentDepTotal</td>
+                    <td class="tdalign"> @Model.PreviousDepTotal</td>
+                    <td class="tdalign"> @Model.cudepTotal</td>
+                </tr>
+            }
+
+        </tfoot>
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        let assetGrid = null;
+        //InitializeassetGridGrid();
+    });
+    function InitializeassetGridGrid() {
+        assetGrid = $('#tblAseetDepGrid').DataTable({
+            //destroy: true,
+            //paging: false,
+            //lengthChange: false,
+            //searching: false,
+            //ordering: false,
+            //info: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function () {
+
+            }
+
+        });
+
+    }
+
+
+
+    function ExportpdfAssetDepreciationGrid () {
+             var CC = '@Model.CostCenter';
+             var year = '@Model.Year';
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfAssetDepGrid',
+            data: { CCCode: CC, Fyear: year },
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = CC + " ,Fyear:" + year + " AssetsDepreciationReport.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+    }
+
+    function ExportExcelAssetDepreciationGrid() {
+         var CC = '@Model.CostCenter';
+             var year = '@Model.Year';
+            $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelStockAssetDepGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = CC + " ,Fyear:" + year + " AssetsDepreciationReport.xlsx";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+        }
+</script>

@@ -1,0 +1,135 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+<div class="col-md-12 verifydiv">
+    <br />Bank
+    <div class="col-md-12">
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorType)
+                @Html.TextBoxFor(model => model.VendorType, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group" id="sppopaytypes">
+                @Html.LabelFor(model => model.PaymentType)
+                @Html.TextBoxFor(model => model.PaymentType, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divVendor">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorCode)
+                @Html.TextBoxFor(model => model.VendorCode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divSPPO">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SPPONo)<br />
+                @Html.ListBoxFor(model => model.SPPONo, new SelectList(Model.POList, "SPPONo", "SPPONoDesc"), new { @class = "listbox form-control", @id = "ddlMultiPO", @style = "margin:0px; width:100% !important;" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <input id="txtgridtotalamount" type="hidden" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" id="divPayment">
+        <div id="divInvPayment" class="col-md-12">
+        </div>
+        <div id="divAdvPayment" class="col-md-12"></div>
+        <div id="divRetPayment" class="col-md-12"> </div>
+        <div id="divHoldPayment" class="col-md-12"></div>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BankId)
+                @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvBankPayBank", onchange = "VendorinvPayModeChange()" })
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ModeofPay)
+                @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvBankPayMode", onchange = "VendorinvPayModeChange()" })
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Number)
+                @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtInvBankPaymentNo" })
+                <select class="form-control dropdown-toggle" id="ddlInvPaymentNo">
+                    <option selected="selected" value="Select">-Select-</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TransactionDate)
+                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtInvBankPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReturnRemarks)
+                @Html.TextAreaFor(model => model.ReturnRemarks, new { @id = "txtInvBankPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TransactionAmount)
+                @Html.TextBoxFor(model => model.TransactionAmount, new { @id = "txtInvBankPayFinalAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);",
+               onkeyup = "CheckPayAmount()"
+           })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <table style="width:100%;border:1px solid gray">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <th style="text-align:center;color:#fff">Approved Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.RemarksList)
+                {
+                    <tr>
+                        <td style="text-align:center">@item.Remarks</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <br />
+    </div>
+
+    <div class="col-md-12 text-right">
+        @*<button class="btn btn1 btn-success" id="btnInvBankPaySubmit" onclick="SubmitVendorInvoiceBankPayData()">Submit</button>*@
+        @if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Invoice")
+        {
+            <button class="btn btn1 btn-success" id="btnSPPOInvBankPaySubmit" onclick="SubmitVendorSPPOInvoiceBankPayData()">Submit</button>
+        }
+        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Advance")
+        { <button class="btn btn1 btn-success" id="btnSPPOInvBankAdvPaySubmit" onclick="SubmitVendorSPPOAdvanceBankPayData()">Submit</button>}
+        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Retention")
+        { <button class="btn btn1 btn-success" id="btnSPPOInvBankRetPaySubmit" onclick="SubmitVendorSPPORetentionBankPayData()">Submit</button>}
+        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Hold")
+        { <button class="btn btn1 btn-success" id="btnSPPOInvBankHoldPaySubmit" onclick="SubmitVendorSPPOHoldBankPayData()">Submit</button>}
+        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Invoice")
+        { <button class="btn btn1 btn-success" id="btnSupplerInvBankPaySubmit" onclick="SubmitVendorSupplierInvoiceBankPayData()">Submit</button>}
+        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Advance")
+        { <button class="btn btn1 btn-success" id="btnSupplerAdvBankPaySubmit" onclick="SubmitVendorSupplierAdvanceBankPayData()">Submit</button>}
+        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Hold")
+        { <button class="btn btn1 btn-success" id="btnInvSupplerHoldBankPaySubmit" onclick="SubmitVendorSupplierHoldBankPayData()">Submit</button>}
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.listbox').multiselect({
+            includeSelectAllOption: true
+        });
+        $("#ddlInvPaymentNo").addClass('hidden');
+    });
+</script>

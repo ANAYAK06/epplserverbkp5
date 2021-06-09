@@ -1,0 +1,463 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.TDSConfigure
+@{
+    ViewBag.Title = "TDSConfigure";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">TDS Nature of Payment Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="Pageconfig" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TdsNames)
+                                                                <a href="javascript:void(0)" onclick="ShowTDSNameModel()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add TDS Names</a>
+                                                                @Html.DropDownListFor(model => model.TdsNames, new SelectList(Model.TDSNamelist, "TDSId", "TDSname"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_tdsnames", onchange = "TDSnamechange()" })  @*, onchange = "CCchange()", onchange = "paymenttypechange()"*@
+                                                            </div>
+                                                        </div>
+                                                        <div id="TDSData">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.DCACode)
+                                                                    @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.TDSDCalist, "TDSdcaid", "TDSdcaname"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_tdsdcacode", onchange = "DCAchange()", })  @*, onchange = "CCchange()", onchange = "paymenttypechange()"*@
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.SDCACode)
+                                                                    @Html.DropDownListFor(model => model.SDCACode, new SelectList(Model.TDSSDCalist, "TDSsdcaid", "TDSsdcaname"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_tdssdcacode" })  @*, onchange = "CCchange()", onchange = "paymenttypechange()"*@
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Date)
+                                                                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtwefdate", @class = "form-control", @readonly = "true" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.HUFRate)
+                                                                    @Html.TextBoxFor(model => model.HUFRate, htmlAttributes: new { @class = "form-control", @id = "txthufrate", @Value = "", onkeypress = "return IsNumericdecimal(this)" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.OtherRate)
+                                                                    @Html.TextBoxFor(model => model.OtherRate, htmlAttributes: new { @class = "form-control", @id = "txtotherrate", @Value = "", onkeypress = "return IsNumericdecimal(this)" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="row ">
+                                                                <div class="col-md-12">
+                                                                    <div class="text-right">
+                                                                        <button class="btn btn1 btn-success" onclick="btnSubmitData()" id="btnCCLimitSubmit">Submit</button>  @*onclick="btnPLCSubmitData()"*@
+                                                                        <button class="btn btn1 btn-success" onclick="ResetData()" id="btnreset">Clear</button>  @*onclick="btnPLCSubmitData()"*@
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row ">
+                                                        </div>
+                                                        <div class="row" id="divgrid">
+                                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                                <div id="divCCCodeDetails">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row text-center">
+                                                            <div id="divTDSConfigInfoMsg" class="alert alert-danger hidden">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ShowTDSNameModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add TDS Name</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>TDS Name</label>
+                                <input type="text" id="txttdsName" style="text-transform:uppercase" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>TDS Code</label>
+                                <input type="text" id="txttdscode" style="text-transform:uppercase" maxlength="4"  class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center" style="vertical-align:bottom">
+                                <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddtdscat" onclick="SubmitTDSName()" /> &nbsp;&nbsp;
+                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="Resettds()" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divAddTDSInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#TDSData").addClass("hidden");
+        $("#txtwefdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+        }).datepicker("setDate", new Date());
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Accounts/ViewTDSConfigGrid',
+            data: {},
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divCCCodeDetails").html(Data);
+                }
+                else {
+                    $("#divCCCodeDetails").html('No Data Found');
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+
+            }
+        });
+    });
+    function ResetData() {
+
+        location.reload();
+    }
+    function btnSubmitData() {
+        var errorMsg = "";
+        isValid = true;
+        var tdsnames = $("#ddl_tdsnames option:selected").index();
+        var tdsdca = $("#ddl_tdsdcacode option:selected").index();
+        var tdssdca = $("#ddl_tdssdcacode option:selected").index();
+        var hufrate = $("#txthufrate").val();
+        var otherrate = $("#txtotherrate").val();
+        if (tdsnames == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select TDS Name</p>";
+            isValid = false;
+        }
+        if (tdsdca == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select TDS DCA</p>";
+            isValid = false;
+        }
+        if (tdssdca == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select TDS SDCA</p>";
+            isValid = false;
+        }
+        if (hufrate == "" || hufrate == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid HUF Rate</p>";
+            isValid = false;
+        }
+        if (otherrate == "" || otherrate == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Other Rate</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divTDSConfigInfoMsg").text("");
+            $("#divTDSConfigInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divTDSConfigInfoMsg").addClass("alert-danger");
+            $("#divTDSConfigInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divTDSConfigInfoMsg").text("");
+            $("#divTDSConfigInfoMsg").addClass("hidden");
+            //alert("Done");
+            Savedata();
+        }
+    }
+    function Savedata() {
+        var tdsnames = $("#ddl_tdsnames option:selected").val();
+        var tdsdca = $("#ddl_tdsdcacode option:selected").val();
+        var tdssdca = $("#ddl_tdssdcacode option:selected").val();
+        var WEFDate = $("#txtwefdate").val();
+        var hufrate = $("#txthufrate").val();
+        var otherrate = $("#txtotherrate").val();
+        var Sessioncreated = '@Session["Createdby"]';
+        var TCSDetails = {
+            TdsNames: tdsnames,
+            DCACode: tdsdca,
+            SDCACode: tdssdca,
+            TDSDate: WEFDate,
+            HUFRate: hufrate,
+            OtherRate: otherrate,
+            Createdby: Sessioncreated
+        };
+        addFailMsg = "Error Occurred While Submitting.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/SaveTDSConfigDetails',
+            data: { newtcsDetails: TCSDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divTDSConfigInfoMsg").text(Data.saveStatus);
+                    $("#divTDSConfigInfoMsg").removeClass("hidden alert-danger");
+                    $("#divTDSConfigInfoMsg").addClass("alert-success");
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Accounts/ViewTDSConfigGrid',
+                        data: {},
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divCCCodeDetails").html(Data);
+                            }
+                            else {
+                                $("#divCCCodeDetails").html('No Data Found');
+                            }
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                }
+                else {
+                    $("#divTDSConfigInfoMsg").text(Data.saveStatus);
+                    $("#divTDSConfigInfoMsg").addClass("alert-danger");
+                    $("#divTDSConfigInfoMsg").removeClass("hidden alert-success");
+                    //$("#btnPLCSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divTDSConfigInfoMsg").text(addFailMsg);
+                $("#divTDSConfigInfoMsg").addClass("alert-danger");
+                $("#divTDSConfigInfoMsg").removeClass("hidden alert-success");
+                //$("#btnPLCSubmit").prop("disabled", false);
+            }
+        });
+    }
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+        return true;
+    }
+    function TDSnamechange() {      
+        var configtypindex = $("#ddl_tdsnames option:selected").index();
+        var Code = $("#ddl_tdsnames");
+        if (configtypindex != 0) {
+            var configtypeval = $("#ddl_tdsnames option:selected").val();           
+            $("#ddl_tdsdcacode").prop('selectedIndex', 0);
+            $("#ddl_tdssdcacode").prop('selectedIndex', 0);
+            $("#txthufrate").val('');
+            $("#txtotherrate").val('');
+            $("#TDSData").removeClass("hidden");
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Accounts/ViewTDSConfigGrid',
+                data: { code: configtypeval},
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#divCCCodeDetails").html(Data);
+                    }
+                    else {
+                        $("#divCCCodeDetails").html('No Data Found');
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+
+                }
+            });           
+        }
+        else {
+            $("#TDSData").addClass("hidden");
+
+        }
+    }
+    function DCAchange() {
+        var configtypindex = $("#ddl_tdsdcacode option:selected").index();
+        var Code = $("#ddl_tdsdcacode");
+        if (configtypindex != 0) {
+            var configtypeval = $("#ddl_tdsdcacode option:selected").val();
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetSDCA",
+                data: '{code:"' + configtypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ddl_tdssdcacode");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['TDSsdcaid']).html(this['TDSsdcaname']));
+                        });
+                    }                  
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        }
+        else {
+            $("#txtdaylimit").val("");
+
+        }
+    }
+    function ShowTDSNameModel() {
+        $('#ShowTDSNameModel').modal('show');
+        Resettds();
+    }
+    function SubmitTDSName() {     
+        isValid = true;
+        var errorMsg = "";
+        var CatName = $("#txttdsName").val();
+        var TdsCode = $("#txttdscode").val();
+        
+        if (CatName === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter TDS Name</p>";
+            isValid = false;
+        }
+        if (TdsCode === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter TDS Code</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divAddTDSInfoMsg").text("");
+            $("#divAddTDSInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAddTDSInfoMsg").addClass("alert-danger");
+            $("#divAddTDSInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddTDSInfoMsg").text("");
+            $("#divAddTDSInfoMsg").addClass("hidden");
+            var Newname = {
+                AddTdsName: $("#txttdsName").val(),
+                AddTdscode: $("#txttdscode").val()
+            };
+            addFailMsg = "Error Occurred While Adding TDS Name";
+            addSuccessMsg = "TDS Name Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/SaveTDSName",
+                data: JSON.stringify({ Cat: Newname }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $("#btnaddtdscat").prop('disabled', true);
+                        $("#divAddTDSInfoMsg").text(addSuccessMsg);
+                        $("#divAddTDSInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddTDSInfoMsg").addClass("alert-success");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/GetTDSNames",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlcat = $("#ddl_tdsnames");
+                                ddlcat.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlcat.append($("<option></option>").val(this['TDSId']).html(this['TDSname']));
+                                });
+                            },
+                            failure: function (response) {
+                                alert(response.responseText);
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    }
+                    else {
+                        $("#btnaddtdscat").prop('disabled', false);
+                        $("#divAddTDSInfoMsg").text(response.saveStatus);
+                        $("#divAddTDSInfoMsg").addClass("alert-danger");
+                        $("#divAddTDSInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddtdscat").prop('disabled', false);
+                    $("#divAddTDSInfoMsg").text(addFailMsg);
+                    $("#divAddTDSInfoMsg").addClass("alert-danger");
+                    $("#divAddTDSInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function Resettds() {
+        $("#ddl_tdsnames").prop('selectedIndex', 0);
+        //$("#btnaddnewitemcat").prop('disabled', false);
+        //$("#divAddTDSInfoMsg").text("");
+        //$("#divAddTDSInfoMsg").addClass("hidden");
+    }
+</script>

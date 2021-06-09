@@ -1,0 +1,196 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmpDocument
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Upload Documents</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DocName)
+                            @*@Html.TextBoxFor(model => model.DocName, htmlAttributes: new { @class = "form-control", @id = "txtDocName", onkeypress = "return isValidSpecialCharacters(event)" })*@
+                            @Html.DropDownListFor(model => model.DocName, new SelectList(Model.EmpDocumentslst, "DocumentName", "DocumentName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNDocumentName" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">Select File(jpg/png)</label><span style="color:red">*</span>
+                            <input type="file" class="form-control col-md-2" title="search image" id="DocumentId" name="file"  onchange="show(this)" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="form-group">
+                                <img id="user_img" height="170" width="170" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row text-right">
+                    <button class="btn btn1 btn-success" id="btnewDocSubmit" onclick="SubmitNewEmpDoumentData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnewnewDocReset" onclick="ClearNewDocumentModel()">Reset</button>
+                    <input type="hidden" id="txturl" />
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddNewDocInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*<img src="data:image/jpg;base64,@item.DocBinaryData" style="height:100px;width:100px;" />*@
+<script>
+    function show(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            filerdr.onload = function (e) {
+                $('#user_img').attr('src', e.target.result);
+                //alert(e.target.result);
+            }
+            filerdr.readAsDataURL(input.files[0]);
+            $("#txturl").val(URL.createObjectURL(input.files[0]));
+        }
+        //if (input.files && input.files[0]) {
+        //    var fileType = input.file["type"];
+        //    console.log(fileType);
+        //    if (fileType.search('image') >= 0) {
+        //        var filerdr = new FileReader();
+        //        filerdr.onload = function (e) {
+        //            $('#user_img').attr('src', e.target.result);
+        //            //alert(e.target.result);
+        //        }
+        //        filerdr.readAsDataURL(input.files[0]);
+        //        $("#txturl").val(URL.createObjectURL(input.files[0]));
+        //        $("#divAddNewDocInfoMsg").text("");
+        //        $("#divAddNewDocInfoMsg").addClass("hidden");
+        //    }
+        //    else {
+        //        $("#divAddNewDocInfoMsg").text("");
+        //        $("#divAddNewDocInfoMsg").append("<div>Select Image File</div>");
+        //        $("#divAddNewDocInfoMsg").addClass("alert-danger");
+        //        $("#divAddNewDocInfoMsg").removeClass("hidden alert-success");
+        //        return false;
+
+        //    }
+        //}
+    }
+    function getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        var dataURL = canvas.toDataURL("image/png");
+        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+    function SubmitNewEmpDoumentData() {
+        var imgpath = $("#DocumentId").val(); var imgbytes = "", imgbytes1 = "";
+        //if (imgpath !== null || imgpath !== "") {
+        //    var myCanvas = $('<canvas/>');
+        //    var myImageSrc = myCanvas.attr('src', imgpath);
+        //    myCanvas.attr('src', myImageSrc);
+        //    var dataInBase64 = $(myCanvas)[0].toDataURL('image/png').replace(/data\:image\/png;base64,/, '');
+        //    imgbytes =binEncode(dataInBase64);
+        //    imgbytes1 = "data:image/png;base64," + dataInBase64;
+        //    console.log(imgbytes);
+        //}
+         isValid = true;
+        var errorMsg = "";
+        if (imgpath == "" || imgpath === null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select File</p>";
+            isValid = false;
+        }
+        if ($("#ddlNDocumentName option:selected").index() === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter File Name</p>";
+            isValid = false;
+        }
+        if ($("#txturl").val() == "" ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select File</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewDocInfoMsg").text("");
+            $("#divAddNewDocInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAddNewDocInfoMsg").addClass("alert-danger");
+            $("#divAddNewDocInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewDocInfoMsg").text("");
+            $("#divAddNewDocInfoMsg").addClass("hidden");
+            var base64 = getBase64Image(document.getElementById("user_img"));
+            console.log("base64:===" + base64);
+            var data = {
+                DocName: $("#ddlNDocumentName option:selected").val(),
+                DocBinaryData: base64,
+                Path: $("#txturl").val()
+            };
+
+            // debugger;
+            addFailMsg = "Error Occurred While Adding.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertEmpDocumentData',
+                data: { docData: data },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        $("#divAddNewDocInfoMsg").text("Added Successfully");
+                        $("#divAddNewDocInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddNewDocInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divAddNewDocInfoMsg").text(Data.saveStatus);
+                        $("#divAddNewDocInfoMsg").addClass("alert-danger");
+                        $("#divAddNewDocInfoMsg").removeClass("hidden alert-success");
+                    }
+                    $("#btnewDocSubmit").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewDocInfoMsg").text(addFailMsg);
+                    $("#divAddNewDocInfoMsg").addClass("alert-danger");
+                    $("#divAddNewDocInfoMsg").removeClass("hidden alert-success");
+                    $("#btnewDocSubmit").prop('disabled', true);
+                }
+            });
+        }
+
+    }
+    function binEncode(data) {
+        var binArray = []
+        var datEncode = "";
+
+        for (i = 0; i < data.length; i++) {
+            binArray.push(data[i].charCodeAt(0).toString(2));
+        }
+        for (j = 0; j < binArray.length; j++) {
+            var pad = padding_left(binArray[j], '0', 8);
+            datEncode += pad + ' ';
+        }
+        function padding_left(s, c, n) {
+            if (!s || !c || s.length >= n) {
+                return s;
+            }
+            var max = (n - s.length) / c.length;
+            for (var i = 0; i < max; i++) {
+                s = c + s;
+            } return s;
+        }
+
+        return binArray;
+    }
+</script>

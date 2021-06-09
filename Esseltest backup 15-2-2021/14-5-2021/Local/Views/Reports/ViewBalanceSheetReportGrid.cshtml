@@ -1,0 +1,292 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.BalanceSheet
+<div class="container col-lg-12" style="background-color: #b7dee8;">
+    <div class="row well well-sm text-center Mainheader"><label style="color:white">ESSEL Projects Pvt Ltd</label></div>
+    <div class="row well well-sm rowgap text-center Mainheader2"><label style="color:white">BALANCE SHEET</label></div>
+    <div class="row rowgap"><label>For the Period Ended @Model.PeriodEndDate </label></div>
+    <div class="well well-sm row " style=" background-color: #0a5ea7;color:#fff !important;">
+        <div class="col-lg-2 text-center"><label class="header2">LIABILITIES </label></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center"><label class="header2">RS. </label></div>
+        <div class="col-lg-2 text-center"><label class="header2">ASSETS </label></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center"><label class="header2">RS. </label></div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 small-box">
+            @*Direct Expense*@
+            <div id="jstreeLiabilityExpense" class="row"></div>
+        </div>
+        <div class="col-lg-6 small-box">
+            @*Direct Income*@
+            <div id="jstreeAssetsIncome" class="row"></div>
+        </div>
+
+    </div>
+    <div class="row totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">
+            @Model.TotalExpense
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">@Model.TotalIncome</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2 text-center">
+            @if (Model.NetProfit != 0)
+            {
+                <label>NET PROFIT</label>
+            }
+        </div>
+        <div class="col-lg-2 "></div>
+        <div class="col-lg-2 text-right">
+            @if (Model.NetProfit != 0)
+            {@Model.NetProfit
+
+        }
+        </div>
+        <div class="col-lg-2  text-center">
+            @if (Model.NetLoss != 0)
+            {
+                <label>NET LOSS</label>
+            }
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">
+            @if (Model.NetLoss != 0)
+            {
+                @Model.NetLoss
+            }
+        </div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+    </div>
+
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">  @Model.FinalTotalLiabilityExpense</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right"> @Model.FinalTotalAssetIncome</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+    </div>
+    <div class="row  totalcls" style="margin-bottom:20px;">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-right">-------------------------</div>
+    </div>
+
+    <div class="modal fade" id="ModelBSLedgerDetails" role="dialog" data-backdrop="static" data-keyboard="false">
+
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Ledger Details</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+
+                    <div id="divLedgerRptDetails">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="txtBSfromdate" value="@Model.FromDate" />
+    <input type="hidden" id="txtBStodate" value="@Model.ToDate" />
+    <input type="hidden" id="txtBSFromYear" value="@Model.FromYear" />
+    <input type="hidden" id="txtBSToYear" value="@Model.ToYear" />
+    <input type="hidden" id="txtBSYear" value="@Model.Year" />
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //************ Direct Expense**********************
+
+        $("#jstreeLiabilityExpense").jstree({
+            plugins: ["grid", "dnd", "contextmenu", "sort", "types"],
+            core: {
+                data: @Html.Raw(Json.Encode(Model.LiabilityTreeData)),
+                "themes": {
+                    "icons": false,
+                    'name': 'proton',
+                    'responsive': true
+                }
+            },
+            // configure tree table
+            grid: {
+                columns: [
+                    { width: '300px', },
+                    { width: '160px', value: "ChildPrice", cellClass: "Pricecls" },
+
+                    { width: '100px', value: "Price" },
+                ],
+                resizable: true,
+            },
+
+        });
+
+        //show popup for ledgers
+        $("#jstreeLiabilityExpense").on("select_node.jstree",
+            function (evt, data) {
+                ////debugger;
+                //alert(data);
+               // console.log(data.node.original);
+               // console.log(data.node.original.ntype);
+                if (data.node.original.ntype == 'Ledger') {
+                    //console.log(data.node.original.LedgerID)
+
+                    var Ledger = data.node.original.text;
+                    var LId = data.node.original.LedgerID;
+                    var fromdate = $("#txtBSfromdate").val();
+                    var todate = $("#txtBStodate").val();
+
+                    //var yearArr = Year.toString().split('-');
+                    var Currentyear = $("#txtBSFromYear").val();
+                    var Nextyear = $("#txtBSToYear").val();
+
+                    var year = $("#txtBSYear").val();
+
+
+                    ShowBalanceLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year);
+
+                }
+
+                }
+
+
+        );
+
+      
+        //************ Direct Income**********************
+        $("#jstreeAssetsIncome").jstree({
+            plugins: ["grid", "dnd", "contextmenu", "sort", "types"],
+            core: {
+                data: @Html.Raw(Json.Encode(Model.AssetsTreeData)),
+                "themes": {
+                    "icons": false,
+                    'name': 'proton',
+                    'responsive': true
+                }
+            },
+            // configure tree table
+            grid: {
+                columns: [
+                    { width: '300px', },
+                    { width: '160px', value: "ChildPrice" },
+
+                    { width: '100px', value: "Price" },
+                ],
+                resizable: true,
+            },
+
+        });
+
+        //show popup for ledgers
+        $("#jstreeAssetsIncome").on("select_node.jstree",
+            function (evt, data) {
+                ////debugger;
+                //alert(data);
+                if (data.node.original.ntype == 'Ledger') {
+                    //console.log(data.node.original.LedgerID)
+
+                    var Ledger = data.node.original.text;
+                    var LId = data.node.original.LedgerID;
+                    var fromdate = $("#txtBSfromdate").val();
+                    var todate = $("#txtBStodate").val();
+
+                    //var yearArr = Year.toString().split('-');
+                    var Currentyear = $("#txtBSFromYear").val();
+                    var Nextyear = $("#txtBSToYear").val();
+
+                    var year = $("#txtBSYear").val();
+
+
+                    ShowBalanceLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year);
+
+                }
+
+            }
+        );
+
+        
+
+    });
+
+    function ShowBalanceLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year) {
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/Reports/ViewLedgerReportGrid',
+            data: { LedgerId: LId, FromDate: fromdate, Todate: todate, CurrentYear: Currentyear, Nextyear: Nextyear, Ledger: Ledger, Year: year },
+            beforeSend: function () {
+                $('#ajax-container').html('');
+                addSpinner($('#ajax-container'));
+            },
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    //alert();
+                    $("#ModelBSLedgerDetails").modal('show');
+                    $("#divLedgerRptDetails").html(Data);
+                    $("#divLedgerRptDetails").removeClass('hidden');
+
+
+                }
+                else {
+
+                    $("#ModelBSLedgerDetails").html('No Data Found');
+                    $("#ModelBSLedgerDetails").removeClass('hidden');
+
+
+                }
+
+                removeSpinner($('#ajax-container'), function () {
+                    $('#ajax-container').html('Content loaded.');
+                });
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                removeSpinner($('#ajax-container'), function () {
+                    $('#ajax-container').html('Content loaded.');
+                });
+                alert("error");
+            }
+        });
+
+    }
+</script>

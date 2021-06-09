@@ -1,0 +1,81 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.TaxDeductionData
+    <style>
+        .tdclass {
+            text-align: center;
+        }
+    </style>
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            @*<div>hfsdhsfkhj</div>*@
+            <div>
+                @if (Model.TaxDedList.Count > 0)
+                {
+                    <div class="col-md-12">
+                        <div class="row change-tab text-right" id="divSPPOInvtaxtable">                           
+                            <div class="tabledynamic">
+                                <br />
+                                <table style="width:100%;border:1px solid gray" class="table order-list">
+                                    <thead>
+                                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                            <th style="text-align:center;color:#fff">S.No</th>
+                                            <th style="text-align:center;color:#fff">CostCenter</th>
+                                            <th style="text-align:center;color:#fff">Account Head </th>
+                                            <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                            <th style="text-align:center;color:#fff">RegNo</th>
+                                            <th style="text-align:center;color:#fff">Tax Type</th>
+                                            <th style="text-align:center;color:#fff">Type</th>
+                                            <th style="text-align:center;color:#fff">Balance</th>
+                                            <th style="text-align:center;color:#fff">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int count = 1; }
+                                        @foreach (var item in Model.TaxDedList)
+                                        {
+                                        <tr>
+                                            <td class="tdclass">@count</td>
+
+                                            <td class="tdclass">@item.CCCode</td>
+                                            <td class="tdclass">@item.DCACode</td>
+                                            <td class="tdclass">@item.SubDCACode</td>
+                                            <td class="tdclass">@item.TaxNo</td>
+                                            <td class="tdclass">@item.TaxType</td>
+                                            <td class="tdclass">@item.Type</td>
+                                            <td class="tdclass">@item.Balance</td>
+                                            <td class="tdclass">@item.Amount</td>
+                                        </tr>
+                                            count++;
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="tdclass">@Model.BalanceTotal</td>
+                                            <td class="tdclass"> @Model.FinalTotal</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                    }
+                     else {
+<div>No Data Found</div>
+                     }
+            </div>
+        </div>
+    </div>
+</div>

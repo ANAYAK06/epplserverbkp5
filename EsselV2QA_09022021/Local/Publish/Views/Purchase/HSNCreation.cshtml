@@ -1,0 +1,335 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.HSN
+
+@{
+    ViewBag.Title = "HSNCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">HSN/SAC CodeCreation And Updation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TransactionType)
+                                                                @Html.DropDownListFor(model => model.TransactionType, new SelectList(Model.UPTypeList, "Typeid", "TypeValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_hsntransactiontype", onchange = "typechange()" })  
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                            </div>
+                                                        </div>                                                      
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4" id="divhsntext">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.HSNCode)
+                                                                @Html.TextBoxFor(model => model.HSNCode, htmlAttributes: new { @class = "form-control", @maxlength = "4", @id = "txthsncode", @Value = "", onkeypress = "return IsNumeric(event)" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4" id="divhsndropdown">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.HSNCode)
+                                                                @Html.DropDownListFor(model => model.HSNCode, new SelectList(Model.HSNCodeList, "hsnid", "hsnvalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_hsncodes", onchange = "HSNchange()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Category)
+                                                                @Html.DropDownListFor(model => model.Category, new SelectList(Model.HsnTypeCategoryList, "Typecategoryid", "Typecategoryvalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_hsncategorytype" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.HSNCategory)
+                                                                @Html.DropDownListFor(model => model.HSNCategory, new SelectList(Model.HsnCategoryList, "CategoryId", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_hsncategory" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Cgstrate)
+                                                                @Html.TextBoxFor(model => model.Cgstrate, htmlAttributes: new { @class = "form-control", @id = "txthsncgst", @Value = "", onkeypress = "return IsNumericdecimal(this)" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Sgstrate)
+                                                                @Html.TextBoxFor(model => model.Sgstrate, htmlAttributes: new { @class = "form-control", @id = "txthsnsgst", @Value = "", onkeypress = "return IsNumericdecimal(this)" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Igstrate)
+                                                                @Html.TextBoxFor(model => model.Igstrate, htmlAttributes: new { @class = "form-control", @id = "txthsnigst", @Value = "", onkeypress = "return IsNumericdecimal(this)" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                        <div class="col-md-8">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Remarks)
+                                                                @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txthsnremarks", @Value = "" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="text-right" style="vertical-align:bottom">
+                                                                <button class="btn btn1 btn-success" id="btnHSNSubmit" onclick="btnSubmitHSNData()">Submit</button>
+                                                                <button class="btn btn1 btn-success" id="btnHSNReset"onclick="ClearHSNreset()" >Reset</button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row text-center">
+                                                        <div id="divHSNInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>   
+    $(document).ready(function () {
+        $("#divhsntext").addClass("hidden");
+        $("#divhsndropdown").addClass("hidden");
+    });
+    function typechange() {
+        $("#ddl_hsncategorytype").prop('selectedIndex', 0);
+        $("#ddl_hsncategory").prop('selectedIndex', 0);
+        $("#ddl_hsncodes").prop('selectedIndex', 0);
+        $("#txthsncgst").val("");
+        $("#txthsnsgst").val("");
+        $("#txthsnigst").val("");
+        $("#txthsnremarks").val("");
+        $("#txthsncode").val("");            
+        var ttypeval = $("#ddl_hsntransactiontype option:selected").val();
+        if (ttypeval == "1") {
+            $("#divhsntext").removeClass("hidden");
+            $("#divhsndropdown").addClass("hidden");
+        }
+        else if (ttypeval == "2") {
+            $("#divhsntext").addClass("hidden");
+            $("#divhsndropdown").removeClass("hidden");
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetHSNCodes",               
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlcodes = $("#ddl_hsncodes");
+                        ddlcodes.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlcodes.append($("<option></option>").val(this['hsnid']).html(this['hsnvalue']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $("#divhsntext").addClass("hidden");
+            $("#divhsndropdown").addClass("hidden");
+        }
+    }
+    function HSNchange() {
+        var ttypeval = $("#ddl_hsncodes option:selected").val();
+        if (ttypeval != "0") {          
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetHSNDetails",
+                data: '{id:"' + ttypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {                        
+                        $("#ddl_hsncategorytype").val(this['Category']);
+                        $("#ddl_hsncategory").val(this['HSNCategory']);
+                        $("#txthsncgst").val(this['Cgstrate']);
+                        $("#txthsnsgst").val(this['Sgstrate']);
+                        $("#txthsnigst").val(this['Igstrate']);
+                        $("#txthsnremarks").val(this['Remarks']);
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            //$("#divhsntext").addClass("hidden");
+            //$("#divhsndropdown").addClass("hidden");
+        }
+    }
+    function btnSubmitHSNData() {
+        var errorMsg = "";
+        isValid = true;
+        var Type = $("#ddl_hsntransactiontype option:selected").index();
+        var categorytype = $("#ddl_hsncategorytype option:selected").index();
+        var category = $("#ddl_hsncategory option:selected").index();        
+        var cgst = $("#txthsncgst").val();
+        var sgst = $("#txthsnsgst").val();
+        var igst = $("#txthsnigst").val();
+        var Remarks = $("#txthsnremarks").val();
+     
+        if (Type == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Create New/ Update</p>";
+            isValid = false;
+        }
+        if (Type == 1) {
+            var hsncode = $("#txthsncode").val();
+            if (hsncode == "" || hsncode == null) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Please Enter HSN Code</p>";
+                isValid = false;
+            }            
+        }
+        if (Type == 2) {
+            var hsncode = $("#ddl_hsncodes").text();
+            if (hsncode == "" || hsncode == null) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select HSN Code</p>";
+                isValid = false;
+            }   
+        }
+        if (categorytype == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category Type</p>";
+            isValid = false;
+        }
+        if (category == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select HSN Category</p>";
+            isValid = false;
+        }
+        if (cgst == "" || cgst == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter CGST</p>";
+            isValid = false;
+        }
+        if (sgst == "" || sgst == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter SGST</p>";
+            isValid = false;
+        }
+        if (igst == "" || igst == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter IGST</p>";
+            isValid = false;
+        }
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divHSNInfoMsg").text("");
+            $("#divHSNInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divHSNInfoMsg").addClass("alert-danger");
+            $("#divHSNInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divHSNInfoMsg").text("");
+            $("#divHSNInfoMsg").addClass("hidden");
+            SaveHSNdata();
+        }
+
+    }
+    function SaveHSNdata() {
+        var Roleid = '@Session["Roleid"]';
+        var Createdby = '@Session["Createdby"]';
+        var trantype = $("#ddl_hsntransactiontype option:selected").text();
+        if (trantype == "Creation") {
+            var hsn = $("#txthsncode").val();
+        }
+        else if (trantype == "Updation") {
+            var hsn = $("#ddl_hsncodes option:selected").text();
+            var Rid = $("#ddl_hsncodes option:selected").val();
+        }
+        var HSNDetails = {
+            TransactionType: $("#ddl_hsntransactiontype option:selected").text(),
+            Category: $("#ddl_hsncategorytype option:selected").val(),
+            HSNCategory: $("#ddl_hsncategory option:selected").text(),
+            HSNCode: hsn,
+            Rowid: Rid,
+            Cgstrate: $("#txthsncgst").val(),
+            Sgstrate: $("#txthsnsgst").val(),
+            Igstrate: $("#txthsnigst").val(),
+            Remarks: $("#txthsnremarks").val(),
+            RoleID: Roleid,
+            Createdby: Createdby
+        };
+        addFailMsg = "Error Occurred While Submitting.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveHSNDetails',
+            data: { newhsnDetails: HSNDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divHSNInfoMsg").text(Data.saveStatus);
+                    $("#divHSNInfoMsg").removeClass("hidden alert-danger");
+                    $("#divHSNInfoMsg").addClass("alert-success");
+                    $("#btnHSNSubmit").prop("disabled", true);
+                }
+                else {
+                    $("#divHSNInfoMsg").text(Data.saveStatus);
+                    $("#divHSNInfoMsg").addClass("alert-danger");
+                    $("#divHSNInfoMsg").removeClass("hidden alert-success");
+                    $("#btnHSNSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divHSNInfoMsg").text(addFailMsg);
+                $("#divHSNInfoMsg").addClass("alert-danger");
+                $("#divHSNInfoMsg").removeClass("hidden alert-success");
+                $("#btnHSNSubmit").prop("disabled", false);
+            }
+        });
+    }
+    function ClearHSNreset() {
+        $("#ddl_hsntransactiontype").prop('selectedIndex', 0);
+        $("#ddl_hsncategorytype").prop('selectedIndex', 0);
+        $("#ddl_hsncategory").prop('selectedIndex', 0);
+        $("#ddl_hsncodes").prop('selectedIndex', 0);
+        $("#txthsncgst").val("");
+        $("#txthsnsgst").val("");
+        $("#txthsnigst").val("");
+        $("#txthsnremarks").val("");
+        $("#txthsncode").val("");
+        $("#btnHSNSubmit").prop("disabled", false);
+        $("#divHSNInfoMsg").text("");
+        $("#divHSNInfoMsg").addClass("hidden");     
+        $("#divhsntext").addClass("hidden");
+        $("#divhsndropdown").addClass("hidden");
+    }
+</script>

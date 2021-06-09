@@ -1,0 +1,6 @@
+﻿@model EsselTestLocalApplication.Models.BusinessApprovalHierarchy
+
+<div>
+    @Html.DropDownListFor(model => model.RoleList, new SelectList(Model.RoleList, "RoleID", "RoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpHirRole" })
+  
+</div>

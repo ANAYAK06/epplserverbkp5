@@ -1,0 +1,94 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.CCEmployeeslist>
+    <style>
+        .txtcls {
+            text-align:center !important
+        }
+        .tdcls {
+            text-align: center !important
+        }
+    </style>
+    <div class="col-md-12">
+        <div class="table-responsive  w-100">
+            <table id="tblAttendanceGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                <thead>
+                    <tr>
+                        <th class="tdcls hidden">RowId</th>
+                        <th class="tdcls">Empolyee ID</th>
+                        <th class="tdcls">Name</th>
+                        <th class="tdcls">Attendance Type</th>
+                        <th class="tdcls hidden">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td class="txtcls hidden">
+                                @Html.DisplayFor(modelItem => item.RowNo)
+                            </td>
+                            <td class="txtcls">
+                                @Html.DisplayFor(modelItem => item.EmpId)
+                            </td>
+                            <td class="txtcls">
+                                @Html.DisplayFor(modelItem => item.EmpName)
+                            </td>
+                            <td class="txtcls">
+                                <select id="dropdowntipo" class="form-control">
+                                    <option value="0">-Select-</option>
+                                    @if (item.AttendanceType == "Present")
+                                    {
+                                        <option value="P" selected>@item.AttendanceType</option>
+                                        <option value="A">Absent</option>
+                                        <option value="PL">PaidLeave</option>
+                                    }
+                                    else if (item.AttendanceType == "OnLeave")
+                                    {
+                                        <option value="P">Present</option>
+                                        <option value="A">Absent</option>
+                                        <option value="PL" selected>PaidLeave</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="txtcls hidden">
+                                @Html.DisplayFor(modelItem => item.AttendanceType)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+
+        </div>
+    </div>
+<script>
+    
+    $(document).ready(function () {
+        var AttendanceGrid = null;
+        InitializeAttendanceGrid();
+    });
+    function InitializeAttendanceGrid() {
+        AttendanceGrid = $('#tblAttendanceGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Staff Found"
+            },
+            "createdRow": function (row, data, index) {
+               
+            },
+            
+            pageLength: 10
+        });       
+    }
+    
+   
+</script>

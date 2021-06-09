@@ -1,0 +1,74 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignCCBudget
+<form onsubmit="return false">
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CCType)
+                @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypeNameList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "CCTypeddl" })
+            </div>
+        </div>
+        <div class="col-md-4" id="divCCSubType">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SubType)
+                @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypeNameList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "SubTypeddl" })
+
+            </div>
+        </div>
+
+        <div class="col-md-4" id="divCCYear">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Year)
+                @Html.DropDownListFor(model => model.Year, new SelectList(Model.YearNameList, "CC_FinYear", "CC_FinYear"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Yearddl" })
+
+            </div>
+        </div>
+
+        <div class="col-md-4" id="divCCCostCenter">
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.CostCenter)
+                @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CostCenterNameList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "CostCenterddl" })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4" id="divCCAmount">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Amount)
+                @Html.TextBoxFor(model => model.Amount, "{0:n2}", htmlAttributes: new { @class = "form-control", @id = "txtAmount", onkeypress = "return ValidateAmount(this,event);" })
+            </div>
+
+        </div>
+        <div class="col-md-8" id="divCCRemarks">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remarks)
+                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtCCReamarks", @class = "form-control", @type = "text", @rows = "2" })
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-7 text-right">
+            <input type="submit" class="btn btn1 btn-success" id="btnCCSubmit" onclick="CCSubmitData()" value="Submit" />
+            <input type="button" class="btn btn1 btn-success" id="btnAssignCCReset" onclick="ClearAssignCC()" value="Reset" />
+            <input type="text" id="txtCCBudgetuid" style="display:none" />
+            
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <div class="row text-center">
+        <br />
+        <div id="divCCInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+    
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+         var SessionUID = '@Session["UID"]';
+        $("#txtCCBudgetuid").val(SessionUID);
+    });
+    </script>

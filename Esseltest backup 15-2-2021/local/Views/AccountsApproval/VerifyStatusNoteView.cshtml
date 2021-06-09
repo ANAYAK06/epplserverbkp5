@@ -1,0 +1,44 @@
+﻿@model List<EsselTestLocalApplication.Models.VerifyDCABudgetStatus>
+@foreach (var item in Model)
+{
+    <div class="col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Status</label>
+                <select class="form-control dropdown-toggle" id="AppDCABudgetstatus-@item.cccode">
+                    <option selected="selected" value="Select">Select</option>
+                    <option value="Verify">Verify</option>
+                    <option value="Approve">Approve</option>
+                    <option value="Return">Return</option>
+                    <option value="Reject">Reject</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-8 ">
+            <div class="form-group">
+                <lable>Note:</lable>
+                <textarea rows="3" cols="60" id="AppDCABudgetNote-@item.cccode"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            <div class="form-group">
+                <br /><button onClick="ApproveDCABudget('@item.cccode')">Submit</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div class="alert alert-danger hidden" id="AppDCABudgetInfomsg-@item.cccode"></div>
+        </div>
+    </div>
+    
+}

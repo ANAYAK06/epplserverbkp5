@@ -1,0 +1,116 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.Attendance>
+<div class="table-responsive">
+    <table id="tblApproveAttendanceGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">AttendanceId</th>
+                <th>TransactionNo</th>
+                <th>Cost Center</th>
+                <th>Attendance Date</th>
+
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.AttendanceId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CostCenter)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AttendanceDate)
+                </td>
+                <td  class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<script>
+        $(document).ready(function () {
+            var AttendanceGrid = null;
+            InitializeApprAttendanceGrid();
+            
+        });
+    function InitializeApprAttendanceGrid() {
+        AttendanceGrid = $('#tblApproveAttendanceGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Data Found"
+                },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(5)', row).html();
+                if (oldstatus !== 0) {
+                    $('td:eq(5)', row).html("Verification Pending");
+                }
+                else { $('td:eq(5)', row).html("Return"); }
+                },
+                pageLength: 10
+            });
+        $('#tblApproveAttendanceGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = AttendanceGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child(formatApprAttendance(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+        }
+    function formatApprAttendance(d) {
+        var htmltext;
+        var id,Transno;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    id = value;
+                if (index == 2)
+                    Transno = value;
+            });
+        var divid = "divappr" + id;
+        var divid1 = $("#" + divid + "");
+      
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/HR/VerifyStaffAttendanceView',
+                data: { TransNo: Transno },
+                success: function (Data) {
+                    var divid2 = "divappr" + id;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+        return '<div id="divappr' + id + '" class="col-md-12"></div>';
+        }
+</script>

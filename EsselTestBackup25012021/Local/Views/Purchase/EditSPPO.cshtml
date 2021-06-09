@@ -1,0 +1,297 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPO
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorCode)
+                    @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.VendorsList, "VendorCode", "VendorName"),Model.VendorCode, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpSppoVendor", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCCode)
+                    @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), Model.CCCode, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpSppoCC",@readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DCACode)
+                    @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.DCAList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpSppoDCA", onchange = "SPPODCAChange()" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubDcaCode)
+                    @Html.DropDownListFor(model => model.SubDcaCode, new SelectList(Model.SubDCAList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpSppoSubDCA" })
+                </div>
+            </div>
+            <div id="divNSppoDates">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SPPOStartDate)
+                        @Html.TextBoxFor(model => model.SPPOStartDate, "{0:dd/MM/yyyy}", new { @id = "txtUpSppoStartDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SPPOEndDate)
+                        @Html.TextBoxFor(model => model.SPPOEndDate, "{0:dd/MM/yyyy}", new { @id = "txtUpSppoEndDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class=" change-tab" id="divitemDescGrid">
+                <div class="strike">
+                    <span>Item Description</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="itemDescUpTable" class="table order-list upitemDesc" cellspacing="1" cellpadding="1">
+                        <thead style="height:250px!important;">
+                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                <td class="tdcls"></td>
+                                <td class="tdcls"><label class="tdlabelcls">S.No</label></td>
+                                <td style="text-align:center;color:#fff !important;padding:0px!important;width:500px"><label class="tdlabelcls">Item Description</label></td>
+
+                                <td class="tdcls"><label class="tdlabelcls">Unit</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Quantity</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Our Rate</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">PRW Rate</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Rate</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Amount</label></td>
+                                <td class="tdcls"><label class="tdlabelcls"></label></td>
+                                <td class="tdcls"><label class="tdlabelcls"></label></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count = 1; }
+                            @foreach (var item in Model.ItemDescList)
+                            {
+                                <tr>
+                                    <td class="tbodytdcls">
+                                        <ul class="list-inline">
+                                            <li class="eagle-checkbox">
+                                                <label class="eagle-check custom-checkbox">
+                                                    <input type="checkbox" class="eagle-check-input" id="chkNSppouitemDesc" checked>
+                                                    <span class="eagle-check-indicator"></span>
+                                                    <span class="eagle-check-description"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td class="tbodytdcls"><label>@count</label></td>
+                                    <td style="text-align:center;padding:1px!important;width:500px">
+                                        <textarea class="form-control txtitemdesc" rows="1" cols="30" onkeypress="return RestrictComma(this,event);" disabled>@item.Description</textarea>
+                                    </td>
+
+                                    <td class="tbodytdcls">
+                                        <input type="text" class="form-control txtUnit" value="@item.Unit" onkeypress="return RestrictComma(this,event);" disabled />
+                                    </td>
+                                    <td class="tbodytdcls">
+                                        <input type="text" class="form-control txtQuantity" value="@item.Quantity" onkeypress="return ValidateAmount(this,event);" onkeyup="CountUpdateItemDescAmount()" disabled />
+
+                                    </td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtOurRate" value="@item.ClientRate" onkeypress="return ValidateAmount(this,event);" disabled /></td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtPRWRate" value="@item.PRWRate" onkeypress="return ValidateAmount(this,event);" onkeyup="ChangeRatecolorforUpSPPO()" disabled /></td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtRate" value="@item.Rate" onkeypress="return ValidateAmount(this,event);" onkeyup="CountUpdateItemDescAmount()" disabled /></td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtAmount" value="@item.Amount" disabled /></td>
+                                    <td class="tbodytdcls"> <input type="button" class="ibtnUpsppoItemDescDel btn btn-md btn-danger" value="Delete"></td>
+                                    <td>old</td>
+                                </tr>
+                                count++;
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                @*<td></td>*@
+                                <td></td>
+                                <td class="text-center;" colspan="2"><label style='float:right'>Total Amount:</label></td>
+                                <td>@Model.TotalValue</td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoUpdateSPPOOItemDescGrid();" />
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="change-tab" id="divApprTACGrid">
+                <div class="strike">
+                    <span>Terms & Conditions</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="TACUpTable" class="table order-list uptactable">
+                        <thead>
+                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important"></label></td>
+                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important">S.No</label></td>
+                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Terms & Conditions</label></td>
+                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important"></label></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count1 = 1; }
+                            @foreach (var item in Model.TermsList)
+                            {
+                                <tr>
+                                    <td style="text-align:center;width:10px!important;">
+                                        <ul class="list-inline">
+                                            <li class="eagle-checkbox">
+                                                <label class="eagle-check custom-checkbox">
+                                                    <input type="checkbox" class="eagle-check-input" checked>
+                                                    <span class="eagle-check-indicator"></span>
+                                                    <span class="eagle-check-description"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td style="text-align:center;width:10px!important;"><label style="margin-top:10%">@count1</label></td>
+                                    <td style="text-align:center;">
+                                        <textarea class="form-control txttac" rows="1" cols="50" onkeypress="return RestrictPipeSymbol(this,event);" disabled>@item.Term</textarea>
+                                    </td>
+                                    <td style="text-align:center"><input type="button" class="ibtnUpsppoTACDel btn btn-md btn-danger" value="Delete"></td>
+                                    <td style="text-align:center">old</td>
+                                </tr>
+                                count1++;
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td class="text-center;"></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoUpSPPOOTACGrid();" />
+                                </td>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row text-right">
+            <input type="submit" class="btn btn1 btn-success" id="btUpdateSPPO" onclick="UpdateSPPOData('@Model.VendorCode','@Model.SPPONo','@Model.CCCode')" value="Submit" />
+            <input type="text" value="@Model.DCACode" id="txtolddca" />
+            <input type="text" value="@Model.TotalValue" id="txtoldPoValue" />
+        </div>
+        <div class="row text-center">
+            <div id="divUpSPPOInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+    $("#txtUpSppoStartDate").datepicker({
+        dateFormat: 'dd-M-yy',
+        changeMonth: true,
+        changeYear: true,
+        showOn: "button",
+        maxDate: 'dateToday',
+        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        onClose: function (selectedDate) {
+            $("#txtUpSppoEndDate").datepicker("option", "minDate", selectedDate);
+            // $("#txtNSppoStartDate").datepicker("option", "disabled", true);
+        }
+    }).datepicker("setDate", '@Model.SPPOStartDate');
+    $("#txtUpSppoEndDate").datepicker({
+        dateFormat: 'dd-M-yy',
+        changeMonth: true,
+        changeYear: true,
+        showOn: "button",
+        //maxDate: 'dateToday',
+        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //onClose: function (selectedDate) {
+        //    $("#txtNSppoEndDate").datepicker("option", "minDate", selectedDate);
+        //    $("#txtNSppoStartDate").datepicker("option", "disabled", true);
+
+        //}
+    }).datepicker("setDate", '@Model.SPPOEndDate');
+    $("table.order-list.upitemDesc").on("click", ".ibtnUpsppoItemDescDel", function (event) {
+        var tablerowcount = $("#itemDescUpTable tbody tr").length;
+        if (tablerowcount > 1) {
+            $(this).closest("tr").remove();
+            ReassignRowNoforUpSPPO();
+            CountUpdateItemDescAmount();
+        }
+        else {
+            if (tablerowcount == 1) {
+                $(this).closest("tr").remove();
+                BindEmptyRowtoUpSppoGrid();
+            }
+            else {
+                $(this).closest("tr").remove();
+                ReassignRowNoforUpSPPO();
+                CountUpdateItemDescAmount();
+            }
+        }
+        });
+        $("table.order-list.uptactable").on("click", ".ibtnUpsppoTACDel", function (event) {
+            var tablerowcount = $("#TACUpTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoUpTAC();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    BindEmptyRowtoUpSppoTACGrid()
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoUpTAC();
+                }
+
+
+            }
+        });
+
+        var dca = '@Model.DCACode';
+        $("#ddlUpSppoDCA").find("option:contains('" + dca + "')").each(function () {
+            if ($(this).text() == dca) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+        var sdca = '@Model.SubDcaCode';      
+
+        $("#ddlUpSppoSubDCA").find("option:contains('" + sdca + "')").each(function () {
+            if ($(this).text() == sdca) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+    });
+</script>
+

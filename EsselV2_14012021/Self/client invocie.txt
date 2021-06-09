@@ -1,0 +1,14 @@
+
+proc :-spGetTCSDCASDCAS
+spCheckGSTStates
+spClientInvoiceCreation
+
+ClientInvoice table add two columns
+1.IsGSTApplicable varchar (10)
+2.IsTCSApplicable varchar(10)
+
+clienttaxes table add one column name taxtype
+1.TaxType varchar(50)
+
+
+configurationtype output dca two time ids are 33,32

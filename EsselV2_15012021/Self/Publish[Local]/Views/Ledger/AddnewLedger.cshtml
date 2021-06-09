@@ -1,0 +1,99 @@
+﻿
+@model EsselTestLocalApplication.Models.Ledger.LedgerCreation
+@{
+    ViewBag.Title = "AddNewLedger";
+}
+<div class="col-md-12">
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LedgerTypeName)
+                    @Html.DropDownListFor(model => model.LedgerTypeName, new SelectList(Model.ledgerTypeList, "LedgerTypeId", "LedgerTypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNLedgType", onchange = "Ledgertypechange()" })
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountHead)
+                    @Html.DropDownListFor(model => model.AccountHead, new SelectList(Model.ledgerAccHeadList, "AccHeadVal", "AccHeadName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNLedgAccHead", onchange = "NewLedgerAccHeadChange()" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LedgerName)
+                    @Html.TextBoxFor(model => model.LedgerName, htmlAttributes: new { @class = "form-control", @id = "txtNLedgName" })
+                </div>
+            </div>
+            <div id="divgroups">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GroupId)
+                        @Html.DropDownListFor(model => model.GroupId, new SelectList(Model.ledgerGroupList, "GroupId", "GroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNLedgGroupId", onchange = "NewLedgerGroupChange()" })
+                    </div>
+                </div>
+                <div class="col-md-4" id="divsubgroup">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubGroupId)
+                        @Html.DropDownListFor(model => model.SubGroupId, new SelectList(Model.ledgerSGroupList, "Id", "Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNLedgSGroupId" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OpeningBalance)
+                    @Html.TextBoxFor(model => model.OpeningBalance, htmlAttributes: new { @class = "form-control", @id = "txtNLedgBalance" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BalanceAsOnDate)
+                    @Html.TextBoxFor(model => model.BalanceAsOnDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control", @id = "txtNLedgBalanceDate", @type = "text" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LedgerValueType)
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="LedgerValueType" value="Yes" id="chkCredit" onclick="NewLedgerValueType(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">Credit</span>
+                            </label>
+                        </li>
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="LedgerValueType" value="No" id="chkDebit" onclick="NewLedgerValueType(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">Debit</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="submit" class="btn btn1 btn-success" id="btnNewLedger" onclick="SubmitNewLedgerData()" value="Submit" />
+                    <input type="submit" class="btn btn1 btn-success" id="btnNewLedgerReset" onclick="clearNewLedgerCreation()" value="Reset" />
+                    <input type="text" value="" id="txtNLAccheadRef" style="display:none" />
+                    <input type="text" value="0" id="txtNLsgrpexist" style="display:none"/>
+                   
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <br />
+                    <div id="divNewLedgerInfoMsg" class="alert alert-danger hidden" >
+                    </div>
+                </div>
+            </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {     
+        $("#divgroups").addClass("hidden");
+        $("#divsubgroup").addClass("hidden");
+    });
+</script>

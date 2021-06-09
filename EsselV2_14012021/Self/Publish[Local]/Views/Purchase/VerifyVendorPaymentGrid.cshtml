@@ -1,0 +1,194 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment>
+<div class="table-responsive">
+    <table id="tblApproveVendorPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>TransactionRefNo</th>
+                <th>PaymentTypeName</th>
+                <th>TransactionType</th>
+                <th class="hidden">VendorName</th>
+                <th>TransactionAmount</th>
+                <th class="hidden">VendorCode</th>                       
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                if (ViewBag.Paytype == item.TransactionType)
+                {
+                    <tr>
+
+                        <td class="details-control"></td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TransactionRefNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PaymentTypeName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TransactionType)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.VendorName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TransactionAmount)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.VendorCode)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveVendorPayGrid = null;
+        InitializeApproveVendorPayGrid();
+        var Sessionroleid = '@Session["Roleid"]';
+        $("#roleid").val(Sessionroleid);
+    });
+    function InitializeApproveVendorPayGrid() {
+        ApproveVendorPayGrid = $('#tblApproveVendorPayGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Invoices Found"
+            },
+            "createdRow": function (row, data, index) {
+                
+                var oldstatus = $.trim($('td:eq(7)', row).html());   
+                //alert(oldstatus);
+                if (oldstatus === '0') {
+                    $('td:eq(7)', row).html("Return");
+                }
+                else { $('td:eq(7)', row).html("Verification Pending"); }
+            },
+            pageLength: 10
+        });
+        $('#tblApproveVendorPayGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveVendorPayGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveVendorPayGrid, tr);
+                // Open this row
+                row.child(formatApproveVendorPay(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApproveVendorPay(d) {
+            var id = 0;
+        var htmltext;
+       
+        var Refno,trnastype,Vendorcode,Paytype,Status;
+        $.each(d, function (index, value) {
+            
+                // Get value in alert
+                if (index == 1)
+                    Refno = value;
+                if (index == 2)
+                    Paytype = value;
+                if (index == 3)
+                    trnastype = value;
+                if (index == 6)
+                    Vendorcode = value;
+                if (index == 7)
+                    Status = value;
+        });
+        //debugger;
+        var divid = "divapprVendorPay" + Refno;
+        var divid1 = $("#" + divid + "");
+        debugger;
+        if (Status !== "0") {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/VerifyVendorPayView',
+                data: { Refno: Refno, transtype: trnastype, paytype: Paytype,VendorCode: Vendorcode },
+                success: function (Data) {
+                    var divid2 = "divapprVendorPay" + Refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+        }
+        //else {
+        //    if (trnastype == 'Bank') {
+        //        $.ajax({
+        //            type: 'GET',
+        //            dataType: 'html',
+        //            url: '/Purchase/EditVendorBankPayment',
+        //            data: { Refno: Refno, transtype: trnastype, paytype: Paytype, VendorCode: Vendorcode },
+        //            success: function (Data) {
+        //                var divid2 = "divapprVendorPay" + Refno;
+        //                var divid3 = $("#" + divid2 + "");
+        //                $(divid3).html(Data);
+        //            },
+        //            error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //            }
+        //        });
+        //    }
+        //    else {
+
+        //        $.ajax({
+        //            type: 'GET',
+        //            dataType: 'html',
+        //            url: '/Purchase/EditVendorCashPayment',
+        //            data: { Refno: Refno, transtype: trnastype, paytype: Paytype, VendorCode: Vendorcode },
+        //            success: function (Data) {
+        //                var divid2 = "divapprVendorPay" + Refno;
+        //                var divid3 = $("#" + divid2 + "");
+        //                $(divid3).html(Data);
+        //            },
+        //            error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //            }
+        //        });
+        //    }
+        //}
+        return '<div id="divapprVendorPay' + Refno + '"></div>';
+    }
+</script>

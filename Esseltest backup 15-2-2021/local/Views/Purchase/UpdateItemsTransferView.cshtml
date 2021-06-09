@@ -1,0 +1,426 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ItemsTransfer
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        @*<div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FromCC)
+                    @Html.DropDownListFor(model => model.FromCC, new SelectList(Model.FromCCList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFromCC", onchange = "GetgridDetails();" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @if (Model.IndentPresentLevel == Model.IndentDefineLevel)
+                    {
+                        @Html.LabelFor(model => model.ToCC)
+                        @Html.DropDownListFor(model => model.ToCC, new SelectList(Model.ToCCList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlToCC" })
+                    }
+                </div>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemCategoryCode)
+                    @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.ItemCategoryList, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_transferItemCategoryupd", onchange = "Clearcat()" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SelectionType)
+                    @Html.DropDownListFor(model => model.SelectionType, new SelectList(Model.ItemSelectionTypeList, "Selectionid", "SelectionValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_transferitemSelectiontypeupd", onchange = "Clearsel()" })
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SearchItem)
+                    @Html.EditorFor(model => model.SearchItem, new { htmlAttributes = new { @class = "form-control", @id = "txttransferItemSearchupd", @onkeyup = "onchangeevent();" ,
+                   @onKeyDown = "preventBackspace();" ,@onpaste = "return false;" ,
+                   style = "text-transform:uppercase" } })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group">
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    </br>
+                    </br>
+                    <input type="submit" value="Add" class="btn btn1 btn-success" id="btnaddnewitems" onclick="SubmitCategoryItem()" /> &nbsp;
+                    <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div id="GridItemtransferUpdateData">
+            </div>
+        </div>
+        <div class="col-md-12">          
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppritemtransferNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveItemtransferDetails('@Model.Rowid')">Submit</button>
+                    <input type="text" value="@Model.IndentPresentLevel" id="txtIndentPresentLevel" style="display:none" />
+                    <input type="text" value="@Model.IndentDefineLevel" id="txtIndentDefineLevel" style="display:none" />
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divAppritemstransferInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function ApproveItemtransferDetails(Rowid) {       
+        var Presentlevel = '@Model.IndentPresentLevel';
+        var DefineLevel = '@Model.IndentDefineLevel';      
+        var Roleid = '@Session["Roleid"]'; 
+        var Sessioncreated = '@Session["Createdby"]';
+        
+        $("#txtAppritemstransCreatedby").val(Sessioncreated);       
+         var ReturnText = $("#AppritemtransferNotes").val();
+         var retnoteid = "AppritemtransferNotes-" + Rowid;
+        retnote = $("#" + retnoteid + "").val();     
+        msg = $("#divAppritemstransferInfoMsg");
+        isValid = true;
+        var errorMsg = "";
+        if (ReturnText == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+            isValid = false;
+        }        
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {           
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").addClass("hidden");
+            if (Presentlevel < DefineLevel) {  
+                var qtycount = 0, StockTypes = 0, chkcount = 0;
+                var currentrowcount = $("#ItemtransferupdateDataTable tbody tr").length;
+                $("#ItemtransferupdateDataTable tbody tr").each(function () {
+                    var currentRow = $(this);                   
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    var StockType = currentRow.find("td").eq(7).find("select option:selected").index();
+                    var Qty = currentRow.find("td").eq(9).find("input[type='text']").val();   
+                    if (check == false) { chkcount = chkcount + 1; } 
+                    if (StockType == 0) { StockTypes = StockTypes + 1; }
+                    if (Qty == "" || Qty == 0) { qtycount = qtycount + 1; }
+                });
+                if (currentrowcount == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Add Items to Transfer</p > ";
+                    isValid = false;
+                }
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+                if (StockTypes > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Items Status Type</p>";
+                    isValid = false;
+                }
+                if (qtycount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Quantity</p>";
+                    isValid = false;
+                }            
+            }                        
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAppritemstransferInfoMsg").text("");
+                $("#divAppritemstransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+                $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {                
+                if (Presentlevel < DefineLevel) {  
+                    var selectedledlist = [];
+                    $("#ItemtransferupdateDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var Inedntid = currentRow.find("td").eq(11).html();
+                        if (Inedntid !== 0) {
+                            selectedledlist.push(currentRow.find("td").eq(11).html());
+                        }
+                    });
+                    var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                    if (duplicatelist.length > 0) {
+                        var finalerror2 = "<div style='align:center'><p>Duplicate ItemCode for Items Transfer</p>";
+                        $("#divItemsTransferInfoMsg").text("");
+                        $("#divItemsTransferInfoMsg").append(finalerror2 + "</div>");
+                        $("#divItemsTransferInfoMsg").addClass("alert-danger");
+                        $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                    else {
+                        var Refno = '@Model.Refno';
+                        var ccode='@Model.FromCC'
+                        $("#divItemsTransferInfoMsg").text("");
+                        $("#divItemsTransferInfoMsg").addClass("hidden");
+                        var Rowids = "", Quantitys = "", Types = "";
+                        $("#ItemtransferupdateDataTable tbody tr").each(function () {
+                            var currentRow = $(this);
+                            var Rowid = currentRow.find("td").eq(11).html();
+                            var Quantity = currentRow.find("td").eq(9).find("input[type='text']").val();
+                            var Type = currentRow.find("td").eq(7).find("select option:selected").val();
+                            Rowids += Rowid;
+                            Rowids += ",";
+                            Quantitys += Quantity;
+                            Quantitys += ",";
+                            Types += Type;
+                            Types += ",";
+                        });                       
+                        finalmsg="Return Updation Successfully"
+                        addFailMsg = "Error Occurred While Verification";                       
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/ReturnUpdateItemsTransfer",
+                            data: '{Refno:"' + Refno + '",Crtdby:"' + $("#txtAppritemstransCreatedby").val() + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",Rowids:"' + Rowids + '",Presentlevel:"' + Presentlevel + '",Definelevel:"' + DefineLevel + '",Qtys:"' + Quantitys + '",Stocktypes:"' + Types + '",CCode:"' + ccode +'"}',
+                            contentType: "application/json; charset=utf-8",
+                            processData: false,
+                            dataType: "json",
+                            success: function (response) {
+                                var msg = response.saveStatus;
+                                if (response.saveStatus == "Submitted") {
+                                    var msg = '';
+                                    $('#ApproveitemstransMsgModal').modal('show');
+                                    msg = "<div>Transfer No  " + Refno + '  ' + finalmsg + "  </div>";
+                                    $("#ApproveitemstransMsgModal").on("hide.bs.modal", function () {
+                                        $("#divAppritemstransGrid").load('/Purchase/VerifyItemsTransferGrid');
+                                    });
+                                    $("#AppritemstransMsg").html(msg);
+                                }
+                                else {
+                                    msg = "<div>" + response.saveStatus + "</div>";
+                                    $("#AppritemstransMsg").html(msg);
+                                    $('#ApproveitemstransMsgModal').modal('show');
+                                }
+                            },
+                            failure: function (response) {
+                                var msg = "<div>" + addFailMsg + "</div>";
+                                $("#AppritemstransMsg").html(msg);
+                                $('#ApproveitemstransMsgModal').modal('show');
+                            },
+                            error: function (response) {
+                                var msg = "<div>" + addFailMsg + "</div>";
+                                $("#AppritemstransMsg").html(msg);
+                                $('#ApproveitemstransMsgModal').modal('show');
+                            }
+                        });
+                    }
+                }                         
+            }
+        }
+    }
+    function SubmitCategoryItem() {      
+        isValid = true;
+        var errorMsg = "";
+        var typecat = $("#ddl_transferItemCategory option:selected").index();
+        var typesel = $("#ddl_transferitemSelectiontype option:selected").index();        
+        var Itemtext = $("#txttransferItemSearch").val();
+        if (typecat === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Category</p>";
+            isValid = false;
+        }
+        if (typesel === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Type</p>";
+            isValid = false;
+        }
+        if (Itemtext === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Search Data</p>";
+            isValid = false;
+        }      
+        if (!isValid) {
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+            $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#GridItemtransferUpdateData").removeClass("hidden");           
+            var Presentlevel = '@Model.IndentPresentLevel';
+            var DefineLevel = '@Model.IndentDefineLevel';
+            var ccodeval = '@Model.FromCC';
+            var Refno = '@Model.Refno';
+            var itemcode = $("#txttransferItemSearchupd").val();
+            var nameArr1 = itemcode.split(',');
+            var catidonly = nameArr1[0].trim();
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").addClass("hidden");
+            var Items = {
+                ItemCode: catidonly,
+                FromCC: ccodeval,
+                Refno: Refno
+            };
+            addFailMsg = "Error Occurred While Adding Items";
+            addSuccessMsg = "Items Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveItemsTransferItemsupdate",
+                data: JSON.stringify({ Item: Items }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        alert(addSuccessMsg);
+                        var durl = "";
+                         durl ='/Purchase/UpdateItemTransferDetailsGridView'                       
+                        $("#txttransferItemSearch").val("");
+                        $.ajax({
+                            type: 'GET',
+                            dataType: 'html',
+                            url: durl,
+                            data: { Refno: Refno, PresentLevel: Presentlevel, DefineLevel: DefineLevel, CCCode: ccodeval },
+                            success: function (data) {
+                                var count = Object.keys(data).length;
+                                if (count > 0) {                                   
+                                        $("#GridItemtransferUpdateData").html(data);
+                                        var currentrowcount2 = $("#ItemtransferupdateDataTable tbody tr").length;
+                                        if (currentrowcount2 > 0) {
+                                            $("#GridItemtransferUpdateData").removeClass('hidden');                                            
+                                        }
+                                        else {
+                                            $("#GridItemtransferUpdateData").addClass('hidden');                                           
+                                        }                                   
+                                }
+                                else {                                    
+                                        $("#GridItemtransferUpdateData").html();
+                                        $("#GridItemtransferUpdateData").addClass("hidden");                                    
+                                }
+
+                            },
+                            error: function (data) {
+                            },
+                            failure: function (data) {
+                            }
+                        });
+                    }
+                    else {
+                        alert(response.saveStatus);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewitems").prop('disabled', false);
+                    $("#divAppritemstransferInfoMsg").text(addFailMsg);
+                    $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+                    $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+  
+    $(document).ready(function () {
+        debugger;
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        var Refno = '@Model.Refno';
+        var Presentlevel = '@Model.IndentPresentLevel';
+        var DefineLevel = '@Model.IndentDefineLevel';
+        var SendingCC='@Model.FromCC';
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/UpdateItemTransferDetailsGridView',
+            data: { Refno: Refno, PresentLevel: Presentlevel, DefineLevel: DefineLevel, CCCode: SendingCC },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridItemtransferUpdateData").html(data);
+                }
+            },
+        });
+    });
+    function SubmitClearItem() {
+        $("#txttransferItemSearchupd").val("");
+        $("#btnaddnewitems").prop('disabled', false);
+    }
+    function Clearcat() {
+        $("#txttransferItemSearchupd").val("");
+        $("#ddl_transferitemSelectiontypeupd").prop('selectedIndex', 0);
+    }
+    function Clearsel() {
+        var typecat = $("#ddl_transferItemCategoryupd option:selected").index();
+        if (typecat != 0) {
+            $("#txttransferItemSearchupd").val("");
+        }
+        else {
+            alert("Select Search By Category");
+            $("#txttransferItemSearchupd").val("");
+            return false;
+        }
+    }
+    function onchangeevent() {
+        var typecat = $("#ddl_transferItemCategoryupd option:selected").index();
+        var typesel = $("#ddl_transferitemSelectiontypeupd option:selected").index();       
+        if (typecat != 0) {
+            if (typesel != 0) {
+                var typeval = $("#ddl_transferitemSelectiontypeupd option:selected").val();
+                var typecatval = $("#ddl_transferItemCategoryupd option:selected").val();
+                var fromccodeval = '@Model.FromCC';
+                if ($("#txttransferItemSearchupd").val() != "") {
+                    $("#txttransferItemSearchupd").autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: '/Purchase/AutoCompleteItemTransfer',
+                                data: '{prefix:"' + request.term + '", Type:"' + typeval + '", Cat:"' + typecatval + '", CC:"' + fromccodeval + '"}',
+                                dataType: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (data) {
+                                    response($.map(data, function (item) {
+                                        return { label: item.SearchItem, value: item.SearchItem };
+                                    }))
+                                },
+                                error: function (data) {
+                                    alert(data.responseText);
+                                },
+                                failure: function (data) {
+                                    alert(data.responseText);
+                                }
+                            });
+                        },
+                    });
+                }
+                else {
+                    $("#ddl_transferitemSelectiontypeupd").prop('selectedIndex', 0);
+                }
+            }
+            else {
+                alert("Select Search By Type");
+                $("#txttransferItemSearchupd").val("");
+                return false;
+            }
+        }
+        else {
+
+            alert("Select Search By Category");
+            $("#txttransferItemSearchupd").val("");
+            return false;
+        }
+    }
+   
+</script>

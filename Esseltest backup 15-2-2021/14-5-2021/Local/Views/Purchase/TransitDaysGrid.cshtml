@@ -1,0 +1,126 @@
+﻿
+
+@using System.Data
+@model DataTable
+
+<style>
+   table.dataTable td.details-control {
+        background: none !important;
+        cursor: pointer;
+    }
+</style>
+
+<div class="table-responsive col-md-12">
+    @if (Model.Rows.Count > 0)
+    {
+        <table class="hover stripe nowrap example dataTable no-footer" id="tbltransitgrid">
+            <thead>
+                <tr>
+                    <th  style="width:10%"></th>
+                    @foreach (System.Data.DataColumn col in Model.Columns)
+                    {
+                        <th style="width:10%">@col.Caption</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.Rows)
+                {
+                <tr>
+                    <td class="details-control">
+                        <button type="button" class="btn btn-info">
+                            <i class="fa fa-search" aria-hidden="false"></i>
+                        </button>
+                    </td>
+                    @foreach (var cell in row.ItemArray)
+                    {
+
+                        <td><span style="max-width:10px !important;">@cell.ToString() </span></td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+
+        <div class="text-center"><span>No Data Found</span></div>
+    }
+</div>
+<div class="modal fade" id="ModalMSGData" role="dialog" data-backdrop="static" data-keyboard="false">
+   
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var transitGrid = null;
+        InitializetransitGridGrid();
+        $("#ModalMSGData").on("hidden.bs.modal", function () {
+            location.reload();
+        });
+
+    });
+    function InitializetransitGridGrid() {
+        transitGrid = $('#tbltransitgrid').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            lengthChange: false,
+            info: false,
+            paging: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function (settings, json) {
+
+            },
+            "createdRow": function (row, data, index) {
+                //var date = $('td:eq(0)', row).html();
+                //var trimStr = $.trim(date);
+                //var typeArr = trimStr.split(' ');
+                //var d3 = typeArr[0];
+                //var t1 = "'" + d3 + "'";
+                //var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+                //$('td:eq(0)', row).html(bldate1);
+                //alert(date);
+            },
+        });
+        $('#tbltransitgrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = transitGrid.row(tr);
+            ShowPopUp(row.data());
+        });
+    }
+    function ShowPopUp(data) {
+        var Pono = "",type='';
+        ////debugger;
+        console.log(data);
+        $.each(data, function (index, value) {
+            if (index == 1)
+                Pono = value.replace(/(<([^>]+)>)/ig, '');
+                //Pono = value;
+            if (index == 5)
+                type = value.replace(/(<([^>]+)>)/ig, '');
+        });
+        console.log(Pono);
+        console.log(Pono);
+        // alert(InvNo);
+        //var title = "Edit General DCA";
+        $.ajax({
+            type: 'POST',
+            url: "/Purchase/TransitDaysDetails",
+            data: { pono: Pono, TransitType: type },
+            dataType: 'html',
+            success: function (response) {
+                $('#ModalMSGData').html(response);
+                 $('#ModalMSGData').modal();
+            },
+            error: function () {
+            }
+        });
+
+    }
+    
+
+</script>

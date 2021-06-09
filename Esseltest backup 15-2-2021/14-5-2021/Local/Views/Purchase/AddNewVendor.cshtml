@@ -1,0 +1,543 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Vendor
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">New Vendor</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Type)
+                            @Html.DropDownListFor(model => model.Type, new SelectList(Model.VendorTypeList, "Type", "Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNVendorType", onchange = "NVendorTypeChange()" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divnpanno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PanNo)
+                            @Html.TextBoxFor(model => model.PanNo, htmlAttributes: new { @class = "form-control", @id = "txtNPanNo", Value = "" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divncstno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CstNo)
+                            @Html.TextBoxFor(model => model.CstNo, htmlAttributes: new { @class = "form-control", @id = "txtNCstNo", Value = "" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divnpfregno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PFRegNo)
+                            @Html.TextBoxFor(model => model.PFRegNo, htmlAttributes: new { @class = "form-control", @id = "txtNPFRegNo", Value = "" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.VendorName)
+                            @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @id = "txtNVendorName", Value = "" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Phoneno)
+                            @Html.TextBoxFor(model => model.Phoneno, htmlAttributes: new { @class = "form-control", @id = "txtNPhoneno", Value = "", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.MobileNo)
+                            @Html.TextBoxFor(model => model.MobileNo, htmlAttributes: new { @class = "form-control", @id = "txtNMobileNo", Value = "", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.BankName)
+                            @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtNBankName", Value = "" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AccountNo)
+                            @Html.TextBoxFor(model => model.AccountNo, htmlAttributes: new { @class = "form-control", @id = "txtNAccNo", Value = "" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IFSCode)
+                            @Html.TextBoxFor(model => model.IFSCode, htmlAttributes: new { @class = "form-control", @id = "txtNIFSCode", Value = "" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NatureGroupName)
+                            @Html.DropDownListFor(model => model.NatureGroupName, new SelectList(Model.VendorNatureOfGroups, "NatureGroupId", "NatureGroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNVNatureGroup", onchange = "NewVedndorNatureofGrpChange()" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divnvMastergrp">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.MasterGroup)
+                            @Html.DropDownListFor(model => model.MasterGroup, new SelectList(Model.VendorMasterGroups, "GroupId", "GroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNVMasterGroup", onchange = "NewVedndorGrpChange()" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divnvsubgrp">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SubGroup)
+                            @Html.DropDownListFor(model => model.SubGroup, new SelectList(Model.VendorSubGroups, "Id", "Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNVSubGroup" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Address)
+                            @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtNAddress", @rows = "2" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divtdsdeduction">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TDSApplicable)
+                            @Html.DropDownListFor(model => model.TDSApplicable, new SelectList(Model.TDSApplicablelist, "Id", "Name"),  htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltdsApplicable", onchange = "TDSnamechange()" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" id="divtdsdeductiondropdown">
+                            @Html.LabelFor(model => model.TDSCode)
+                            @Html.DropDownListFor(model => model.TDSCode, new SelectList(Model.TDSCodelist, "TdsCode", "TdsName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltdsname" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GstApplicable)
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input" name="NVGstApplicable" value="Yes" id="chkNVCGSTY" onclick="NVendorGSTValidation(this)">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">Yes</span>
+                                    </label>
+                                </li>
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input" name="NVGstApplicable" value="No" id="chkNVCGSTN" onclick="NVendorGSTValidation(this)">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">No</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="divNVendorGst">
+                    <div style="margin-left:2px;">
+                        <div class="strike">
+                            <span>Add GST Details</span>
+                        </div>
+                        <div class="tabledynamic">
+                            <table id="NewVendorGstTable" class="table order-list newvendorgst">
+                                <thead>
+                                    <tr>
+                                        <td class="col-md-2"></td>
+                                        <td style="text-align:center;color:#fff !important">State</td>
+                                        <td style="text-align:center;color:#fff !important">GST Number</td>
+                                        <td style="text-align:center;color:#fff !important">Check</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center">
+                                        <td class="col-md-2">1</td>
+                                        <td>
+                                            @Html.DropDownListFor(model => model.State, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => model.GST_No, htmlAttributes: new { @class = "form-control" })
+                                        </td>
+                                        <td>
+                                            <ul class="list-inline">
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input" id="chkNVGstCheck">
+                                                        <span class="eagle-check-indicator"></span>
+
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="col-md-2"></td>
+                                        <td class="text-center"></td>
+                                        <td></td>
+                                        <td>
+                                            <input type="button" class="btn btn-default  btn-block" id="addNVGST" value="Add New GST" onclick="BindNewRowForNVendorGST()" />
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewVendor" onclick="SubmitNewVendorData()" value="Submit" />
+                        <input type="hidden" id="txtsubgrpexist"/>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <div id="divNewVendorInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {        
+        $("#divnpanno").addClass("hidden");
+        $("#divnpfregno").addClass("hidden");
+        $("#divncstno").addClass("hidden");
+        $("#divnvsubgrp").addClass("hidden");
+        $("#chkNVCGSTN").prop("checked", true);
+        $("#chkNVCGSTY").prop("checked", false);
+        $("#divNVendorGst").addClass('hidden');
+        $("#btnSubmitNewVendor").prop("disabled", false);
+        $("#divNewVendorInfoMsg").text("");
+        $("#divNewVendorInfoMsg").addClass("hidden");
+        $("table.order-list.newvendorgst").on("click", ".ibtnNewVGstDel", function (event) {
+            $(this).closest("tr").remove();
+            ReassignrownoafterdeletingforVendorGST()
+        });
+        $("#divtdsdeduction").addClass("hidden");
+        $("#divtdsdeductiondropdown").addClass("hidden");
+    });
+    function TDSnamechange() {
+        var configtypindex = $("#ddltdsApplicable option:selected").index();
+        if (configtypindex==1) {
+            $("#divtdsdeductiondropdown").removeClass("hidden");
+        }
+        else {
+            $("#divtdsdeductiondropdown").addClass("hidden");
+        }
+    }
+    function NVendorTypeChange() {
+        //debugger;
+        var typeIndex = $("#ddlNVendorType option:selected").index();
+        var vendrotype = $("#ddlNVendorType option:selected").val();
+        if (typeIndex !== 0) {
+            if (vendrotype === "Service Provider") {
+                $("#divnpanno").removeClass("hidden");
+                $("#divnpfregno").removeClass("hidden");
+                $("#divncstno").addClass("hidden");
+                $("#divtdsdeduction").removeClass("hidden");
+                //$("#divtdsdeductiondropdown").removeClass("hidden"); 
+            }
+            else {
+                $("#divnpanno").addClass("hidden");
+                $("#divnpfregno").addClass("hidden");
+                $("#divncstno").removeClass("hidden");
+                $("#divtdsdeduction").addClass("hidden");
+                $("#divtdsdeductiondropdown").addClass("hidden");
+            }
+        }
+        else {
+            $("#divnpanno").addClass("hidden");
+            $("#divnpfregno").addClass("hidden");
+            $("#divncstno").addClass("hidden");
+            $("#divtdsdeduction").addClass("hidden");
+            $("#divtdsdeductiondropdown").addClass("hidden");
+        }
+        $("#divNewVendorInfoMsg").text("");
+        $("#divNewVendorInfoMsg").addClass("hidden");
+
+    }
+    function SubmitNewVendorData() {
+        isValid = true;
+        var errorMsg = "";
+        var vtypeIndex = $("#ddlNVendorType option:selected").index();
+        var vendrotype = $("#ddlNVendorType option:selected").val();
+        var PanNo = $("#txtNPanNo").val();
+        var CstNo = $("#txtNCstNo").val();
+        var PFRegNo = $("#txtNPFRegNo").val();
+
+        var Vendorname = $("#txtNVendorName").val();
+        var PhoneNo = $("#txtNPhoneno").val();
+        var MobileNo = $("#txtNMobileNo").val();
+
+        var Bankname = $("#txtNBankName").val();
+        var Accno = $("#txtNAccNo").val();
+        var IFSCCode = $("#txtNIFSCode").val();
+
+        var natureidIndex = $("#ddlNVNatureGroup option:selected").index();
+        var natureid = $("#ddlNVNatureGroup option:selected").val();
+
+        var mastergrpIndex = $("#ddlNVMasterGroup option:selected").index();
+        var mastergrp = $("#ddlNVMasterGroup option:selected").val();
+
+        var subgrpidIndex = $("#ddlNVSubGroup option:selected").index();
+        var subgrp = $("#ddlNVSubGroup option:selected").val();
+        var Address = $("#txtNAddress").val();
+
+     
+
+        if (vtypeIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select vendor Type</p>";
+            isValid = false;
+        }
+        if (vendrotype === "Service Provider") {
+            var TDSApplicable = $("#ddltdsApplicable option:selected").index();
+            var TDSName = $("#ddltdsname option:selected").index();
+            if (PanNo === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter PAN Number</p>";
+                isValid = false;
+            }
+            if (PFRegNo === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter PF Reg Number</p>";
+                isValid = false;
+            }
+            if (TDSApplicable === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select TDS Applicable</p>";
+                isValid = false;
+            }
+            if (TDSApplicable === 1) {
+                if (TDSName === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select TDS Name</p>";
+                    isValid = false;
+                }
+            }
+        }
+        else if (vendrotype === "Supplier" || vendrotype === "Trading Supply") {
+            if (CstNo === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter CST Number</p>";
+                isValid = false;
+            }
+        }
+        if (Vendorname === null || Vendorname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Vendor Name</p>";
+            isValid = false;
+        }
+        if (PhoneNo === null || PhoneNo === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Phone No</p>";
+            isValid = false;
+        }
+        else if (PhoneNo.length !== 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter 10 digit Phone No</p>";
+            isValid = false;
+        }
+        if (MobileNo === null || MobileNo === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Mobile No</p>";
+            isValid = false;
+        }
+        else if (MobileNo.length !== 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter 10 digit Phone No</p>";
+            isValid = false;
+        }
+        if (Bankname === null || Bankname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Bank Name</p>";
+            isValid = false;
+        }
+        if (Accno === null || Accno === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Account No</p>";
+            isValid = false;
+        }
+        if (IFSCCode === null || IFSCCode === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter IFSC Code</p>";
+            isValid = false;
+        }
+
+        if (natureidIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Nature of Group</p>";
+            isValid = false;
+        }
+        if (mastergrpIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Group</p>";
+            isValid = false;
+        }
+        if (Address === null || Address === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Address</p>";
+            isValid = false;
+        }
+        if ($("#txtsubgrpexist").val() === '1' && subgrpidIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Sub Group</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divNewVendorInfoMsg").text("");
+            $("#divNewVendorInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divNewVendorInfoMsg").addClass("alert-danger");
+            $("#divNewVendorInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            //submit data with gst details       
+            if ($('#chkNVCGSTN').is(":checked")) {
+
+                var gst = confirm('Apply GST');
+                if (gst === true) {
+                    //show gst grid
+                    $("#chkNVCGSTY").prop("checked", true);
+                    $("#chkNVCGSTN").prop("checked", false);
+                    $("#divNVendorGst").removeClass('hidden');
+
+                    $("#divNewVendorInfoMsg").text("");
+                    $("#divNewVendorInfoMsg").addClass("hidden");
+                }
+                else {
+                    //submit data without gst details
+                    SaveNewVendor();
+                    $("#divNewVendorInfoMsg").text("");
+                    $("#divNewVendorInfoMsg").addClass("hidden");
+                }
+            } else {
+                //alert('is NOT checked!');
+                //submit data with gst details
+                var ddlcount = 0;
+                var amountcount = 0;
+                var checkcount = 0;
+                var list = [];
+                $("#NewVendorGstTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var col2_value = currentRow.find("td").eq(1).find("select option:selected").index();
+                    var col1_value = currentRow.find("td").eq(2).find("input[type='text']").val();
+                    var stateName = currentRow.find("td").eq(1).find("select option:selected").text();
+                    var check = currentRow.find('input[type="checkbox"]').is(':checked');
+                    if (col2_value === 0) {
+                        ddlcount = ddlcount + 1;
+                    }
+                    else {
+                        list.push(stateName);
+                    }
+
+                    if (col1_value === "" || col1_value === "0") {
+                        amountcount = amountcount + 1;
+                    }
+                    if (check === false) {
+                        checkcount = checkcount + 1;
+
+                    }
+                });
+                if (ddlcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select State Name</p>";
+                    isValid = false;
+                }
+                if (amountcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter GSTNo</p>";
+                    isValid = false;
+                }
+                if (checkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Verify GST</p>";
+                    isValid = false;
+                }
+                if (!isValid) {
+                    var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divNewVendorInfoMsg").text("");
+                    $("#divNewVendorInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                    $("#divNewVendorInfoMsg").addClass("alert-danger");
+                    $("#divNewVendorInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divNewVendorInfoMsg").text("");
+                    $("#divNewVendorInfoMsg").addClass("hidden");
+
+                    var duplicatelist = list.filter(i => list.filter(ii => ii === i).length > 1);
+                    if (duplicatelist.length > 0) {
+                        var finalerror2 = "<div style='align:center'><p>Only One GST for One State</p>";
+                        $("#divNewVendorInfoMsg").text("");
+                        $("#divNewVendorInfoMsg").append(finalerror2 + "</div>");
+                        $("#divNewVendorInfoMsg").addClass("alert-danger");
+                        $("#divNewVendorInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                    else {
+                        $("#divNewVendorInfoMsg").text("");
+                        $("#divNewVendorInfoMsg").addClass("hidden");
+
+                        SaveNewVendor();
+                    }
+                }
+            }
+        }
+    }
+    function SaveNewVendor() {
+        var gstdeals = null;
+        var gstApplicatble = 0;
+        var rows = [];
+        var GstStatids = "", GstNos = "";
+        if ($('#chkNVCGSTN').is(":checked")) { gstApplicatble = 0; }
+        if ($('#chkNVCGSTY').is(":checked")) {
+            gstApplicatble = 1;
+            var totalRowCount = $("#NewVendorGstTable tbody tr").length;
+            $("#NewVendorGstTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var state = currentRow.find("td").eq(1).find("select option:selected").val();
+                var gstno = currentRow.find("td").eq(2).find("input[type='text']").val();
+                GstStatids += state + ",";
+                GstNos += gstno + ",";
+            });
+        }
+        var subgroupid = 0;
+        var subgroupexist = $("#txtsubgrpexist").val();
+        if (subgroupexist === '1') {
+            subgroupid = $("#ddlNVSubGroup option:selected").val();
+        }
+        var addNewVendor = {
+            Type: $("#ddlNVendorType option:selected").val(),
+            PanNo: $("#txtNPanNo").val(),
+            PFRegNo: $("#txtNPFRegNo").val(),
+            CstNo: $("#txtNCstNo").val(),
+            VendorName: $("#txtNVendorName").val(),
+            Phoneno: $("#txtNPhoneno").val(),
+            MobileNo: $("#txtNMobileNo").val(),
+            BankName: $("#txtNBankName").val(),
+            AccountNo: $("#txtNAccNo").val(),
+            IFSCode: $("#txtNIFSCode").val(),
+            Address: $("#txtNAddress").val(),
+            NatureGroupId: $("#ddlNVNatureGroup option:selected").val(),
+            GroupId: $("#ddlNVMasterGroup option:selected").val(),
+            SubGroupId: subgroupid,
+            Action: 'Add',
+            GstApplicable: gstApplicatble,
+            GSTStatesList: GstStatids,
+            GSTNoList: GstNos,
+            TDSApplicable: $("#ddltdsApplicable option:selected").val(),
+            TDSCode: $("#ddltdsname option:selected").val()
+        };
+        $("#btnSubmitNewVendor").prop("disabled", true);
+        addFailMsg = "Error Occurred While Adding New Vendor";
+        addSuccessMsg = "Vendor Details Added Successfully.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveNewVendor',
+            data: { vendor: addNewVendor },
+            success: function (Data) {
+                if (Data.saveStatus === 'Submited') {
+                    $("#divNewVendorInfoMsg").text(addSuccessMsg);
+                    $("#divNewVendorInfoMsg").removeClass("hidden alert-danger");
+                    $("#divNewVendorInfoMsg").addClass("alert-success");
+                    
+                }
+                else {
+                    $("#divNewVendorInfoMsg").text(Data.saveStatus);
+                    $("#divNewVendorInfoMsg").addClass("alert-danger");
+                    $("#divNewVendorInfoMsg").removeClass("hidden alert-success");
+                    $("#btnSubmitNewVendor").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnSubmitNewVendor").prop("disabled", false);
+                $("#divNewVendorInfoMsg").text(addFailMsg);
+                $("#divNewVendorInfoMsg").addClass("alert-danger");
+                $("#divNewVendorInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+</script>

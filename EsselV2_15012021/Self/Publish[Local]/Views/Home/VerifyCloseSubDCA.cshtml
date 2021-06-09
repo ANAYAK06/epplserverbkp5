@@ -1,0 +1,84 @@
+﻿@model List<EsselTestLocalApplication.Models.SubDCA>
+@{
+    ViewBag.Title = "VerifyCloseSubDCA";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table id="tblCloseSubDCAList" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                        <thead>
+                            <tr>
+                                <th class="hidden"></th>
+                                <th>DCA Name</th>
+                                <th>Sub DCA Code</th>
+                                <th>Sub DCA Name</th>
+                                <th>IT Code</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.SubDCACodeID)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DCAName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SubDCACode)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SubDCAName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ITCodeDescription)
+                                    </td>
+                                    <td>
+                                        <button onClick="ViewSubDCACloseDetails(@item.SubDCACodeID, @item.DCACodeID, '@item.SubDCAName', '@item.SubDCACode','@item.DCAName',@item.ITCodeID,'@item.Status','@item.ITCodeDescription')">View</button>
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="closeSDCAConfirmationForVerifyAppr" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var sdcaCloseGrid = null;
+        InitializeSDCACloseGrid();
+    });
+
+    function InitializeSDCACloseGrid() {
+        var sdcaCloseGrid = $('#tblCloseSubDCAList').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            order: [[0, "asc"]],
+            language: {
+                "emptyTable": "No Sub Account Heads Found"
+            },
+            "createdRow": function (row, data, index) {
+
+
+            },
+            pageLength: 10
+        });
+    }
+</script>
+

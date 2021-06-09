@@ -1,0 +1,190 @@
+﻿@model EsselTestLocalApplication.Models.NewUsers
+@{
+    ViewBag.Title = "EmployeeInformation";
+    Layout = "~/Views/Shared/EmployeeMaster.cshtml";
+}
+@*<h2>EmployeeInformation</h2>*@
+@*<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Client Invoice Creation</h4>
+                </div>
+                <div class="body">*@
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.joiningcategory)
+                                                    @Html.TextBoxFor(model => model.joiningcategory, new { @id = "txtfirstname", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.JoiningType)
+                                                    @Html.TextBoxFor(model => model.JoiningType, new { @id = "txtfirstname", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Category)
+                                                    @Html.TextBoxFor(model => model.Category, new { @id = "txtfirstname", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Appointmenttype)
+                                                    @Html.TextBoxFor(model => model.Appointmenttype, new { @id = "txtfirstname", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Firstname)
+                                                    @Html.TextBoxFor(model => model.Firstname, new { @id = "txtfirstname", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Middlename)
+                                                    @Html.TextBoxFor(model => model.Middlename, new { @id = "txtmiddlename", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Lastname)
+                                                    @Html.TextBoxFor(model => model.Lastname, new { @id = "txtlastname", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Gender)
+                                                    @Html.TextBoxFor(model => model.Gender, new { @id = "txtfirstname", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.UpDob)
+                                                    @Html.TextBoxFor(model => model.UpDob, new { @id = "txtdob", @class = "form-control", @readonly = "true", @type = "text" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Age)
+                                                    @Html.TextBoxFor(model => model.Age, new { @id = "txtage", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.MartialStatus)
+                                                    @Html.TextBoxFor(model => model.Firstname, new { @id = "txtfirstname", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.UpDateofMarriage)
+                                                    @Html.TextBoxFor(model => model.UpDateofMarriage, new { @id = "txtdomarriage", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.SpouseName)
+                                                    @Html.TextBoxFor(model => model.SpouseName, new { @id = "txtspousename", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.NomineeName)
+                                                    @Html.TextBoxFor(model => model.NomineeName, new { @id = "txtnomineename", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.NomineeGender)
+                                                    @Html.TextBoxFor(model => model.NomineeGender, new { @id = "txtfirstname", @class = "form-control", @readonly = "true", })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Relation)
+                                                    @Html.TextBoxFor(model => model.Relation, new { @id = "txtfirstname", @class = "form-control", @readonly = "true", })
+                                                    @*@Html.TextBoxFor(model => model.Relation, new { @id = "txtRelation", @class = "form-control" })*@
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Mobile)
+                                                    @Html.TextBoxFor(model => model.Mobile, new { @id = "txtMobile", @maxlength = "10", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.workemail)
+                                                    @Html.TextBoxFor(model => model.workemail, new { @id = "txtworkemail", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Jobtype)
+                                                    @Html.TextBoxFor(model => model.Jobtype, new { @id = "txtfirstname", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.PermanentAddress)
+                                                    @Html.TextAreaFor(model => model.PermanentAddress, new { @id = "txtPermanentAddress", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.DepartmentName)
+                                                    @Html.TextBoxFor(model => model.DepartmentName, new { @id = "txtfirstname", @class = "form-control", @readonly = "true" })
+
+
+                                                </div>
+                                            </div>
+                                           
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Appointed)
+                                                    @Html.TextBoxFor(model => model.Appointed, new { @id = "txtfirstname", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Username)
+                                                    @Html.TextBoxFor(model => model.Username, new { @id = "txtNUsername", @class = "form-control", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @*</div>
+            </div>
+        </div>
+    </div>
+</div>*@

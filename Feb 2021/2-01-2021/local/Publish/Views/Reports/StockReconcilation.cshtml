@@ -1,0 +1,286 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.StockReconcilation
+@{
+    ViewBag.Title = "StockReconcilation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Reports")
+@Styles.Render("~/bundles/Accounts/css")
+
+@*<h2>StockReconcilation</h2>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Reconcilation Of Stock</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Type)
+                                            @Html.DropDownListFor(model => model.Type, new SelectList(Model.TypeList, "Type", "TypeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSRRpttype", onchange = "RptTypeChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSRRptCC", onchange = "SRRptCCChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewSRRpt" onclick="ShowSRReport()" />
+                                                </div>
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetSRRpt" onclick="ResetSRReport()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divReconcilationRptGrid">
+                                    <div id="divAssetsGrid">
+
+                                    </div>
+                                    <div id="divSemiAssetsGrid">
+
+                                    </div>
+                                    <div id="divConsumablesBoughtOutGrid">
+
+                                    </div>
+                                    @*<div id="divBoughtOutItemsGrid">
+
+                                    </div>*@
+                                    <div id="divAllTypeGrid">
+
+                                    </div>
+                                    <div id="divEmptyGrid" class="row">
+
+                                    </div>
+                                </div>
+                                <div class="row text-center">
+                                    <div id="divSRRptInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#divReconcilationRptGrid").addClass("hidden");
+            $("#divAssetsGrid").addClass("hidden");
+            $("#divSemiAssetsGrid").addClass("hidden");
+            $("#divConsumablesBoughtOutGrid").addClass("hidden");           
+            $("#divAllTypeGrid").addClass("hidden");
+        });
+        function RptTypeChange() {
+            let typeindex = $("#ddlSRRpttype option:selected").index();
+            if (typeindex === 0) { location.reload(); }
+            else {
+                $("#divReconcilationRptGrid").addClass("hidden");
+                $("#divAssetsGrid").addClass("hidden");
+                $("#divSemiAssetsGrid").addClass("hidden");
+                $("#divConsumablesGrid").addClass("hidden");
+                $("#divBoughtOutItemsGrid").addClass("hidden");
+                $("#divAllTypeGrid").addClass("hidden"); }
+        }
+        function SRRptCCChange() {
+            var CCindex = $("#ddlSRRptCC option:selected").index();
+          //  var CC = $("#ddlAIRptCC option:selected").val();
+            var CCindex = $("#ddlSRRptCC option:selected").index();
+            //if (CCindex === 0) {
+                $("#divReconcilationRptGrid").addClass("hidden");
+                $("#divAssetsGrid").addClass("hidden");
+                $("#divSemiAssetsGrid").addClass("hidden");
+                $("#divConsumablesGrid").addClass("hidden");
+                $("#divBoughtOutItemsGrid").addClass("hidden");
+                $("#divAllTypeGrid").addClass("hidden");
+            //}
+
+        }
+        function ShowSRReport() {
+            let typeindex = $("#ddlSRRpttype option:selected").index();
+            let type = $("#ddlSRRpttype option:selected").val();
+            let CCindex = $("#ddlSRRptCC option:selected").index();
+            let CC = $("#ddlSRRptCC option:selected").val();
+            var isValid = true;
+            var errorMsg = "";
+            if (typeindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Type</p>";
+                isValid = false;
+            }
+            if (CCindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divSRRptInfoMsg").text("");
+                $("#divSRRptInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divSRRptInfoMsg").addClass("alert-danger");
+                $("#divSRRptInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divSRRptInfoMsg").text("");
+                $("#divSRRptInfoMsg").addClass("hidden");
+               
+                if (type === "1") {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Reports/StockReconcilationAssetGrid',
+                        data: { CCCode: CC, Type: type },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divAssetsGrid").html(Data);
+                                $("#divAssetsGrid").removeClass('hidden');
+
+                               
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                            else {
+                                $("#divEmptyGrid").html('No Data Found');
+                                $("#divEmptyGrid").removeClass('hidden');
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+
+                }
+                else if (type === "2") {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Reports/StockReconcilationSemiAssetGrid',
+                        data: { CCCode: CC, Type: type },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;                          
+                            if (count1 > 0) {
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divSemiAssetsGrid").html(Data);
+                                $("#divSemiAssetsGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                               
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                            else {
+                                $("#divEmptyGrid").html('No Data Found');
+                                $("#divEmptyGrid").removeClass('hidden');
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+
+                }
+                else if (type === "3" || type === "4") {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Reports/StockReconcilConsumableBoughtGrid',
+                        data: { CCCode: CC, Type: type },
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            if (count1 > 0) {
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divConsumablesBoughtOutGrid").html(Data);
+                                $("#divConsumablesBoughtOutGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                               
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                            else {
+                                $("#divEmptyGrid").html('No Data Found');
+                                $("#divEmptyGrid").removeClass('hidden');
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+
+                }
+               
+                else if (type ==="All") {
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Reports/StockReconcilAllGrid',
+                        data: { CCCode: CC, Type: 0},
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divAllTypeGrid").html(Data);
+                                $("#divAllTypeGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");                               
+                            }
+                            else {
+                                $("#divEmptyGrid").html('No Data Found');
+                                $("#divEmptyGrid").removeClass('hidden');
+                                $("#divReconcilationRptGrid").removeClass('hidden');
+                                $("#divAssetsGrid").addClass("hidden");
+                                $("#divSemiAssetsGrid").addClass("hidden");
+                                $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                                $("#divAllTypeGrid").addClass("hidden");
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                            alert("error");
+                        }
+                    });
+
+                }
+               
+            }
+
+        }
+        function ResetSRReport() { location.reload(); }
+
+
+    </script>
+

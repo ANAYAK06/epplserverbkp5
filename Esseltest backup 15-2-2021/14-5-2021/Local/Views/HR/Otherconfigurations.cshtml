@@ -1,0 +1,154 @@
+﻿@model EsselTestLocalApplication.Models.HR.OtherConfigurations
+<div class="row">
+    <div class="container">
+        <div class="col-md-10">
+            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Pay Role Calculation Date</h5>
+        </div>
+        <div class="col-md-10"><hr class="separationHr" /></div>
+        <div class="col-md-10">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.PayroleDate)
+                @Html.DropDownListFor(model => model.PayroleDate, new SelectList(Model.payroleDatelst, "CalculationDate", "CalculationDate"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCalculationDate" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.PaymentDay)
+                @Html.DropDownListFor(model => model.PaymentDay, new SelectList(Model.paymentDatelst, "CalculationDate", "CalculationDate"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPaymentDate" })
+
+                @*@Html.LabelFor(model => model.EffectiveMonth)
+        @Html.DropDownListFor(model => model.EffectiveMonth, new SelectList(Model.monthlst, "name", "name"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPayRoleMonth" })*@
+            </div>
+            @*<div class="col-md-3">
+                @Html.LabelFor(model => model.Year)
+                @Html.DropDownListFor(model => model.Year, new SelectList(Model.yearlst, "Year", "YearValue"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPayRoleyear" })
+            </div>*@
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EffectiveDate)
+                    @Html.TextBoxFor(model => model.EffectiveDate, new { @id = "txtPayEffectiveDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10 rowspace">
+            <div class="row rowspace">
+                <div class="col-md-12 text-right">
+                    <br />
+                    <button class="btn btn1 btn-success" id="btnPayroleDateSubmit" onclick="SubmitPayroleDateData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnPayroleDateReset" onclick="ResetPayroleDateData()">Reset</button>
+                </div>
+            </div>
+            <div class="row rowspace">
+                <div class="text-center">
+                    <br />
+                    <div id="divPayroleDateInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12" id="divothergrid">
+        @Html.Action("OtherRulesGrid", "HR")
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {      
+        $("#txtPayEffectiveDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", new Date());
+    });
+    function SubmitPayroleDateData() {
+
+        var errorMsg = "";
+        isValid = true;
+        var dateindex = $("#ddlCalculationDate option:selected").index();
+        var date = $("#ddlCalculationDate  option:selected").val();
+        var monthindex = $("#ddlPaymentDate option:selected").index();
+        var month = $("#ddlPaymentDate option:selected").val();
+        //var monthindex = $("#ddlPayRoleMonth option:selected").index();
+        //var month = $("#ddlPayRoleMonth option:selected").val();
+        //var yearindex = $("#ddlPayRoleyear option:selected").index();
+        //var year = $("#ddlPayRoleyear option:selected").val();       
+        var paydate = $("#txtPayEffectiveDate").val();       
+
+        if (dateindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Payrole Date</p>";
+            isValid = false;
+        }
+        if (monthindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Payment Day</p>";
+            isValid = false;
+        }
+        //if (yearindex === 0) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Select Year</p>";
+        //    isValid = false;
+        //}
+        if (paydate === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Payment Date For Month</p>";
+            isValid = false;
+        }
+        
+       
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPayroleDateInfoMsg").text("");
+            $("#divPayroleDateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divPayroleDateInfoMsg").addClass("alert-danger");
+            $("#divPayroleDateInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divPayroleDateInfoMsg").text("");
+            $("#divPayroleDateInfoMsg").addClass("hidden");
+            //let saveData = {
+            //    Key: "PayRoleDate",
+            //    PayroleDate: date,                           
+            //    PaymentDay: month,
+            //    Year: year,
+            //    EffectiveDate: paydate
+            //};
+
+            let saveData = {
+                Key: "PayRoleDate",
+                PayroleDate: date,
+                PaymentDay: month,                
+                EffectiveDate: paydate
+            };
+             //debugger;
+            addFailMsg = "Error Occurred While Adding.";
+            $("#btnPayroleDateSubmit").prop("disabled", true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SavePayRoleDate',
+                data: { otherData: saveData },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        // location.reload();
+                        $('#liOthers').trigger('click');
+                    }
+                    else {
+                        $("#divPayroleDateInfoMsg").text(Data.saveStatus);
+                        $("#divPayroleDateInfoMsg").addClass("alert-danger");
+                        $("#divPayroleDateInfoMsg").removeClass("hidden alert-success");
+                        $("#btnPayroleDateSubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divPayroleDateInfoMsg").text(addFailMsg);
+                    $("#divPayroleDateInfoMsg").addClass("alert-danger");
+                    $("#divPayroleDateInfoMsg").removeClass("hidden alert-success");
+                    $("#btnPayroleDateSubmit").prop("disabled", false);
+                }
+            });
+        }
+    }
+    function ResetPayroleDateData() {
+        $('#liOthers').trigger('click');
+    }
+</script>

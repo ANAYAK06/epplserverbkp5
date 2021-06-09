@@ -1,0 +1,249 @@
+﻿@model EsselTestLocalApplication.Models.HR.LongTermAdvance
+@{
+    ViewBag.Title = "LongTermAdvanceEmpRequest";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@*<h2>LongTermAdvanceEmpRequest</h2>*@
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <h4 style="text-align:left;font-weight:bold">LTA Request</h4>
+                        </div>
+                        <div class="col-md-6" style="text-align:right">
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <br />
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-2">
+                                            @Html.LabelFor(model => model.AdvanceType)
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.DropDownListFor(model => model.AdvanceType, new SelectList(Model.AdvanceTypelist, "TypeValue", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlEmpAdvancetype",onchange="AdvanceTypeChange()" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="divData">
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-2">
+                                                @Html.LabelFor(model => model.LTAAmount)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.TextBoxFor(model => model.LTAAmount, htmlAttributes: new { @class = "form-control", @id = "txtEmpLTAAmount", onkeypress = "return ValidateAmount(this,event);", @value = "" })
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row" id="divInstallment">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-2">
+                                                @Html.LabelFor(model => model.NoOfInstallments)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.DropDownListFor(model => model.NoOfInstallments, new SelectList(Model.NoofInstallMentslst, "NoofMonths", "NoofMonths"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlEmpNoofMonths" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-2">
+                                                @Html.LabelFor(model => model.EmpRemarks)
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    @Html.TextAreaFor(model => model.EmpRemarks, new { @id = "txtEmpRemarks", @class = "form-control", @type = "text", @rows = "2" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 text-right">
+                                            <br />
+                                            <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitLTAData()">Submit</button>
+                                            <button class="btn btn1 btn-success" id="btnReset" onclick="ResetLTAData()">Reset</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 rowspace">
+                                        <div class="text-center">
+                                            <br />
+                                            <div id="divLTAInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    type = "text/javascript" >
+        $(document).ready(function () {
+        $("#divData").addClass("hidden");
+        $("#divInstallment").addClass("hidden");
+        });
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function SubmitLTAData() {
+        var errorMsg = "";
+        isValid = true;
+        var amount = $("#txtEmpLTAAmount").val();
+        var noofmonthsIndex = $("#ddlEmpNoofMonths option:selected").index();
+        var noofmonths = $("#ddlEmpNoofMonths option:selected").val();
+        var remarks = $("#txtEmpRemarks").val();
+        debugger;
+        if (amount === "" || amount === 0 || amount === "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Amount</p>";
+            isValid = false;
+        }
+        let typeindex = $("#ddlEmpAdvancetype option:selected").index();
+        let type = $("#ddlEmpAdvancetype option:selected").val();
+
+        if (typeindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Advance Type</p>";
+            isValid = false;
+        }
+        debugger;
+        if (noofmonthsIndex === 0 && type==="LTA") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select No of Installments</p>";
+            isValid = false;
+        }
+      
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divLTAInfoMsg").text("");
+            $("#divLTAInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divLTAInfoMsg").addClass("alert-danger");
+            $("#divLTAInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divLTAInfoMsg").text("");
+            $("#divLTAInfoMsg").addClass("hidden");
+            let savedata = {};
+            if (type === "LTA") {
+                savedata = {
+                    LTAAmount: amount,
+                    NoOfInstallments: noofmonths,
+                    EmpRemarks: remarks,
+                    AdvanceType: type
+                };
+            }
+            else {
+                savedata = {
+                    LTAAmount: amount,
+                    NoOfInstallments: 0,
+                    EmpRemarks: remarks,
+                    AdvanceType: type
+                };
+            }
+            debugger;
+            addFailMsg = "Error Occurred While Adding.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveEmployeeLTARequest',
+                data: { advance: savedata },
+                success: function (Data) {
+                    if (Data.saveStatus === "Submited") {
+                        // $("#btnSubmit").prop('disabled', true);
+                        $("#divLTAInfoMsg").text("Saved Successfully");
+                        $("#divLTAInfoMsg").removeClass("hidden alert-danger");
+                        $("#divLTAInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divLTAInfoMsg").text(Data.saveStatus);
+                        $("#divLTAInfoMsg").addClass("alert-danger");
+                        $("#divLTAInfoMsg").removeClass("hidden alert-success");
+                    }
+                    $("#btnSubmit").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnSubmit").prop('disabled', true);
+                    $("#divLTAInfoMsg").text(addFailMsg);
+                    $("#divLTAInfoMsg").addClass("alert-danger");
+                    $("#divLTAInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function ResetLTAData() { location.reload(); }
+    function AdvanceTypeChange() {
+        let typeindext = $("#ddlEmpAdvancetype option:selected").index();
+        let type = $("#ddlEmpAdvancetype option:selected").val();
+
+        if (typeindext == 0) {
+            $("#divData").addClass("hidden");
+            $("#divInstallment").addClass("hidden");
+        }
+        else {
+            $("#divData").removeClass("hidden");
+            debugger;
+            if (type === "LTA") {
+                $("#divInstallment").removeClass("hidden");
+
+            }
+            else {
+                $("#divInstallment").addClass("hidden");
+
+            }   
+            $("#ddlEmpAdvancetype").prop('disabled', true); 
+            clear();
+        }
+    }
+    function clear() {
+        $("#txtEmpLTAAmount").val("");
+        $("#ddlEmpNoofMonths").prop('selectedIndex', 0); 
+        $("#txtEmpRemarks").val("");
+        $("#divLTAInfoMsg").text("");
+        $("#divLTAInfoMsg").addClass("hidden");    
+        $("#btnSubmit").prop('disabled', false);
+    }
+</script>
+

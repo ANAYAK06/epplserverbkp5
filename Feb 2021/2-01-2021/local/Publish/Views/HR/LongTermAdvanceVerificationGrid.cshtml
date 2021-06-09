@@ -1,0 +1,224 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.LongTermAdvance>
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: left;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+
+    .txtcls {
+        font-weight: normal;
+        white-space: normal;
+        font-size: 11px;
+        text-align: left;
+    }
+</style>
+<div class="table-responsive  w-100">
+    <table id="tblApproveGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="tdcls"></th>
+                <th class="tdcls hidden">LTAId</th>
+                <th class="tdcls">Employee ID</th>
+                <th class="tdcls">Employee Name</th>
+                <th class="tdcls">LTAAmount</th>
+                <th class="tdcls">No Of Installments</th>
+                <th class="tdcls">Payment Request Date</th>
+                <th class="tdcls hidden">TransactionRefNo</th>
+                <th class="tdcls hidden">ReportToMgrRemarks</th>
+                <th class="tdcls hidden">MOID</th>
+                <th class="tdcls hidden">ApprovalNote</th>
+                <th class="tdcls hidden">DisbursementDate</th>
+
+                <th class="tdcls hidden">RequestStatus</th>
+                <th class="tdcls hidden">EmpRemarks</th>
+                <th class="tdcls">Advance Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.LTAId)
+                </td>
+                <td class="txtcls">
+                    @Html.DisplayFor(modelItem => item.EmployeeID)
+                </td>
+                <td class="txtcls">
+                    @Html.DisplayFor(modelItem => item.EmployeName)
+                </td>
+                <td class="txtcls">
+                    @Html.DisplayFor(modelItem => item.LTAAmount)
+                </td>
+                <td class="txtcls">
+                    @Html.DisplayFor(modelItem => item.NoOfInstallments)
+                </td>
+                <td class="txtcls">
+                    @Html.DisplayFor(modelItem => item.PaymentRequestDate)
+                </td>
+                <td class="txtcls hidden">@Html.DisplayFor(modelItem => item.TransactionRefNo)</td>
+
+                <td class="txtcls hidden">@Html.DisplayFor(modelItem => item.ReportingMgrRemarks)</td>
+
+                <td class="txtcls hidden">@Html.DisplayFor(modelItem => item.MOID)</td>
+                <td class="txtcls hidden">
+                    @Html.DisplayFor(modelItem => item.ApprovalNote)
+                </td>
+                <td class="txtcls hidden">
+                    @Html.DisplayFor(modelItem => item.DisbursementDate)
+                </td>
+                <td class="txtcls hidden">
+                    @Html.DisplayFor(modelItem => item.RequestStatus)
+                </td>
+                <td class="txtcls hidden">
+                    @Html.DisplayFor(modelItem => item.EmpRemarks)
+                </td>
+                <td class="txtcls">
+                    @Html.DisplayFor(modelItem => item.AdvanceType)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveGrid = null;
+        InitializeApprGrid();
+    });
+    function InitializeApprGrid() {
+        ApproveGrid = $('#tblApproveGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {               
+            },
+            pageLength: 10
+        });
+        $('#tblApproveGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveGrid, tr);
+                // Open this row
+                row.child(formatApprLTA(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprLTA(d) {
+        var htmltext;
+        var LTAId = 0, EmployeeID = "",Name="", LTAAmount = "", NoOfInstallments = "", PaymentRequestDate="";
+        let TransactionRefNo = "", ReportingMgrRemarks = "", MOID = 0, ApprovalNote = "", DisbursementDate = "", RequestStatus = "",EmpRemarks="",Type="";
+        $.each(d, function (index, value) {
+            if (index == 1)
+                LTAId = value;
+            if (index == 2)
+                EmployeeID = value;
+            
+            if (index == 3)
+                Name = value;
+            if (index == 4)
+                LTAAmount = value;
+            if (index == 5)
+                NoOfInstallments = value;
+            if (index == 6)
+                PaymentRequestDate = value;
+            if (index == 7)
+                TransactionRefNo = value;
+            if (index == 8)
+                ReportingMgrRemarks = value;
+            if (index == 9)
+                MOID = value;
+            if (index == 10)
+                ApprovalNote = value;
+            if (index == 11)
+                DisbursementDate = value;
+            if (index == 12)
+                RequestStatus = value;
+            if (index == 13)
+                EmpRemarks = value;
+            if (index == 14)
+                Type = value;
+           
+        });
+        var empData = {
+            LTAId: LTAId,
+            EmployeeID: EmployeeID,
+            LTAAmount: LTAAmount,
+            EmployeName:Name,
+            NoOfInstallments: NoOfInstallments,
+            PaymentRequestDate: PaymentRequestDate,
+            TransactionRefNo: TransactionRefNo,
+            ReportingMgrRemarks: ReportingMgrRemarks,
+            MOID: MOID,
+            ApprovalNote: ApprovalNote,
+            DisbursementDate: DisbursementDate,
+            RequestStatus: RequestStatus,
+            EmpRemarks: EmpRemarks,
+            AdvanceType: Type
+        };
+        debugger;
+        var divid = "divapprStaff" + LTAId;
+        var divid1 = $("#" + divid + "");
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/HR/LongTermAdvanceVerificationView',
+            data: { advance: empData },
+            success: function (Data) {
+                var divid2 = "divapprStaff" + LTAId;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+        return '<div id="divapprStaff' + LTAId + '" class="row" ></div>';
+    }
+</script>

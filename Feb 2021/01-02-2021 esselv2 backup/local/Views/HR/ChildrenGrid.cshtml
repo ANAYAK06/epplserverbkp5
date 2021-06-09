@@ -1,0 +1,100 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.Childrens>
+@if (Model.Count > 0)
+{
+<div class="col-md-12 change-tab">
+    <div class="strike">
+        <span>Children Details</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="ChildrenTable" class="table order-list Childrentable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important">S.No</td>
+                    <td style="text-align:center;color:#fff !important">Name</td>
+                    <td style="text-align:center;color:#fff !important">Date of Birth</td>
+                    <td style="text-align:center;color:#fff !important">Age</td>
+                    <td style="text-align:center;color:#fff !important">Gender</td>
+                    <td style="text-align:center;color:#fff !important">Marital Status</td>
+                    <td style="text-align:center;color:#fff !important"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count1 = 1;
+                }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center;width:1%">@count1</td>
+                        <td style="text-align:center;width:20%">
+                            @Html.DisplayFor(modelItem => item.ChildName)
+                        </td>
+                        <td style="width:20%;text-align:center;">
+                            @Html.DisplayFor(modelItem => item.ChildDateofBirth)
+                        </td>
+
+                        <td style="width:10%;text-align:center;"> @Html.DisplayFor(modelItem => item.ChildAge)</td>
+                        <td style="width:20%;text-align:center;">
+                            @Html.DisplayFor(modelItem => item.ChildGender)
+                        </td>
+                        <td style="width:20%;text-align:center;">
+                            @Html.DisplayFor(modelItem => item.ChildMaritalStatus)
+                        </td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddnewempChildTabledelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count1++;
+                }
+                </tbody>
+            
+        </table>
+    </div>
+</div>
+    <script>
+        $(document).ready(function () {
+            $("table.order-list.Childrentable").on("click", ".ibtnAddnewempChildTabledelete", function (event) {
+                var row = $(this).closest("tr");
+                var chname = $.trim(row.find("td").eq(1).html());
+                var rowno = $.trim(row.find("td").eq(0).html());
+                addFailMsg = "Error Occurred While Deleting.";
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/DeleteChildMemberData',
+                    data: { Name: chname },
+                    success: function (Data) {
+                        //alert("Hi");
+                        if (Data.saveStatus === "Deleted") {
+                            row.remove();
+                            if (rowno == 1 || rowno === "1") {
+                                $("#divChildGridData").load('/HR/ChildrenGrid');
+                            }
+                            else { ReassignRowNoforChildMemberGrid();}
+                        }
+                        else {
+                            $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            });
+         
+        });
+        function ReassignRowNoforChildMemberGrid() {
+            var rowno = 1;
+            $("#ChildrenTable tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(rowno);
+                rowno++;
+            });
+        }
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AmendCCBudget
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <label>Cost Center Type</label>
+            @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendCCBType", onchange = "AmendCCBudgetCCTypesChange()" })
+
+        </div>
+
+        <div class="col-md-3" id="divAmendCCYear">
+            <div class="form-group">
+                <label>Year</label>
+                @Html.DropDownListFor(model => model.FYYear, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendCCYear" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divAmendCCSubType">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SubType)
+                @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendCCSubType" })
+            </div>
+        </div>
+
+        <div class="col-md-3" id="divAmendccgridbtn">
+            <br />
+            <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnAmendCCDetials" onclick="ShowAmendCCGrid()" />
+            <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetAmendCCDetials" onclick="ResetAmendCCGrid()" />
+        </div>
+    </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <br />
+                <div id="divAmendCCGridInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+        <div id="divAmendCCGrid"></div>
+    </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divAmendCCGrid").addClass('hidden');    
+        $("#divAmendCCYear").addClass('hidden');    
+        $("#divAmendCCSubType").addClass('hidden');
+        $("#divAmendccgridbtn").addClass('hidden');
+    });
+ </script>

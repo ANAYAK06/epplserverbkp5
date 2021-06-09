@@ -1,0 +1,167 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Users>
+
+<div class="table-responsive">
+    <table id="tblVerifyUserGrid" style="width:100%" class="hover stripe nowrap example">
+        <thead>
+            <tr>
+                <th></th>
+                <th>UserID</th>
+                <th>User Name</th>
+                <th>RoleId</th>
+                <th>User Role</th>
+                <th>Status</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Userid)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Username)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoleID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserRole)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                   
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveUSerGrid = null;
+        InitializeApproveUSerGrid();          
+    });
+    function InitializeApproveUSerGrid() {
+        ApproveUSerGrid = $('#tblVerifyUserGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Users Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(5)', row).html();
+                if (oldstatus ==0) {
+                    $('td:eq(5)', row).html("Return"); 
+                    
+                }
+                else { $('td:eq(5)', row).html("Verification Pending");}
+            },
+            pageLength: 10
+        });
+        $('#tblVerifyUserGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveUSerGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveUSerGrid, tr);
+                // Open this row
+                row.child(formatApproveUser(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApproveUser(d) {
+            var id = 0;
+            var htmltext;
+            var userid,Roleid,Status;
+            $.each(d, function (index, value) {
+                // Get value in alert                
+                if (index == 1)
+                    userid = value;
+                if (index == 3)
+                    Roleid = value;
+                if (index == 5)
+                    Status = value;
+        });        
+        var divid = "divappruser" + userid;
+        var divid1 = $("#" + divid + "");    
+        //if (Status == 0) {
+
+        //    $.ajax({
+        //        type: 'GET',
+        //        dataType: 'html',
+        //        url: '/Home/AddnewUser',
+        //        data: { userid: userid, Roleid: Roleid },
+        //        beforeSend: function () {
+        //            $('#ajax-container').html('');
+        //            addSpinner($('#ajax-container'));
+        //        },
+        //        success: function (Data) {
+        //            var divid2 = "divappruser" + userid;
+        //            var divid3 = $("#" + divid2 + "");
+        //            $(divid3).html(Data);
+        //            removeSpinner($('#ajax-container'), function () {
+        //                $('#ajax-container').html('Content loaded.');
+        //            })
+        //        },
+        //        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //            removeSpinner($('#ajax-container'), function () {
+        //                $('#ajax-container').html('Content loaded.');
+        //            })
+        //            alert("error");
+        //        }
+        //    });
+
+        //}
+        //else {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/ViewApproveUserbyid',
+                data: { userid: userid, Roleid: Roleid },
+                success: function (Data) {
+                    var divid2 = "divappruser" + userid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });        
+           return '<div id="divappruser' + userid + '"></div>';
+    }
+</script>
+

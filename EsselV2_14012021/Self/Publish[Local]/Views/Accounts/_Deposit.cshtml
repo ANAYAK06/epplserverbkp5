@@ -1,0 +1,117 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.Deposit
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">
+                       Bank Deposit
+                    </h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+
+                                                <div class="col-md-4" id="divTransCC">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Transfer_Cost_Center)
+                                                        @Html.DropDownListFor(model => model.Transfer_Cost_Center, new SelectList(Model.Transfer_CcList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TransToCC", onchange = "TransferCCChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divTransferCCAmount">
+                                                    @Html.LabelFor(model => model.CC_Amount)
+                                                    @Html.TextBoxFor(model => model.CC_Amount, new { @id = "txtCCAmount", @class = "form-control", @readOnly = "true" })
+                                                </div>
+                                                <div class="col-md-4">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12" id="divTranferDetails">
+                                                <div class="col-md-12">
+                                                    <hr style="margin-top:0px;margin-bottom:2px" />
+                                                </div>
+                                                <div class="col-md-4" id="divTransBank">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Transfer_Bank)
+                                                        @Html.DropDownListFor(model => model.Transfer_Bank, new SelectList(Model.Transfer_BanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TransToBank" })
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4" id="divdepdate">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Transfer_Date)
+                                                        @Html.TextBoxFor(model => model.Transfer_Date, new { @id = "txtTransferDate", @class = "form-control date-picker", @type = "text" })
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group" id="divdepamt">
+                                                        @Html.LabelFor(model => model.Transfer_Amount)
+                                                        @Html.TextBoxFor(model => model.Transfer_Amount, new { @id = "txtTransAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", Value = "", onKeyup = "AmountValidatedeposit()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group" id="divdepdesc">
+                                                        @Html.LabelFor(model => model.Description)
+                                                        @Html.TextAreaFor(model => model.Description, new { @id = "txtTransferDesc", @class = "form-control", @type = "text", @rows = "3" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12" id="divdepbtns">
+                                                    <div class="text-right">
+                                                        <input type="text" value="0" id="txtdepositRoleId" style="display:none" />
+                                                        <button class="btn btn1 btn-success" id="btndepositSubmit" onclick="TransferSubmitData()">Submit</button>
+                                                        <button class="btn btn1 btn-success" id="btndepositCancel" onclick="CancelTransferData()">Reset</button>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="text-center">
+                                                        <div id="divTransferInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+         var RoleID = '@Session["Roleid"]';
+        $("#txtdepositRoleId").val(RoleID);
+        //$("#divTranferDetails").addClass('hidden');
+        //$("#divTransferCCAmount").addClass('hidden');
+        $("#txtTransferDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", new Date());
+    });
+
+</script>

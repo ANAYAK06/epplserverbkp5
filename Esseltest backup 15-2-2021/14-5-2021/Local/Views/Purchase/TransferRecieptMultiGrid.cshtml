@@ -1,0 +1,148 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.TransferReciept>
+<div class="table-responsive w-100">
+    <table id="tblApprovetroGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Previous MRR No</th>
+                <th>Stock Recieving From</th>
+                <th>Indent No</th>
+                <th>Cost Center</th>
+                <th class="hidden">mid</th>
+                <th>MRR Type</th>
+                <th class="hidden">CCType</th>
+                <th>PO NO</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mrrno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IndentNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Moid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MrrType)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CCType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PoNo)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        //debugger;
+        var ApprovetroGrid = null;
+            InitializeApprtroGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprtroMCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtApprtroMRole").val(SessionRole);
+        });
+    function InitializeApprtroGrid() {
+        ApprovetroGrid = $('#tblApprovetroGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+            },
+                pageLength: 10
+            });
+        $('#tblApprovetroGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApprovetroGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApprovetroGrid, tr);
+                // Open this row
+                    row.child(formatApprtro(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+
+    function formatApprtro(d) {
+        var htmltext;
+        var Mrrno, Type, IndentNo, Moid, MrrType, CCType, PoNo;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Mrrno = value;
+            if (index == 2)
+                Type = value;
+            if (index == 3)
+                IndentNo = value;
+            if (index == 5)
+                Moid = value;
+            if (index == 6)
+                MrrType = value;
+            if (index == 7)
+                CCType = value;
+            if (index == 8)
+                PoNo = value;
+        });
+        var divid = "divapprtro" + Mrrno;
+        var divid1 = $("#" + divid + "");
+        $("#currenttrid").val(Mrrno);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/TransferRecieptMultiView',
+                data: { Mrrno: Mrrno, Type: Type, IndentNo: IndentNo, Moid: Moid, MrrType: MrrType, CCType: CCType, PoNo: PoNo },
+                success: function (Data) {
+                    var divid2 = "divapprtro" + Mrrno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        return '<div id="divapprtro' + Mrrno + '"></div>';
+    }
+</script>

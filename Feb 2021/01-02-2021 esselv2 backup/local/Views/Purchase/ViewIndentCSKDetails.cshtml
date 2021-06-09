@@ -1,0 +1,177 @@
+﻿@model EsselTestLocalApplication.Models.IndentData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab" id="divIndentGrid">
+    <div class="strike">
+        <span>Indent Items</span>
+    </div>
+    <div style="height:5px"></div>
+    <div class="tabledynamic">
+        <table id="ItemIndentCSKDataTable" class="table order-list itemIndentlistcsk">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Transferred Quantity</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Purchased Quantity</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Total Quantity</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:75px !important;">Amount</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                <tr>
+                    <td style="text-align:center;width:10px!important;">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    <input type="checkbox" class="eagle-check-input">
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Specification)</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><input type="text" class="form-control " style="width:50px !important; font-size:10px" readonly /></td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><input type="text" class="form-control " style="width:50px !important; font-size:10px" value="" onkeypress="return IsNumericdecimal(this)" onkeyup="CountItemTotalAmount()" /></td> @*onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()"*@
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><input type="text" class="form-control " style="width:75px !important; font-size:10px; text-align:right" readonly /></td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><input type="text" class="form-control " style="width:75px !important; font-size:10px; text-align:right" readonly /></td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> <input type="button" class="btnIndentDel btn btn-md btn-danger" value="Delete" /></td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.IndentListId)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.Costcenter)</td>
+                </tr>
+
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center"><label>SubTotal</label></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("table.order-list.itemIndentlistcsk").on("click", ".btnIndentDel", function (event) {
+            //$(this).closest("tr").remove();
+            var currentRow = $(this).closest("tr");
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var IndListid = currentRow.find("td").eq(13).html();
+            var CCCode = currentRow.find("td").eq(14).html();
+            if (check == true) {
+                var Items = {
+                    IndentListId: IndListid
+                };
+                addFailMsg = "Error Occurred While Deleting Item";
+                addSuccessMsg = "Deleted Successfully.";
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/DeleteIndentItem",
+                    data: JSON.stringify({ Ind: Items }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus == "Submited") {
+                            alert("Deleted Successfully");
+                            $.ajax({
+                                type: 'GET',
+                                dataType: 'html',
+                                url: '/Purchase/ViewIndentDetails',
+                                data: { cccode: CCCode },
+                                success: function (data) {
+                                    var count = Object.keys(data).length;
+                                    if (count > 0) {
+                                        $("#GridCSKData").html(data);
+                                        $("#GridCSKData").removeClass('hidden');
+                                    }
+                                    else {
+                                        $("#GridCSKData").addClass('hidden');
+                                    }
+                                },
+                            });
+                        }
+                        else {
+                            alert(response.saveStatus);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    }
+                });
+            }
+            else {
+                alert("Please Check for Delete");
+                return false;
+            }
+        });
+    });
+
+    function CountItemTotalAmount() {
+        debugger;
+        var Basic = 0;
+        var issuedqty = 0;
+        var gvnqty = 0;
+        var totqty = 0;
+        var rowtotal = 0;
+        var subtotal = 0;
+        $("#ItemIndentCSKDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            Basic = currentRow.find("td").eq(6).html();
+            issuedqty = currentRow.find("td").eq(8).find("input[type='text']").val();
+            gvnqty = currentRow.find("td").eq(9).find("input[type='text']").val();
+            var numgivenqty = isNaN(parseFloat(gvnqty)) ? 0 : parseFloat(gvnqty)
+            var numissuedqty = isNaN(parseFloat(issuedqty)) ? 0 : parseFloat(issuedqty)
+            if (Basic != "" && gvnqty != "") {
+                rowtotal = (parseFloat(Basic) * (parseFloat(numissuedqty) + parseFloat(numgivenqty))).toFixed(2);              
+                currentRow.find("td").eq(10).find("input[type='text']").val(parseFloat(numissuedqty) + parseFloat(numgivenqty))
+                currentRow.find("td").eq(11).find("input[type='text']").val(rowtotal);
+                subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+            }
+            else {
+                currentRow.find("td").eq(9).find("input[type='text']").val(0);
+                currentRow.find("td").eq(11).find("input[type='text']").val(0);
+            }
+        });
+        $("#ItemIndentCSKDataTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            if (!isNaN(subtotal)) {
+                footerRow.find("td").eq(11).html("<b>" + parseFloat(subtotal).toFixed(2) + "</b>");
+            }
+            else {
+                footerRow.find("td").eq(11).html("");
+            }
+        });
+
+    } 
+</script>

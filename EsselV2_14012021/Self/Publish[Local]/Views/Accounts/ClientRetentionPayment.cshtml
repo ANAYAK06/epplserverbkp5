@@ -1,0 +1,424 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.RetentionPayment
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ClientRetentionPayment</title>
+</head>
+<body>
+    <div class="row">
+        <form onsubmit="return false">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="hidden" value="@Model.BankTransactionRefNo" id="txttransrefno" />
+                    @if (Model.Action == "Update")
+                    {
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientCode)
+                                @Html.TextBoxFor(model => model.ClientCode, new { @id = "txtRetPayClient", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divRetPaySubclient">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubClientCode)
+                                @Html.TextBoxFor(model => model.SubClientCode, new { @id = "txtRetPaySubClient", @class = "form-control" })
+                            </div>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientCode)
+                                @Html.DropDownListFor(model => model.ClientCode, new SelectList(Model.RetClientList, "ClientCode", "ClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlRetPayClient", onchange = "RetPayClientChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divRetPaySubclient">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubClientCode)
+                                @Html.DropDownListFor(model => model.SubClientCode, new SelectList(Model.RetsubClientList, "SubClientCode", "SubClientCodename"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlRetPaysubClient", onchange = "RetPaySubClientChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divRetPayCC">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CCCode)
+                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.RetCCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlRetPayCC", onchange = "RetPayCCChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divRetPayPO">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PO)
+                                @Html.DropDownListFor(model => model.PO, new SelectList(Model.RetPOList, "ClientPOId", "PONumber"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlRetPayPO", onchange = "ddlRetPayPOChange()" })
+                            </div>
+                        </div>
+
+                    }
+                </div>
+                <div class="col-md-12" id="divRetpayIncDetails">
+                    <div class="strike">
+                        <span>Invoice Details</span>
+                    </div>
+                    <div class="">
+                        <div class="tabledynamic">
+                            <br />
+                            <table id="RetPayInvTable" class="table order-list retpayinv" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="hdrowcount hidden">Invoice No</td>
+                                        <td style="text-align:center;font-weight:bold" class="hdcheckall">
+                                            <ul class="list-inline">
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input chkselectall" id="idchkselectall" name="chkselectall">
+                                                        <span class="eagle-check-indicator"></span>
+                                                        <span class="eagle-check-description"></span>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="hdinvno">Invoice No</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="hdinvpo">PO Number</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="hdinvdate">Invoice Date</td>
+                                        <td style="text-align:center;font-weight:bold;color:#fff !important" class="hdinvbalance">Retention Balance</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.Action == "Update")
+                                    {
+                                        foreach (var item in Model.RetInvDetailsList)
+                                        {
+                                            <tr>
+                                                <td style="text-align:center"  class="hidden"></td>
+                                                <td style="text-align:center">
+                                                    <ul class="list-inline">
+                                                        <li class="eagle-checkbox">
+                                                            <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chkRetpayInv" id="idchkselectall" name="chkselectall"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                                <td style="text-align:center">@item.ClientInvoiceNo</td>
+                                                <td style="text-align:center">@item.PONumber</td>
+                                                <td style="text-align:center">@item.InvoiceDate</td>
+                                                <td style="text-align:center">@item.RetBalance</td>
+                                            </tr>
+                                        }
+
+                                    }
+                                </tbody>
+                                <tfoot>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12" id="divRetPaymentsection">
+                    <div class="col-md-12">
+                        <hr style="margin-top:0px;margin-bottom:2px" />
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">                                
+                                    @Html.LabelFor(model => model.BankName)
+                                    @Html.DropDownListFor(model => model.BankName, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlRetPayBank", onchange = "RetPaymodeChange()" })
+
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                
+                                    @Html.LabelFor(model => model.ModeOfPay)
+                                    @Html.DropDownListFor(model => model.ModeOfPay, new SelectList(Model.PayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlRetPaymode", onchange = "RetPaymodeChange()" })
+
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                               
+                                    @Html.LabelFor(model => model.No)
+                                    @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtRetPayNo" })
+                                    <select class="form-control dropdown-toggle RetPayNo" id="ddltxtRetPayNo">
+                                        <option selected="selected" value="Select">-Select-</option>
+                                    </select>
+                                
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReturnPayDate)
+                                @Html.TextBoxFor(model => model.ReturnPayDate, "{0:dd/MM/yyyy}", new { @id = "txtRetPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtRetPayRemarks", @class = "form-control", @rows = "3" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PaymentAmount)
+                                @Html.TextBoxFor(model => model.PaymentAmount, new { @id = "txtRetPayAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <input type="text" value="0" id="txtRetRoleId" style="display:none" />
+                            @if (Model.Action == "New")
+                            {
+                                <button class="btn btn1 btn-success" id="btnRetPaySubmit" onclick="SubmitRetPayData()">Submit</button>
+                                <button class="btn btn1 btn-success" id="btnRetPayReset" onclick="ResetRetPayData()">Reset</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn1 btn-success" id="btnUpRetPaySubmit" onclick="UpdateRetPayData(@Model.BankTransactionRefNo)">Submit</button>
+                                <input id="txtUpmodeofpay" type="hidden" value="@Model.ModeOfPay" />
+                                <input id="txtUpbank" type="hidden" value="@Model.Bank" />
+                            }
+                            <input id="txtrpaydate" value="" style="width:1px;display:none" />
+                            <input id="txtinvtotal" value="" style="width:1px;display:none" />
+                            <input id="txtoldinvoicenos" value="" style="width:1px;display:none" />
+                            <input id="txtoldredamounts" value="" style="width:1px;display:none" />
+                            <input id="txtRetCreatedby" style="width:1px;display:none" />
+                            
+
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <br />
+                            <div id="divRetPayInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+       // alert(@Model.BankTransactionRefNo);
+            var Sessioncreated = '@Session["Createdby"]';
+        $("#txtRetCreatedby").val(Sessioncreated);
+            var RoleID = '@Session["Roleid"]';
+        $("#txtRetRoleId").val(RoleID);
+        $("#txtRetPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtrpaydate").val(selectedDate);
+                RetPaymentDateValidation();
+            }
+        }).datepicker("setDate", new Date());
+        if ('@Model.Action' == 'Update') {
+            var fulltotal = $("#txtRetPayAmount").val();
+            var total = parseFloat(fulltotal).toFixed(2);
+            $("#txtRetPayAmount").val(total);
+              @*var date = '@Model.PaymentDate';              
+            var idate = date.toString().split(' ');
+            var idate1 = idate.toString().split(' '); 
+            var tdate = "'" + idate1 + "'";
+            var tdate1 = moment(tdate, "DD-MM-YYYY").format('DD-MMM-YYYY');*@
+            $("#txtRetPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtHoldpaydate").val(selectedDate);
+                    RetPaymentDateValidation();
+                }
+            }).datepicker("setDate", '@Model.ReturnPayDate');
+            var mode = '@Model.ModeOfPay';
+            var bank = '@Model.Bank';
+            $("#ddlRetPaymode").find("option:contains('" + mode+ "')").each(function () {
+                if ($(this).text() == mode) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#ddlRetPayBank").find("option:contains('" + bank + "')").each(function () {
+                if ($(this).text() == bank) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#btnRetPayReset").addClass('hidden');
+            var rowno = 1;
+            var oldinvoiceno = '', oldretamounts = '';
+            $("#RetPayInvTable tbody tr").each(function () {               
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(rowno);
+                currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                var invoiceno = currentRow.find("td").eq(2).html();
+                var amount = currentRow.find("td").eq(5).html();
+                oldinvoiceno += invoiceno + ",";
+                oldretamounts += amount + ",";
+                rowno++;
+            });
+            $("#txtoldinvoicenos").val(oldinvoiceno);
+            $("#txtoldredamounts").val(oldretamounts);
+            $("#RetPayInvTable thead tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+            });
+            //show or hide payemnt txt or ddl
+            var modeofpay = $("#txtUpmodeofpay").val();
+            if (modeofpay== "Cheque") {
+                $("#txtRetPayNo").addClass('hidden');
+                $("#ddltxtRetPayNo").removeClass('hidden');
+                var bank = $("#txtUpbank").val();
+               // alert(bank);
+                var chequeno = $("#txtRetPayNo").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetChequeNos",
+                    data: '{bankname:"' + bank + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        if (count > 0) {
+                            var ddlRetPayNo = $("#ddltxtRetPayNo");
+
+                            ddlRetPayNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                var dbno = this['Cheque_No'];
+                                if (chequeno == dbno) {
+                                    ddlRetPayNo.append($("<option selected='selected'></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                                }
+                                else { ddlRetPayNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No'])); }
+
+                            });
+                            ddlRetPayNo.append($("<option selected='selected'></option>").val(@Model.chequeid).html(chequeno));
+                     
+
+                        }
+                    },
+                    failure: function (response) {
+                    
+
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                       
+
+                        alert(response.responseText);
+                    }
+                });
+
+            }
+            else {
+                $("#txtRetPayNo").removeClass('hidden');
+                $("#ddltxtRetPayNo").addClass('hidden');
+            }
+        }
+        else {
+            $("#btnRetPayReset").removeClass('hidden');
+            $("#divCRec_InsType").addClass('hidden');
+            $("#divRetpayIncDetails").addClass('hidden');
+            $("#divRetentionPayment").addClass("hidden");
+            $("#divRetPaymentsection").addClass("hidden");
+            $('#txtRetPayDate').css('background-color', 'transparent');
+            $("#RetPayInvTable thead tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+            });
+
+           
+        }
+        $('#RetPayInvTable').on('change', '.chkRetpayInv', function () {
+            var row = $(this).closest('tr'); // get the row
+            var checkbox = row.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+            if (checkbox == false) {
+                $("#RetPayInvTable thead tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            else {
+                var noofrows = $("#RetPayInvTable tbody tr").length;
+                var checkedrows = 0;
+                $("#RetPayInvTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    if (checkbox == true) {
+                        checkedrows = parseInt(checkedrows) + 1;
+                    }
+                });
+                if (parseInt(noofrows) == parseInt(checkedrows)) {
+                    $("#RetPayInvTable thead tr").each(function () {
+                        var currentRow = $(this);
+                        var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                        currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                    });
+                }
+            }
+            //var rowamount = currentRow.find("td").eq(5).html();
+            CountRetnPayTotal();
+        });
+        $('#RetPayInvTable thead tr').on('change', '.chkselectall', function () {
+            var row = $(this).closest('tr'); // get the row
+            var headcheckbox = row.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+            if (headcheckbox == true) {
+                $("#RetPayInvTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                });
+            }
+            else {
+                $("#RetPayInvTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            CountRetnPayTotal();
+        });
+    });
+    function RetPaymentDateValidation() {
+        var paydate = $("#txtRetPayDate").val();
+      //  alert(paydate + "--" + $("#RetPayInvTable tbody tr").length);
+        $("#RetPayInvTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+            var invdate = currentRow.find("td").eq(4).html();          
+            if (checkbox == true) {
+                if (new Date(paydate) < new Date(invdate)) {
+                   // alert('invdate:' + invdate + "...." + "paydate:" + paydate);
+                    $("#divRetPayInfoMsg").text("");
+                    $("#divRetPayInfoMsg").append("<div>Payment Date must be greater than Invoice Date</div>");
+                    $("#divRetPayInfoMsg").addClass("alert-danger");
+                    $("#divRetPayInfoMsg").removeClass("hidden alert-success");
+                    $("#divRetPayInfoMsg").datepicker("setDate", 'dateToday');
+                }
+                else {
+                    $("#divRetPayInfoMsg").text("");
+                    $("#divRetPayInfoMsg").addClass("hidden");
+                }
+            }
+        });
+    }
+</script>

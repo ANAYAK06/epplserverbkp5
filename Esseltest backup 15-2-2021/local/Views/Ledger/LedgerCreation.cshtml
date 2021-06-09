@@ -1,0 +1,171 @@
+﻿
+@{
+    ViewBag.Title = "LedgerCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/Accounts/css")
+<script src="~/Scripts/Ledger/Ledger.js"></script>
+@*<h2>LedgerCreation</h2>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Ledger</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <button class="btn btn1 btn-success" id="btnewLedger" onclick="ViewAddNewLedgerModel()">Create Ledger</button>
+                                <input type="text" value="0" id="txtNLCreatedby" style="display:none" />
+                                <div id="divLedgerDetailsGrid">
+                                    @Html.Action("ViewLedgerDetailsGrid", "Ledger")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="AddNewLedgerModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Create Ledger</h4>
+                            </div>
+                            <div class="modal-body" style="overflow-x:hidden">
+                                @Html.Action("AddnewLedger", "Ledger")
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="EditLedgerModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Edit Ledger</h4>
+                            </div>
+                            <div class="modal-body" style="overflow-x:hidden">
+                                <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Group</label>
+                                            <input type="text" id="txtUpledgGroup" class="form-control" readonly="readonly" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Sub Group Name</label>
+                                        <input type="text" id="txtUpledgSubGroup" class="form-control" readonly="readonly" />
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Account Head</label>
+                                        <input type="text" id="txtUpledgAccHead" class="form-control" readonly="readonly" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <label>Ledger Name</label>
+                                        <input type="text" id="txtUpledgName" class="form-control" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Opening Balance</label>
+                                        <input type="text" id="txtUpledgBal" class="form-control" onkeypress="return ValidateAmount(this,event);" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Balance As On Date</label>
+                                        <input type="text" id="txtUpledgBalDate" class="form-control date-picker" readonly="readonly" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Ledger Value Type</label>
+                                            <ul class="list-inline">
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input" name="UpLedgerValueType" value="Yes" id="chkUpCredit" onclick="UpdateLedgerValueType(this)">
+                                                        <span class="eagle-check-indicator"></span>
+                                                        <span class="eagle-check-description">Credit</span>
+                                                    </label>
+                                                </li>
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input" name="UpLedgerValueType" value="No" id="chkUpDebit" onclick="UpdateLedgerValueType(this)">
+                                                        <span class="eagle-check-indicator"></span>
+                                                        <span class="eagle-check-description">Debit</span>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="text-right">
+                                        <input type="submit" class="btn btn1 btn-success" id="btnUpLedger" onclick="UpdateLedger()" value="Submit" />
+                                        <input type="text" id="txtUpLedgerId" class="form-control" style="display:none" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <br />
+                                    <div id="divUpdateLedgerInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="deleteLedger" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                    <div class="modal-dialog modal-confirm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="icon-box">
+                                    <i class="fa fa-check"></i>
+                                </div>
+                                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="confirmmsg">
+                                    <p>Do you really want to delete Ledger: </p>
+                                    <label id="lbldelLedgerName"></label>
+                                    <label id="lbldelLedgerName1"></label>
+                                    <p>This process cannot be undone.</p>
+                                </div>
+                                <div id="divDeletecLedgerInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div id="confirmbtndeleteledger">
+                                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" id="btndeletersubgrp" onclick="DeleteLedger()">Delete</button>
+                                    <input type="text" id="txtdeleteledgerid" style="display:none" />
+                                    <input type="text" id="txtdeleteledgdate" style="display:none" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtNLCreatedby").val(Sessioncreated);
+    });
+</script>

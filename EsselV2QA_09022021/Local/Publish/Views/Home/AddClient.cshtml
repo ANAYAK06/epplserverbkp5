@@ -1,0 +1,341 @@
+﻿@model EsselTestLocalApplication.Models.AddClientAndSubClient
+@{
+    /**/
+    ViewBag.Title = "AddClient";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/Accounts/css")
+@*<script src="~/Scripts/DataTables/media/js/jquery.dataTables.min.js"></script>
+    <link href="~/Content/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/EsselStyles/style.css" rel="stylesheet" />*@
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Client And SubClients</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button class="btn btn1 btn-success" id="btnAddNewClient" onclick="ShowAddNewClientModel()">Add Client</button>
+                                        <input type="text" value="0" id="txtClientCreatedby" style="display:none" />
+                                        <div id="divClientGrid">
+                                            @Html.Action("ViewClientDetailsGrid", "Home")
+                                        </div>
+                                    </div>
+                                    <div id="ModelNewClient" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Client Creation</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @Html.Action("AddnewClient", "Home")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="ModelUpdateClient" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Update Client</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @Html.Action("UpdateClient", "Home")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="ModelAddSubClient" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Add New Sub Client</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @Html.Action("AddNewSubClient", "Home")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="ModelUpdateSubClient" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Update  Sub Client</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @Html.Action("UpdateSubClient", "Home")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="ModelViewClient" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Client Details</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="divClientDetails">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>ClientName</label>
+                                                                    <input type="text" class="form-control" id="txtvclient" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>Tin Number</label>
+                                                                    <input type="text" class="form-control" id="txtvtin" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>PAN Number</label>
+                                                                    <input type="text" class="form-control" id="txtpan" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>TAN Number</label>
+                                                                    <input type="text" class="form-control" id="txtvctan" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>Contact Person Name</label>
+                                                                    <input type="text" class="form-control" id="txtvName" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>Client Phone Number</label>
+                                                                    <input type="text" class="form-control" id="txtvPhone" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>GST Applicable</label>
+                                                                    <input type="text" class="form-control" id="txtvgst" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>Nature Of Group</label>
+                                                                    <input type="text" class="form-control" id="txtvgnature" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" id="divViewClientGst">
+                                                            <div style="margin-left:2px">
+                                                                <div class="strike">
+                                                                    <span>GST Details</span>
+                                                                </div>
+                                                                <div class="tabledynamic">
+                                                                    <table id="ViewGstTable" class="table order-list viewgst">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <td style="text-align:center"><label>State</label></td>
+                                                                                <td style="text-align:center"><label>GSTNo</label></td>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody></tbody>
+
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="closeClientcodeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+                                    </div>
+                                    <div id="ModelCloseSubClient" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Add New Sub Client</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @Html.Action("CloseSubClientForClient", "Home")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="closeSubClientcodeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ShowAddNewClientModel() {
+        $("#ModelNewClient").modal('show');
+        ClearAddClient();
+    }
+            function onlyOne(checkbox) {
+                var selectedIds = [];
+                var checkboxes = document.getElementsByName('GstApplicable');
+                for (var i in checkboxes)
+                    checkboxes[i].checked = checkbox.checked;
+                checkboxes.forEach((item) => {
+                    if (item !== checkbox) item.checked = false;
+                })
+                var ids = document.getElementsByName('GstApplicable');
+                for (var i = 0; i < ids.length; i++) {
+                    if (ids[i].checked == true) {
+                        // alert(ids[i].value);
+                        if (ids[i].value == 'Yes') {
+                            $("#divClientGst").removeClass('hidden');
+                            $("#divAddClientInfoMsg").text("");
+                            $("#divAddClientInfoMsg").addClass("hidden");
+                        }
+                        else {
+                            $("#divClientGst").addClass('hidden');
+                            $("#ClientGstTable tbody tr:not(:first)").remove();
+                            $("#ClientGstTable tbody tr:first").each(function () {
+                                var currentRow = $(this);
+                                var state = currentRow.find("td").eq(1).find("select").prop('selectedIndex', 0);
+                                var gstno = currentRow.find("td").eq(2).find("input[type='text']").val("");
+                                currentRow.find('input[type="checkbox"]').prop("checked", false);
+
+                            });
+                            $("#divAddClientInfoMsg").text("");
+                            $("#divAddClientInfoMsg").addClass("hidden");
+                        }
+                    }
+                }
+            }
+            function upgstCheckchange(checkbox) {
+                var selectedIds = [];
+                var checkboxes = document.getElementsByName('upGstApplicable');
+                for (var i in checkboxes)
+                    checkboxes[i].checked = checkbox.checked;
+                checkboxes.forEach((item) => {
+                    if (item !== checkbox) item.checked = false;
+                })
+                var ids = document.getElementsByName('upGstApplicable');
+                for (var i = 0; i < ids.length; i++) {
+                    if (ids[i].checked == true) {
+                        // alert(ids[i].value);
+                        if (ids[i].value == 'Yes') {
+                            $("#divUpClientGst").removeClass('hidden');
+                            $.ajax({
+                                type: "POST",
+                                url: "/Home/GetAllStates",
+                                data: '{}',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response) {
+                                    var rowno = 1;
+                                    var newRow = $("<tr>");
+                                    var cols = "";
+                                    cols += '<td style="text-align:center">' + rowno + '</td>';
+                                    cols += '<td><select class="form-control dropdown-toggle" id="ddlUpGstState" onchange="ClientGSTStateChange()"><option value="">-Please Select-</option>';
+                                    $.each(response, function () {
+                                        cols += '<option value=' + this['State_ID'] + '>' + this['State_Name'] + '</option>';
+                                    });
+                                    cols += '</select>';
+                                    cols += '</td><td style="text-align:center"><input class="form-control" data-val="true" id="txtUpGSTNo" name="txtGSTNo" type="text" /></td >';
+                                    cols += '<td style="text-align:center"><ul class="list-inline">';
+                                    cols += '<li class="eagle-checkbox">';
+                                    cols += '<label class="eagle-check custom-checkbox">';
+                                    cols += '<input type="checkbox" class="eagle-check-input" id="chkGstCheck">';
+                                    cols += '<span class="eagle-check-indicator"></span>  </label>';
+                                    cols += '</li>';
+                                    cols += '</ul ></td>';
+                                    //cols += '<td style="text-align:center"><input type="button" class="ibtnUpClientDel btn btn-md btn-danger" value="Delete"></td>';
+                                    newRow.append(cols);
+                                    $("table.order-list.UpClientGstGrid").append(newRow);
+                                    $("#divUpClientInfoMsg").text("");
+                                    $("#divUpClientInfoMsg").addClass("hidden");
+                                },
+                                failure: function (response) {
+                                    alert(response.responseText);
+                                },
+                                error: function (response) {
+                                    alert(response.responseText);
+                                }
+                            });
+
+                        }
+                        else {
+                            $("#divUpClientGst").addClass('hidden');
+                            $("#UpClientGstTable tbody tr").remove();
+                            $("#divUpClientInfoMsg").text("");
+                            $("#divUpClientInfoMsg").addClass("hidden");
+                        }
+                    }
+                }
+            }
+            function SubClientGSTCheckbox(checkbox) {
+                var selectedIds = [];
+                var checkboxes = document.getElementsByName('SCGstApplicable');
+                for (var i in checkboxes)
+                    checkboxes[i].checked = checkbox.checked;
+                checkboxes.forEach((item) => {
+                    if (item !== checkbox) item.checked = false;
+                })
+                var ids = document.getElementsByName('SCGstApplicable');
+                for (var i = 0; i < ids.length; i++) {
+                    if (ids[i].checked == true) {
+                        alert(ids[i].value);
+                        if (ids[i].value == 'Yes') {
+                            $("#divSubClientGst").removeClass('hidden');
+
+                        }
+                        else {
+                            $("#divSubClientGst").addClass('hidden');
+                        }
+                    }
+                }
+            }
+            $(document).ready(function () {
+                //Add Client
+                $("#chkGSTN").prop("checked", true);
+                $("#chkGSTY").prop("checked", false);
+                $("#divClientGst").addClass('hidden');
+                $("#divSubClientGst").addClass('hidden');
+                $("table.order-list.ClientGstGrid").on("click", ".ibtnClientDel", function (event) {
+                    $(this).closest("tr").remove();
+                    CountInvoiceTotal();
+                });
+                $("table.order-list.ClientGstGrid").on("click", ".ibtnClientDel", function (event) {
+                    $(this).closest("tr").remove();
+                    //CountInvoiceTotal();
+                });
+
+                var Sessioncreated = '@Session["Createdby"]';
+                $("#txtClientCreatedby").val(Sessioncreated);
+            });
+</script>

@@ -1,0 +1,300 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.TransferReciept
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div id="GridTransferRecieptData">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date)
+                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtTranrecDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                </div>
+                </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppritemtransferNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveItemtransferDetails('@Model.RefNo')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divAppritemstransferInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        var Type = '@Model.Type';
+        var Refno = '@Model.RefNo';
+        $("#txtTranrecDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+
+        }).datepicker("setDate", "");
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/TransferRecieptDataGrid',
+            data: { Refno: Refno, Type: Type},
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridTransferRecieptData").html(data);
+                }
+            },
+        });
+    });
+    function ApproveItemtransferDetails(RefNo) {
+         var Type = '@Model.Type';
+        var Roleid = '@Session["Roleid"]';
+        var Refno = '@Model.RefNo';
+        var Sessioncreated = '@Session["Createdby"]';
+        var AppritemtransferNotes = $("#AppritemtransferNotes").val();
+        var Date = $("#txtTranrecDate").val();
+        msg = $("#divAppritemstransferInfoMsg");
+        isValid = true;
+        var errorMsg = "";
+        if (Date == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Date</p>";
+            isValid = false;
+        }
+        if (AppritemtransferNotes == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Notes</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").addClass("hidden");
+            if (Type == "From Other Store") {
+                var currentrowcount = $("#ItemITRDetailsDataTable tbody tr").length;
+                var chkcount = 0;
+                $("#ItemITRDetailsDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentrowcount = currentRow;
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    if (check == false) { chkcount = chkcount + 1; }
+                });
+                if (currentrowcount == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Invalid Submission</p > ";
+                    isValid = false;
+                }
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+            }
+            else {
+                var currentrowcount = $("#ItemITRDetailsDataTable tbody tr").length;
+                var chkcount = 0;
+                var chkqty = 0;
+                $("#ItemITRDetailsDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentrowcount = currentRow;
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    var qty = currentRow.find("td").eq(10).find("input[type='text']").val();
+                    if (check == false) { chkcount = chkcount + 1; }
+                    if (qty == "") { chkqty = chkqty + 1; }
+                });
+                if (currentrowcount == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Invalid Submission</p > ";
+                    isValid = false;
+                }
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+                if (chkqty > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Enter Recieved Quantity</p > ";
+                    isValid = false;
+                }
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAppritemstransferInfoMsg").text("");
+                $("#divAppritemstransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+                $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var Type = '@Model.Type';
+                var ICCCodes = "";
+                var ItemCodes = "";
+                var Basics = "";
+                var Amts = "";
+                var IssuedQtys = 0;
+                var LostQtys = 0;
+                var DamagedQtys = 0;
+                var sumLostQty = 0;
+                var sumIssuedQty = 0;
+                var sumDamagedQty = 0;
+                var RaisedQtys = 0;
+                var RecievedQtys = 0;
+                var SumRaisedQty = 0;
+                var SumRecievedQty = 0;
+                var Rowids = "";
+                var selectedledlist = [];
+                //var IndDefinetxt = $("#ddl_ItemType option:selected").text();
+                $("#ItemITRDetailsDataTable tbody tr").each(function () {
+                    var currentRow = $(this);                    
+                    if (Type == "From Other Store") {
+                        var ICCCode = currentRow.find("td").eq(1).html();
+                        var Itemcode = currentRow.find("td").eq(2).html();
+                        //var Basic = isNaN(parseFloat(currentRow.find("td").eq(6).html())) ? 0 : parseFloat(currentRow.find("td").eq(6).html())
+                        var Amt = isNaN(parseFloat(currentRow.find("td").eq(8).html())) ? 0 : parseFloat(currentRow.find("td").eq(8).html())
+                        var Issuedqty = isNaN(parseFloat(currentRow.find("td").eq(9).html())) ? 0 : parseFloat(currentRow.find("td").eq(9).html())
+                        var LostQty = isNaN(parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())
+                        var DamagedQty = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+                        var Rowid = currentRow.find("td").eq(12).html();
+                        ICCCodes = ICCCodes + ICCCode + ",";
+                        ItemCodes = ItemCodes + Itemcode + ",";
+                        Amts = Amts + Amt + ",";
+                        IssuedQtys = IssuedQtys + Issuedqty + ",";
+                        LostQtys = LostQtys + LostQty + ",";
+                        DamagedQtys = DamagedQtys + DamagedQty + ",";
+                        sumLostQty = parseFloat(sumLostQty) + parseFloat(LostQty);
+                        sumDamagedQty = parseFloat(sumDamagedQty) + parseFloat(DamagedQty);
+                        Rowids = Rowids + Rowid + ",";
+                        if (ItemCodes != "") {
+                            selectedledlist.push(currentRow.find("td").eq(2).html());
+                        }
+                    }
+                    else {                       
+                        var Itemcode = currentRow.find("td").eq(1).html();
+                        var Basic = isNaN(parseFloat(currentRow.find("td").eq(6).html())) ? 0 : parseFloat(currentRow.find("td").eq(6).html())
+                        var Amt = isNaN(parseFloat(currentRow.find("td").eq(8).html())) ? 0 : parseFloat(currentRow.find("td").eq(8).html())
+                        var Raisedqty = isNaN(parseFloat(currentRow.find("td").eq(9).html())) ? 0 : parseFloat(currentRow.find("td").eq(9).html())
+                        var RecievedQty = isNaN(parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())
+                        var Rowid = currentRow.find("td").eq(11).html();                        
+                        ItemCodes = ItemCodes + Itemcode + ",";
+                        Basics = Basics + Basic + ",";
+                        Amts = Amts + Amt + ",";
+                        RaisedQtys = RaisedQtys + Raisedqty + ",";                        
+                        RecievedQtys = RecievedQtys + RecievedQty + ",";                       
+                        SumRaisedQty = parseFloat(SumRaisedQty) + parseFloat(Raisedqty);
+                        SumRecievedQty = parseFloat(SumRecievedQty) + parseFloat(RecievedQty);
+                        Rowids = Rowids + Rowid + ",";
+                        if (ItemCodes != "") {
+                            selectedledlist.push(currentRow.find("td").eq(2).html());
+                        }
+                    }
+                });
+                var Refno = '@Model.RefNo';                
+                var Indno = '@Model.IndentNo';
+                $("#divAppritemstransferInfoMsg").text("");
+                $("#divAppritemstransferInfoMsg").addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+                if (Type == "From Other Store") {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/SaveTransferReciept",
+                        data: '{ItemCodes:"' + ItemCodes + '",Amts:"' + Amts + '",IssuedQtys:"' + IssuedQtys + '",LostQtys:"' + LostQtys + '",DamagedQtys:"' + DamagedQtys + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",sumLostQty:"' + sumLostQty + '",sumDamagedQty:"' + sumDamagedQty + '",Refno:"' + Refno + '",Rid:"' + Rowids + '",Date:"' + $("#txtTranrecDate").val() + '",Type:"' + Type + '",Indno:"' + Indno + '",ICCCodes:"' + ICCCodes + '",Basics:"' + Basics + '",SumIssuedQty:"' + sumIssuedQty + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        processData: false,
+                        dataType: "json",
+                        success: function (Data) {
+                            var msg = '';
+                            var string = Data.saveStatus;
+                            var nameArr1 = string.split(',');
+                            var status = nameArr1[0];
+                            var ICode = nameArr1[1];
+                            if (status == "Submitted") {
+                                $('#ApprovetrMsgModal').modal('show');
+                                msg = "<div>Transfer Reciept No  " + ICode + " Successfully Submitted </div>";
+                                $("#ApprovetrMsgModal").on("hide.bs.modal", function () {
+                                    $("#divApprtrGrid").load('/Purchase/TransferRecieptGrid');
+                                });
+                                $("#ApprtrMsg").html(msg);
+                            }
+                            else {
+                                msg = "<div>" + Data.saveStatus + "</div>";
+                                $("#ApprtrMsg").html(msg);
+                                $('#ApprovetrMsgModal').modal('show');
+                            }
+                        },
+                        failure: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprtrMsg").html(msg);
+                            $('#ApprovetrMsgModal').modal('show');
+                        },
+                        error: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprtrMsg").html(msg);
+                            $('#ApprovetrMsgModal').modal('show');
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/SaveVendorTransferReciept",
+                        data: '{ItemCodes:"' + ItemCodes + '",Basics:"' + Basics + '",Amts:"' + Amts + '",RaisedQtys:"' + RaisedQtys + '",RecievedQtys:"' + RecievedQtys + '",SumRaisedQty:"' + SumRaisedQty + '",SumRecievedQty:"' + SumRecievedQty + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",Pono:"' + Refno + '",Rid:"' + Rowids + '",Date:"' + $("#txtTranrecDate").val() + '",Indno:"' + Indno + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        processData: false,
+                        dataType: "json",
+                        success: function (Data) {
+                            var msg = '';
+                            var string = Data.saveStatus;
+                            var nameArr1 = string.split(',');
+                            var status = nameArr1[0];
+                            var ICode = nameArr1[1];
+                            if (status == "Submitted") {
+                                $('#ApprovetrMsgModal').modal('show');
+                                msg = "<div>Transfer Reciept No  " + ICode + " Successfully Submitted </div>";
+                                $("#ApprovetrMsgModal").on("hide.bs.modal", function () {
+                                    $("#divApprtrGrid").load('/Purchase/TransferRecieptGrid');
+                                });
+                                $("#ApprtrMsg").html(msg);
+                            }
+                            else {
+                                msg = "<div>" + Data.saveStatus + "</div>";
+                                $("#ApprtrMsg").html(msg);
+                                $('#ApprovetrMsgModal').modal('show');
+                            }
+                        },
+                        failure: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprtrMsg").html(msg);
+                            $('#ApprovetrMsgModal').modal('show');
+                        },
+                        error: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprtrMsg").html(msg);
+                            $('#ApprovetrMsgModal').modal('show');
+                        }
+                    });
+                }
+            }
+        }
+    }
+</script>

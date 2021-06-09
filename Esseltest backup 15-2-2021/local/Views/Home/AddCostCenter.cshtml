@@ -1,0 +1,697 @@
+﻿@model EsselTestLocalApplication.Models.AddCostCenter
+@{
+    ViewBag.Title = "AddCostCenter";
+}
+<style>
+    .spancls {
+        color: red;
+        font-size: 12px;
+    }
+</style>
+<div class="col-md-12">
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCType)
+                        @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "CCTypeddlID", onchange = "NewCCTypeChange()" })
+                    </div>
+                </div>
+                <div class="col-md-6" id="divNPCCType">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NPCCOfficeType)
+                        @Html.DropDownListFor(model => model.NPCCOfficeType, new SelectList(Model.NPCCTypesList, "NPCCTypeID", "CCTypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "NPCCType" })
+                    </div>
+                </div>
+                <div class="col-md-6" id="divNewCCSubType">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubType)
+                        @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "SubTypeddlID" })
+                    </div>
+                </div>
+            </div>
+            <div id="divNewCCDetails">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCCode)&nbsp;&nbsp;
+                            <label id="lblccExist" class="spancls"></label>
+
+                            @Html.TextBoxFor(model => model.CCCode, htmlAttributes: new { @class = "form-control", @id = "txtNewCCCode", onkeyup = "NewCCCodeChange(this)", onkeypress = "return IsNumericCC(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCName)
+                            @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @id = "txtCCNameid" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" id="divNewCCFinalOfferNo">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EPPLFinalOfferNo)
+                            @Html.TextBoxFor(model => model.EPPLFinalOfferNo, htmlAttributes: new { @class = "form-control", @id = "txtEPPLFinalOfferNoid" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divNewCCFinalOfferDate">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FinalOfferDate)
+                            @Html.TextBoxFor(model => model.FinalOfferDate, "{0:dd-MMM-yyyy}", new { @id = "txtFinalOfferDateid", @class = "form-control date-picker", type = "text", @readonly = true })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" id="divNewCCRefNo">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientAcceptanceReferenceNo)
+                            @Html.TextBoxFor(model => model.ClientAcceptanceReferenceNo, htmlAttributes: new { @class = "form-control", @id = "txtClientAcceptanceReferenceNoid" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divNewCCRefDate">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientAcceptanceDate)
+                            @Html.TextBoxFor(model => model.ClientAcceptanceDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control  date-picker", @id = "txtClientAcceptanceDateid", @type = "text", @readonly = true })
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCInchargeName)
+                            @Html.TextBoxFor(model => model.CCInchargeName, htmlAttributes: new { @class = "form-control", @id = "txtCCInchargeNameid" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.State)
+                            @Html.DropDownListFor(model => model.State, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "txtStateNameid" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.InchargePhNo)
+                            @Html.TextBoxFor(model => model.InchargePhNo, htmlAttributes: new { @class = "form-control", @id = "txtInchargePhNoid", onkeypress = "return IsNumeric(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SiteAddress)
+                            @Html.TextBoxFor(model => model.SiteAddress, htmlAttributes: new { @class = "form-control", @id = "txtSiteAddressid" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PhoneNo)
+                            @Html.TextBoxFor(model => model.PhoneNo, htmlAttributes: new { @class = "form-control", @id = "txtPhoneNoid", onkeypress = "return IsNumeric(event)" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @*@Html.LabelFor(model => model.VoucherLimit)
+                            @Html.TextBoxFor(model => model.VoucherLimit, htmlAttributes: new { @class = "form-control", @id = "txtVoucherLimitid", onkeypress = "return ValidateAmount(this,event);" })*@
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DayLimit)
+                            @Html.TextBoxFor(model => model.DayLimit, htmlAttributes: new { @class = "form-control", @id = "txtDayLimitid", onkeypress = "return ValidateAmount(this,event);" })
+
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-6" id="divccProjmgr">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ProjectMgr)
+                            @Html.DropDownListFor(model => model.ProjectMgr, new SelectList(Model.Projectmgrlist, "Userid", "Username"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "ddlCCProjmgr" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divNpCCStore">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.StoreType)
+                            @Html.DropDownListFor(model => model.StoreType, new SelectList(Model.NPStoreTypesList, "Value", "TypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "ddlNpCCStore" })
+                        </div>
+                    </div>
+
+                    @if (Model.isRegionExist == true)
+                    {
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.GroupID)
+                                @Html.DropDownListFor(model => model.GroupID, new SelectList(Model.GroupsList, "GroupID", "GroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control  dropdown-toggle", @id = "groupDDlid" })
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+                <div class="row" id="divClientIncharge">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientInchargeName)
+                            @Html.TextBoxFor(model => model.ClientInchargeName, htmlAttributes: new { @class = "form-control", @id = "txtClientInchargeName" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientInchargePhNo)
+                            @Html.TextBoxFor(model => model.ClientInchargePhNo, htmlAttributes: new { @class = "form-control", @id = "txtclientInchargePhNo", onkeypress = "return IsNumeric(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientInchargemailid)
+                            @Html.TextBoxFor(model => model.ClientInchargemailid, htmlAttributes: new { @class = "form-control", @id = "txtclientInchargemailid" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" id="divpCCStore">
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.IsStoreApplicable)
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input" name="StoreApplicable" value="Yes" id="chkStoreY" onclick="StoleApplicableValidation(this)">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">Yes</span>
+                                    </label>
+                                </li>
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input" name="StoreApplicable" value="No" id="chkStoreN" onclick="StoleApplicableValidation(this)" checked>
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">No</span>
+                                    </label>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <input type="submit" value="Submit" class="btn btn1 btn-success" onclick="AddCostCenter()" />
+                            <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetAddNewCC()" />
+                            <input type="text" id="txtCreatedby" style="display:none" />
+                            <input type="text" id="txtCCuid" style="display:none" />
+                            @if (Model.isRegionExist == true)
+                            {
+                                <input type="hidden" id="txtRegionExist" value="Yes" />
+                            }
+                            else
+                            {
+                                <input type="hidden" id="txtRegionExist" value="No" />
+                            }
+
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddCostCenterInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+        var SessionUID = '@Session["UID"]';
+        $("#txtCCuid").val(SessionUID);
+        //alert($("#txtCreatedby").val());
+        $('#txtClientAcceptanceDateid').css('background-color', 'transparent');
+        $('#txtFinalOfferDateid').css('background-color', 'transparent');
+        $("#divNewCCDetails").addClass('hidden');
+        $("#divNewCCSubType").addClass('hidden');
+        $("#divNewCCFinalOfferNo").addClass('hidden');
+        $("#divNewCCFinalOfferDate").addClass('hidden');
+        $("#divNewCCRefNo").addClass('hidden');
+        $("#divNewCCRefDate").addClass('hidden');
+        $("#divpCCStore").addClass('hidden');
+        $("#divNpCCStore").addClass('hidden');
+        $("#divClientIncharge").addClass('hidden');        
+        // Intialising Int fields to show Empty
+        $("#VoucherLimit").val("");
+        $("#DayLimit").val("");
+        //Cost center
+        $("#txtFinalOfferDateid").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+        $("#txtClientAcceptanceDateid").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+
+    });
+    function ResetAddNewCC() {
+        $("#lblccExist").text("");
+
+        $("#txtEPPLFinalOfferNoid").val("");
+        //var FinalOfferDate = $("#txtFinalOfferDateid").val();
+        var ClientAcceptanceReferenceNo = $("#txtClientAcceptanceReferenceNoid").val("");
+        //var ClientAcceptanceDate = $("#txtClientAcceptanceDateid").val();
+
+        $("#txtCCNameid").val("");
+        $("#txtCCInchargeNameid").val("");
+        $("#txtInchargePhNoid").val("");
+        $("#txtSiteAddressid").val("");
+        $("#txtPhoneNoid").val("");
+        //$("#txtVoucherLimitid").val("");
+        $("#txtDayLimitid").val("");
+        //$("#txtStateNameid option:selected").index();
+        $("#txtNewCCCode").val("");
+        $("#SubTypeddlID").prop('selectedIndex', 0);
+        $("#txtStateNameid").prop('selectedIndex', 0);
+        $("#CCTypeddlID").prop('selectedIndex', 0);
+        $("#CCTypeddlID").prop('disabled', false);
+        // $(".date-picker").datepicker("setDate", 'dateToday');
+        $("#txtClientAcceptanceDateid").datepicker("setDate", 'dateToday');
+        $("#txtFinalOfferDateid").datepicker("setDate", 'dateToday');
+        //$('#txtClientAcceptanceDateid').datepicker('setDate', null);
+        //$("#txtFinalOfferDateid").datepicker({ }).datepicker("setDate", new Date());
+
+        $("#divAddCostCenterInfoMsg").text("");
+        $("#divAddCostCenterInfoMsg").addClass("hidden");
+        $("#divNewCCSubType").addClass("hidden");
+        $("#divNewCCDetails").addClass("hidden");
+        $("#divNPCCType").addClass("hidden");
+        ViewAddCostCenterModel1();
+        $("#divpCCStore").addClass('hidden');
+        $("#divNpCCStore").addClass('hidden');
+    }
+    function ViewAddCostCenterModel1() {
+        $.get("/Home/AddCostCenter", null, function (data) {
+            $('#AddCostCenter').html(data);
+            $("#AddNewCCModal").modal('show');
+            $("#divNPCCType").addClass('hidden');
+        });
+    }
+    function StoleApplicableValidation(checkbox) {
+        var selectedIds = [];
+        var checkboxes = document.getElementsByName('StoreApplicable');
+        for (var i in checkboxes)
+            checkboxes[i].checked = checkbox.checked;
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+        var ids = document.getElementsByName('StoreApplicable');
+      
+    }
+    function NewCCTypeChange() {
+        var cctypeindex = $("#CCTypeddlID option:selected").index();
+        var cctype = $("#CCTypeddlID  option:selected").text();
+        if (cctypeindex == 0) {
+            $("#divNewCCSubType").addClass('hidden');
+            $("#divNewCCDetails").addClass('hidden');
+            $("#divNPCCType").addClass('hidden');
+            $("#divClientIncharge").addClass('hidden');
+        }
+        else {
+
+            $("#CCTypeddlID").prop('disabled', true);
+            $("#divNewCCDetails").removeClass('hidden');
+            if (cctype == "Performing") {
+                $("#divNPCCType").addClass('hidden');
+                $("#divNewCCSubType").removeClass('hidden');
+                $("#divNewCCSubType").removeClass('hidden');
+                $("#divNewCCFinalOfferNo").removeClass('hidden');
+                $("#divNewCCFinalOfferDate").removeClass('hidden');
+                $("#divNewCCRefNo").removeClass('hidden');
+                $("#divNewCCRefDate").removeClass('hidden');
+                $("#txtClientAcceptanceDateid").datepicker("setDate", 'dateToday');
+                $("#txtFinalOfferDateid").datepicker("setDate", 'dateToday');
+                $("#divccProjmgr").removeClass('hidden');
+
+
+                $("#divpCCStore").removeClass('hidden');
+                $("#divNpCCStore").addClass('hidden');
+                $("#divClientIncharge").removeClass('hidden');
+            }
+            else if (cctype == "Capital") {
+                $("#divNewCCSubType").addClass('hidden');
+                $("#divNewCCFinalOfferNo").addClass('hidden');
+                $("#divNewCCFinalOfferDate").addClass('hidden');
+                $("#divNewCCRefNo").addClass('hidden');
+                $("#divNewCCRefDate").addClass('hidden');
+                $("#divNewCCSubType").addClass('hidden');
+                $("#divccProjmgr").addClass('hidden');
+                $("#divNPCCType").addClass('hidden');
+                $("#divClientIncharge").addClass('hidden');
+            }
+            else {
+                $("#divNewCCSubType").addClass('hidden');
+                $("#divNewCCFinalOfferNo").addClass('hidden');
+                $("#divNewCCFinalOfferDate").addClass('hidden');
+                $("#divNewCCRefNo").addClass('hidden');
+                $("#divNewCCRefDate").addClass('hidden');
+                $("#divNewCCSubType").addClass('hidden');
+                $("#divccProjmgr").addClass('hidden');
+                $("#divNPCCType").removeClass('hidden');
+                $("#divpCCStore").addClass('hidden');
+                $("#divNpCCStore").removeClass('hidden');
+                $("#divClientIncharge").addClass('hidden');
+
+            }
+        }
+    }
+    function AddCostCenter() {
+
+        var isValid = ValidateAddCostCenterDetails();
+        if (!isValid) return false;
+        var CC = "";
+        var NPCCType = "";
+        var CostcenterType = $("#CCTypeddlID option:selected").text();
+        if (CostcenterType != "Capital") {
+            CC = "CC-" + $("#txtNewCCCode").val();
+        }
+        else if (CostcenterType == "Capital") {
+            CC = $("#txtNewCCCode").val();
+        }
+        if (CostcenterType == "Capital") {
+            NPCCType = null;
+        }
+        else {
+            NPCCType = $("#NPCCType option:selected").val();
+        }
+
+        var Groupname = '';
+        var isregionexist = $("#txtRegionExist").val();
+        if (isregionexist === 'Yes') {
+            Groupname = $("#groupDDlid  option:selected").text();
+        }
+
+        //alert($("#SubTypeddlID option:selected").text());
+        var CCTypeval = $("#CCTypeddlID option:selected").text();
+        var addCostCenterDetails = {};
+        var d = new Date();
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+        var currentdate = d.getFullYear() + '-' +
+            (('' + month).length < 2 ? '0' : '') + month + '-' +
+            (('' + day).length < 2 ? '0' : '') + day;
+
+        //alert(currentdate);
+        var stype = "";
+        if (CCTypeval == "Non-Performing") {
+            storeApplicable = "Yes";
+            stype = $("#ddlNpCCStore option:selected").val();
+        }
+        else if (CCTypeval === 'Capital') {
+            storeApplicable = "No";
+            stype = '';
+
+        }
+        if (CCTypeval == "Performing") {
+            var storeApplicable = "No";
+            if ($('#chkStoreY').is(":checked") === true) {
+                storeApplicable = "Yes";
+                stype = 'Normal';
+            }
+            addCostCenterDetails = {
+                CCType: $("#CCTypeddlID option:selected").text(),
+                SubType: $("#SubTypeddlID option:selected").text(),
+                EPPLFinalOfferNo: $("#txtEPPLFinalOfferNoid").val(),
+                FinalOfferDate: $("#txtFinalOfferDateid").val(),
+                ClientAcceptanceReferenceNo: $("#txtClientAcceptanceReferenceNoid").val(),
+                ClientAcceptanceDate: $("#txtClientAcceptanceDateid").val(),
+                Group: Groupname,
+                CCName: $("#txtCCNameid").val(),
+                CCInchargeName: $("#txtCCInchargeNameid").val(),
+                InchargePhNo: $("#txtInchargePhNoid").val(),
+                SiteAddress: $("#txtSiteAddressid").val(),
+                PhoneNo: $("#txtPhoneNoid").val(),
+                //VoucherLimit: $("#txtVoucherLimitid").val(),
+                DayLimit: $("#txtDayLimitid").val(),
+                StateID: $("#txtStateNameid option:selected").val(),
+                Createdby: $("#txtCreatedby").val(),
+                Action: 'Add',
+                CCCode: CC,
+                UID: $("#txtCCuid").val(),
+                ProjectMgrid: $("#ddlCCProjmgr option:selected").val(),
+                IsStoreApplicable: storeApplicable,
+                StoreType: stype,
+                ClientInchargeName: $("#txtClientInchargeName").val(),
+                ClientInchargePhNo: $("#txtclientInchargePhNo").val(),
+                ClientInchargemailid: $("#txtclientInchargemailid").val()
+            };
+        }
+        else {
+            addCostCenterDetails = {
+                CCType: $("#CCTypeddlID option:selected").text(),
+                NPCCOfficeType: NPCCType,
+                SubType: $("#CCTypeddlID option:selected").text(),
+                EPPLFinalOfferNo: $("#txtEPPLFinalOfferNoid").val(),
+                FinalOfferDate: currentdate,
+                ClientAcceptanceReferenceNo: $("#txtClientAcceptanceReferenceNoid").val(),
+                ClientAcceptanceDate: currentdate,
+                Group: Groupname,
+                CCName: $("#txtCCNameid").val(),
+                CCInchargeName: $("#txtCCInchargeNameid").val(),
+                InchargePhNo: $("#txtInchargePhNoid").val(),
+                SiteAddress: $("#txtSiteAddressid").val(),
+                PhoneNo: $("#txtPhoneNoid").val(),
+                //VoucherLimit: $("#txtVoucherLimitid").val(),
+                DayLimit: $("#txtDayLimitid").val(),
+                StateID: $("#txtStateNameid option:selected").val(),
+                Createdby: $("#txtCreatedby").val(),
+                Action: 'Add',
+                CCCode: CC,
+                UID: $("#txtCCuid").val(),
+                ProjectMgrid: 0,
+                IsStoreApplicable: storeApplicable,
+                StoreType: stype
+            };
+        }
+        addFailMsg = "Error Occurred While Adding New Cost Center.";
+        addSuccessMsg = "Cost Center Added Successfully.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Home/SaveNewCostCenter',
+            data: { newCostCenter: addCostCenterDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Cost Center Inserted") {
+                    $("#divAddCostCenterInfoMsg").text(addSuccessMsg);
+                    $("#divAddCostCenterInfoMsg").removeClass("hidden alert-danger");
+                    $("#divAddCostCenterInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#divAddCostCenterInfoMsg").text(Data.saveStatus);
+                    $("#divAddCostCenterInfoMsg").addClass("alert-danger");
+                    $("#divAddCostCenterInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divAddCostCenterInfoMsg").text(addFailMsg);
+                $("#divAddCostCenterInfoMsg").addClass("alert-danger");
+                $("#divAddCostCenterInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+
+    function ValidateAddCostCenterDetails() {
+        var isValid = true;
+        var errorMsg = "";
+        var CCType = $("#CCTypeddlID option:selected").text();
+        var NPCCType = $("#NPCCType option:selected").index();
+        var SubType = $("#SubTypeddlID option:selected").index();
+        var EPPLFinalOfferNo = $("#txtEPPLFinalOfferNoid").val();
+        var FinalOfferDate = $("#txtFinalOfferDateid").val();
+        var ClientAcceptanceReferenceNo = $("#txtClientAcceptanceReferenceNoid").val();
+        var ClientAcceptanceDate = $("#txtClientAcceptanceDateid").val();
+
+        var CCName = $("#txtCCNameid").val();
+        var CCInchargeName = $("#txtCCInchargeNameid").val();
+        var InchargePhNo = $("#txtInchargePhNoid").val();
+        var SiteAddress = $("#txtSiteAddressid").val();
+        var PhoneNo = $("#txtPhoneNoid").val();
+        //var VoucherLimit = $("#txtVoucherLimitid").val();
+        var DayLimit = $("#txtDayLimitid").val();
+        var StateName = $("#txtStateNameid option:selected").index();
+        var NewCCCode = $("#txtNewCCCode").val();
+        if (CCType == "-Please Select-") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center Type</p>";
+            isValid = false;
+        }
+        if (NewCCCode == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Cost Center Code</p>";
+            isValid = false;
+        }
+        if (CCName == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+            isValid = false;
+        }
+
+        if (CCType == "Performing") {
+            var ClientInchargeName = $("#txtClientInchargeName").val();
+            var ClientInchargePhNo = $("#txtclientInchargePhNo").val();
+            var ClientInchargemailid = $("#txtclientInchargemailid").val();
+            if (SubType == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Sub Type</p>";
+                isValid = false;
+            }
+            if (EPPLFinalOfferNo == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Final Offer No</p>";
+                isValid = false;
+            }
+            if (FinalOfferDate == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Final Offer Date</p>";
+                isValid = false;
+            }
+            if (ClientAcceptanceReferenceNo == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Reference Number</p>";
+                isValid = false;
+            }
+            if (ClientAcceptanceDate == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Reference Date</p>";
+                isValid = false;
+            }
+
+            var ProjerctmgrName = $("#ddlCCProjmgr option:selected").index();
+            if (ProjerctmgrName === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Project Manager</p>";
+                isValid = false;
+            }
+
+            if ($('#chkStoreY').is(":checked") === false && $('#chkStoreN').is(":checked") === false) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check If Store Applicable or Not</p>";
+                isValid = false;
+            }
+            if (ClientInchargeName == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Incharge Name</p>";
+                isValid = false;
+            }
+            if (ClientInchargePhNo == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Incharge  PhoneNumber</p>";
+                isValid = false;
+            }
+            else if (ClientInchargePhNo.length != 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Client Incharge Phone No</p>";
+                isValid = false;
+            }
+            if (ClientInchargemailid == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client E-Mail</p>";
+                isValid = false;
+            }
+            if (ClientInchargemailid != "") {
+                var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if (!expr.test(ClientInchargemailid)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Client Email</p>";
+                    isValid = false;
+                }
+            }
+        }
+        if (CCType === "Non-Performing") {
+            if (NPCCType === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select NPCC Branch Type</p>";
+                isValid = false;
+            }
+            var storetype = $("#ddlNpCCStore option:selected").index();
+            if (storetype == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Store Type</p>";
+                isValid = false;
+            }
+        }
+
+
+        if (CCInchargeName == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Incharge Name</p>";
+            isValid = false;
+        }
+        if (InchargePhNo == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Incharge  Phone Number</p>";
+            isValid = false;
+        }
+        else if (InchargePhNo.length != 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Phone No</p>";
+            isValid = false;
+        }
+        if (SiteAddress == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Site Address</p>";
+            isValid = false;
+        }
+        if (PhoneNo == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Cost Center Phone No</p>";
+            isValid = false;
+        }
+        else if (PhoneNo.length != 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Phone No</p>";
+            isValid = false;
+        }
+        //if (VoucherLimit == "") {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Vocher Limit</p>";
+        //    isValid = false;
+        //}
+        if (DayLimit == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Day Limit</p>";
+            isValid = false;
+        }
+        if (StateName == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select State Name</p>";
+            isValid = false;
+        }
+        var isregionexist = $("#txtRegionExist").val();
+        if (isregionexist === 'Yes') {
+            var GroupID = $("#groupDDlid option:selected").index();
+            if (GroupID == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Group</p>";
+                isValid = false;
+            }
+        }
+
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddCostCenterInfoMsg").text("");
+            $("#divAddCostCenterInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddCostCenterInfoMsg").addClass("alert-danger");
+            $("#divAddCostCenterInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divAddCostCenterInfoMsg").text("");
+            $("#divAddCostCenterInfoMsg").addClass("hidden");
+        }
+        return isValid;
+
+    }
+
+
+</script>
+

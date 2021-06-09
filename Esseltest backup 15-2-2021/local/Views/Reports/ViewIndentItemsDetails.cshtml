@@ -1,0 +1,90 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.ViewIndents>
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12">
+    <table id="tblIndentitemsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr><th colspan="8" style="text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:15px;">Indent Items</th></tr>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Item Code</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Item Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Specification</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Price</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Purchased Quantity</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Indent Value</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Transferred Quantity</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Transferred Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Itemcode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Itemname)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Specification)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Basic)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.PurchasedQty)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.IndentValue)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TransferredQty)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TransferredValue)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><label id="purchasedqty" style="color:green; font-weight:bold"></label></td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"><label id="IndentValue" style="color:green; font-weight:bold"></label></td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"><label id="transferredqty" style="color:green; font-weight:bold"></label></td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"><label id="transferredvalue" style="color:green; font-weight:bold"></label></td>               
+            </tr>
+        </tfoot>
+    </table>
+    <br />
+</div>
+<script>
+     $(document).ready(function () {       
+        var sumpqty = 0;
+         var sumIV = 0;
+         var sumtqty = 0;
+         var sumTV = 0;
+         $("#tblIndentitemsGrid tbody tr").each(function () {
+            var currentRow = $(this).closest("tr");
+            var pqty = currentRow.find("td").eq(4).html();
+             var IV = currentRow.find("td").eq(5).html();
+             var tqty = currentRow.find("td").eq(6).html();
+             var TV = currentRow.find("td").eq(7).html();
+             sumpqty = parseFloat(sumpqty) + parseFloat(pqty);
+             sumIV = parseFloat(sumIV) + parseFloat(IV);            
+             sumtqty = parseFloat(sumtqty) + parseFloat(tqty);
+             sumTV = parseFloat(sumTV) + parseFloat(TV);
+           
+        });
+         $("#tblIndentitemsGrid tfoot tr").each(function () {
+             $("#purchasedqty").html(parseFloat(sumpqty));
+             $("#IndentValue").html(parseFloat(sumIV).toFixed(2));
+             $("#transferredqty").html(parseFloat(sumtqty));
+             $("#transferredvalue").html(parseFloat(sumTV).toFixed(2));
+        });
+    });
+</script>

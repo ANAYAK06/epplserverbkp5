@@ -1,0 +1,234 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.StockReconcilation
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+
+    .tdalign {
+        text-align: center !important;
+        /*white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;*/
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+
+    .firstheaderborder {
+        border-left: 1px solid white;
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .startheaderborder {
+        border-left: 1px solid white;
+    }
+
+    .endheaderborder {
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .linkcls {
+        color: blue !important;
+        text-decoration: underline !important;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 0 0;
+        border-bottom: 1px solid #111;
+    }
+</style>
+@*<div>All</div>*@
+<div align="right" class="col-md-12">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelAllGrid();" />
+    <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfCBGrid();" />
+
+</div>
+<div class="col-md-12">
+    <div class="table-responsive">
+        <table id="tblAllGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th colspan="4" class="firstheaderborder">Total Reciept At CC</th>
+                    <th colspan="6" class="endheaderborder">Total Out From CC</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th class="wrapcls">Item Code</th>
+                    <th class="wrapcls">Item Name</th>
+                    <th class="wrapcls">Specification</th>
+                    <th class="wrapcls ">Basic Price</th>
+                    <th class="wrapcls">Units</th>
+                    <th class="wrapcls">Recived From CentralStore</th>
+                    <th class="wrapcls">Recieved From OtherCC</th>
+                    <th class="wrapcls ">Purchase At CC</th>
+                    <th class="wrapcls">Total Recieved at CC</th>
+                    <th class="wrapcls">Transfer To Central Store</th>
+                    <th class="wrapcls">Transfer To OtherCC</th>
+                    <th class="wrapcls ">Issued For CC Consumption</th>
+                    <th class="wrapcls ">Lost & Damages</th>
+                    <th class="wrapcls ">Total Out From CC</th>
+                    <th class="wrapcls ">Balance Stock At CC</th>
+                    <th class="wrapcls ">Amount Of Consumed at CC</th>
+                    <th class="wrapcls ">Balance Stock Amt at CC</th>
+                    <th class="wrapcls ">Amount Of Damage</th>
+                    <th class="wrapcls ">Comments On Balance</th>
+                    <th class="wrapcls ">CC Store Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AllDataList)
+                {
+                    <tr style="height:20px !important;">
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemCode)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemName)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Specification)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.BasicPrice)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Units)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(model => item.rcv_frm_central)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.rcv_frm_othercc)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.purchased_at_cc)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TotalRecievedAtCC)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Trans_to_central)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Trans_to_othercc)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Issue_for_cons)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.lost_and_damage)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TotalOutFromCC)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.BalanceStockAtCC)
+                        </td>
+                        <td class="tdalign">@Html.DisplayFor(modelItem => item.AmtOfConsumedAtCC)</td>
+                        <td class="tdalign">@Html.DisplayFor(modelItem => item.BalanceStockAmtatCC)</td>
+                        <td class="tdalign">@Html.DisplayFor(modelItem => item.AmtOfDamaged)</td>
+                        <td class="tdalign">@Html.DisplayFor(modelItem => item.Comments)</td>
+                        <td class="tdalign">@Html.DisplayFor(modelItem => item.CCStatus)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+        </table>
+    </div>
+</div>
+@if (Model.AllDataList.Count > 0)
+{
+<div class="row">
+    <br />
+    <div class="col-lg-2">
+    </div>
+    <div class="col-lg-11 text-center">
+        <label style="font-weight:bold;background-color:cornflowerblue;color:black"> AMOUNT OF MATERIAL STOCK AT SITE  IS  @Model.TotalBalanceStockAmt  </label>
+    </div>
+</div>
+}
+    <script type="text/javascript">
+    $(document).ready(function () {
+        let allGrid = null;
+        InitializetblAllGrid();
+    });
+    function InitializetblAllGrid() {
+        allGrid = $('#tblAllGrid').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function () {
+
+            }
+
+        });
+
+
+    }
+    function ExportExcelAllGrid() {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelStockAllGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                @*var CC = '@Session["ACCIntCC"]';
+                var From = '@Session["ACCIntCCFromDate"]';
+                var To = '@Session["ACCIntCCToDate"]';*@
+                link.download = "Reconcilation Of Stock Report.xlsx";
+
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+    function ExportpdfCBGrid() {
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfAllGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = "Reconcilation Of Stock Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+    </script>

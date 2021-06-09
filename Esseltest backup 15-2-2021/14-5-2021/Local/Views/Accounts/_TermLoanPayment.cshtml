@@ -1,0 +1,488 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.TermLoanPayment
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Term Loan Return</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.PaymentType)
+                                                            @Html.DropDownListFor(model => model.PaymentType, new SelectList(Model.paymenttypes, "paymenttypeid", "paymenttypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltlpaymenttype", onchange = "Bindlonnos()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3" id="divloannos">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.LoanNos)
+                                                            @Html.DropDownListFor(model => model.LoanNos, new SelectList(Model.TermLoanlist, "Loanid", "Loanvalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltermloannos", onchange = "GetAgencycode()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3" id="divcodes">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Agencycodeandname)
+                                                            @Html.TextBoxFor(model => model.Agencycodeandname, htmlAttributes: new { @class = "form-control", @id = "txtagenycodeandname", @Value = "", @readonly = true })
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-md-3" style="align-items:center">
+                                                            <div class="form-group">
+                                                                <label>Configuration</label></br>
+                                                                <button id="btntlconfig" style="border:none;">
+                                                                    <img style="background-color:none; border:none; width:30px; height:30px" src="~/Content/EsselImages/Config.jpg" />
+                                                                </button>
+                                                            </div>
+                                                        </div>*@
+                                                </div>
+                                                <div class="col-md-12" id="divprinpl">
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <label>Balance Amount</label>
+                                                            <input type="text" class="form-control" value="" readOnly="readOnly" id="lblprinciple" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.principle)
+                                                            @Html.TextBoxFor(model => model.principle, htmlAttributes: new { @class = "form-control", @id = "txtprinciple", @Value = "", onkeypress = "return IsNumeric(event)", onKeyup = "Totalsumcount()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.interst)
+                                                            @Html.TextBoxFor(model => model.interst, htmlAttributes: new { @class = "form-control", @id = "txtintrest", @Value = "", onkeypress = "return IsNumeric(event)", onKeyup = "Totalsumcount()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.installmentno)
+                                                            @Html.TextBoxFor(model => model.installmentno, htmlAttributes: new { @class = "form-control", @id = "txtinstno", @Value = "", @readonly = true })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12" id="divremarks">
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.TLRemarks)
+                                                            @Html.TextAreaFor(model => model.TLRemarks, htmlAttributes: new { @class = "form-control", @id = "txttlremarks", @Value = "" })
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12" id="divbankdetails">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Bank)
+                                                            @Html.DropDownListFor(model => model.Bank, new SelectList(Model.TranBankFromList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TLBANK", onchange = "TLPayModeChange()" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Mode_of_Pay)
+                                                            @Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.TranPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TLPayMode", onchange = "TLPayModeChange()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.No)
+                                                            @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txttlchqNo" })
+                                                            @Html.DropDownListFor(model => model.Chequeid, new SelectList(Model.WdChequesList, "Cheque_Id", "Cheque_No"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TLchequenos" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Date)
+                                                            @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txttlDate", @class = "form-control", @readonly = "true" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Remarks)
+                                                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtTLbankRemarks", @class = "form-control", @rows = "3" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Amount)
+                                                            @Html.TextBoxFor(model => model.Amount, new { @id = "txtTotalAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @readonly = "true" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12" id="divbtns">
+                                                    <div class="text-right">
+                                                        <input type="text" value="0" id="txtbanktransferRoleId" style="display:none" />
+                                                        <button class="btn btn1 btn-success" id="btnTLPaymentSubmit" onclick="btnSubmitTLCDatavalid()">Submit</button>
+                                                        <button class="btn btn1 btn-success" id="btnTLPaymentReset" onclick="btnResetTLPaymentData()">Reset</button>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="text-center">
+                                                        <div id="divTLPaymentInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divloannos").addClass("hidden");
+        $("#divprinpl").addClass("hidden");
+        $("#divcodes").addClass("hidden");
+        $("#divremarks").addClass("hidden");
+        $("#divbankdetails").addClass("hidden");
+        $("#ddl_TLchequenos").addClass("hidden");
+        $("#divbtns").addClass("hidden");
+        $("#txttlDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+        }).datepicker("setDate", new Date());
+         @*var Sessioncreated = '@Session["SessionCostCenter"]';
+         $("#txtGeneralSessionCCTransfer").val(Sessioncreated);
+         var RoleID = '@Session["Roleid"]';
+         $("#txtcccasttransferRoleId").val(RoleID);
+           var Createdby = '@Session["Createdby"]';
+         $("#txtGeneralceratedbyCCTransfer").val(Createdby);*@
+    });
+    function Bindlonnos() {
+
+        var index = $("#ddltlpaymenttype option:selected").index();
+        var loannos = $("#ddltermloannos");
+        if (index != 0) {
+            $("#divloannos").removeClass("hidden");
+            $("#divprinpl").removeClass("hidden");
+            $("#divcodes").removeClass("hidden");
+            $("#divremarks").removeClass("hidden");
+            $("#divbankdetails").removeClass("hidden");
+            $("#ddl_TLchequenos").addClass("hidden");
+            $("#divbtns").removeClass("hidden");
+            //var indexvalue = "Debit";
+            var indexvalue = $("#ddltlpaymenttype option:selected").val();
+            $.ajax({
+                type: "POST",
+                //url: "/Accounts/GetAllCashCC",
+                url: "/Accounts/GetAllloans",
+                data: '{Type:"' + indexvalue + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#ddltermloannos").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        $("#ddltermloannos").append($("<option></option>").val(this['Loanid']).html(this['Loanvalue']));
+                    });
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+
+            });
+        }
+        else {
+            $("#divloannos").addClass("hidden");
+            $("#divprinpl").addClass("hidden");
+            $("#divcodes").addClass("hidden");
+            $("#divremarks").addClass("hidden");
+            $("#divbankdetails").addClass("hidden");
+            $("#divbtns").addClass("hidden");
+            return false;
+        }
+
+    }
+    function GetAgencycode() {
+        var index = $("#ddltermloannos option:selected").index();
+        if (index != 0) {
+            var indexvalue = $("#ddltermloannos option:selected").val();
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetAgencycode",
+                data: '{Type:"' + indexvalue + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txtagenycodeandname").val(this['Termloancodeandname']);
+                        $("#txtinstno").val(this['Instalno']);
+                        $("#lblprinciple").val(this['Pricipleamt']);
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+
+            });
+        }
+        else {
+            alert("Select Payment Type");
+            return false;
+        }
+
+    }
+    function TLPayModeChange() {
+        var PayMode = $('#ddl_TLPayMode option:selected').text();
+        var PayModeIndex = $('#ddl_TLPayMode option:selected').index();
+        $("#txttlchqNo").addClass("hidden");
+        if (PayModeIndex == 1) {
+            $("#ddl_TLchequenos").removeClass("hidden");
+            $("#txttlchqNo").addClass("hidden");
+            var Bank = $('#ddl_TLBANK option:selected').text();
+            //var ddlChequeNo = $("#ddl_Transferchequenos");
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/BindWdCheques",
+                data: '{BankName:"' + Bank + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var chequeddl = $('#ddl_TLchequenos');
+                    chequeddl.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    //$('#ddl_Transferchequenos').get(0).selectedIndex = 0;
+                    $.each(response, function () {
+                        //alert(response.Cheque_No);
+                        chequeddl.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                    });
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+        }
+        else {
+            $("#txttlchqNo").removeClass("hidden");
+            $("#ddl_TLchequenos").addClass("hidden");
+        }
+
+    }
+    function Totalsumcount() {
+        var principlelamt = $("#txtprinciple").val();
+        var intrestamt = $("#txtintrest").val();
+        if (principlelamt != "" && intrestamt == "") {
+            $("#txtTotalAmount").val(parseFloat(principlelamt));
+        }
+        else if (intrestamt != "" && principlelamt == "") {
+            $("#txtTotalAmount").val(parseFloat(processing));
+        }
+        else if (principlelamt != "" && intrestamt != "") {
+            $("#txtTotalAmount").val(parseFloat(principlelamt) + parseFloat(intrestamt));
+        }
+        else {
+            $("#txtTotalAmount").val('0');
+        }
+    }
+    function btnSubmitTLCDatavalid() {
+        var errorMsg = "";
+        isValid = true;
+        var paymentType = $("#ddltlpaymenttype option:selected").index();
+        var laonno = $("#ddltermloannos option:selected").index();
+        var Balamt = $("#lblprinciple").val();
+        var principleamt = $("#txtprinciple").val();
+        var intrest = $("#txtintrest").val();
+        var instnos = $("#txtinstno").val();
+        var tlremarks = $("#txttlremarks").val();
+        var Bankname = $("#ddl_TLBANK option:selected").index();
+        var paymentmode = $("#ddl_TLPayMode option:selected").index();
+        var bankdate = $("#txttlDate").val();
+        var remarks = $("#txtTLbankRemarks").val();
+        var TotalAmount = $("#txtTotalAmount").val();
+        if (paymentType == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Payment Type</p>";
+            isValid = false;
+        }
+        if (laonno == "" || laonno == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>select Laon No</p>";
+            isValid = false;
+        }
+        if (principleamt == "" || principleamt == null || principleamt == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Principle amount</p>";
+            isValid = false;
+        }
+        if (parseFloat(principleamt) > parseFloat(Balamt)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Principle amount</p>";
+            isValid = false;
+        }
+
+        if (intrest == "" || intrest == null || intrest == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Intrest amount</p>";
+            isValid = false;
+        }
+        if (instnos == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Installment</p>";
+            isValid = false;
+        }
+        if (tlremarks == "" || tlremarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Loan Remarks</p>";
+            isValid = false;
+        }
+
+        if (Bankname == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+            isValid = false;
+        }
+        if (paymentmode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Mode of pay</p>";
+            isValid = false;
+        }
+        if (paymentmode > 0) {
+            if (paymentmode == 1) {
+                var Chequenos = $("#ddl_TLchequenos option:selected").val();
+                if (Chequenos == "Select") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Cheque No</p>";
+                    isValid = false;
+                }
+            }
+            else {
+                var no = $("#txttlchqNo").val();
+                if (no == "" || no == null) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter No</p>";
+                    isValid = false;
+                }
+            }
+        }
+
+        if (remarks == "" || remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Bank Remarks</p>";
+            isValid = false;
+        }
+        if (TotalAmount == "" || TotalAmount == null || TotalAmount == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Total Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divTLPaymentInfoMsg").text("");
+            $("#divTLPaymentInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divTLPaymentInfoMsg").addClass("alert-danger");
+            $("#divTLPaymentInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divTLPaymentInfoMsg").text("");
+            $("#divTLPaymentInfoMsg").addClass("hidden");
+            SaveTermloanpaymentdata();
+        }
+
+    }
+    function btnResetTLPaymentData() {
+        $("#ddltlpaymenttype").prop('selectedIndex', 0);
+        $("#ddltermloannos").prop('selectedIndex', 0);
+        $("#txtprinciple").val("");
+        $("#txtintrest").val("");
+
+        $("#txtagenycodeandname").val("");
+        $("#lblprinciple").val("");
+        $("#txtinstno").val("");
+
+        $("#txttlremarks").val("");
+        $("#ddl_TLBANK").prop('selectedIndex', 0);
+        $("#ddl_TLPayMode").prop('selectedIndex', 0);
+        $("#ddl_TLchequenos").prop('selectedIndex', 0);
+        $("#txttlchqNo").val("");
+        $("#txtTLbankRemarks").val("");
+        $("#txtTotalAmount").val("");
+        $("#ddl_TLBANK").prop('selectedIndex', 0);
+        $("#divTLPaymentInfoMsg").text("");
+        $("#divTLPaymentInfoMsg").addClass("hidden");
+        $("#btnTLPaymentSubmit").prop('disabled', false);
+    }
+    function SaveTermloanpaymentdata() {
+        var Roleid = '@Session["Roleid"]';
+        var Createdby = '@Session["Createdby"]';
+        var TLPDetails = {
+            PaymentType: $("#ddltlpaymenttype option:selected").val(),
+            LoanNo: $("#ddltermloannos option:selected").val(),
+            BalAmount: $("#lblprinciple").val(),
+            Principleamt: $("#txtprinciple").val(),
+            IntrestAmt: $("#txtintrest").val(),
+            instno: $("#txtinstno").val(),
+            TLPRemarks: $("#txttlremarks").val(),
+            BankName: $("#ddl_TLBANK option:selected").val(),
+            Bankdate: $("#txttlDate").val(),
+            Modeofpay: $("#ddl_TLPayMode option:selected").val(),
+            Instrumentno: $("#txttlchqNo").val(),
+            Cheque: $("#ddl_TLchequenos").val(),
+            Loanpurpose: $("#txtTLPurpose").val(),
+            BankRemarks: $("#txtTLbankRemarks").val(),
+            TotalAmount: $("#txtTotalAmount").val(),
+            RoleID: Roleid,
+            Createdby: Createdby
+        };
+        addSuccessMsg = "Term Loan Payment successfully.";
+        $("#btnTLPaymentSubmit").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/SaveTermloanPaymentDetails',
+            data: { TLP: TLPDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divTLPaymentInfoMsg").text(addSuccessMsg);
+                    $("#divTLPaymentInfoMsg").removeClass("hidden alert-danger");
+                    $("#divTLPaymentInfoMsg").addClass("alert-success");
+                   
+
+                }
+                else {
+                    $("#divTLPaymentInfoMsg").text(Data.saveStatus);
+                    $("#divTLPaymentInfoMsg").addClass("alert-danger");
+                    $("#divTLPaymentInfoMsg").removeClass("hidden alert-success");
+                    $("#btnTLPaymentSubmit").prop("disabled", false);
+
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divTLPaymentInfoMsg").text(addFailMsg);
+                $("#divTLPaymentInfoMsg").addClass("alert-danger");
+                $("#divTLPaymentInfoMsg").removeClass("hidden alert-success");
+                $("#btnTLPaymentSubmit").prop("disabled", false);
+
+            }
+        });
+
+    }
+</script>

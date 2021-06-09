@@ -1,0 +1,168 @@
+﻿@model List<EsselTestLocalApplication.Models.MasterWorkFlowStatus>
+@{
+    /**/
+
+    // ViewBag.Title = "BankPayments";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Bank Payments</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <ul class="nav nav-tabs" id="tabBankPayments" role="tablist">
+                                    @foreach (var item in Model)
+                                    {
+                                        //if ((item.MID == 152 && item.WorkflowExist == true) || (item.MID == 154 && item.WorkflowExist == true) ||
+                                        //    (item.MID == 156 && item.WorkflowExist == true) || (item.MID == 158 && item.WorkflowExist == true))
+                                        if (item.MID == 152 && item.WorkflowExist == true)
+                                        {
+
+                                            <li><a data-toggle="tab" href="#ClientRecievables" id="linkRec">Client Recievables</a></li>
+                                        }
+                                        if (item.MID == 0)
+                                        {
+                                            <li><a data-toggle="tab" href="#Vendor_Invoice_Payable" id="linkVendor">Vendor Invoice Payable</a></li>
+
+                                        }
+                                        if (item.MID == 160 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#GeneralPayable" id="linkGeneral">General Payable</a></li>
+                                        }
+                                        if (item.MID == 162 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#withdrawal">Withdrawal</a></li>
+                                        }
+                                        if (item.MID == 164 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#Deposit">Deposit</a></li>
+                                        }
+                                        if (item.MID == 166 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#BankTransfer">Transfer</a></li>
+                                        }
+                                        if (item.MID == 168 && item.WorkflowExist == true)
+                                        //if (item.MID == 168 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#Refund">Refund</a></li>
+                                        }
+                                        if ((item.MID == 224 && item.WorkflowExist == true))
+                                        {
+                                            <li><a data-toggle="tab" href="#UnSecuredLoan">UnSecured Loan</a></li>
+                                        }
+                                        if ((item.MID == 174 && item.WorkflowExist == true))
+                                        {
+                                            <li><a data-toggle="tab" href="#Miscellaneous">Misc</a></li>
+                                        }
+
+                                        if (item.MID == 178 && item.WorkflowExist == true)
+                                        {
+                                            <li class="active"><a data-toggle="tab" href="#FD">FD</a></li>
+                                        }
+                                        if (item.MID == 246 && item.WorkflowExist == true)
+                                        {
+                                            <li class="active"><a data-toggle="tab" href="#TL">TL</a></li>
+                                        }
+                                    }
+
+
+                                </ul>
+                                <div class="tab-content">
+                                    @foreach (var item1 in Model)
+                                    {
+                                        //if ((item.MID == 152 && item.WorkflowExist == true) || (item.MID == 154 && item.WorkflowExist == true) ||
+                                        //       (item.MID == 156 && item.WorkflowExist == true) || (item.MID == 158 && item.WorkflowExist == true))
+                                        if (item1.MID == 152 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="ClientRecievables" class="tab-pane fade in  active">
+                                                @Html.Action("ClientRecievables", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 0)
+                                        {
+                                            <div id="Vendor_Invoice_Payable" class="tab-pane fade  in  active">
+                                                @Html.Action("VendorInvoicePayable", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 160 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="GeneralPayable" class="tab-pane fade">
+                                                @Html.Action("GeneralPayable", "Accounts", new { TransactionRefno = "000" })
+                                            </div>
+                                        }
+                                        if (item1.MID == 162 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="withdrawal" class="tab-pane fade">
+                                                @Html.Action("Withdrawal", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 164 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="Deposit" class="tab-pane fade">
+                                                @Html.Action("Deposit", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 166 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="BankTransfer" class="tab-pane fade">
+                                                @Html.Action("Banktransfer", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 168 && item1.WorkflowExist == true)
+                                        //if (item1.MID == 168 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="Refund" class="tab-pane fade">
+                                                @Html.Action("Refund", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 224 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="UnSecuredLoan" class="tab-pane fade">
+
+                                                @Html.Action("UnSecuredLoan", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 174 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="Miscellaneous" class="tab-pane fade">
+                                                @Html.Action("Miscellaneous", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 178 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="FD" class="tab-pane fade">
+                                                @Html.Action("FDPayments", "Accounts")
+                                            </div>
+                                        }
+                                        if (item1.MID == 246 && item1.WorkflowExist == true)
+                                        {
+                                            <div id="TL" class="tab-pane fade">
+                                                @Html.Action("TLPayments", "Accounts")
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.nav-tabs li:eq(0) a').tab('show');
+    });
+</script>

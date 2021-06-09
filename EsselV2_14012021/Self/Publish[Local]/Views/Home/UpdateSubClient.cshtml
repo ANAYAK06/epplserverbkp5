@@ -1,0 +1,162 @@
+﻿
+@model EsselTestLocalApplication.Models.AddSubClient
+<div>
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ClientCode)
+                    @Html.TextBoxFor(model => model.ClientCode, htmlAttributes: new { @class = "form-control", @id = "txtUpClientCodeForClient" })
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubClientCode)
+                    <select id="ddlUpSubClientCode" class="form-control dropdown-toggle" onchange="SubClientCodeChange()">
+                        <option value="select">-Select-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Branch)
+                    @Html.TextBoxFor(model => model.Branch, htmlAttributes: new { @class = "form-control", @id = "txtUpSCBranch" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_Person_Name)
+                    @Html.TextBoxFor(model => model.SC_Person_Name, htmlAttributes: new { @class = "form-control", @id = "txtUpSCPersonName" })
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_Phone_No)
+                    @Html.TextBoxFor(model => model.SC_Phone_No, htmlAttributes: new { @class = "form-control", @id = "txtUpSCPhoneNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_TINNo)
+                    @Html.TextBoxFor(model => model.SC_TINNo, htmlAttributes: new { @class = "form-control", @id = "txtUpSCTINNo" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_PANNo)
+                    @Html.TextBoxFor(model => model.SC_PANNo, htmlAttributes: new { @class = "form-control", @id = "txtUpSCPANNo" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SC_TANNo)
+                    @Html.TextBoxFor(model => model.SC_TANNo, htmlAttributes: new { @class = "form-control", @id = "txtUpSCTANNo" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NatureGroupName)
+                    @Html.TextBoxFor(model => model.NatureGroupName, htmlAttributes: new { @class = "form-control", @id = "txtUpSCNature", readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Address)
+                    @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtUpSCAddress" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.GST_Applicable)
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="upSCGstApplicable" value="Yes" id="chkUpSCGSTY" onclick="upSCgstCheckchange(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">Yes</span>
+                            </label>
+                        </li>
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="upSCGstApplicable" value="No" id="chkUpSCGSTN" onclick="upSCgstCheckchange(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">No</span>
+                            </label>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" id="divUpSCClientGst">
+            <div style="margin-left:2px">
+                <div class="strike">
+                    <span>Update GST Details</span>
+                </div>
+                <div class="tabledynamic">
+                    <table id="UpSClientGstTable" class="table order-list UpSClientGstGrid">
+                        <thead>
+                            <tr>
+                                <td class="hidden"></td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.State)</td>
+                                <td style="text-align:center">@Html.LabelFor(model => model.GST_No)</td>
+                                <td style="text-align:center"><label>Check</label></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="hidden"></td>
+                                <td class="text-center"></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Tax" onclick="UpdateSClientBindNewRowForGST()" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="text-right">
+                <input type="text" id="txtUpClientidforsubclient" style="display:none" />
+                <input type="submit" class="btn btn1 btn-success" id="btnUpdateSubClient" onclick="UpdateSubClientData()" value="Submit" />
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <div id="divUpSubClientInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+        
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        
+
+
+        $("table.order-list.UpSClientGstGrid").on("click", ".ibtnUpSClientDel", function (event) {
+
+            $(this).closest("tr").remove();
+           
+            var tablerowcount = $("#UpSClientGstTable tbody tr").length;
+            if (tablerowcount > 0) {
+                $("#divUpSCClientGst").removeClass('hidden');
+                $("#chkUpSCGSTY").prop("checked", true);
+                $("#chkUpSCGSTN").prop("checked", false);
+            }
+            else {
+                $("#chkUpSCGSTY").prop("checked", false);
+                $("#chkUpSCGSTN").prop("checked", true);
+                $("#divUpSCClientGst").addClass('hidden');
+            }
+        });
+    }); 
+</script>

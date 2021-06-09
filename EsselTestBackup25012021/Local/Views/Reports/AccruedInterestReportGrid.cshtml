@@ -1,0 +1,216 @@
+﻿@model List<EsselTestLocalApplication.Models.ReportParameters.AccruedData>
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+    }
+    .tdalign {
+        text-align: right !important;
+    }
+</style>
+<div align="right">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelACCInterest();" />
+    @*<img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfACCInterest();" />*@
+    @*<img src="~/Content/EsselImages/word.png" onclick="Exportword();" />*@
+</div>
+<div></div>
+
+<div class="table-responsive">
+    <table id="tblAIMainGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+
+                <th class="hidden">CCCode</th>
+                <th>Date</th>
+                <th class="wrapcls">Net Recieved Amount</th>
+                <th class="wrapcls">Cumulative Recieved</th>
+                <th class="wrapcls">Net Paid Amount</th>
+                <th class="wrapcls">Cumulative Net Paid Amount</th>
+                <th class="wrapcls">Paid Amount</th>
+                <th class="wrapcls">Cumulative Paid Amount</th>
+                <th class="wrapcls">Net Cash Status</th>
+                <th class="wrapcls">Interest On Negetive Cash Flow</th>
+                <th class="wrapcls">Accumulated Interest</th>
+                @*<th  class="hidden">Type</th>*@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.date)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.netrecieved)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.cumrec)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.netpaid)
+                </td>
+
+                <td class="tdalign">
+                @Html.DisplayFor(modelItem => item.cumpaid)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.paidAmount)
+                </td>
+                <td class="tdalign">
+            @Html.DisplayFor(modelItem => item.Cupaidamount)
+        </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.cashstatus)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.incf)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.NewAccumulatedInterst)
+                </td>
+                @*<td  class="hidden">
+            @Html.DisplayFor(modelItem => item.Type)
+        </td>*@
+            </tr>
+            }
+        </tbody>
+
+
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var AIMainGrid = null;
+        InitializeAIMainGridGrid();
+    });
+    function InitializeAIMainGridGrid() {
+        AIMainGrid = $('#tblAIMainGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 100,
+            "initComplete": function (settings, json) {
+                //GetBudgetAsignedCCDetailsForReport();
+
+            }
+        });
+        $('#tblAIMainGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = AIMainGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatAIMainGridReport(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+    }
+    function formatAIMainGridReport(d) {
+        //debugger;
+        var CC='',TransDate='',type='';
+        $.each(d, function (index, value) {
+            if (index == 1)
+                CC = value;
+            if (index == 2)
+                TransDate = value;
+            if (index == 12)
+                type = value;
+        });
+        var ccnoarray = CC.toString().split('-');
+        var ccno = ccnoarray[1];
+        var divid = "divAISummary" + ccno;
+        var divid1 = $("#" + ccno + "");
+  
+        //$.ajax({
+        //    type: 'POST',
+        //    dataType: 'html',
+        //    url: '/Reports/AccruedInterestReportSummary',
+        //    data: { CCCode: CC, Date: TransDate, Type: type },
+
+        //    success: function (Data) {
+        //        var count1 = Object.keys(Data).length;
+        //        var msg = "";
+        //        if (count1 > 0) {
+        //            var divid2 = "divAISummary" + ccno;
+        //            var divid3 = $("#" + divid2 + "");
+        //            $(divid3).html(Data);
+        //        }
+        //        else {
+        //            $(divid3).html("<span>No Data Found</span>")
+        //        }
+
+        //    },
+        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+        //    }
+        //});
+        return '<div id="divAISummary' + ccno + '" class="col-md-12"></div>';
+
+    }
+    function ExportExcelACCInterest() {
+
+        $.ajax({
+            type: 'POST',           
+            url: '/Reports/ExportExcelACCInterest',             
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                var CC = '@Session["ACCIntCC"]';
+                var From = '@Session["ACCIntCCFromDate"]';
+                var To = '@Session["ACCIntCCToDate"]';
+                link.download = "Accured Interest For " + CC + ", From Date:" + From + " To Date:" + To +" Report.xlsx";
+                //link.download = "Accrued Interest Report.xlsx";
+                link.click();
+            },
+            error: function (err) {
+            }          
+        });
+
+    }
+    function ExportpdfACCInterest() {        
+        $.ajax({
+            type: 'POST',           
+            url: '/Reports/ExportpdfACCInterest',            
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                 var CC = '@Session["ACCIntCC"]';
+                var From = '@Session["ACCIntCCFromDate"]';
+                var To = '@Session["ACCIntCCToDate"]';
+                link.download = "Accured Interest For " + CC + ", From Date:" + From + " To Date:" + To +" Report.pdf";
+                @*var CC = '@Session["ACCIntDateCC"]';
+                var From = '@Session["ACCIntDate"]';
+                link.download = "Accured Interest For " + CC + ", From:" + From + "To:" + To+" Report.pdf";*@
+              //  link.download = "Accrued Interest Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }          
+        });
+
+    }
+</script>

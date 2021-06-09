@@ -1,0 +1,170 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.ItemsTransfer>
+<div class="table-responsive w-100">
+    <table id="tblApproveitranGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Ref No</th>
+                <th>Date</th>
+                <th>Indent No</th>
+                <th>Recieving Cost Center</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">MOID</th>
+                <th class="hidden">CCType</th>
+                <th class="hidden">Sending CC</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ItId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Refno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IndentNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ToCC)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.MOID)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CCType)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.FromCC)
+                </td>
+              
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveindGrid = null;
+            InitializeApprtranGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppritemstransCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtAppritemstransRole").val(SessionRole);
+        });
+    function InitializeApprtranGrid() {
+        ApproveindGrid = $('#tblApproveitranGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+            },
+                pageLength: 10
+            });
+        $('#tblApproveitranGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveindGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApproveindGrid, tr);
+                // Open this row
+                    row.child(formatApprhsn(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprhsn(d) {
+        var htmltext;
+        var Rid, transstatus, SendingCC,Mid,CCtype,Indentno;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Rid = value;
+            if (index == 2)
+                Refno = value;
+            if (index == 9)
+                SendingCC = value;
+            if (index == 6)
+                transstatus = value;
+            if (index == 7)
+                Mid = value;
+            if (index == 8)
+                CCtype = value;
+            if (index == 4)
+                Indentno = value;
+        });
+        var divid = "divappric" + Rid;
+        var divid1 = $("#" + divid + "");
+        $("#currenticid").val(Rid);
+        //debugger;
+        if (transstatus == 0 && CCtype == "Performing") {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/UpdateItemsTransferView',
+                data: { Refno: Refno, MOID: Mid, Rowid: Rid, SendingCC: SendingCC },
+                success: function (Data) {
+                    var divid2 = "divappric" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/VerifyItemsTransferView',
+                data: { Refno: Refno, MOID: Mid, Rowid: Rid, CType: CCtype, Indno: Indentno },
+                success: function (Data) {
+                    var divid2 = "divappric" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        return '<div id="divappric' + Rid + '"></div>';
+    }
+</script>

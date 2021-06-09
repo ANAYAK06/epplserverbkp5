@@ -1,0 +1,478 @@
+﻿@model EsselTestLocalApplication.Models.HR.Holidays
+
+<div class="row">   
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.HolidayType)
+        @Html.DropDownListFor(model => model.HolidayType, new SelectList(Model.HolidayTypeslist, "HolidayTypeName", "HolidayTypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHolidayType" })
+
+    </div>
+    <div class="col-md-3" id="divNewDate">
+        <div class="form-group">
+            @Html.LabelFor(model => model.HolidayDate)
+            @Html.TextBoxFor(model => model.HolidayDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtHolidayDate", @readOnly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3" id="divUpDate">
+        <div class="form-group">
+            @Html.LabelFor(model => model.HolidayDate)
+            @Html.TextBoxFor(model => model.HolidayDate, htmlAttributes: new { @class = "form-control", @id = "txtHolidayUpDate", @readOnly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.HolidayName)
+        @Html.TextBoxFor(model => model.HolidayName, htmlAttributes: new { @class = "form-control", @id = "txtHolidayName" })
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.HolidayState)<br />
+            @Html.ListBoxFor(model => model.HolidayState, new SelectList(Model.hoilidayStatesList, "State_ID", "State_Name"), new { @class = "listbox form-control", @id = "ddlMultiStateName" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-right">
+        <br />
+        <button class="btn btn1 btn-success" id="btnHolidaySubmit" onclick="SubmitHolidaySData()">Submit</button>
+        <button class="btn btn1 btn-success" id="btnHolidayUpdate" onclick="UpdateHolidaySData()">Update</button>
+        <button class="btn btn1 btn-success" id="btnHolidayReset" onclick="ResetHolidayData()">Reset</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 rowspace">
+        <div class="text-center">
+            <br />
+            <div id="divHolidayInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divgridholidays">
+    @Html.Action("GetAllHolidays", "HR")
+</div>
+<script>
+    $(document).ready(function () {
+        $('.listbox').multiselect({
+            includeSelectAllOption: true
+        });
+        $("#btnHolidaySubmit").removeClass('hidden');
+        $("#btnHolidayUpdate").addClass('hidden');
+
+        $("#divUpDate").addClass('hidden');
+        $("#divNewDate").removeClass('hidden');
+
+        //$("#txtHolidayDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //    yearRange: "-100:+1",
+        //}).datepicker("setDate", new Date());
+        var today = new Date();  //G
+        //************to show last dec to this des***********************
+       // //var startDate = new Date(today.getFullYear() - 1, 11, 01);  //To get the 31st Dec of las year
+       // //var endDate = new Date(today.getFullYear() + 0, 11, 31);  //To get the 31st Dec of current year
+        
+       // //console.log('startDate:'+startDate);
+       // //console.log('endDate:'+endDate);
+       //// Console.log(startDate);
+       // $("#txtHolidayDate").datepicker({
+       //     dateFormat: 'dd-M-yy',
+       //     changeMonth: false,
+       //     changeYear: false,
+       //     showOn: "button",
+       //     buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",            
+       //     minDate: startDate,
+       //     maxDate: endDate,
+       // }).datepicker("setDate", new Date());
+         //************End of to show last dec to this des***********************
+        var today = new Date();  //G
+        var month = today.getMonth();
+        //alert(month);
+        if (month == 11) {
+            var startDate = new Date(today.getFullYear() + 0, 11, 01);  //To get the 31st Dec of current year
+            var endDate = new Date(today.getFullYear() + 1, 11, 31);  //To get the 31st Dec of next year
+        }
+        else {
+             var startDate = new Date(today.getFullYear() - 1, 11, 01);  //To get the 31st Dec of las year
+             var endDate = new Date(today.getFullYear() + 0, 11, 31);  //To get the 31st Dec of current year
+        }
+
+        //console.log('startDate:'+startDate);
+        //console.log('endDate:'+endDate);
+        // Console.log(startDate);
+        $("#txtHolidayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: false,
+            changeYear: false,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            minDate: startDate,
+            maxDate: endDate,
+        }).datepicker("setDate", new Date());
+    });
+    ////Start of Holidays *************************************************************
+    function SubmitHolidaySData() {
+        var errorMsg = "";
+        isValid = true;
+        var holidaytypeindex = $("#ddlHolidayType option:selected").index();
+
+        var holidaydate = $("#txtHolidayDate").val();
+        //var holidayCategoryIndex = $("#ddlHolidayCategory option:selected").index();
+
+        var holidayname = $("#txtHolidayName").val();
+        var holidaystates = $('#ddlMultiStateName > option:selected');
+        //if (holidayCategoryIndex === 0) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Select Category Name</p>";
+        //    isValid = false;
+        //}
+        if (holidayname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Holiday Name</p>";
+            isValid = false;
+        }
+        if (holidaydate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Holiday Date</p>";
+            isValid = false;
+        }
+        if (holidaytypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Holiday Type</p>";
+            isValid = false;
+        }
+        if (holidaystates.length == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select States</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divHolidayInfoMsg").text("");
+            $("#divHolidayInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divHolidayInfoMsg").addClass("alert-danger");
+            $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divHolidayInfoMsg").text("");
+            $("#divHolidayInfoMsg").addClass("hidden");
+            //let catid = 0;
+            //if (holidayCategoryIndex == 1) {
+            //    catid = 0;
+            //}
+            //else {
+            //    catid = $("#ddlHolidayCategory option:selected").val();
+            //}
+            debugger;
+            var statecount = $('#ddlMultiStateName option').length;
+            var Selectedstatecount = $('#ddlMultiStateName option:selected').length;
+            var SelectedState = '';
+            if (Selectedstatecount === statecount) {
+                SelectedState = 0;//all selected
+            }
+            else {
+                var SelectedState = $('#ddlMultiStateName option:selected').toArray().map(item => item.value).join() + ',';
+            }
+            let newholidaydata = {
+                HolidayType: $("#ddlHolidayType option:selected").val(),
+                HolidayDate: $("#txtHolidayDate").val(),
+                HolidayName: $("#txtHolidayName").val(),
+                HolidayState: SelectedState,
+                Action: "New",
+                //HolidayCategoryId: catid
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');           
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertHolidays',
+                data: { holidayData: newholidaydata },
+                success: function (Data) {
+                    if (Data.saveStatus === "Submited") {
+                        // BindExistingHolidays();
+                        ClearHolidayData();
+                    }
+                    else {
+                        $("#divHolidayInfoMsg").text(Data.saveStatus);
+                        $("#divHolidayInfoMsg").addClass("alert-danger");
+                        $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divHolidayInfoMsg").text(addFailMsg);
+                    $("#divHolidayInfoMsg").addClass("alert-danger");
+                    $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    function BindExistingHolidays() {
+        // $("#divgridholidays").load('/HR/GetAllHolidays');
+    }
+    function ResetHolidayData() {
+        location.reload();
+        $('.nav-tabs li:eq(2) a').tab('show');
+        // $('#liHolidays').trigger('click');
+        //location.reload();
+        //$("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+        //$('#txtHolidayDate').val("");
+        //$('#txtHolidayName').val("");
+        //$("#ddlHolidayType").prop('selectedIndex', 0);
+        //$('#ddlMultiStateName').multiselect("deselectAll", false).multiselect("refresh");
+        //$("#ddlHolidayCategory").prop('selectedIndex', 0);
+        //$("#btnHolidaySubmit").removeClass('hidden');
+        //$("#btnHolidayUpdate").addClass('hidden');
+        //$('#txtHolidayName').prop('disabled', false);
+        //$('#txtHolidayDate').prop('disabled', false);
+    }
+    function ClearHolidayData() {
+        $("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+        $('#txtHolidayDate').val("");
+        $('#txtHolidayName').val("");
+        $("#ddlHolidayType").prop('selectedIndex', 0);
+        $('#ddlMultiStateName').multiselect("deselectAll", false).multiselect("refresh");
+        $("#ddlHolidayCategory").prop('selectedIndex', 0);
+        $("#btnHolidaySubmit").removeClass('hidden');
+        $("#btnHolidayUpdate").addClass('hidden');
+        $('#txtHolidayName').prop('disabled', false);
+        $('#txtHolidayDate').prop('disabled', false);
+        $("#divUpDate").addClass('hidden');
+        $("#divNewDate").removeClass('hidden');
+        $("#divgridholidays").load('/HR/GetAllHolidays');
+    }
+    function HolidayActionChange(ModelData, Action) {
+
+        var selectedaction = Action.value;
+        if (selectedaction === "E") {
+            //$("#ddlHolidayType").find("option:contains('" + ModelData.HolidayType + "')").each(function () {
+            //    debugger;
+            //    if ($(this).text() == ModelData.HolidayType) {
+            //        $(this).attr("selected", "selected");
+            //    }
+            //});
+            var typeddl = $("#ddlHolidayType");
+            typeddl.empty().append('<option  value="0">-Please Select-</option>');
+            if (ModelData.HolidayType == "Optional") {
+                typeddl.append($("<option selected></option>").val('Optional').html('Optional'));
+                typeddl.append($("<option></option>").val('Normal').html('Normal'));
+            }
+            else {
+                typeddl.append($("<option></option>").val('Optional').html('Optional'));
+                typeddl.append($("<option selected></option>").val('Normal').html('Normal'));
+            }
+            $("#txtHolidayUpDate").val(ModelData.HolidayDate);
+            $('#txtHolidayName').val(ModelData.HolidayName);
+            if (ModelData.HolidayCategoryId === 0) {
+                $("#ddlHolidayCategory").prop('selectedIndex', 1);
+            }
+            else {
+                $("#ddlHolidayCategory").find("option:contains('" + ModelData.HolidayCategory + "')").each(function () {
+                    if ($(this).text() == ModelData.HolidayCategory) {
+                        $(this).attr("selected", "selected");
+                    }
+                });
+            }
+            $("#ddlMultiStateName option").remove();
+            if (ModelData.SelectedState.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/BindAllCostCenterStates",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        $.each(response, function () {
+                            var index = ModelData.SelectedState.indexOf(this['State_ID']);
+                            console.log(index);
+                            if (index > -1) {
+                                $('#ddlMultiStateName').append('<option value="' + this['State_ID'] + '" selected>' + this['State_Name'] + '</option>').multiselect('rebuild');
+                                // $('#ddlMultiCCCode').append('<option value="' + this['CC_Code'] + '" selected>' + this['CC_Name'] + '</option>').multiselect('rebuild');
+                            }
+                            else {
+                                $('#ddlMultiStateName').append('<option value="' + this['State_ID'] + '" >' + this['State_Name'] + '</option>').multiselect('rebuild');
+                                // $('#ddlMultiCCCode').append('<option value="' + this['CC_Code'] + '" >' + this['CC_Name'] + '</option>').multiselect('rebuild');
+                            }
+                        });
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+            else {
+                //$('#ddlMultiStateName').multiselect("selectAll", false).multiselect("refresh");
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/BindAllCostCenterStates",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        $.each(response, function () {
+                            $('#ddlMultiStateName').append('<option value="' + this['State_ID'] + '" selected>' + this['State_Name'] + '</option>').multiselect('rebuild');
+                        });
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+            $("#btnHolidaySubmit").addClass('hidden');
+            $("#btnHolidayUpdate").removeClass('hidden');
+            $('#txtHolidayName').prop('disabled', true);
+            $("#divUpDate").removeClass('hidden');
+            $("#divNewDate").addClass('hidden');
+
+            //$('#ddlMultiCCCode').multiselect("deselectAll", false).multiselect("refresh");
+            //var cc = "CC-33";
+            //$('#ddlMultiCCCode option[value=' + cc + ']').attr("selected", true);
+            //ModelData.SelectedCCCode.forEach(function (element, index) {
+            //    console.log(element);
+            //    var selectedcc =element.replace(/\"/g, "")
+            // //  element.replace(/"/g, '');
+            //    debugger;
+
+            //   // $('#ddlMultiCCCode option[value=' + cc +']').attr("selected", true);
+            //    //$("#ddlMultiCCCode option[value='" + element + "']").attr("selected", "true");
+            //});
+        }
+        else if (selectedaction === "D") {
+
+            //let holidaydata = {
+            //    HolidayType: $("#ddlHolidayType option:selected").val(),
+            //    HolidayDate: $("#txtHolidayUpDate").val(),
+            //    HolidayName: $("#txtHolidayName").val(),
+            //    HolidayState: SelectedState,
+            //    Action: "Edit",
+            //    HolidayCategoryId: catid
+            //};
+
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteHolidays',
+                data: { Holidayname: ModelData.HolidayName, Holidaydate: ModelData.HolidayDate },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        //row.remove();  
+                        ClearHolidayData();
+                    }
+                    else {
+                        $("#divHolidayInfoMsg").text(addFailMsg);
+                        $("#divHolidayInfoMsg").addClass("alert-danger");
+                        $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divHolidayInfoMsg").text(addFailMsg);
+                    $("#divHolidayInfoMsg").addClass("alert-danger");
+                    $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function UpdateHolidaySData() {
+        //alert('Update');
+        var errorMsg = "";
+        isValid = true;
+        var holidaytypeindex = $("#ddlHolidayType option:selected").index();
+
+        var holidaydate = $("#txtHolidayUpDate").val();
+        var holidayCategoryIndex = $("#ddlHolidayCategory option:selected").index();
+
+        var holidayname = $("#txtHolidayName").val();
+        var holidaystates = $('#ddlMultiStateName > option:selected');
+        if (holidayCategoryIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category Name</p>";
+            isValid = false;
+        }
+        if (holidayname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Holiday Name</p>";
+            isValid = false;
+        }
+        if (holidaydate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Holiday Date</p>";
+            isValid = false;
+        }
+        if (holidaytypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Holiday Type</p>";
+            isValid = false;
+        }
+        if (holidaystates.length == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select States</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divHolidayInfoMsg").text("");
+            $("#divHolidayInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divHolidayInfoMsg").addClass("alert-danger");
+            $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divHolidayInfoMsg").text("");
+            $("#divHolidayInfoMsg").addClass("hidden");
+
+            let catid = 0;
+            if (holidayCategoryIndex == 1) {
+                catid = 0;
+            }
+            else {
+                catid = $("#ddlHolidayCategory option:selected").val();
+            }
+            debugger;
+            var statecount = $('#ddlMultiStateName option').length;
+            var Selectedstatecount = $('#ddlMultiStateName option:selected').length;
+            var SelectedState = '';
+            if (Selectedstatecount === statecount) {
+                SelectedState = 0;//all selected
+            }
+            else {
+                var SelectedState = $('#ddlMultiStateName option:selected').toArray().map(item => item.value).join() + ',';
+            }
+            let newholidaydata = {
+                HolidayType: $("#ddlHolidayType option:selected").val(),
+                HolidayDate: $("#txtHolidayUpDate").val(),
+                HolidayName: $("#txtHolidayName").val(),
+                HolidayState: SelectedState,
+                Action: "Edit",
+                HolidayCategoryId: catid
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');           
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertHolidays',
+                data: { holidayData: newholidaydata },
+                success: function (Data) {
+                    if (Data.saveStatus === "Submited") {
+                        // BindExistingHolidays();
+                        ClearHolidayData();
+                    }
+                    else {
+                        $("#divHolidayInfoMsg").text(Data.saveStatus);
+                        $("#divHolidayInfoMsg").addClass("alert-danger");
+                        $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divHolidayInfoMsg").text(addFailMsg);
+                    $("#divHolidayInfoMsg").addClass("alert-danger");
+                    $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    ////End of Holidays
+</script>

@@ -1,0 +1,134 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.EmployeeAssetAllocation>
+<div class="table-responsive w-100">
+    <table id="tblApproveindGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Transaction No</th>
+                <th>Employee Id</th>
+                <th>Employee Name</th>
+                <th>Date</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">MOID</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AllocationRefno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employeeid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Empname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Validfrom)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.AllocationStatus)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.MOID)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveindGrid = null;
+            InitializeApprindGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprindCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtApprindRole").val(SessionRole);
+        });
+    function InitializeApprindGrid() {
+        ApproveindGrid = $('#tblApproveindGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+            },
+                pageLength: 10
+            });
+        $('#tblApproveindGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveindGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApproveindGrid, tr);
+                // Open this row
+                    row.child(formatApprhsn(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprhsn(d) {
+        //debugger;
+        var htmltext;
+        var Empid, transstatus, AllRefno,Mid;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                AllRefno = value;
+            if (index == 2)
+                Empid = value;
+            if (index == 5)
+                transstatus = value;
+            if (index == 6)
+                Mid = value;          
+        });
+        var divid = "divappric" + AllRefno;
+        var divid1 = $("#" + divid + "");
+        $("#currenticid").val(AllRefno);       
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/Purchase/VerifyEmployeeAssetAllocationView',
+            data: { EmpRefno: AllRefno, MOID: Mid, Employeeid: Empid },
+            success: function (Data) {
+                var divid2 = "divappric" + AllRefno;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });       
+        return '<div id="divappric' + AllRefno + '"></div>';
+    }
+</script>

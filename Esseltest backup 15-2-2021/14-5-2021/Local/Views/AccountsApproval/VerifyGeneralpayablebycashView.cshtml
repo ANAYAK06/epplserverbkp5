@@ -1,0 +1,275 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.GeneralPayablebyCashDetails>
+@foreach (var item in Model)
+{
+    <div class="col-md-12 verifydiv">
+    <br/>
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                @*@if (item.SelfCCCode == item.PaidAgainstCCCode)*@
+                @if (item.PaidAgainstCCCode == null)
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Mode of Transaction:</label>
+                            <input type="text" class="form-control" value="Self Debit" readOnly="readOnly" id="Apprwithdrawnname-@item.Voucherno" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Self Cost Center:</label>
+                            <input type="text" class="form-control" value="@item.SelfCCCode" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Mode of Transaction:</label>
+                            <input type="text" class="form-control" value="Debit from other CC" readOnly="readOnly" id="Apprwithdrawnname-@item.Voucherno" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Self Cost Center:</label>
+                            <input type="text" class="form-control" value="@item.SelfCCCode" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Other Cost Center:</label>
+                            <input type="text" class="form-control" value="@item.PaidAgainstCCCode" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+                @*@if (item.SelfCCCode != item.PaidAgainstCCCode)
+                    {
+
+                    }*@               
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Date:</label>
+                        <input type="text" class="form-control" value="@item.InvoiceDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Paid Date:</label>
+                        <input type="text" class="form-control" value="@item.PaymentDate" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Head :</label>
+                        <input type="text" class="form-control" value="@item.DCACode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sub AccountHead:</label>
+                        <input type="text" class="form-control" value="@item.SubDCACode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Name :</label>
+                        <input type="text" class="form-control" value="@item.Name" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <label>Remarks :</label>
+                        <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input type="text" class="form-control" value="@item.Amount" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprgeneralpayablebycashstatus" })
+                       
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="ApprgeneralpayablebycashNote-@item.Voucherno"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="Approvegeneralpayablebycash('@item.Voucherno')">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprgeneralpayablebycashInfoMsg-@item.Voucherno" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+}
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Apprgeneralpayablebycashstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] == 'Return') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        });
+                        //$.each(response, function () {
+                        //    ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        //});
+                    }
+                
+                },
+                failure: function (response) {
+                 
+                },
+                error: function (response) {
+                  
+                }
+            });
+    });
+    function Approvegeneralpayablebycash(Voucherno) {
+        appstatusid = "Apprgeneralpayablebycashstatus-" + Voucherno;
+        var appstatus = $("#Apprgeneralpayablebycashstatus option:selected").text();
+        var retnoteid = "ApprgeneralpayablebycashNote-" + Voucherno;
+        retnote = $("#" + retnoteid + "").val();
+        Bankid = "divApprgeneralpayablebycashInfoMsg-" + Voucherno;
+        msg = $("#" + Bankid + "");
+        isValid = true;
+
+        var errorMsg = "";
+        if (appstatus == "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var VerifyGeneral = {
+                Voucherno: Voucherno,
+                Approvalstatus: appstatus,
+                ApprovalRemarks: retnote,
+                Createdby: $("#txtApprgeneralpayablebycashCreatedby").val(),
+                RoleId: $("#txtApprgeneralpayablebycashRole").val()
+            };
+            addFailMsg = "Error Occurred While General Payment by cash Verification";
+            //addSuccessMsg = "General Payment by Cash Verified Successfully.";
+            var addSuccessMsg;
+            if (appstatus === 'Verify') {
+                addSuccessMsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { addSuccessMsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { addSuccessMsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { addSuccessMsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/ApproveGeneralpayablebycash",
+                data: JSON.stringify({ apprgeneral: VerifyGeneral }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    //alert(msg);
+                    if (msg == "Submitted") {
+                        //$('#ApprovegeneralpayablebycashMsgModal').modal('show');
+                        var msg = "General Payable By Cash:" + addSuccessMsg + "";
+                        //$("#ApprGPbycashMsg").html(msg);
+                        $//("#divCashReportInfoMsg").html(msg);
+                        alert(msg);
+                        var cc = $("#ddlVerifyCCCode option:selected").val();
+                        var dca = $("#ddlVerifyDCA option:selected").val();
+                        var month = $("#ddlVerifyMonth option:selected").val();
+                        var year = $("#ddlVerifyyear option:selected").val();
+                        $.ajax({
+                            type: "GET",
+                            url: "/AccountsApproval/VerifyGeneralpayablebycashGrid",
+                            data: { cc: cc, dca: dca, month: month, year: year },
+                            dataType: 'html',
+                            success: function (response) {
+                                var count1 = Object.keys(response).length;
+                                var msg = "";
+                                if (count1 > 0) {
+                                    $("#divCMSRptGrid").html(response);
+                                    $("#divCMSRptGrid").removeClass('hidden');
+                                }
+                                else {
+                                    $("#divCMSRptGrid").html('No Data Found');
+                                    $("#divCMSRptGrid").removeClass('hidden');
+                                }
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert("error");
+                            }
+                        });
+                    }
+                    else {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        //$("#divCashReportInfoMsg").html(msg);
+                        //$('#ApprovegeneralpayablebycashMsgModal').modal('show');
+                        alert(addFailMsg);
+                    }
+                },
+                failure: function (response) {
+                    //var msg = "<div>" + addFailMsg + "</div>";
+                    alert(addFailMsg);
+                    //$("#divCashReportInfoMsg").html(msg);
+                    //$('#ApprovegeneralpayablebycashMsgModal').modal('show');
+                },
+                error: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    alert(addFailMsg);
+                    //$("#divCashReportInfoMsg").html(msg);
+                    //$('#ApprovegeneralpayablebycashMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

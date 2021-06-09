@@ -1,0 +1,135 @@
+﻿@model  EsselTestLocalApplication.Models.SubGroup
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sub Group Name:</label>
+                        <input type="text" class="form-control" value="@Model.Name" readOnly="readOnly" id="Apprsgroupname" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Master Group Name:</label>
+                        <input type="text" class="form-control" value="@Model.MasterGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nature of Group:</label>
+                        <input type="text" class="form-control" value="@Model.NatureGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprSGstatus" })
+
+                        @*<select class="form-control dropdown-toggle" id="ApprSGstatus">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Verify">Verify</option>
+                                <option value="Approve">Approve</option>
+                                <option value="Return">Return</option>
+                                <option value="Reject">Reject</option>
+                            </select>*@
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="ApprSGNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveSubGroup(@Model.Id)">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprSGInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <form onsubmit="return false">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Master Group Name:</label>
+                        <input type="text" class="form-control" value="@Model.MasterGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nature of Group:</label>
+                        <input type="text" class="form-control" value="@Model.NatureGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label>Enter Sub Group Name</label>
+                    <input type="text" id="txtUpSubGpName" class="form-control" style="text-transform:uppercase" value="@Model.Name" />
+
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row">
+                <div class="text-right">
+                    <input type="submit" class="btn btn1 btn-success" id="btnUpdateSubGroup" onclick="UpdateApprSubGroup(@Model.Id)" value="Submit" />
+                    <input type="text" id="txtUpSubGpId" class="form-control" style="display:none;width:10px" />
+
+                </div>
+            </div>
+            <div class="row col-md-12 text-center">
+                <br />
+                <div id="divUpdateSubGroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </form>
+    }
+</div>
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            if (@Model.Status != "0") {               
+                var Mid = $("#txtMOID").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/AccountsApproval/GetApprovalstatus",
+                    data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        if (count > 0) {
+                            var ddlaprovalstatus = $("#ApprSGstatus");
+                            ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                            $.each(response, function () {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            });
+                        }
+                    
+                    },
+                    failure: function (response) {
+                      
+                    },
+                    error: function (response) {
+                   
+                    }
+                });
+            }
+    });
+</script>

@@ -1,0 +1,88 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.LeaveApplication>
+<div class="table-responsive">
+    <table id="tblItemsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Employee ID</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Cost Center</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">From Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">To Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Days</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Leave Type</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Status</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.lid)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.EmployeeName)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.cccode)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.FromDate)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.ToDate)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.Noofleaves)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.LeaveType)
+                </td>
+                <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+<script>
+
+    $(document).ready(function () {
+        var ApprovePOGrid = null;
+        InitializeformatApprovePOGrid();
+        var total = 0;
+        $("#tblItemsGrid tbody tr").each(function () {
+            var currentRow = $(this);
+
+            var rowtotal = currentRow.find("td").eq(8).html();
+            var numgivenqty = isNaN(parseFloat(rowtotal)) ? 0 : parseFloat(rowtotal)
+            if (rowtotal != "") {
+                total = parseFloat(total) + parseFloat(numgivenqty);
+            }
+
+        });       
+    });
+    function InitializeformatApprovePOGrid() {
+        ApprovePOGrid = $('#tblItemsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: true,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            //pageLength: 10
+        });
+
+    }
+</script>

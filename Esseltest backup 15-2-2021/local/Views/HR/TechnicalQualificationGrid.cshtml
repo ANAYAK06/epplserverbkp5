@@ -1,0 +1,88 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.TechnicalQualification>
+@if (Model.Count > 0)
+{
+    <div class="col-md-12 change-tab">
+        <div class="strike1">
+            <span>Technical Qualification</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <table id="TechnicalQuaTable" class="table order-list technicalquatable">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;color:#fff !important">S.No</td>
+                        <td style="text-align:center;color:#fff !important">Technical Skills</td>
+                        <td style="text-align:center;color:#fff !important">Year Of Experience</td>
+                        <td style="text-align:center;color:#fff !important"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int count3 = 1; }
+
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="text-align:center">@count3</td>
+                            <td style="text-align:center">
+                                @Html.DisplayFor(modelItem => item.TechnicalSkill)
+                            </td>
+                            <td style="text-align:center">
+                                @Html.DisplayFor(modelItem => item.ExperienceYears)
+                            </td>
+                            <td style="text-align:center"><input type="button" class="ibtnAddTechSkilldelete btn btn-md btn-danger" value="Delete"></td>
+                        </tr>
+                        count3++;
+                    }
+                    </tbody>
+               
+            </table>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+        $("table.order-list.technicalquatable").on("click", ".ibtnAddTechSkilldelete", function (event) {
+            var row = $(this).closest("tr");
+            var skill = $.trim(row.find("td").eq(1).html());
+            var rowno = $.trim(row.find("td").eq(0).html());
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteTecgnicalQualificationData',
+                data: { SkillName: skill },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        row.remove();
+                        if (rowno == 1 || rowno === "1") {
+                            $("#divTechnicalGrid").load('/HR/TechnicalQualificationGrid');
+                        }
+                        else { ReassignRowNoforTQGrid(); }
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+            });
+        });
+        function ReassignRowNoforTQGrid() {
+            var rowno = 1;
+            $("#TechnicalQuaTable tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(rowno);
+                rowno++;
+            });
+
+        }
+    </script>
+
+}

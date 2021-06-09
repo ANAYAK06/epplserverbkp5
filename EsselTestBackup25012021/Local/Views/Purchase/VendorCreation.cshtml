@@ -1,0 +1,40 @@
+﻿@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Vendor Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button class="btn btn1 btn-success" id="btnewVendor" onclick="ViewAddNewVendorModel()">Add Vendor</button>
+                                        <div id="divVendorDetailsGrid">
+                                            @Html.Action("ViewVendorGrid", "Purchase")
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" id="ModalNewVendor" role="dialog" data-backdrop="static" data-keyboard="false">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,590 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Indent
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        @if (Session["Roleid"].ToString() == Model.IndentTypeDefine)
+        {
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @*@Html.LabelFor(model => model.Costcenter)
+        @Html.ListBoxFor(model => model.Costcenter, new SelectList(Model.UserCCList, "CC_Code", "CC_Name"), new { @class = "listbox form-control", @id = "ddlMultiCCCode" })*@
+
+                    @*@Html.LabelFor(model => model.IndentTypeDefine)
+        @Html.DropDownListFor(model => model.IndentTypeDefine, new SelectList(Model.IndentDefineTypeList, "Defineid", "DefineValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemType", onchange = "checkvalid()" })*@
+                </div>
+            </div>            
+            <div class="col-md-4">
+                <div class="form-group">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                </div>
+            </div>
+        </div>
+        }
+            <div class="col-md-12">
+                @*@if (Session["Roleid"].ToString() == Model.IndentTypeDefine)*@
+                @if (Model.IndentPresentLevel == Model.IndentDefineLevel)
+                {
+                    <div id="GridCSKData">
+                    </div>
+                   
+                }
+                @if (Model.IndentPresentLevel < Model.IndentDefineLevel)
+                {
+                    <div id="GridData">
+                    </div>
+                }
+                @if (Model.IndentPresentLevel == Model.NewItemDefineLevel)
+                {
+                    <div id="GridPUMData">
+
+                    </div>
+                }
+                else
+                {
+                    <div id="GridOtherData">
+
+                    </div>
+
+                }
+            </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprindentstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprindentNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveindentDetails('@Model.Rowid')">Submit</button>
+                    <input type="text" value="@Model.IndentPresentLevel" id="txtIndentPresentLevel" style="display:none" />
+                    <input type="text" value="@Model.IndentDefineLevel" id="txtIndentDefineLevel" style="display:none" />
+                   
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprindentInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">     
+    $(document).ready(function () {  
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        var Indno = '@Model.Indentno';
+        var Presentlevel = '@Model.IndentPresentLevel';
+        var DefineLevel = '@Model.IndentDefineLevel';
+        var DefineNewStockLevel = '@Model.NewItemDefineLevel';
+        var IndentTypeDefine = '@Model.IndentTypeDefine';
+        $.ajax({            
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {               
+                var count = Object.keys(response).length;
+                if (count > 0) {                    
+                    var ddlaprovalstatus = $("#Apprindentstatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');                  
+                     $.each(response, function () {                          
+                         if (Presentlevel >= DefineNewStockLevel) {
+                                if (this['Type'] == 'Return') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                        });
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });       
+        if (Presentlevel == DefineLevel) {            
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/ViewCSKIndentDetailsGrid',
+                data: { Indentno: Indno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridCSKData").html(data);
+                    }
+                },
+            });
+        }
+        else if (Presentlevel < DefineLevel) {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/ViewIndentDetailsGrid',
+                data: { Indentno: Indno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridData").html(data);
+                    }
+                },
+            });
+        }
+        else if (Presentlevel == DefineNewStockLevel) {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/ViewPUMIndentDetailsGrid',
+                data: { Indentno: Indno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridPUMData").html(data);
+                    }
+                },
+            });
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/ViewOthersIndentDetailsGridView',
+                data: { Indentno: Indno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {                       
+                        $("#GridOtherData").html(data);
+                    }
+                },
+            });
+        }
+    });
+    function ApproveindentDetails(Rowid) {
+        var Presentlevel = '@Model.IndentPresentLevel';
+        var DefineLevel = '@Model.IndentDefineLevel';
+        var DefineNewStockLevel = '@Model.NewItemDefineLevel';
+        var Roleid = '@Session["Roleid"]';      
+        var Indno = '@Model.Indentno';
+        var IndentTypeDefine = '@Model.IndentTypeDefine';
+         var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprindCreatedby").val(Sessioncreated);
+        appstatusid = "Apprindentstatus-" + Rowid;
+        var appstatus = $("#Apprindentstatus").val();
+        var ReturnText = $("#ApprindentNotes").val();
+        var retnoteid = "ApprindentNotes-" + Rowid;
+        retnote = $("#" + retnoteid + "").val();    
+        msg = $("#divApprindentInfoMsg");
+        isValid = true;
+        var errorMsg = "";      
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (ReturnText == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+            isValid = false;
+        }        
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divApprindentInfoMsg").text("");
+            $("#divApprindentInfoMsg").addClass("hidden");
+            if (Presentlevel == DefineLevel) {              
+                var qtycount = 0, chkcount = 0; currentrowcount = 0;
+                $("#ItemIndentDetailsCSKDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentrowcount = currentRow;
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    var qtychk = currentRow.find("td").eq(9).find("input[type='text']").val();
+                    if (check == false) { chkcount = chkcount + 1; }
+                    if (qtychk == "" || qtychk != 0 ) { qtycount = qtycount + 1; }
+                });
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+            }
+            else if (Presentlevel < DefineLevel) {
+                var qtycount = 0, amtcount = 0, chkcount = 0; currentrowcount = 0;
+                $("#ItemIndentDetailsDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentrowcount = currentRow;
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    if (check == false) { chkcount = chkcount + 1; }
+                });
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+            }
+            else if (Presentlevel == DefineNewStockLevel) {                
+                var qtycount = 0, chkcount = 0; currentrowcount = 0;
+                $("#ItemIndentDetailsPUMDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentrowcount = currentRow;
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    var qtychk = currentRow.find("td").eq(10).find("input[type='text']").val();
+                    if (check == false) { chkcount = chkcount + 1; }
+                    if (qtychk == "" || qtychk != 0) { qtycount = qtycount + 1; }
+                });
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+            }
+            else {
+                var qtycount = 0, chkcount = 0; currentrowcount = 0;
+                $("#ItemIndentDetailsOtherDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentrowcount = currentRow;
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    if (check == false) { chkcount = chkcount + 1; }
+                });
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                    isValid = false;
+                }
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divApprindentInfoMsg").text("");
+                $("#divApprindentInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divApprindentInfoMsg").addClass("alert-danger");
+                $("#divApprindentInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else { 
+                if (Presentlevel == DefineLevel) {
+                    //debugger;
+                    var Ids = "";
+                    var Qtys = "";
+                    var Basics = "";
+                    var Amts = "";
+                    var TotalQtys = 0;
+                    var selectedledlist = [];
+                    //var IndDefinetxt = $("#ddl_ItemType option:selected").text();
+                    $("#ItemIndentDetailsCSKDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var qtychk = currentRow.find("td").eq(9).find("input[type='text']").val();
+                        //if (IndDefinetxt == "Partially Purchase" || IndDefinetxt == "Full Purchase" || IndDefinetxt == "Full Issue") {
+                            //if (qtychk != "" && IndDefinetxt != "Full Purchase") {
+                            //if (qtychk != "") {
+                               var num = isNaN(parseFloat(currentRow.find("td").eq(9).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(9).find("input[type='text']").val())
+                                Ids = Ids + currentRow.find("td").eq(13).html() + ",";
+                                Qtys = Qtys + num + ",";
+                                Basics = Basics + currentRow.find("td").eq(6).html() + ",";
+                                Amts = Amts + parseFloat(parseFloat(currentRow.find("td").eq(6).html())) * ((parseFloat(currentRow.find("td").eq(8).html()) - parseFloat(num))) + ",";
+                                TotalQtys = parseFloat(TotalQtys) + parseFloat(num);
+                                if (Ids != "") {
+                                    selectedledlist.push(currentRow.find("td").eq(13).html());
+                                }
+                            //}
+                        //}
+                    });                  
+                    var currentrowcount1 = $("#ItemCSKCCDataTable tbody tr").length;
+                    var InputString = "";
+                    var TItemcodes = "";
+                    var TCCcodes = "";
+                    var TQtys = "";
+                    if (currentrowcount1 > 0) {
+                        var arr = [];
+                        $("#ItemCSKCCDataTable tbody tr").each(function () {
+                            var currentRowbody = $(this).closest("tr");
+                            var JsonObject = new Object();
+                            var qty = currentRowbody.find(".countcheck");
+                            var i = -1;
+                            $("#ItemCSKCCDataTable thead th").each(function () {
+                                var currentRowhead = $(this);
+                                if (currentRowhead[0].outerText != "ItemCode" && currentRowhead[0].outerText != "0") {
+                                    JsonObject.ItemCode = currentRowbody.find("td").eq(0)[0].outerText;
+                                    TItemcodes = TItemcodes + currentRowbody.find("td").eq(0)[0].outerText + ",";
+                                    JsonObject.CCCode = currentRowhead[0].outerText;
+                                    TCCcodes = TCCcodes + currentRowhead[0].outerText + ",";
+                                    JsonObject.Quantity = qty[i].value;
+                                    TQtys = TQtys + qty[i].value + ",";
+                                    arr.push(JsonObject);
+                                }
+                                i = i + 1
+                            });
+                        });
+                    }
+                    var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                    if (duplicatelist.length > 0) {
+                        var finalerror2 = "<div style='align:center'><p>Duplicate ItemCode for Indent</p>";
+                        $("#divIndentInfoMsg").text("");
+                        $("#divIndentInfoMsg").append(finalerror2 + "</div>");
+                        $("#divIndentInfoMsg").addClass("alert-danger");
+                        $("#divIndentInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                    else {                     
+                        var Indno = '@Model.Indentno';
+                        $("#divIndentInfoMsg").text("");
+                        $("#divIndentInfoMsg").addClass("hidden");                       
+                        addFailMsg = "Error Occurred While Verification";
+                        var finalmsg;
+                        if (appstatus === 'Verify') {
+                            finalmsg = 'Verified Successfully';
+                        }
+                        else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                        else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                        else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/ApproveIndentCSK",
+                            data: '{Rowid:"' + Ids + '",Qtys:"' + Qtys + '",Basics:"' + Basics + '",Amts:"' + Amts + '",TotalQtys:"' + TotalQtys + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprindCreatedby").val() + '",Remarks:"' + $("#ApprindentNotes").val() + '",Indent:"' + Indno + '",TItemcodes:"' + TItemcodes + '",TCCCodes:"' + TCCcodes + '",TQtys:"' + TQtys + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            processData: false,
+                            dataType: "json",
+                            success: function (response) {
+                                var msg = response.saveStatus;
+                                if (response.saveStatus == "Submitted") {
+                                    var msg = '';
+                                    $('#ApproveindMsgModal').modal('show');
+                                    msg = "<div>Indent  " + Indno + finalmsg + "  </div>";
+                                    $("#ApproveindMsgModal").on("hide.bs.modal", function () {
+                                        $("#divApprindGrid").load('/Purchase/VerifyIndentCreationGrid');
+                                    });
+                                    $("#ApprindMsg").html(msg);
+                                }
+                                else {
+                                    msg = "<div>" + response.saveStatus + "</div>";
+                                    $("#ApprindMsg").html(msg);
+                                    $('#ApproveindMsgModal').modal('show');
+                                }
+                            },
+                            failure: function (response) {
+                                var msg = "<div>" + addFailMsg + "</div>";
+                                $("#ApprindMsg").html(msg);
+                                $('#ApproveindMsgModal').modal('show');
+                            },
+                            error: function (response) {
+                                var msg = "<div>" + addFailMsg + "</div>";
+                                $("#ApprindMsg").html(msg);
+                                $('#ApproveindMsgModal').modal('show');
+                            }
+                        });
+                    }
+
+
+                }
+                else if (Presentlevel < DefineLevel) {
+                    var Indno = '@Model.Indentno';
+                    $("#divIndentInfoMsg").text("");
+                    $("#divIndentInfoMsg").addClass("hidden");                 
+                    addFailMsg = "Error Occurred While Verification";
+                    var finalmsg;
+                    if (appstatus === 'Verify') {
+                        finalmsg = 'Verified Successfully';
+                    }
+                    else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                    else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                    else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/ApproveIndent",
+                        data: '{Rowid:"' + Rowid + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprindCreatedby").val() + '",Remarks:"' + $("#ApprindentNotes").val() + '",Indent:"' + Indno + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var msg = response.saveStatus;
+                            if (response.saveStatus == "Submitted") {
+                                var msg = '';
+                                $('#ApproveindMsgModal').modal('show');
+                                msg = "<div>Indent  " + Indno + finalmsg + "  </div>";
+                                $("#ApproveindMsgModal").on("hide.bs.modal", function () {
+                                    $("#divApprindGrid").load('/Purchase/VerifyIndentCreationGrid');
+                                });
+                                $("#ApprindMsg").html(msg);
+                            }
+                            else {
+                                msg = "<div>" + response.saveStatus + "</div>";
+                                $("#ApprindMsg").html(msg);
+                                $('#ApproveindMsgModal').modal('show');
+                            }
+                        },
+                        failure: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprindMsg").html(msg);
+                            $('#ApproveindMsgModal').modal('show');
+                        },
+                        error: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprindMsg").html(msg);
+                            $('#ApproveindMsgModal').modal('show');
+                        }
+                    });
+                }
+                else if (Presentlevel == DefineNewStockLevel) {
+                    ////debugger;
+                    var Indno = '@Model.Indentno';
+                    var Indflow = '@Model.IndentFlow';
+                    var Ids = "";
+                    var Qtys = "";
+                    var Basics = "";
+                    var Amts = "";
+                    var TotalQtys = 0;
+                    var selectedledlist = [];
+                    var IndDefinetxt = $("#ddl_ItemType option:selected").text();
+                    $("#ItemIndentDetailsPUMDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var qtychk = currentRow.find("td").eq(10).find("input[type='text']").val();                       
+                            //if (currentRow.find("td").eq(10).find("input[type='text']").val() != "") {
+                                var num = isNaN(parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())
+                                Ids = Ids + currentRow.find("td").eq(13).html() + ",";
+                                Qtys = Qtys + num + ",";
+                                Basics = Basics + currentRow.find("td").eq(6).html() + ",";
+                                //Amts = Amts + parseFloat(parseFloat(currentRow.find("td").eq(6).html())) * ((parseFloat(currentRow.find("td").eq(8).html()) - parseFloat(currentRow.find("td").eq(9).find("input[type='text']").val()))) + ",";
+                                 Amts = Amts + parseFloat(parseFloat(currentRow.find("td").eq(6).html())) * ((parseFloat(currentRow.find("td").eq(8).html()) - parseFloat(currentRow.find("td").eq(9).html()) - parseFloat(num))) + ",";
+                                      //TotalQtys = TotalQtys + currentRow.find("td").eq(10).find("input[type='text']").val() + ",";
+                                TotalQtys = parseFloat(TotalQtys) + parseFloat(num);
+                                if (Ids != "") {
+                                    selectedledlist.push(currentRow.find("td").eq(13).html());
+                                }
+                            //}
+                       
+                    });
+                    var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                    if (duplicatelist.length > 0) {
+                        var finalerror2 = "<div style='align:center'><p>Duplicate ItemCode for Indent</p>";
+                        $("#divIndentInfoMsg").text("");
+                        $("#divIndentInfoMsg").append(finalerror2 + "</div>");
+                        $("#divIndentInfoMsg").addClass("alert-danger");
+                        $("#divIndentInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                    else {
+                        var IndDefine = $("#ddl_ItemType option:selected").val();
+                        var IndDefinetxt = $("#ddl_ItemType option:selected").text();
+                        var Indno = '@Model.Indentno';
+                        $("#divIndentInfoMsg").text("");
+                        $("#divIndentInfoMsg").addClass("hidden");
+                        addFailMsg = "Error Occurred While Verification";
+                        var finalmsg;
+                        if (appstatus === 'Verify') {
+                            finalmsg = 'Verified Successfully';
+                        }
+                        else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                        else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                        else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/ApproveIndentCSK",
+                            data: '{Rowid:"' + Ids + '",Qtys:"' + Qtys + '",Basics:"' + Basics + '",Amts:"' + Amts + '",TotalQtys:"' + TotalQtys + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprindCreatedby").val() + '",Remarks:"' + $("#ApprindentNotes").val() + '",Indent:"' + Indno + '",IndTypetxt:"' + Indflow + '"}',
+                            //data: '{Rowid:"' + Ids + '",Qtys:"' + Qtys + '",Basics:"' + Basics + '",Amts:"' + Amts + '",TotalQtys:"' + TotalQtys + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                var msg = response.saveStatus;
+                                if (response.saveStatus == "Submitted") {
+                                    var msg = '';
+                                    $('#ApproveindMsgModal').modal('show');
+                                    msg = "<div>Indent  " + Indno +'  '+ finalmsg + "  </div>";
+                                    $("#ApproveindMsgModal").on("hide.bs.modal", function () {
+                                        $("#divApprindGrid").load('/Purchase/VerifyIndentCreationGrid');
+                                    });
+                                    $("#ApprindMsg").html(msg);
+                                }
+                                else {
+                                    msg = "<div>" + response.saveStatus + "</div>";
+                                    $("#ApprindMsg").html(msg);
+                                    $('#ApproveindMsgModal').modal('show');
+                                }
+                            },
+                            failure: function (response) {
+                                var msg = "<div>" + addFailMsg + "</div>";
+                                $("#ApprindMsg").html(msg);
+                                $('#ApproveindMsgModal').modal('show');
+                            },
+                            error: function (response) {
+                                var msg = "<div>" + addFailMsg + "</div>";
+                                $("#ApprindMsg").html(msg);
+                                $('#ApproveindMsgModal').modal('show');
+                            }
+                        });
+                    }
+
+
+                }
+                else {
+                    ////debugger;
+                    var Indno = '@Model.Indentno';
+                    $("#divIndentInfoMsg").text("");
+                    $("#divIndentInfoMsg").addClass("hidden");                   
+                    addFailMsg = "Error Occurred While Verification";
+                    var finalmsg;
+                    if (appstatus === 'Verify') {
+                        finalmsg = 'Verified Successfully';
+                    }
+                    else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                    else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                    else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/ApproveIndent",
+                        data: '{Rowid:"' + Rowid + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprindCreatedby").val() + '",Remarks:"' + $("#ApprindentNotes").val() + '",Indent:"' + Indno + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var msg = response.saveStatus;
+                            if (response.saveStatus == "Submitted") {
+                                var msg = '';
+                                $('#ApproveindMsgModal').modal('show');
+                                msg = "<div>Indent  " + Indno + finalmsg + "  </div>";
+                                $("#ApproveindMsgModal").on("hide.bs.modal", function () {
+                                    $("#divApprindGrid").load('/Purchase/VerifyIndentCreationGrid');
+                                });
+                                $("#ApprindMsg").html(msg);
+                            }
+                            else {
+                                msg = "<div>" + response.saveStatus + "</div>";
+                                $("#ApprindMsg").html(msg);
+                                $('#ApproveindMsgModal').modal('show');
+                            }
+                        },
+                        failure: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprindMsg").html(msg);
+                            $('#ApproveindMsgModal').modal('show');
+                        },
+                        error: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprindMsg").html(msg);
+                            $('#ApproveindMsgModal').modal('show');
+                        }
+                    });
+
+
+                }
+            }
+        }
+    }
+</script>

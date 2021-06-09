@@ -1,0 +1,160 @@
+﻿@model List<EsselTestLocalApplication.Models.Budget.AmendCCBudget>
+
+    <div class="table-responsive">
+        <table id="tblVerifyCCAmendGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="hidden">Id</th>
+                    <th>Cost Center Code</th>
+                    <th>Cost Center Name</th>
+                    <th>Amend Value</th>
+                    <th>Amend Type</th>
+                    <th class="hidden">Created Date</th>
+                    <th class="hidden">Financial Year</th>
+                    <th class="hidden">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="details-control"></td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.CCBudgetAmendmentid)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CCCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CCName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AmendedValue)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AmendmentType)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.AmendmentDate)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.FYYear)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    
+
+
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {         
+        var CostCentersAmendGrid = null;
+        InitializeCCAmendGrid();
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppccAmendCreatedby").val(Sessioncreated);
+        var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+
+    });
+    function InitializeCCAmendGrid() {
+        CostCentersAmendGrid = $('#tblVerifyCCAmendGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(8)', row).html();
+                if (oldstatus !=0) {
+                    $('td:eq(8)', row).html("Verification Pending");
+                }
+                else { $('td:eq(8)', row).html("Return"); }
+            },
+            pageLength: 10
+        });
+
+        $('#tblVerifyCCAmendGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = CostCentersAmendGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(CostCentersAmendGrid, tr);
+                // Open this row
+                row.child(formatVerifyAmendCC(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatVerifyAmendCC(d) {       
+        var htmltext;
+        var amendid,cccode,amendtype;
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 2)
+                cccode = value;
+            if (index == 1)
+                amendid = value; 
+            if (index == 5)
+                amendtype = value;
+        });
+        //debugger;
+        //alert(amendtype);
+        var divid = "divappAmendcc" + amendid ;
+        var divid1 = $("#" + divid + "");
+        $("#currentccAmendid").val(amendid);
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/ViewApproveCCAmendBudget',
+                data: { AmedBudgetid: amendid, AmendType: amendtype },
+                success: function (Data) {
+                    var divid2 = "divappAmendcc" + amendid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+       
+                }
+            });
+        return '<div id="divappAmendcc' + amendid +'"></div>';
+    }
+
+</script>

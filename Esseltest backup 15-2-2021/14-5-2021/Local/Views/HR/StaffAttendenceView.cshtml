@@ -1,0 +1,389 @@
+﻿@model EsselTestLocalApplication.Models.HR.AttendenceReport
+@{
+    ViewBag.Title = "StaffAttendenceView";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/AccountsApprovaljs")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Attendence Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ReportType)
+                                            @Html.DropDownListFor(model => model.ReportType, new SelectList(Model.AttendanceReportypeList, "TypeValue", "TypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlReportType", onchange = "AttendanceReportTypeChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divCC">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlEmpCC" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divName">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.EmpName)
+                                            @Html.EditorFor(model => model.EmpName, new { htmlAttributes = new { @class = "form-control", @id = "txtEmpNameSearch", @onkeyup = "onchangeevenEmpName();",
+
+                                           @type = "search",
+                                           @onpaste = "return false;" ,
+                                           style = "text-transform:uppercase" } })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divID">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.EmpRefNo)
+                                            @Html.EditorFor(model => model.EmpRefNo, new { htmlAttributes = new { @class = "form-control", @id = "txtEmpIDSearch", @onkeyup = "onchangeeventEmpID();",
+
+                                           @type = "search",
+                                           @onpaste = "return false;" ,
+                                           style = "text-transform:uppercase" } })
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-3" id="divFromDate">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FromDate)
+                @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtAttendanceFromDate", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divToDate">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ToDate)
+                @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtAttendanceToDate", @readOnly = "true" })
+            </div>
+        </div>*@
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(model => model.Month)
+                                        @Html.DropDownListFor(model => model.Month, new SelectList(Model.monthlst, "name", "name"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlMonth" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(model => model.Year)
+                                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.yearlst, "Year", "YearValue"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAyear" })
+                                    </div>
+                                    <div class="col-md-3" id="divbtns">
+                                        <div class="form-group">
+                                            <br />
+                                            <button class="btn btn1 btn-success" id="btnViewAttendance" onclick="GetAttendanceReportData()">View</button>
+                                            <button class="btn btn1 btn-success" id="btnSResetAttendance" onclick="ResetAttendanceReport()">Reset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divAttendenceData">
+
+                                </div>
+                                <div class="col-md-12">
+                                    <br />
+                                    <div class="text-center">
+                                        <div id="divAddAttendenceInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divCC").addClass("hidden");
+        $("#divName").addClass("hidden");
+        $("#divID").addClass("hidden");
+        $("#divFromDate").addClass("hidden");
+        $("#divToDate").addClass("hidden");
+        $("#divbtns").addClass("hidden");
+        $("#txtAttendanceFromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",            
+            yearRange: "-100:+0",    
+            maxDate: 'dateToday',
+            onClose: function (selectedDate) {       
+                $("#txtAttendanceToDate").datepicker("option", "minDate", selectedDate);    
+                //var newdate = new Date(selectedDate);
+                //newdate.setDate(newdate.getDate() + 3);              
+                //var dd = newdate.getDate();
+                //var mm = newdate.getMonth();
+                //var y = newdate.getFullYear();
+                //var someFormattedDate = dd + '-' + mm + '-' + y;
+
+                var newdate = new Date(selectedDate);
+                var in_a_week = new Date().setDate(newdate.getDate() + 10);
+                console.log("30days: " + in_a_week);
+               
+                $("#txtAttendanceToDate").datepicker("option", "maxDate", new Date(in_a_week));
+            }
+        });
+        $("#txtAttendanceToDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",            
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",  
+            yearRange: "-100:+0",  
+            maxDate: 'dateToday',
+            onClose: function (selectedDate) {
+              
+            }
+        });
+    });
+    function AttendanceReportTypeChange() {
+        let ddlReportTypeindex = $("#ddlReportType select:option").index();
+        let ddlReportType = $("#ddlReportType option:selected").val();        
+        if (ddlReportTypeindex === 0) {
+            $("#divCC").addClass("hidden");
+            $("#divName").addClass("hidden");
+            $("#divID").addClass("hidden");
+            $("#divFromDate").addClass("hidden");
+            $("#divToDate").addClass("hidden");
+            $("#divbtns").addClass("hidden");
+            $("#txtHoldPayDate").datepicker("setDate", 'dateToday');
+            $("#txtAttendanceToDate").datepicker("setDate", 'dateToday');
+            $("#txtEmpNameSearch").val("");
+            $("#txtEmpIDSearch").val("");
+            $("#ddlEmpCC").prop('selectedIndex', 0);
+        }
+        else {
+            if (ddlReportType === "CCCode") {
+                $("#divCC").removeClass("hidden");
+                $("#divName").addClass("hidden");
+                $("#divID").addClass("hidden");
+            }
+            else if(ddlReportType === "ID") {
+                $("#divCC").addClass("hidden");
+                $("#divName").addClass("hidden");
+                $("#divID").removeClass("hidden");
+            }
+            else if (ddlReportType === "Name") {
+                $("#divCC").addClass("hidden");
+                $("#divName").removeClass("hidden");
+                $("#divID").addClass("hidden");
+            }            
+            $("#txtHoldPayDate").datepicker("setDate", 'dateToday');
+            $("#txtHoldPayDate").datepicker("setDate", 'dateToday');
+            $("#txtEmpNameSearch").val("");
+            $("#txtEmpIDSearch").val("");
+            $("#ddlEmpCC").prop('selectedIndex', 0);
+            $("#divFromDate").removeClass("hidden");
+            $("#divToDate").removeClass("hidden");
+            $("#divbtns").removeClass("hidden");
+        }        
+    }
+    function onchangeevenEmpName() {
+        let ddlReportTypeindex = $("#ddlReportType select:option").index();
+        let ddlReportType = $("#ddlReportType option:selected").val();        
+        var previxvalue = $("#txtEmpNameSearch").val();
+        if (ddlReportTypeindex === 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append("<div>Select Employee Category</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            if (previxvalue != "") {
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").addClass("hidden");
+                $("#txtEmpNameSearch").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/HR/GetEmployeesForAttendanceReport',
+                            data: '{Prefix:"' + request.term + '", PrefixType:"' + ddlReportType + '"}',
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return { label: item.FirstName, value: item.FirstName };
+                                }))
+                            },
+                            error: function (data) {
+                                alert(data.responseText);
+                            },
+                            failure: function (data) {
+                                alert(data.responseText);
+                            }
+                        });
+                    },
+                });
+            }
+        }
+    }
+    function onchangeeventEmpID() {
+        let ddlReportTypeindex = $("#ddlReportType select:option").index();
+        let ddlReportType = $("#ddlReportType option:selected").val();        
+        var previxvalue = $("#txtEmpIDSearch").val();
+        if (ddlReportTypeindex === 0) {
+            $("#divAddAttendenceInfoMsg").text("");
+            $("#divAddAttendenceInfoMsg").append("<div>Select Report Type</div>");
+            $("#divAddAttendenceInfoMsg").addClass("alert-danger");
+            $("#divAddAttendenceInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            if (previxvalue != "") {
+                $("#divAddAttendenceInfoMsg").text("");
+                $("#divAddAttendenceInfoMsg").addClass("hidden");
+                $("#txtEmpIDSearch").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/HR/GetEmployeesForAttendanceReport',
+                            data: '{Prefix:"' + request.term + '", PrefixType:"' + ddlReportType + '"}',
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return { label: item.FirstName, value: item.EmpRefNo };
+                                }))
+                            },
+                            error: function (data) {
+                                alert(data.responseText);
+                            },
+                            failure: function (data) {
+                                alert(data.responseText);
+                            }
+                        });
+                    },
+                });
+            }
+        }
+    }
+    function ResetAttendanceReport() {
+        location.reload();
+    }
+    function GetAttendanceReportData() {
+        let ddlReportTypeindex = $("#ddlReportType option:selected").index();
+        let ddlReportType = $("#ddlReportType option:selected").val();
+
+
+        let ddlmonthindex = $("#ddlMonth option:selected").index();
+        let ddlmonth = $("#ddlMonth option:selected").val();
+
+
+        let yearindex = $("#ddlAyear option:selected").index();
+        let year = $("#ddlAyear option:selected").val();
+        //debugger;
+        //let fromdate = $("#txtAttendanceFromDate").val();
+        //let todate = $("#txtAttendanceToDate").val();
+        if (ddlReportTypeindex === 0) {
+            $("#divAddAttendenceInfoMsg").text("");
+            $("#divAddAttendenceInfoMsg").append("<div>Select Report Type</div>");
+            $("#divAddAttendenceInfoMsg").addClass("alert-danger");
+            $("#divAddAttendenceInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else if (ddlmonthindex === 0) {
+            $("#divAddAttendenceInfoMsg").text("");
+            $("#divAddAttendenceInfoMsg").append("<div>Select Month</div>");
+            $("#divAddAttendenceInfoMsg").addClass("alert-danger");
+            $("#divAddAttendenceInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else if (yearindex === 0) {
+            $("#divAddAttendenceInfoMsg").text("");
+            $("#divAddAttendenceInfoMsg").append("<div>Select Year</div>");
+            $("#divAddAttendenceInfoMsg").addClass("alert-danger");
+            $("#divAddAttendenceInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddAttendenceInfoMsg").text("");
+            $("#divAddAttendenceInfoMsg").addClass("hidden");
+            var isValid = true;
+            var errorMsg = "";
+            let typevalue = "";//cccode or empid or empname
+            //debugger;
+            let ccindex = $("#ddlEmpCC option:selected").index();
+            let cccode = $("#ddlEmpCC option:selected").val();
+            var idvalue = $("#txtEmpIDSearch").val();
+            var namevalue = $("#txtEmpNameSearch").val();
+            if (ddlReportType === "CCCode") {
+                if (ccindex ===0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                isValid = false;
+             }
+            }
+            else if (ddlReportType === "ID") {
+                if (idvalue === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Enployee ID</p>";
+                    isValid = false;
+                }
+            }
+            else if (ddlReportType === "Name") {
+                if (namevalue === "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Employee Name</p>";
+                    isValid = false;
+                }
+            }      
+            //if (fromdate === "") {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            //    isValid = false;
+            //}
+            //if (todate === "") {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            //    isValid = false;
+            //}  
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAddAttendenceInfoMsg").text("");
+                $("#divAddAttendenceInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAddAttendenceInfoMsg").addClass("alert-danger");
+                $("#divAddAttendenceInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAddAttendenceInfoMsg").text("");
+                $("#divAddAttendenceInfoMsg").addClass("hidden");              
+
+                $("#ddlReportType").prop('disabled', true);  
+                $("#ddlEmpCC").prop('disabled', true);  
+                $("#txtEmpNameSearch").prop('disabled', true);  
+                $("#txtEmpIDSearch").prop('disabled', true);  
+                $("#txtAttendanceFromDate").prop('disabled', true);  
+                $("#txtAttendanceToDate").prop('disabled', true);   
+                $("#ddlMonth").prop('disabled', true);  
+                $("#ddlAyear").prop('disabled', true);  
+                $("#btnViewAttendance").prop('disabled', true);  
+                if (ddlReportType === "CCCode") {
+                    typevalue = cccode;
+                }
+                else if (ddlReportType === "ID") { typevalue = idvalue;}
+                else if (ddlReportType === "Name") {                 
+                    var name = namevalue.split('(');
+                    typevalue = name[0];
+                }
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'html',
+                    url: '/HR/GetEmployeesReportData',
+                    data: { TypeValue: typevalue, FromDate: ddlmonth, ToDate: year, ReportType: ddlReportType },        
+                    //data: { TypeValue: typevalue, FromDate: fromdate, ToDate: todate, ReportType: ddlReportType},                  
+                    success: function (Data) {                       
+                    $("#divAttendenceData").html(Data);
+                    $("#divAttendenceData").removeClass('hidden');
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                     
+                    }
+                });
+
+            }
+        }
+    }
+</script>
+

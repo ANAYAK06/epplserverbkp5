@@ -1,0 +1,170 @@
+﻿@model EsselTestLocalApplication.Models.HR.AcademicQualification
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add Academic Qualification</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AcademicClass)
+                            @Html.DropDownListFor(model => model.AcademicClass, new SelectList(Model.DegreeList, "DegreeName", "DegreeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpDegreeName" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NameofUniversity)
+                            @Html.TextBoxFor(model => model.NameofUniversity, htmlAttributes: new { @class = "form-control", @id = "txtAQNameofUniversity", onkeypress = "return isValidSpecialCharacters(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FromYear)
+                            @*@Html.TextBoxFor(model => model.FromYear, htmlAttributes: new { @class = "form-control", @id = "txtAQFromYear", onkeypress = "return IsNumeric(event)" })*@
+                            @Html.DropDownListFor(model => model.AcademicClass, new SelectList(Model.AcademicYearsList, "Year", "Year"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAQFromYear" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ToYear)
+                            @Html.DropDownListFor(model => model.ToYear, new SelectList(Model.AcademicYearsList, "Year", "Year"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAQToYear" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Percentage)
+                            @Html.TextBoxFor(model => model.Percentage, htmlAttributes: new { @class = "form-control", @id = "txtAQPercentage", onkeypress = "return ValidateAmount(this,event)" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-right">
+                    <button class="btn btn1 btn-success" id="btnewAQSubmit" onclick="SubmitNewAcademicQualificationData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnewnewAQReset" onclick="ClearNewAcademicQualificationModel()">Reset</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddNewAQInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function SubmitNewAcademicQualificationData() {
+        isValid = true;
+        var errorMsg = "";
+        let Academicclassindex = $("#ddlNEmpDegreeName option:selected").index();
+        let Academicclass = $("#ddlNEmpDegreeName option:selected").val();
+        let university = $("#txtAQNameofUniversity").val();
+        let fromyearindex = $("#ddlAQFromYear option:selected").index();
+        let toyearindex = $("#ddlAQToYear option:selected").index();
+        let fromyear = $("#ddlAQFromYear option:selected").val();
+        let toyear = $("#ddlAQToYear option:selected").val();
+        let percentage = $("#txtAQPercentage").val();
+        var selectedclassnames = [];
+        // console.log(currentRow);
+        if (Academicclassindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Academic Degree</p>";
+            isValid = false;
+        }
+        else { selectedclassnames.push(Academicclass); }
+        if (university === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter University</p>";
+            isValid = false;
+        }
+        
+        if (fromyearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Academic From Year</p>";
+            isValid = false;}
+        //else if (fromyear.length != 4) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Academic From Year</p>";
+        //    isValid = false;}
+        if (toyearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Academic To Year</p>";
+            isValid = false; }
+        //else if (toyear.length != 4) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Academic To Year</p>";
+        //    isValid = false; }
+        if (percentage === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Percentage</p>";
+            isValid = false;
+        }
+        var duplicatelist = selectedclassnames.filter(i => selectedclassnames.filter(ii => ii === i).length > 1);
+        if (duplicatelist.length > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Class Entered</p>";
+            isValid = false;
+        }
+        if (fromyear > toyear) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid From and To Year</p>";
+            isValid = false;
+        }
+       
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewAQInfoMsg").text("");
+            $("#divAddNewAQInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAddNewAQInfoMsg").addClass("alert-danger");
+            $("#divAddNewAQInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewAQInfoMsg").text("");
+            $("#divAddNewAQInfoMsg").addClass("hidden");
+
+            var qualData = {
+                AcademicClass: Academicclass,
+                NameofUniversity: university,
+                FromYear: fromyear,
+                ToYear: toyear,
+                Percentage: percentage + '%',
+                
+
+            }
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertAcademicQualificationData',
+                data: { aqData: qualData },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+
+                        $("#divAddNewAQInfoMsg").text("Added Successfully");
+                        $("#divAddNewAQInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddNewAQInfoMsg").addClass("alert-success");
+
+                    }
+                    else {
+                        $("#divAddNewAQInfoMsg").text(Data.saveStatus);
+                        $("#divAddNewAQInfoMsg").addClass("alert-danger");
+                        $("#divAddNewAQInfoMsg").removeClass("hidden alert-success");
+                    }
+                    $("#btnewAQSubmit").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewAQInfoMsg").text(addFailMsg);
+                    $("#divAddNewAQInfoMsg").addClass("alert-danger");
+                    $("#divAddNewAQInfoMsg").removeClass("hidden alert-success");
+                    $("#btnewAQSubmit").prop('disabled', true);
+                }
+            });
+        }
+
+    }
+
+</script>

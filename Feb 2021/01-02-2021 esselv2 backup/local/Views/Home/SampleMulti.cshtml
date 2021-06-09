@@ -1,0 +1,285 @@
+﻿@*@model EsselTestLocalApplication.Models.Users
+@{
+    ViewBag.Title = "SampleMulti";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+
+}
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+
+<div class="col-md-12" id="divCCCodes">
+    <div class="form-group">
+        @Html.LabelFor(model => model.CCCode, htmlAttributes: new { @class = "control-label col-xs-3" })
+        <div class="col-xs-6">
+            @Html.ListBoxFor(model => model.CCCode, new SelectList(Model.UserCCList, "CC_Code", "CC_Name"), new { @class = "listbox form-control", @id = "ddlMultiCCCode1" })
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12" id="divCCCodes">
+    <div class="form-group">
+        @Html.LabelFor(model => model.SelectedCCCode, htmlAttributes: new { @class = "control-label col-xs-3" })
+        <div class="col-xs-6">
+            @Html.ListBoxFor(model => model.SelectedCCCode, new SelectList(Model.UserCCList1, "CC_Code", "CC_Name"), new { @class = "listbox form-control", @id = "ddlMultiCCCode2" })
+        </div>
+    </div>
+</div>
+<button class="btn btn1 btn-success" id="btnewLedger" onclick="Rebind()">Create User</button>
+<button class="btn btn1 btn-success" id="btnewLedger1" onclick="Submit()">Create User</button>
+<button class="btn btn1 btn-success" id="btnewLedger2" onclick="Update()">update User</button>
+
+
+
+<script type="text/javascript">
+    $(function () {
+        $('.listbox').multiselect({
+            includeSelectAllOption: false
+        });
+    });
+
+    function Rebind() {
+        $("#ddlMultiCCCode1 option:selected").prop("selected", false);
+        $("#ddlMultiCCCode1 option").remove();
+        $('#ddlMultiCCCode1').multiselect('rebuild');
+        //for deselect all
+        //$('#ddlMultiCCCode1').multiselect("deselectAll", false).multiselect("refresh");
+        //for hiding
+       // $("#ddlMultiCCCode1").multiselect('destroy');
+        //Reload
+        //$("#ddlMultiCCCode1").multiselect();               
+        //$('#ddlMultiCCCode1').append('<option value="1">1rrewrwe</option>').multiselect('rebuild');              
+
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetUserCC",
+            data: '{Roleid:100}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {              
+                $.each(response, function () {
+                    $('#ddlMultiCCCode1').append('<option value="' + this['CC_Code'] + '">' + this['CC_Name'] + '</option>').multiselect('rebuild');
+                });               
+            },
+            failure: function (response) {
+                alert(response.responseText);
+
+            },
+            error: function (response) {
+                alert(response.responseText);
+             
+            }
+        });
+    }
+
+    function Submit() {
+        var options = $('#ddlMultiCCCode1 > option:selected');
+        if (options.length == 0) {
+            alert('no value selected');
+            return false;
+        }
+        else {
+            var text = $('#ddlMultiCCCode1 option:selected').toArray().map(item => item.text).join();
+            var text1 = $('#ddlMultiCCCode1 option:selected').toArray().map(item => item.value).join();
+            alert(text1);
+
+        }
+
+    }
+    function Update() {        
+        var options = $('#ddlMultiCCCode2 > option:selected');
+        if (options.length == 0) {
+            alert('no value selected');
+            return false;
+        }
+        else {
+            var text = $('#ddlMultiCCCode2 option:selected').toArray().map(item => item.text).join();
+            var text1 = $('#ddlMultiCCCode2 option:selected').toArray().map(item => item.value).join();
+            alert(text1);
+        }
+        }
+
+   
+</script>*@
+
+
+<script>
+    if ($('#chkUpGSTN').is(":checked")) {
+        var gst = confirm('Apply GST');
+        if (gst == true) {
+            //show gst grid
+            $("#chkUpGSTY").prop("checked", true);
+            $("#chkUpGSTN").prop("checked", false);
+            $("#divUpClientGst").removeClass('hidden');
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetAllStates",
+                data: '{}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    var rowno = 1;
+                    var newRow = $("<tr>");
+                    var cols = "";
+                    cols += '<td style="text-align:center" class="hidden">' + rowno + '</td>';
+                    cols += '<td><select class="form-control dropdown-toggle" id="ddlUpGstState" onchange="ClientGSTStateChange()"><option value="">-Please Select-</option>';
+                    $.each(response, function () {
+
+                        cols += '<option value=' + this['State_ID'] + '>' + this['State_Name'] + '</option>';
+
+                    });
+                    cols += '</select>';
+                    cols += '</td><td style="text-align:center"><input class="form-control" data-val="true" id="txtUpGSTNo" name="txtGSTNo" type="text" /></td >';
+                    cols += '<td style="text-align:center"><ul class="list-inline">';
+                    cols += '<li class="eagle-checkbox">';
+                    cols += '<label class="eagle-check custom-checkbox">';
+                    cols += '<input type="checkbox" class="eagle-check-input" id="chkGstCheck">';
+                    cols += '<span class="eagle-check-indicator"></span>  </label>';
+                    cols += '</li>';
+                    cols += '</ul ></td>';
+                    cols += '<td style="text-align:center"><input type="button" class="ibtnUpClientDel btn btn-md btn-danger" value="Delete"></td>';
+                    newRow.append(cols);
+                    $("table.order-list.UpClientGstGrid").append(newRow);
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+        else {
+            //submit data without gst details
+            //UpdateClientDetails();
+        }
+    }
+    else {
+        //alert('is NOT checked!');
+        //submit data with gst details
+        var ddlcount = 0;
+        var amountcount = 0, checkcount = 0;
+        $("#UpClientGstTable tbody tr").each(function () {
+
+            var currentRow = $(this);
+            var col2_value = currentRow.find("td").eq(1).find("select option:selected").val();
+            var col1_value = currentRow.find("td").eq(2).find("input[type='text']").val();
+            // var col3_value = currentRow.find("td").find("input[type='checkbox']");
+            var stateName = currentRow.find("td").eq(1).find("select option:selected").text();
+            var check = currentRow.find('input[type="checkbox"]').is(':checked');
+            if (col2_value == 0) {
+                ddlcount = ddlcount + 1;
+            }
+            if (col1_value == "" || col1_value == "0") {
+                amountcount = amountcount + 1;
+            }
+            if (check == false) {
+                checkcount = checkcount + 1;
+            }
+        });
+
+        if (ddlcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select State Name</p>";
+            isValid = false;
+        }
+        if (amountcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter GSTNo</p>";
+            isValid = false;
+        }
+        if (checkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Check</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divUpClientInfoMsg").text("");
+            $("#divUpClientInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divUpClientInfoMsg").addClass("alert-danger");
+            $("#divUpClientInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divUpClientInfoMsg").text("");
+            $("#divUpClientInfoMsg").addClass("hidden");
+            //update client data
+
+            var gstdeals = null;
+            var gstApplicatble = '0';
+            var rows = [];
+
+            if ($('#chkUpGSTN').is(":checked")) { gstApplicatble = '0'; }
+            if ($('#chkUpGSTY').is(":checked")) {
+                gstApplicatble = '1';
+                var totalRowCount = $("#UpClientGstTable tbody tr").length;
+
+                var GstStatids = "", GstNos = "";
+                $("#UpClientGstTable tbody tr").each(function () {
+                    var currentRow = $(this);
+
+                    var state = currentRow.find("td").eq(1).find("select option:selected").val();//statetd
+                    // var state = currentRow.find("td").eq(1).find(".statetd option:selected").val();
+                    var gstno = currentRow.find("td").eq(2).find("input[type='text']").val();
+                    GstStatids += state + ",";
+                    GstNos += gstno + ",";
+                });
+
+            }
+            var updateClient = {
+                ClientID: $("#txtUpclientid").val(),
+                Client_Code: $("#txtUpClientcode").val(),
+                Client_Name: $("#txtUpClient").val(),
+                TINNo: $("#txtUpTINNo").val(),
+                PANNo: $("#txtUpPANNo").val(),
+                TANNo: $("#txtUpTANNo").val(),
+                Contact_Person_Name: $("#txtUpContactPersonName").val(),
+                Person_PhoneNo: $("#txtUpPersonPhoneNo").val(),
+                Address: $("#txtUpAddress").val(),
+                GST_Applicable: gstApplicatble,
+                Action: 2,
+                GSTStatesList: GstStatids,
+                GSTNoList: GstNos,
+                Createdby: $("#txtAppClientCreatedby").val(),
+                DelGSTStatesList: $("#txtdelgstid").val(),
+                CheckUpdationType: 'ReturnUpdate'
+            };
+
+            addFailMsg = "Error Occurred While Updating ClientDatials.";
+            addSuccessMsg = "Client Details Updated Successfully.";
+            //alert('submit');
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/UpdateClientDetails',
+                data: { addClient: updateClient },
+                success: function (Data) {
+                    if (Data.saveStatus == true) {
+                        $('#ApproveClientMsgModal').modal('show');
+                        var msg = "<div>Client Updated Successfully</div>";
+                        $("#AppClientMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#AppClientMsg").html(msg1);
+                        $('#ApproveClientMsgModal').modal('show');
+                    }
+                },
+                failure: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppClientMsg").html(msg);
+                    $('#ApproveClientMsgModal').modal('show');
+                },
+                error: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppClientMsg").html(msg);
+                    $('#ApproveClientMsgModal').modal('show');
+                }
+            });
+
+        }
+
+    }
+</script>
+
+

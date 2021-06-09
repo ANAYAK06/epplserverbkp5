@@ -1,0 +1,252 @@
+﻿@model EsselTestLocalApplication.Models.HR.PayRollGeneration
+@{
+    ViewBag.Title = "PayRollGeneration";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+@*<h2>PayRollGeneration</h2>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">PayRoll Generation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.GenerateByType)
+                                            @Html.DropDownListFor(model => model.GenerateByType, new SelectList(Model.GenerateTypelst, "Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlType" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <br />
+                                            <button class="btn btn1 btn-success" id="btnGenerate" onclick="GetData()">Generate PayRoll</button>
+                                            <button class="btn btn1 btn-success" id="btnSResetAttendance" onclick="ResetGeneration()">Reset</button>
+                                            <input type="text" value="" id="txtPayrolldate" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divgrid">
+                                    <div class="row" id="divMainGrid">
+                                    </div>
+                                    <div class="row text-center">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitFinalData()">Submit</button>
+                                        <input type="hidden" value="" id="txtCurrentTransactionno" />
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <br />
+                                    <div class="text-center">
+                                        <div id="divPayRollInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalEmpPayRoll" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divgrid").addClass("hidden");
+        let payroleexiststatus = '@Model.PayRoleExistStatus';
+        let payrolldate = '@Model.PayRoleDate';
+        let pfdcastatus = '@Model.PFStatus';
+        let esidcastatus = '@Model.ESIStatus';    
+       
+        if (payroleexiststatus === "NotGenerationDay") {
+            $("#divPayRollInfoMsg").text("Current date is not the payrole generation day");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            $("#btnGenerate").addClass("hidden");
+        }
+        else if(pfdcastatus ==="PFDCANotExist") {
+            $("#divPayRollInfoMsg").text("PF Rules Not Defined in HRRules");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            $("#btnGenerate").addClass("hidden");
+        }
+        else if (esidcastatus === "ESIDCANotExist") {
+            $("#divPayRollInfoMsg").text("ESI Rules Not Defined in HRRules");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            $("#btnGenerate").addClass("hidden");
+
+        }
+        else if (payroleexiststatus === "NotExistForThisMonth") {//last day of current month
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+            $("#btnSubmit").removeClass("hidden");
+            $("#txtPayrolldate").val(payrolldate);
+            $("#btnGenerate").removeClass("hidden");
+
+        }
+        else if (payroleexiststatus === "Existforlastmonth") {
+            $("#divPayRollInfoMsg").text("PayRoll Already Generated for Last Month");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            $("#btnGenerate").addClass("hidden");
+        }
+        else if (payroleexiststatus = "NotExistForLastMonth") {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+
+            $("#txtPayrolldate").val(payrolldate);
+            $("#btnGenerate").removeClass("hidden");
+        }
+        @*let rulestausformonth = '@Model.RuleMonthStatus';
+        if (rulestausformonth === "NotExist") {
+            $("#divPayRollInfoMsg").text("PayRoll Generation Date is Configured For Current Month");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+
+        }
+        else {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+        }*@
+        //$("#ModalEmpPayRoll").on("hidden.bs.modal", function () {
+        //    let type = $("#ddlType option:selected").val();
+        //    $("#divMainGrid").load('/HR/PayRollGenerationCCGrid?Type="' + type+'"');
+        //});
+    });
+    function GetData() {
+        let typeindex = $("#ddlType option:selected").index();
+        let type = $("#ddlType option:selected").val();
+
+        if (typeindex === 0) {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").append("<div>Select Type</div>");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#btnGenerate").prop('disabled', true);
+            $("#ddlType").prop('disabled', true);
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+            var genrationdate = $("#txtPayrolldate").val();
+            //if (type=="CostCenter") {
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/PayRollGenerationCCGrid",
+                    data: '{ Type:"' + type + '",PayRoleDate:"' + genrationdate + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'html',
+                    success: function (data) {
+                            $('#divMainGrid').html(data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#btnSubmit").prop('disabled', true);
+                        $("#divPayRollInfoMsg").append("<div>" + addFailMsg + "</div>");
+                        $("#divPayRollInfoMsg").addClass("alert-danger");
+                        $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+                        $("#divgrid").addClass("hidden");
+                        $("#btnGenerate").addClass("hidden");
+                    }
+                });
+            //}
+
+    }
+
+    }
+    function ResetGeneration() { location.reload(); }
+
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function SubmitFinalData() {
+        let typeindex = $("#ddlType option:selected").index();
+        let type = $("#ddlType option:selected").val();
+        let Transno = $("#txtCurrentTransactionno").val();
+        if (typeindex === 0) {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").append("<div>Select Type</div>");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+            var savedata = {
+                TransactionRefno: Transno
+            };
+            addFailMsg = "Error Occurred";
+            addSuccessMsg = "Saved Successfully.";
+            $("#btnSubmit").prop('disabled', true);
+            //debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SavePayRoll',
+                data: { payRoll: savedata },
+                success: function (Data) {
+                    if (Data.saveStatus === 'Submited') {
+                      
+                        $("#divPayRollInfoMsg").text(addSuccessMsg);
+                        $("#divPayRollInfoMsg").removeClass("hidden alert-danger");
+                        $("#divPayRollInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnSubmit").prop('disabled', false);
+                        var ErrorMsg = Data.saveStatus;
+                        let ErrorMsglist = ErrorMsg.toString().split('|');
+                        console.log(ErrorMsglist);
+                        $.each(ErrorMsglist, function (element,value) {
+                            var msg = value;
+                            console.log(msg);
+                            $("#divPayRollInfoMsg").append("<div>" + msg + "</div>");
+                        });
+                        $("#divPayRollInfoMsg").addClass("alert-danger");
+                        $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnSubmit").prop('disabled', false);
+                    $("#divPayRollInfoMsg").append("<div>" + addFailMsg + "</div>");
+                    $("#divPayRollInfoMsg").addClass("alert-danger");
+                    $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+</script>
+

@@ -1,0 +1,162 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmployeeNoticePeriodRules
+
+<div class="row">
+    <div class="col-md-3 rowspace">
+        <div class="form-group">
+            @Html.LabelFor(model => model.NPEffectiveDate)
+            @Html.TextBoxFor(model => model.NPEffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtNPEffectiveDate", @readOnly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.NoticePeriodCategory)
+        @Html.DropDownListFor(model => model.NoticePeriodCategory, new SelectList(Model.NPCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNPCategory" })
+    </div>
+    <div class="col-md-3 rowspace">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProbationAge)
+            @Html.TextBoxFor(model => model.ProbationAge,  htmlAttributes: new { @class = "form-control date-picker", @id = "txtNProbAge", onkeypress = "return IsNumeric(event)" })
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <br />
+    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%;margin-left:10px">  In Probation</h5>
+</div>
+<div class="row"><hr class="separationHr" /></div>
+<div class="row">   
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.InProbServingNoticePeriod)
+        @Html.TextBoxFor(model => model.InProbServingNoticePeriod, htmlAttributes: new { @class = "form-control", @id = "txtInProbNoticePeriodDays", onkeypress = "return IsNumeric(event)" })
+    </div>
+</div>
+<div class="row">
+    <br />
+    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%;margin-left:10px">  After Probation</h5>
+</div>
+<div class="row"><hr class="separationHr" /></div>
+<div class="row">  
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.AfterProbServingNoticePeriod)
+        @Html.TextBoxFor(model => model.AfterProbServingNoticePeriod, htmlAttributes: new { @class = "form-control", @id = "txtAfterProbNoticePeriodDays", onkeypress = "return IsNumeric(event)" })
+    </div> 
+    </div>
+    <div class="row rowspace">
+        <div class="col-md-12 text-right">
+            <br />
+            <button class="btn btn1 btn-success" id="btnNoticePeriodSubmit" onclick="SubmitNoticePeriodData()">Submit</button>
+            <button class="btn btn1 btn-success" id="btnNoticePeriodReset" onclick="ResetNoticePeriodData()">Reset</button>
+            <br />
+        </div>
+    </div>
+    <div class="row rowspace">
+        <div class="text-center">
+            <br />
+            <div id="divNoticePeriodInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+    <div id="divNoticeperioddata">
+        @Html.Action("GetNoticePeriodData", "HR")
+        
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#txtNPEffectiveDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                maxDate: 'dateToday',
+                yearRange: "-100:+1",
+            }).datepicker("setDate", new Date());
+        });
+        //Start of Notice Period *************************************************************
+        function SubmitNoticePeriodData() {
+            var errorMsg = "";
+            isValid = true;
+            var InProbdays = $('#txtInProbNoticePeriodDays').val();
+            var AfterProbdays = $('#txtAfterProbNoticePeriodDays').val();
+            var effectivedate = $('#txtNPEffectiveDate').val();
+            var categoryindex = $("#ddlNPCategory option:selected").index();
+            var pAge = $("#txtNProbAge").val();
+            if (InProbdays === "" || InProbdays === "0" || InProbdays === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter InProbation Notice Period Days</p>";
+                isValid = false;
+            }
+            if (AfterProbdays === "" || AfterProbdays === "0" || AfterProbdays === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter After Probation Notice Period Days</p>";
+                isValid = false;
+            }
+            if (effectivedate === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Effective Days</p>";
+                isValid = false;
+            }
+            if (categoryindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+                isValid = false;
+            }
+            if (pAge === "" || pAge === "0" || pAge === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter After Probation Age</p>";
+                isValid = false;
+            }
+            //else if (pAge>"11") {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Probation Age Should Not be </p>";
+            //    isValid = false;
+            //}
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divNoticePeriodInfoMsg").text("");
+                $("#divNoticePeriodInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divNoticePeriodInfoMsg").addClass("alert-danger");
+                $("#divNoticePeriodInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divNoticePeriodInfoMsg").text("");
+                $("#divNoticePeriodInfoMsg").addClass("hidden");
+               // alert($("#ddlNPCategory option:selected").val());
+                let npData = {
+                    NoticePeriodCategoryId: $("#ddlNPCategory option:selected").val(),
+                    InProbServingNoticePeriod: InProbdays,
+                    AfterProbServingNoticePeriod: AfterProbdays,
+                    NPEffectiveDate: effectivedate,
+                    ProbationAge: pAge
+                };      
+                //debugger;
+                addFailMsg = "Error Occurred While Adding.";
+                $("#btnNoticePeriodSubmit").prop("disabled", true);
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/SaveHRNoticePeriodRule',
+                    data: { NPData: npData },
+                    success: function (Data) {
+                        // alert("Hi");
+                        if (Data.saveStatus === "Submited") {
+                            //location.reload();
+                            $('#liNPRules').trigger('click');
+                        }
+                        else {
+                            $("#divNoticePeriodInfoMsg").text(addFailMsg);
+                            $("#divNoticePeriodInfoMsg").addClass("alert-danger");
+                            $("#divNoticePeriodInfoMsg").removeClass("hidden alert-success");
+                            $("#btnNoticePeriodSubmit").prop("disabled", false);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divNoticePeriodInfoMsg").text(addFailMsg);
+                        $("#divNoticePeriodInfoMsg").addClass("alert-danger");
+                        $("#divNoticePeriodInfoMsg").removeClass("hidden alert-success");
+                        $("#btnNoticePeriodSubmit").prop("disabled", false);
+                    }
+                });
+            }
+        }
+        function ResetNoticePeriodData() {
+            //location.reload();
+            //$('.nav-tabs li:eq(7) a').tab('show');
+            $('#liNPRules').trigger('click');
+        }
+    //End of Notice Period
+    </script>

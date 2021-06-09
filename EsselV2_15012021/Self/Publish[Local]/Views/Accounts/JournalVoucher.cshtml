@@ -1,0 +1,181 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.JournalVoucherCreation
+@{
+    ViewBag.Title = "JournalVoucher";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Journal Voucher Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.JVCreationDate)
+                                                        @Html.TextBoxFor(model => model.JVCreationDate, "{0:dd-MMM-yyyy}", new { @id = "txtjvcreationDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                </div>
+                                                <div class="col-md-4">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 change-tab" id="divJVGrid">
+                                                <div class="strike">
+                                                    <span>Add Journal</span>
+                                                </div>
+                                                <div class="tabledynamic">
+                                                    <br />
+                                                    <table id="JVTable" class="table order-list jv">
+                                                        <thead>
+                                                            <tr>
+                                                                <td style="text-align:center" class="hidden"><label>No</label></td>
+                                                                <td style="text-align:center"><label>LedgerName</label></td>
+                                                                <td style="text-align:center"><label>TransactionType</label></td>
+                                                                <td style="text-align:center"><label>Amount</label></td>
+                                                                <td style="text-align:center"><label>Check</label></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="text-align:center" class="hidden">1</td>
+                                                                <td style="text-align:center">
+                                                                    <select class="form-control dropdown-toggle ctaxdca" id="ddlLedger">
+                                                                        <option selected="selected" value="Select">-Select-</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td style="text-align:center">
+                                                                    <select class="form-control dropdown-toggle ctrantype" id="ddlTranType" onchange="Ledgercount();">
+                                                                        <option selected="selected" value="Select">-Select-</option>
+                                                                        <option value="Credit">Credit</option>
+                                                                        <option value="Debit">Debit</option>
+                                                                    </select>
+
+                                                                </td>
+                                                                <td style="text-align:center"><input type="text" class="form-control ctaxamount" value="" id="txttranAmount"  onkeypress="return ValidateAmount(this,event);" onkeyup="Ledgercount()"/></td>  @*onkeypress="return ValidateAmount(this,event);" onkeyup="CountInvoiceTotal()"*@
+                                                                <td style="text-align:center">
+                                                                    <ul class="list-inline">
+                                                                        <li class="eagle-checkbox">
+                                                                            <label class="eagle-check custom-checkbox">
+                                                                                <input type="checkbox" class="eagle-check-input" id="chkJV">
+                                                                                <span class="eagle-check-indicator"></span>
+                                                                                <span class="eagle-check-description"></span>
+                                                                            </label>
+                                                                        </li>
+                                                                    </ul>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td align="right">
+                                                                    <input type="button" class="btn btn-default  btn-block" style="width:50%" id="addLedger" value="Add New Ledger" onclick="JVRow_BindNewRowtoGrid();" /> @*onclick="ClientInv_BindNewRowtoGrid();"*@
+                                                                </td>
+                                                                <td>
+                                                                </td>
+                                                                <td>
+                                                                </td>
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.JVRemarks)
+                                                        @Html.TextAreaFor(model => model.JVRemarks, htmlAttributes: new { @class = "form-control", @id = "txtJVDescription", @rows = "3" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SumCreditamount)
+                                                        @Html.TextBoxFor(model => model.SumCreditamount, htmlAttributes: new { @class = "form-control", @id = "txtsumcreditamount", @Value = "", @readonly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SumDebitamount)
+                                                        @Html.TextBoxFor(model => model.SumDebitamount, htmlAttributes: new { @class = "form-control", @id = "txtsumdebitamount", @Value = "", @readonly = true })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-right">
+                                                    <button class="btn btn1 btn-success" id="btnSubmitjvCreation" onclick="SubmitJournal();" >Submit</button> @*onclick="SubmitJournal()"*@
+                                                    <button class="btn btn1 btn-success" id="btnResetClientInvCreation" onclick="ResetJournal()" >Reset</button> @**@
+                                                    <input type="text" value="0" id="txtJournalCreatedby" style="display:none" />
+                                                    <input type="text" value="0" id="LedExist" style="display:none" />
+                                                    <input type="text" value="Insert" id="txtlAction" style="display:none" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="row col-md-12 text-center">
+                                            <div id="divJournalCreationInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtJournalCreatedby").val(Sessioncreated);
+        $("#txtjvcreationDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+
+        $("table.order-list.jv").on("click", ".ibtnledgerdelete", function (event) {
+            $(this).closest("tr").remove();
+            Ledgercount();
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/GetLedger",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    $.each(response, function (index, value) {
+                        $('#ddlLedger').append($("<option></option>").val(this['LedgerId']).html(this['LedgerName']));
+                    });
+                }
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    });
+</script>

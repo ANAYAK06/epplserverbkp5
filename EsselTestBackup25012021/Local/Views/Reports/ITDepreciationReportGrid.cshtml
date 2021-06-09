@@ -1,0 +1,120 @@
+﻿@model EsselTestLocalApplication.Models.ITDepData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="row">
+<table id="ITdepDataTable" class="table order-list itemIndentlist col-md-10">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Transaction Id</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Actual Invoice</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Asset Name</label></td>
+
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Subdca Code</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Asset Category</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Purchased Price</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">FY Opening Balance</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Current FY Addition</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Total Value</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Date of Purchase</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Deletion Value</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Deletion Date</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remaining Days</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Valid Days</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Dep Percentage</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Depreciation Value</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Balance Value</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sold Price</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Gain/Loss Value</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">FY Closing Balance</label></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Data)
+                    {
+                        <tr>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.TRANSACTION_id, new { @Class = "griditemcode" })</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Actual_Invoice)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"> @Html.DisplayFor(modelItem => item.ItemCode)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Assetname)</td>
+
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Subdca_code)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Asset_category)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Purcahse_Price)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.FY_Opening_bal)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Current_FY_Addition)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Totalvalue)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Purchased_date)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Deletion_value)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Deletion_date)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.remaining_days)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.valid_days)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.percentage)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Dep_Amount)</td>
+
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Bal_value)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Sold_price)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> </td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> </td>
+                        </tr>
+
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>    
+   
+</div>
+<script>
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+        return true;
+    }
+    $("#ITdepDataTable tbody tr").each(function () {
+        var currentRow = $(this);
+        var BasicValue = currentRow.find("td").eq(17).html();
+        var deletionvalue = currentRow.find("td").eq(11).html();               
+        var SumBasicValue = isNaN(parseFloat(BasicValue)) ? 0 : parseFloat(BasicValue)
+        var Sdeletionvalue = isNaN(parseFloat(deletionvalue)) ? 0 : parseFloat(deletionvalue)       
+        var gain_loss = parseFloat(SumBasicValue) + parseFloat(Sdeletionvalue);        
+        ClientGST = parseFloat(CsumIGST) + parseFloat(CsumCGST) + parseFloat(CsumSGST);
+        VendorGST = parseFloat(VsumIGST) + parseFloat(VsumCGST) + parseFloat(VsumSGST);
+        GovtGST = parseFloat(GsumIGST) + parseFloat(GsumCGST) + parseFloat(GsumSGST);
+        currentRow.find("td").eq(19).html(parseFloat(Sdeletionvalue) - parseFloat(SumBasicValue));
+        currentRow.find("td").eq(20).html((parseFloat(SumBasicValue) - parseFloat(Sdeletionvalue)) + (parseFloat(gain_loss)));
+    });
+</script>

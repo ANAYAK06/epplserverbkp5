@@ -1,0 +1,158 @@
+﻿@model EsselTestLocalApplication.Models.ItemsIssueData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12 change-tab" id="divItemissueGrid">
+        <div class="strike">
+            <span>Daily Issue Items</span>
+        </div>
+        <div style="height:5px"></div>
+        <div class="tabledynamic">
+            <table id="ItemissueDataTable" class="table order-list itemissuelist">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Avaliable Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px;"><label style="color:#fff !important;width:50px !important;">Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px" class="hidden"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Data)
+                    {
+                        <tr>
+                            <td style="text-align:center;width:10px!important;">
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            <input type="checkbox" class="eagle-check-input">
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Specification)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDCAcode)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Basic)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.AvailableQty)</td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;"><input type="text" class="form-control " style="width:50px !important; font-size:10px" onkeypress="return IsNumericdecimal(this)" onkeyup="CountItemTotalqty()" /></td>
+                            <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"> <input type="button" class="btnIndentDel btn btn-md btn-danger" value="Delete" /></td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.Rid)</td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("table.order-list.itemissuelist").on("click", ".btnIndentDel", function (event) {
+            var currentRow = $(this).closest("tr");
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var Listid = currentRow.find("td").eq(11).html();
+            var cc = $("#ddlFromCC option:selected").val();
+            if (check == true) {
+                var Items = {
+                    Rid: Listid,
+                    FromCC: cc
+                };
+                addFailMsg = "Error Occurred While Deleting Item";
+                addSuccessMsg = "Deleted Successfully.";
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/DeleteDailyIssueItems",
+                    data: JSON.stringify({ Ind: Items }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus == "Submited") {
+                            alert("Deleted Successfully");
+                            resetgrid();
+                        }
+                        else {
+                            alert(response.saveStatus);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    }
+                });
+            }
+            else {
+                alert("Please Check for Delete");
+                return false;
+            }
+        });
+    });
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+        return true;
+    }
+    function resetgrid() {
+        var cc = $("#ddlFromCC option:selected").val();
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/ItemsDailyIssueSK',
+            data: { cccode: cc },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridSKData").html(data);
+                    var currentrowcount2 = $("#ItemissueDataTable tbody tr").length;
+                    if (currentrowcount2 > 0) {
+                        $("#GridSKData").removeClass('hidden');
+                        $("#divgriddata").removeClass("hidden");
+                    }
+                    else {
+                        $("#GridSKData").addClass('hidden');
+                        $("#divgriddata").addClass("hidden");
+                    }
+                }
+                else {
+                    $("#GridSKData").addClass('hidden');
+                    $("#divgriddata").addClass("hidden");
+                }
+            },           
+        });        
+    }
+    function CountItemTotalqty() {
+        $("#ItemissueDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            avlqty = currentRow.find("td").eq(8).html();
+            qty = currentRow.find("td").eq(9).find("input[type='text']").val();
+            if (parseFloat(qty) != "") {
+                if (parseFloat(qty) > parseFloat(avlqty)) {
+                    alert("Invalid Quantity")
+                    currentRow.find("td").eq(9).find("input[type='text']").val("");
+                }
+            }
+        });
+    }   
+</script>

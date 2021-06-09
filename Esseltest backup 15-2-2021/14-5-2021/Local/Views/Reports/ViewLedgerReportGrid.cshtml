@@ -1,0 +1,264 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.LedgerReport
+
+<div align="right">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="Exportexcel();" />
+    <img src="~/Content/EsselImages/pdf1.png" onclick="Exportpdf();" />
+    @*<img src="~/Content/EsselImages/word.png" onclick="Exportword();" />*@
+</div>
+<div></div>
+<div id="divLedgerDetails">
+    @{ int count = 1; }
+    <div class="table-responsive">
+        <table id="tblLedgerReportGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+
+                <tr>
+                    <th colspan="2" style="text-align:center">@Model.LedgerName</th>
+                    <th class="hidden"></th>
+                    <th class="hidden"></th>
+                    <th></th>
+                    <th>FromDate: @Model.FromDate</th>
+                    <th>ToDate: @Model.ToDate</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th class="hidden">No</th>
+                    <th class="hidden">Id</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>VoucherNo</th>
+                    <th>Debit</th>
+                    <th>Credit</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.LedgerReportData)
+                {
+                    <tr>
+                        <td class="details-control"></td>
+                        <td style="text-align:center" class="hidden">@count</td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.VoucherNo)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Debit)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Credit)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Balance)
+                        </td>
+
+                    </tr>
+                    count++;
+                }
+            </tbody>
+
+
+        </table>
+    </div>
+    <input type="hidden" value="@Model.LedgerId" id="txtLedgerid" />
+    <input type="hidden" value="@Model.Year" id="txtYear" />
+    <input type="hidden" value="@Model.LedgerTypeId" id="txtLtid" />
+    <input type="hidden" value="@Model.LedgerTypeName" id="txtLtname" />
+</div>
+<script type="text/javascript">
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ledgerGrid = null;
+        InitializeLedgerReportGrid();
+    });
+    function InitializeLedgerReportGrid() {
+        ledgerGrid = $('#tblLedgerReportGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 100,
+            "initComplete": function (settings, json) {
+                //GetBudgetAsignedCCDetailsForReport();
+
+            }
+        });
+        $('#tblLedgerReportGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ledgerGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ledgerGrid, tr);
+                // Open this row
+                row.child(formatLedgerReport(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+            //var tr = $(this).closest('tr');
+            //var row = ledgerGrid.row(tr);
+
+            //if (row.child.isShown()) {
+            //    // This row is already open - close it
+            //    row.child.hide();
+            //    tr.removeClass('shown');
+            //}
+            //else {
+            //    // Open this row
+            //    row.child(formatLedgerReport(row.data())).show();
+            //    tr.addClass('shown');
+            //    // store current selection
+            //    openRows.push(tr);
+            //}
+        });
+
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatLedgerReport(d) {
+        ////debugger;
+        var rowid = '', rowno = 0;
+        //var LegderId = $("#ddlLRptLedgername option:selected").val();txtLedgerid
+        var LegderId = $("#txtLedgerid").val();
+        var RowYear = $("#txtYear").val();
+        $.each(d, function (index, value) {
+            if (index == 2)
+                rowid = value;
+            if (index == 1)
+                rowno = value;
+            //alert(rowid);
+        });
+        ////debugger;
+        var divid = "divlederSummary" + rowno;
+        var divid1 = $("#" + rowno + "");
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/Reports/GetLedgerDetailedSummary',
+            data: { ledgerid: LegderId, id: rowid, year: RowYear },
+
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    var divid2 = "divlederSummary" + rowno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                }
+                else {
+                    $(divid3).html("<span>No Data Found</span>")
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+        return '<div id="divlederSummary' + rowno + '" class="col-md-12"></div>';
+
+    }
+
+    function Exportexcel() {
+
+        $.ajax({
+            type: 'POST',           
+            url: '/Reports/ExportExcel',             
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                var Ledgername = '@Model.LedgerName';
+                var From = '@Model.FromDate';
+                var To = '@Model.ToDate';
+                link.download = "" + Ledgername + " Ledger For " + From + "  _  " + To + "" + "  Report.xlsx";
+                link.click();
+            },
+            error: function (err) {
+            }          
+        });
+
+    }
+    function Exportpdf() {
+          var Ledgername = '@Model.LedgerName';
+          var From = '@Model.FromDate';
+          var To = '@Model.ToDate';
+        $.ajax({
+            type: 'POST',           
+            url: '/Reports/Exportpdf',            
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+               
+                link.download = "" + Ledgername + " Ledger For " + From + "  _  " + To + "" + "  Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }          
+        });
+
+    }
+     function Exportword() {
+         var Ledgername = '@Model.LedgerName';
+         var From = '@Model.FromDate';
+         var To = '@Model.ToDate';
+        $.ajax({
+            type: 'POST',           
+            url: '/Reports/Exportword',
+            data: '{Ledgername:"' + Ledgername + '",From:"' + From + '",To:"' + To + '"}',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/ms-doc" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);               
+                link.download = "" + Ledgername + " Ledger For " + From + "  _  " + To + "" + "  Report.doc";
+                link.click();
+            },
+            error: function (err) {
+            }          
+        });
+
+    }
+
+</script>

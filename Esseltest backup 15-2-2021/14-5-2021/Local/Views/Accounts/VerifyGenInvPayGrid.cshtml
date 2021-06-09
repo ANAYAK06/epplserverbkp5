@@ -1,0 +1,215 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.GeneralInvoicePayment>
+<div class="table-responsive">
+    <table id="tblApprovePayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>TransactionRefNo</th>
+                <th class="hidden">TransactionType</th>
+                @if (ViewBag.Paytype == "Cash")
+                {
+                <th>Voucher Id</th>
+                }
+                <th>Name</th>
+                <th>InvoiceNo</th>
+                <th>Cost Center</th>
+                <th>Amount</th>
+                <th>Invoice Date</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                if (ViewBag.Paytype == "Cash")
+                {
+
+            <tr>
+
+                <td class="details-control"></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionRefNo)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.TransactionType)
+                </td>
+
+                <td >
+                    @Html.DisplayFor(modelItem => item.VoucherId)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SelfCCName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            </tr>
+
+                }
+                else if (ViewBag.Paytype == "Bank")
+                {
+
+            <tr>
+                <td class="details-control"></td>                
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionRefNo)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.TransactionType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SelfCCName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+            </tr>
+
+
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    <input  type="hidden" id="txttype" value="@ViewBag.Paytype"/>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApprovePayGrid = null;
+        InitializeApprovePayGrid();
+        var Sessionroleid = '@Session["Roleid"]';
+        $("#roleid").val(Sessionroleid);
+    });
+    function InitializeApprovePayGrid() {
+        ApprovePayGrid = $('#tblApprovePayGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Invoices Found"
+            },
+            "createdRow": function (row, data, index) {
+                let type = $("#txttype").val();
+                if (type == 'Bank') {
+                    var oldstatus = $.trim($('td:eq(8)', row).html());
+                    //alert(oldstatus);
+                    if (oldstatus === '0') {
+                        $('td:eq(8)', row).html("Return");
+                    }
+                    else { $('td:eq(8)', row).html("Verification Pending"); }
+                }
+                else {
+                    var oldstatus = $.trim($('td:eq(9)', row).html());
+                    //alert(oldstatus);
+                    if (oldstatus === '0') {
+                        $('td:eq(9)', row).html("Return");
+                    }
+                    else { $('td:eq(9)', row).html("Verification Pending"); } }
+            },
+            pageLength: 10
+        });
+        $('#tblApprovePayGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApprovePayGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApprovePayGrid, tr);
+                // Open this row
+                row.child(formatApprovePay(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprovePay(d) {
+            var id = 0;
+        var htmltext;
+
+        var Refno,trnastype,Status;
+        $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 1)
+                    Refno = value;
+                if (index == 2)
+                    trnastype = value;                
+                if (index == 8)
+                    Status = value;
+        });
+        ////debugger;
+        var divid = "divapprPay" + Refno;
+        var divid1 = $("#" + divid + "");
+        //debugger;
+        if (Status !== "0") {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Accounts/VerifyGenInvPayView',
+                data: { Refno: Refno, Type: trnastype },
+                success: function (Data) {
+                    var divid2 = "divapprPay" + Refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+        }
+       
+        return '<div id="divapprPay' + Refno + '"></div>';
+    }
+</script>

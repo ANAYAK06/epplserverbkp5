@@ -1,0 +1,226 @@
+﻿@model EsselTestLocalApplication.Models.ItemsTransferRecieptData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGrid">
+    <div class="strike">
+        <span>Items Details</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemITRDetailsDataTable" class="table order-list itemDetaillist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sending CC</label></td>
+                    }
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                    @if (Model.Type == "From Vendor")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    }
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+
+                    @if (Model.Type == "From Other Store")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Issued Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Lost Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Damaged Quantity</label></td>
+                    }
+                    @if (Model.Type == "From Vendor")
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Raised Quantity</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Recieved Quantity</label></td>
+                    }
+                    @*<td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Lost Or Damged Remarks</label></td>*@
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                    <tr>
+                        <td style="text-align:center;width:10px!important;">
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </td>
+                        @if (Model.Type == "From Other Store")
+                        {
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.CCCode)</td>
+                        }
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                        <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.Specification</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDCAcode)</td>
+                        @if (Model.Type == "From Vendor")
+                        {
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Basic)</td>
+                        }
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+
+                        @if (Model.Type == "From Other Store")
+                        {
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.IssuedQty)</td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> <input type="text" class="form-control countcheck1" value="@item.Lost" onkeypress="return IsNumericdecimal(this)" /></td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> <input type="text" class="form-control countcheck2" value="@item.Damaged" onkeypress="return IsNumericdecimal(this)" /></td>
+                        }
+                        @if (Model.Type == "From Vendor")
+                        {
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.RaisedQty)</td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px"> <input type="text" class="form-control countcheck3" value="@item.RecievedQty" onkeypress="return IsNumericdecimal(this)" /></td>
+                        }
+                        @*<td style="font-weight:normal; white-space: normal;font-size:11px"> <textarea rows = "2" cols = "2" type="text" class="form-control countcheck3" onkeypress="restrictComma(this)" /></td>*@
+                        <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.Rid)</td>
+                    </tr>
+                }
+            </tbody>
+            @*<tfoot>
+
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-center" colspan="2"><label>SubTotal: @item.TotalAmount</label></td>
+                        </tr>
+
+                </tfoot>*@
+        </table>
+    </div>
+</div>
+<div id="TRConfirmModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title"></h4></div>
+                @*<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do You Really Want to Continue with the Quantity</br> For the ItemCode:-</p><label id="lblNewitemcode"></label>
+                  
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-danger" onclick="Continueno()">No</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal" onclick="Continueyes()">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+
+        return true;
+
+    }
+    $(document).ready(function () {
+        //Lost
+        var Type = '@Model.Type';
+        $("table.order-list.itemDetaillist").on("keyup", ".countcheck1", function (event) {
+            if (Type == "From Other Store") {
+                var currentRow = $(this).closest("tr");
+                var itemcode = currentRow.find("td").eq(2).html();
+                var issuedQty = currentRow.find("td").eq(9).html();
+                var Lostnum = isNaN(parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())
+                var Damagednum = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+                if (parseFloat(issuedQty) < (parseFloat(Lostnum) + parseFloat(Damagednum))) {
+                    alert("Invalid Lost Quantity for " + itemcode);
+                    currentRow.find("td").eq(10).find("input[type='text']").val("0");
+                    return false;
+                }
+            }
+        });
+        //Damaged
+        $("table.order-list.itemDetaillist").on("keyup", ".countcheck2", function (event) {
+            if (Type == "From Other Store") {
+                var currentRow = $(this).closest("tr");
+                var itemcode = currentRow.find("td").eq(2).html();
+                var issuedQty = currentRow.find("td").eq(9).html();
+                var Lostnum = isNaN(parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())
+                var Damagednum = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+                if (parseFloat(issuedQty) < (parseFloat(Lostnum) + parseFloat(Damagednum))) {
+                    alert("Invalid Damaged Quantity for " + itemcode);
+                    currentRow.find("td").eq(11).find("input[type='text']").val("0");
+                    return false;
+                }
+            }
+        });
+        $("table.order-list.itemDetaillist").on("keyup", ".countcheck3", function (event) {
+            debugger;
+            if (Type == "From Vendor") {
+                var currentRow = $(this).closest("tr");
+                var itemcode = currentRow.find("td").eq(1).html();
+                var raisedQty = currentRow.find("td").eq(9).html();
+                var recievedqty = parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val());
+                //var recievedqty = isNaN(parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(10).find("input[type='text']").val())
+                if (recievedqty === "") {
+                    alert("Enter Recieved Quantity for " + itemcode);
+                    currentRow.find("td").eq(10).find("input[type='text']").val("");
+                    return false;
+                }
+                if (parseFloat(raisedQty) < parseFloat(recievedqty)) {
+                    alert("Invalid Recieved Quantity for " + itemcode);
+                    currentRow.find("td").eq(10).find("input[type='text']").val("");
+                    return false;
+                }
+                else if ((parseFloat(raisedQty) > parseFloat(recievedqty)) || parseFloat(recievedqty) == 0) {
+                    $('#TRConfirmModel').modal('show');
+                    $("#lblNewitemcode").html(itemcode);
+                    return false;
+                }                
+            }
+        });
+
+    });
+    function Continueno() {
+        debugger;
+        var Type = '@Model.Type';
+        $('#TRConfirmModel').modal('hide');
+        $("#ItemITRDetailsDataTable tbody tr").each(function () {
+            if (Type == "From Vendor") {
+                var currentRow = $(this).closest("tr");
+                currentRow.find("td").eq(10).find("input[type='text']").val("");
+                return false;                
+            }
+        });
+    }
+    function Continueyes() {        
+        $('#TRConfirmModel').modal('hide');        
+    }
+</script>

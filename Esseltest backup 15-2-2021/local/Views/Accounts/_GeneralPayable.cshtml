@@ -1,0 +1,284 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPayment
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">General invoice Payment</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+
+                                    <div class="row">
+                                        <br />
+                                        <form onsubmit="return false">
+
+                                            <div class="col-md-12" id="divGPCCTable">
+                                                <div class="row">
+                                                    <div class="row">
+                                                        @if (Model.Action == "New")
+                                                        {
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.CCCode)
+                                                                    @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.GenPayCCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGpCCCode", onchange = "GeneralPayCCChange()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" id="divgpdca">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.DCACode)
+                                                                    @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.GenPayDcaList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGpDcaCode", onchange = "GeneralPayDcaChange()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" id="divgpsdca">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.SubDcaCode)
+                                                                    @Html.DropDownListFor(model => model.SubDcaCode, new SelectList(Model.GenPaySubDcaList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGpSDcaCode", onchange = "GeneralPaySDcaChange()" })
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.CCCode)
+                                                                    @Html.TextBoxFor(model => model.CCCodename, htmlAttributes: new { @class = "form-control", readOnly = "readOnly" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" id="divgpdca">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.DCACode)
+                                                                    @Html.TextBoxFor(model => model.DCACodename, htmlAttributes: new { @class = "form-control", readOnly = "readOnly" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" id="divgpsdca">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.SubDcaCode)
+                                                                    @Html.TextBoxFor(model => model.SubDcaname, htmlAttributes: new { @class = "form-control", readOnly = "readOnly" })
+                                                                </div>
+                                                            </div>
+
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12" id="divGPPaymentDetails">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Payment Details</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12"><hr class="separationHr" /></div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Name)
+                                                                @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtGPName" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.BankId)
+                                                                @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPBank", onchange = "GPPayModeChange()" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.ModeofPay)
+                                                                @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPPayMode", onchange = "GPPayModeChange()" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Number)
+                                                                @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtGPPaymentNo" })
+                                                                <select class="form-control dropdown-toggle GpNo" id="ddlGPPaymentNo">
+                                                                    <option selected="selected" value="Select">-Select-</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TransactionDate)
+                                                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtGPPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Remarks)
+                                                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtGPReamarks", @class = "form-control", @type = "text", @rows = "3" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TransactionAmount)
+                                                                @Html.TextBoxFor(model => model.TransactionAmount, new { @id = "txtGPFinalAmount", @class = "form-control", @type = "text" })
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <input type="text" value="0" id="txtGeneralRoleId" style="display:none" />
+                                                        @if (Model.Action == "New")
+                                                        {
+                                                            <button class="btn btn1 btn-success" id="btnGPSubmit" onclick="SubmitGeneralPayableData()">Submit</button>
+                                                            <button class="btn btn1 btn-success" id="btnGPReset" onclick="ResetGeneralPayableData()">Reset</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn1 btn-success" id="btnGPUpdate" onclick="UpdateGeneralPayableData('@Model.BankTransactionRefNo')">Submit</button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="text-center">
+                                                        <br />
+                                                        <div id="divGeneralPayInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @**@
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //General Payable Page Load
+        var RoleID = '@Session["Roleid"]';
+        $("#txtGeneralRoleId").val(RoleID);
+        var transno = '@Model.BankTransactionRefNo';
+
+
+        if ('@Model.Action' == "New") {
+            $("#ddlGPPaymentNo").addClass("hidden");
+            $("#divGPPaymentDetails").addClass("hidden");
+            $("#divgpdca").addClass("hidden");
+            $("#divgpsdca").addClass("hidden");
+            $('#txtGPPayDate').css('background-color', 'transparent');
+            $("#txtGPPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+            }).datepicker("setDate", new Date());
+        }
+        else {
+            var date = '@Model.TransactionDate';
+
+            $("#txtGPPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+            }).datepicker("setDate", date);
+            var fulltotal = $("#txtGPFinalAmount").val();
+            var total = parseFloat(fulltotal).toFixed(2);
+            $("#txtGPFinalAmount").val(total);
+
+            $("#txtGPName").prop('disabled', false);
+            $("#ddlGPBank").prop('disabled', false);
+            $("#ddlGPPayMode").prop('disabled', false);
+            $("#txtGPReamarks").prop('disabled', false);
+            $("#ddlGPPaymentNo").prop('disabled', false);
+            $("#txtGPPaymentNo").prop('disabled', false);
+
+             var mode = '@Model.ModeofPay';
+            var bank = '@Model.Bank';
+            $("#ddlGPPayMode").find("option:contains('" + mode + "')").each(function () {
+                if ($(this).text() == mode) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#ddlGPBank").find("option:contains('" + bank + "')").each(function () {
+                if ($(this).text() == bank) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            $("#btnGPReset").addClass('hidden');
+            //show or hide payemnt txt or ddl
+            if (mode == "Cheque") {
+                $("#txtGPPaymentNo").addClass('hidden');
+                $("#ddlGPPaymentNo").removeClass('hidden');
+               // var bank = $("#txtUpbank").val();
+                var chequeno = '@Model.Number';
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetChequeNos",
+                    data: '{bankname:"' + bank + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        if (count > 0) {
+                            var ddlGenPayNo = $("#ddlGPPaymentNo");
+
+                            ddlGenPayNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                var dbno = this['Cheque_No'];
+                                if (chequeno == dbno) {
+                                    ddlGenPayNo.append($("<option selected='selected'></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                                }
+                                else { ddlGenPayNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No'])); }
+
+                            });
+                            ddlGenPayNo.append($("<option selected='selected'></option>").val(@Model.chequeid).html(chequeno));
+
+                        }
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+
+            }
+            else {
+                $("#txtGPPaymentNo").removeClass('hidden');
+                $("#ddlGPPaymentNo").addClass('hidden');
+            }
+        }
+
+
+    });
+
+</script>

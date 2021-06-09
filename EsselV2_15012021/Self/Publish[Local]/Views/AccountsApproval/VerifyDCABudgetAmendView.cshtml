@@ -1,0 +1,348 @@
+﻿@model  EsselTestLocalApplication.Models.Budget.AmendDCABudget
+<div class="col-md-12 verifydiv" style="overflow-y:auto" id="divtbldcaAmendbycc"><br/>
+    @if (Model.Status != "0")
+    {
+        <div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4"><label>Cost Center Code:&nbsp;&nbsp; </label><label>@Model.CCCode</label></div>
+                    <div class="col-md-4"><label>Cost Center Budget:&nbsp;&nbsp; </label><label>@Model.CCBudget</label></div>
+                    <div class="col-md-4"><label>Cost Center Balance:&nbsp;&nbsp; </label><label>@Model.CCBalance</label></div>
+                    <label id="CCBid" style="display:none">@Model.CCBudgetId</label>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-4"><label>Account Head Code:&nbsp;&nbsp; </label><label>@Model.DCACode</label></div>
+                    <div class="col-md-4"><label>Account Head Budget:&nbsp;&nbsp; </label><label>@Model.DCABudget</label></div>
+                    <div class="col-md-4"><label>Account Head Balance:&nbsp;&nbsp; </label><label>@Model.DCABudgetBalance</label></div>
+                    <label id="DcaBid" style="display:none">@Model.DCABudgetId</label>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <label>Payment Type:&nbsp;&nbsp; </label>
+                        <label>@Model.AmendmentType</label>
+                    </div>
+                    @if (Model.cc_Type != "Performing")
+                    {
+                        <div class="col-md-4"><label>Financial Year:&nbsp;&nbsp; </label><label>@Model.FYYear</label></div>
+                    }
+                   
+
+                </div>
+               
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Amount:&nbsp;&nbsp; </label>
+                            @Html.TextBoxFor(model => model.AmendedValue, htmlAttributes: new { @class = "form-control", @id = "txtapprdbavalue", @readOnly = true })
+                        </div>   
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                                <label>Status</label>
+                                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppDCABudgetAmendstatus" })
+
+                                @*<select class="form-control dropdown-toggle" id="AppDCABudgetAmendstatus">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Verify">Verify</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Return">Return</option>
+                        <option value="Reject">Reject</option>
+                    </select>*@
+                            </div>
+                        </div>
+                        <div class="col-md-8 ">
+                            <div class="form-group">
+                                <lable>Notes:</lable> <br />
+                                <textarea rows="3" cols="60" class="dcabudgetnote" id="AppDCABudgetAmendNote"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-10">
+                            <div class="form-group">
+                                <br /><button onClick="ApproveDCABudgetAmend('@Model.CCCode','@Model.DCACode','@Model.AmendmentType',@Model.DCABudgetAmendmentId,'@Model.FYYear')">Submit</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divApprDCABudgetAmendInfoMsg" class="alert alert-danger hidden"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+    }
+    else
+    {
+        <div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Amend Type:</label>
+                        <select class="form-control dropdown-toggle" id="ddlDCAAmendType">
+                            @if (Model.AmendmentType == "Add")
+                            {
+                                <option selected="selected" value="Add">Add</option>
+                            }
+                            else if (Model.AmendmentType == "Substract")
+                            {
+                                <option selected="selected" value="Substract">Substract</option>
+                            }
+                            else if (Model.AmendmentType == "New")
+                            {
+                                <option selected="selected" value="New">New</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="divDCAAmendDetails">
+                <div id="divNewDCABudgetAssignInAmend">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>DCA Code:</label>
+                                <label>@Model.DCACode</label>
+
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.AmendmentType == "New")
+                    {
+                      <div id="NewAmendDCADetails">
+                          <div class="row">
+                              <div class="col-md-4">
+                                  <label>Cost Center Code:</label>
+                                  <label id="lblNewDCCAmendName">@Model.CCCode</label>
+                              </div>
+                              <div class="col-md-4">
+                                  <label>Cost Center Budget Value:</label>
+                                  <label id="lblNewDCCAmendBudget">@Model.CCBudget</label>
+                              </div>
+                              <div class="col-md-4">
+                                  <label>Cost Center  Balance:</label>
+                                  <label id="lblNewDCCAmendBalance">@Model.CCBalance</label>
+
+                              </div>
+                              @if (Model.cc_Type != "Performing")
+                              {
+                                  <div class="col-md-4"><label>Financial Year:&nbsp;&nbsp; </label><label>@Model.FYYear</label></div>
+                              }
+                          </div>
+                        <div class="row" style="margin-top:10px">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Amount:</label>
+                                    <input type="text" id="NewDCABudgetAmount" value="@Model.AmendedValue" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="NewAmendDCAVerification()" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="text-right">
+                                <button class="btn btn1 btn-success" id="btnNewAmendDCASubmit" onclick="UpdateApprNewAmendDCAData('@Model.CCCode','@Model.DCACode','@Model.AmendedValue','@Model.AmendmentType',@Model.DCABudgetAmendmentId,'@Model.FYYear')">Submit</button>
+                                <input type="hidden" id="txtNewDCCBudgetid" style="display:none" value="@Model.CCBudgetId" />
+                                <input type="hidden" id="txtNewDCCBudgetold" style="display:none" value="@Model.CCBudget" />
+                                <input type="hidden" id="txtNewDCABudgetid" value="@Model.DCABudgetId" />
+                                <input type="hidden" id="txtNewDCCBalanceOld" style="display:none" value="@Model.CCBalance" />
+                                <input type="hidden" id="txtDCAoldAmount1" value="@Model.AmendedValue" />
+                                <input type="hidden" id="CCBid" value="@Model.CCBudgetId" />
+                                <input type="hidden" id="DCABid" value="@Model.DCABudgetId" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <div id="divNewAmendDCAInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+                <div id="divOldDCABudgetAssignInAmend">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>CC Name:</label>
+                            <label id="lblDCCAmendName">@Model.CCCode</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label>CC Budget Value:</label>
+                            <label id="lblDCCAmendBudget">@Model.CCBudget</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label>CC  Balance:</label>
+                            <label id="lblDCCAmendBalance"></label>
+                        </div>
+                        <div class="col-md-4">
+                            <label>DCA Name:</label>
+                            <label id="lblDCANameAmend">@Model.DCACode</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label>DCA Budget Value:</label>
+                            <label id="lblDCABudgetAmend"></label>
+                        </div>
+                        <div class="col-md-4">
+                            <label>DCA Budget Balance:</label>
+                            <label id="lblDCAAmendBudgetBalance"></label>
+                        </div>
+                        @if (Model.cc_Type != "Performing")
+                        {
+                            <div class="col-md-4"><label>Financial Year:&nbsp;&nbsp; </label><label>@Model.FYYear</label></div>
+                        }
+
+                        <div class="col-md-4" style="margin-top:10px">
+                            <div class="form-group">
+                                <label>Amount:</label>
+                                <input type="text" id="AmendDCABudgetAmount" value="@Model.AmendedValue" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="ApprAmendDCAVerification('@Model.AmendmentType')" />
+                            </div>
+
+                        </div>
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            @*CC*@
+                            <input type="hidden" id="txtDCCBudgetid" value="@Model.CCBudgetId" />
+                            <input type="hidden" id="txtDCCBudgetold" value="@Model.CCBudget" />
+                            <input type="hidden" id="txtDCCBalanceOld" value="@Model.CCBalance" />
+                            @*DCA*@
+                            <input type="hidden" id="txtDCABudgetid" value="@Model.DCABudgetId" />
+                            <input type="hidden" id="txtDCABudgetold" value="@Model.DCABudget" />
+                            <input type="hidden" id="txtDCABalanceold" value="@Model.DCABudgetBalance" />
+                            <input type="hidden" id="txtDCAoldAmount" value="@Model.AmendedValue" />
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="text-right">
+                                    <button class="btn btn1 btn-success" id="btnAmendDCASubmit" onclick="UpdateApprAmendDCAData('@Model.CCCode','@Model.DCACode','@Model.AmendedValue','@Model.AmendmentType',@Model.DCABudgetAmendmentId,'@Model.FYYear')">Submit</button>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <div id="divAmendDCAInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    }
+    
+</div>
+<script>
+    $(document).ready(function () {
+        var status = '@Model.Status';
+        if (@Model.Status != "0") {
+
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppDCABudgetAmendstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        
+            if (status=='0') {
+                var type = '@Model.AmendmentType';
+                var amendvalue = '@Model.AmendedValue';
+                var previousCCbudget = 0;
+                var previousCCBal = 0;
+                var previousDCAbudget = 0;
+                var previousDCABal = 0;
+                var currentccbudget = '@Model.CCBudget';
+                var currentccbudbal = '@Model.CCBalance';
+                var currentdcabudget = '@Model.DCABudget';
+                var currentdcabudbal = '@Model.DCABudgetBalance';
+                if (type === "New") {
+                $("#divNewDCABudgetAssignInAmend").removeClass('hidden');
+                $("#divOldDCABudgetAssignInAmend").addClass('hidden');
+                $("#ddlDCAAmendType").prop("disabled", "true");
+
+               // previousCCBal = parseFloat(@Model.CCBalance) - parseFloat(@Model.AmendedValue);
+                $("#lblNewDCCAmendBalance").html(parseFloat(@Model.CCBalance).toFixed(2));
+                }
+                else {
+                $("#divOldDCABudgetAssignInAmend").removeClass('hidden');
+                $("#divNewDCABudgetAssignInAmend").addClass('hidden');
+                    $("#ddlDCAAmendType").prop("disabled", "true");
+                  debugger;
+                    if (type == "Add") {
+                     previousCCBal = parseFloat(@Model.CCBalance)+parseFloat(@Model.AmendedValue);
+
+                    $("#lblDCCAmendBalance").html(parseFloat(@Model.CCBalance).toFixed(2));
+                     previousDCAbudget = parseFloat(@Model.DCABudget) + parseFloat(@Model.AmendedValue);
+                    $("#lblDCABudgetAmend").html(parseFloat(previousDCAbudget).toFixed(2));
+                    previousDCABal = parseFloat(@Model.DCABudgetBalance) + parseFloat(@Model.AmendedValue);
+                    $("#lblDCAAmendBudgetBalance").html(parseFloat(previousDCABal).toFixed(2));
+                    $("#txtDCCBalanceOld").val(previousCCBal);
+                    $("#txtDCABudgetold").val(previousDCAbudget);
+                    $("#txtDCABalanceold").val(previousDCABal);
+                }
+                if (type == "Substract") {
+                     previousCCBal = parseFloat(@Model.CCBalance) - parseFloat(@Model.AmendedValue);
+                    $("#lblDCCAmendBalance").html(parseFloat(@Model.CCBalance).toFixed(2));
+                    previousDCAbudget = parseFloat(@Model.DCABudget) + parseFloat(@Model.AmendedValue);
+                    $("#lblDCABudgetAmend").html(parseFloat(@Model.DCABudget).toFixed(2));
+                     previousDCABal = parseFloat(@Model.DCABudgetBalance) + parseFloat(@Model.AmendedValue);
+                    $("#lblDCAAmendBudgetBalance").html(parseFloat(@Model.DCABudgetBalance).toFixed(2));
+
+                    $("#txtDCCBalanceOld").val(previousCCBal);
+                    $("#txtDCABudgetold").val(previousDCAbudget);
+                    $("#txtDCABalanceold").val(previousDCABal);
+
+                }
+
+
+            }
+
+
+
+        }
+        //var code = $("#currentAmendcc").val();
+        //var typeArr = code.toString().split('-');
+        //var msg = typeArr[0];
+        //var msgcc = typeArr[1];
+        //var txtid = "apprdcabudcc-" + msgcc;
+        //$("#" + txtid + "").val(msgcc);
+        //var t = $("#divtbldcaAmendbycc").find("table");
+        //if (t.length == 1) {
+        //    t.attr("id", "tblapprdcabAmend" + msgcc + "");
+        //}
+        //$("#currentAmendcc").val("");
+
+});
+</script>

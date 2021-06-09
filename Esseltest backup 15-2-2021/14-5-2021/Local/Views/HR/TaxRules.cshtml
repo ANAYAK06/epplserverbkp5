@@ -1,0 +1,251 @@
+﻿@model EsselTestLocalApplication.Models.HR.ProfessionalTaxRules
+
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.CategoryName)
+        @Html.DropDownListFor(model => model.CategoryName, new SelectList(Model.PTEmpCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPTCategory", onchange = "TaxCategoryChange()" })
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.EffectiveDate)
+            @Html.TextBoxFor(model => model.EffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtPTaxEffectDate", @readOnly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3 ">
+        @Html.LabelFor(model => model.ApplicaleToWhome)
+        @Html.TextBoxFor(model => model.ApplicaleToWhome, htmlAttributes: new { @class = "form-control", @id = "txtPTaxApplicaleToWhome", onkeypress = "return ValidateAmount(this,event);" })
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.PercentageInSalary)
+        @Html.TextBoxFor(model => model.PercentageInSalary, htmlAttributes: new { @class = "form-control", @id = "txtPTaxPercentageInSalary", onkeypress = "return ValidateAmount(this,event);" })
+    </div>
+    
+</div>
+
+    
+<div class="row">
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.DCA)
+        @Html.DropDownListFor(model => model.DCA, new SelectList(Model.DCACodes, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlTaxDca", onchange = "TaxDCAChange()" })
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.SubDCA)
+        @Html.DropDownListFor(model => model.SubDCA, new SelectList(Model.SubDCACodes, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlTaxSubDca" })
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.State)<br />
+        @Html.ListBoxFor(model => model.State, new SelectList(Model.PTaxStates, "State_ID", "State_Name"), new { @class = "listbox form-control", @id = "ddlMultiPTaxState" })
+    </div>
+</div>
+    <div class="row text-right">
+        <br />
+        <button class="btn btn1 btn-success" id="btnTaxSubmit" onclick="SubmitTaxData()">Submit</button>
+        <button class="btn btn1 btn-success" id="btnTaxReset" onclick="ResetTaxData()">Reset</button>
+    </div>
+    <div class="row rowspace">
+        <div class="text-center">
+            <br />
+            <div id="divTaxInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+    <div id="divTaxgrid">
+        @Html.Action("ProfessionalTaxGrid", "HR")
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('.listbox').multiselect({
+                includeSelectAllOption: true
+            });
+            $("#txtPTaxEffectDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                maxDate: 'dateToday',
+                yearRange: "-100:+1",
+            });
+        });
+        function SubmitTaxData() {
+            var errorMsg = "";
+            isValid = true;
+            var catindex = $("#ddlPTCategory option:selected").index();
+            var Effectdate = $('#txtPTaxEffectDate').val();
+            var Salarylimit = $("#txtPTaxApplicaleToWhome").val();
+            var Percantage = $('#txtPTaxPercentageInSalary').val();
+            var taxstates = $('#ddlMultiPTaxState > option:selected');
+            var dcaindex = $("#ddlTaxDca option:selected").index();
+            var subdcaindex = $("#ddlTaxSubDca option:selected").index();
+            var dca = $("#ddlTaxDca option:selected").val();
+            var subdca = $("#ddlTaxSubDca option:selected").val();
+            if (catindex == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+                isValid = false;
+            }
+            if (Effectdate === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+                isValid = false;
+            }
+            if (Salarylimit === "" || Salarylimit === "0" || Salarylimit === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Applicatble Salary Limit </p>";
+                isValid = false;
+            }
+            if (Percantage === "" || Percantage === "0" || Percantage === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Percantage In Salary</p>";
+                isValid = false;
+            }
+            if (taxstates.length == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Applicable States</p>";
+                isValid = false;
+            }
+            if (dcaindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Account Head</p>";
+                isValid = false;
+            }
+            if (subdcaindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select SubAccount Head</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divTaxInfoMsg").text("");
+                $("#divTaxInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divTaxInfoMsg").addClass("alert-danger");
+                $("#divTaxInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divTaxInfoMsg").text("");
+                $("#divTaxInfoMsg").addClass("hidden");
+                var statecount = $('#ddlMultiPTaxState option').length;
+                var Selectedstatecount = $('#ddlMultiPTaxState option:selected').length;
+                var SelectedState = '';
+                //if (Selectedstatecount === statecount) {
+                //    SelectedState = 0;//all selected
+                //}
+                //else {
+                    var SelectedState = $('#ddlMultiPTaxState option:selected').toArray().map(item => item.value).join() + ',';
+                //}
+
+                let data = {
+                    EffectiveDate: Effectdate,
+                    CategoryId: $("#ddlPTCategory option:selected").val(),
+                    ApplicaleToWhome: Salarylimit,
+                    PercentageInSalary: Percantage,
+                    State: SelectedState,
+                    DCA: dca,
+                    SubDCA: subdca
+                };
+                addFailMsg = "Error Occurred While Adding.";
+                //alert('submit');
+                //debugger;
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/SaveHRTaxRule',
+                    data: { objHRRules: data },
+                    success: function (Data) {
+                        // alert("Hi");
+                        if (Data.saveStatus === "Submited") {
+                            $('#liTax').trigger('click');
+                            //location.reload();
+                            //$("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+                            //$('#txtMinWageAmount').val("");
+                            //$("#ddlMinWageSkillName").prop('selectedIndex', 0);
+                            //$("#divTaxInfoMsg").text("Rule Added Successfully");
+                            //$("#divTaxInfoMsg").removeClass("hidden alert-danger");
+                            //$("#divTaxInfoMsg").addClass("alert-success");
+
+                        }
+                        else {
+                            $("#divTaxInfoMsg").text(addFailMsg);
+                            $("#divTaxInfoMsg").addClass("alert-danger");
+                            $("#divTaxInfoMsg").removeClass("hidden alert-success");
+                        }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divTaxInfoMsg").text(addFailMsg);
+                        $("#divTaxInfoMsg").addClass("alert-danger");
+                        $("#divTaxInfoMsg").removeClass("hidden alert-success");
+
+                    }
+                });
+            }
+        }
+        function ResetTaxData() {
+            location.reload();
+        }
+        function TaxDCAChange() {
+
+            // //debugger;
+            let dcaindex = $("#ddlTaxDca option:selected").index();
+            let dca = $("#ddlTaxDca option:selected").val();
+            var sdcaddl = $("#ddlTaxSubDca");
+            if (dcaindex == 0) {
+                sdcaddl.empty().append('<option selected="selected" value="-Please Select-">-Please Select-</option>');
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/GetSubDCAbyDCA",
+                    data: "{DCACode:'" + dca + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+
+                        sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(data, function () {
+                            sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        });
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+            }
+        }
+        function TaxCategoryChange() {
+            //debugger;
+            
+            let cateindex = $("#ddlPTCategory option:selected").index();
+            let category = $("#ddlPTCategory option:selected").val();
+            if (cateindex == 0) {                
+                $("#ddlMultiPTaxState option:selected").prop("selected", false);
+                $("#ddlMultiPTaxState option").remove();
+                $('#ddlMultiPTaxState').multiselect('rebuild');
+
+                //$("#ddlMultiSWLState option:selected").prop("selected", false);
+                //$("#ddlMultiSWLState option").remove();
+                //$('#ddlMultiSWLState').multiselect('rebuild');
+            }            
+            else {
+              
+                $("#ddlMultiPTaxState option:selected").prop("selected", false);
+                $("#ddlMultiPTaxState option").remove();
+                $('#ddlMultiPTaxState').multiselect('rebuild');
+                    $.ajax({
+                        type: "POST",
+                        url: "/HR/GetStatesListForTax",
+                        data: '{CategoryId:"' + category + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+
+                            $.each(response, function () {
+                                console.log(this['State_ID'] + '-' + this['State_Name']);
+                                $('#ddlMultiPTaxState').append('<option value="' + this['State_ID'] + '">' + this['State_Name'] + '</option>').multiselect('rebuild');
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                
+
+            }
+        }
+    </script>

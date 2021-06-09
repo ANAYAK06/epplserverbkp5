@@ -1,0 +1,879 @@
+﻿@model EsselTestLocalApplication.Models.AddCostCenter
+@{
+    ViewBag.Title = "EditCostCenter";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/AccountsApprovaljs")
+@if (Model.status == "000")
+{
+    <!--for return update-->
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCType)
+                        @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ECCTypeddlID", disabled = "disabled" })
+                    </div>
+                </div>
+                @if (Model.CCType != "Performing" && Model.CCType != "Capital")
+                {
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NPCCOfficeType)
+                            <input type="text" class="form-control appfindate" value="@Model.NPCCOfficeType" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+                <div class="col-md-4" id="divEditCCSubType">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubType)
+                        @Html.TextBoxFor(model => model.SubType, htmlAttributes: new { @class = "form-control", @id = "ESubTypeddlID", @readonly = true })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCCode)
+                        @Html.TextBoxFor(model => model.CCCode, htmlAttributes: new { @class = "form-control", @id = "txtECCode", onkeyup = "NewCCCodeChange(this)", onkeypress = "return IsNumeric(event)", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCName)
+                        @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @id = "txteCCNameid" })
+                    </div>
+                </div>
+            </div>
+            @if (Model.CCType == "Performing")
+            {
+                <div class="row">
+                    <div class="col-md-6" id="divEditCCFinalOfferNo">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EPPLFinalOfferNo)
+                            @Html.TextBoxFor(model => model.EPPLFinalOfferNo, htmlAttributes: new { @class = "form-control", @id = "txteEPPLFinalOfferNoid", @readonly = true })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divEditCCFinalOfferDate">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FinalOffDate)
+                            @Html.TextBoxFor(model => model.FinalOffDate, "{0:dd/MM/yyyy}", new { @id = "txtEFinalOfferDateid", @class = "form-control   date-picker", @type = "text", @readonly = true })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" id="divEditCCRefNo">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientAcceptanceReferenceNo)
+                            @Html.TextBoxFor(model => model.ClientAcceptanceReferenceNo, htmlAttributes: new { @class = "form-control", @id = "txtEClientAcceptanceReferenceNoid", @readonly = true })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divEditCCRefDate">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ClientAcceptanceDate)
+                            @Html.TextBoxFor(model => model.ClientAcceptanceDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control  date-picker", @id = "txtEClientAcceptanceDateid", @type = "text", @readonly = true })
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCInchargeName)
+                        @Html.TextBoxFor(model => model.CCInchargeName, htmlAttributes: new { @class = "form-control", @id = "txtECCInchargeNameid" })
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.StateID)
+                        @Html.DropDownListFor(model => model.StateID, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "txtEStateNameid", @enabled = true })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InchargePhNo)
+                        @Html.TextBoxFor(model => model.InchargePhNo, htmlAttributes: new { @class = "form-control", @id = "txtEInchargePhNoid", onkeypress = "return IsNumeric(event)" })
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SiteAddress)
+                        @Html.TextBoxFor(model => model.SiteAddress, htmlAttributes: new { @class = "form-control", @id = "txtESiteAddressid", @readonly = true })
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PhoneNo)
+                        @Html.TextBoxFor(model => model.PhoneNo, htmlAttributes: new { @class = "form-control", @id = "txtEPhoneNoid", onkeypress = "return IsNumeric(event)" })
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @*@Html.LabelFor(model => model.VoucherLimit)
+                        @Html.TextBoxFor(model => model.VoucherLimit, htmlAttributes: new { @class = "form-control", @id = "txtEVoucherLimitid", onkeypress = "return ValidateAmount(this,event);", @readonly = true })*@
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DayLimit)
+                        @Html.TextBoxFor(model => model.DayLimit, htmlAttributes: new { @class = "form-control", @id = "txtEDayLimitid", onkeypress = "return ValidateAmount(this,event);", @readonly = true })
+
+                    </div>
+                </div>
+                @if (Model.CCType == "Performing")
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ProjectMgr)
+                                @Html.TextBoxFor(model => model.ProjectMgr, htmlAttributes: new { @class = "form-control", @id = "ddlUpCCPrjmgr", @readonly = true })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientInchargeName)
+                                @Html.TextBoxFor(model => model.ClientInchargeName, htmlAttributes: new { @class = "form-control", @id = "txtupClientInchargeName" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientInchargePhNo)
+                                @Html.TextBoxFor(model => model.ClientInchargePhNo, htmlAttributes: new { @class = "form-control", @id = "txtupclientInchargePhNo", onkeypress = "return IsNumeric(event)" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClientInchargemailid)
+                                @Html.TextBoxFor(model => model.ClientInchargemailid, htmlAttributes: new { @class = "form-control", @id = "txtupclientInchargemailid" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divpCCStore">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IsStoreApplicable)
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        @if (Model.IsStoreApplicable == "No")
+                                        {
+                                            <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="Yes" id="chkUpStoreY" onclick="StoreApplicableValidation(this)">
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="Yes" id="chkUpStoreY" onclick="StoreApplicableValidation(this)" checked>
+                                        }
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">Yes</span>
+                                    </label>
+                                </li>
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        @if (Model.IsStoreApplicable == "No")
+                                        {
+                                            <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="No" id="chkUpStoreN" onclick="StoreApplicableValidation(this)" checked>
+                                        }
+                                        else
+                                        { <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="No" id="chkUpStoreN" onclick="StoreApplicableValidation(this)">}
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">No</span>
+                                    </label>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                }
+                @if (Model.isRegionExist == true)
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Group)
+                            @Html.DropDownListFor(model => model.Group, new SelectList(Model.GroupsList, "GroupID", "GroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control  dropdown-toggle", @id = "groupEDDlid" })
+
+                        </div>
+                    </div>
+                }
+                @if (Model.CCType == "Non-Performing")
+                {<div class="col-md-6" id="divNpCCStore">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.StoreType)
+                            @Html.DropDownListFor(model => model.StoreType, new SelectList(Model.NPStoreTypesList, "Value", "TypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "ddlUpNpCCStore" })
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <input type="submit" value="Edit" class="btn btn1 btn-success" onclick="EditCostCenter('@Model.CC_Id','@Model.CCCode','@Model.status')" />
+                        <input type="text" id="txtECreatedby" style="display:none" />
+                        <input type="text" id="txtECCID" style="display:none" />
+                        <input type="text" id="txtCCUpdateuid" style="display:none" />
+                        @if (Model.isRegionExist == true)
+                        {
+                            <input type="hidden" id="txtRegionExist" value="Yes" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="txtRegionExist" value="No" />
+                        }
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divEditCostCenterInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+}
+else
+{<div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Cost Center</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+
+                <form onsubmit="return false">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CCType)
+                                    @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ECCTypeddlID", @readonly = true })
+                                </div>
+                            </div>
+                            @if (Model.CCType != "Performing" && Model.CCType != "Capital")
+                            {
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.NPCCOfficeType)
+                                        <input type="text" class="form-control appfindate" value="@Model.NPCCOfficeType" readOnly="readOnly" />
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-4" id="divEditCCSubType">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SubType)
+                                    @Html.TextBoxFor(model => model.SubType, htmlAttributes: new { @class = "form-control", @id = "ESubTypeddlID", @readonly = true })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CCCode)
+                                    @Html.TextBoxFor(model => model.CCCode, htmlAttributes: new { @class = "form-control", @id = "txtECCode", onkeyup = "NewCCCodeChange(this)", onkeypress = "return IsNumeric(event)", @readonly = true })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CCName)
+                                    @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @id = "txteCCNameid" })
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.CCType == "Performing")
+                        {
+                            <div class="row">
+                                <div class="col-md-6" id="divEditCCFinalOfferNo">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.EPPLFinalOfferNo)
+                                        @Html.TextBoxFor(model => model.EPPLFinalOfferNo, htmlAttributes: new { @class = "form-control", @id = "txteEPPLFinalOfferNoid", @readonly = true })
+                                    </div>
+                                </div>
+                                <div class="col-md-6" id="divEditCCFinalOfferDate">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FinalOffDate)
+                                        @Html.TextBoxFor(model => model.UpFinalOfferDate, "{0:dd/MM/yyyy}", new { @id = "txtEFinalOfferDateid", @class = "form-control   date-picker", @type = "text", @readonly = true })
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" id="divEditCCRefNo">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ClientAcceptanceReferenceNo)
+                                        @Html.TextBoxFor(model => model.ClientAcceptanceReferenceNo, htmlAttributes: new { @class = "form-control", @id = "txtEClientAcceptanceReferenceNoid", @readonly = true })
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6" id="divEditCCRefDate">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ClientAcceptanceDate)
+                                        @Html.TextBoxFor(model => model.UpClientAcceptanceDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control  date-picker", @id = "txtEClientAcceptanceDateid", @type = "text", @readonly = true })
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                        <div class="row">
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CCInchargeName)
+                                    @Html.TextBoxFor(model => model.CCInchargeName, htmlAttributes: new { @class = "form-control", @id = "txtECCInchargeNameid" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.StateID)
+                                    @Html.DropDownListFor(model => model.StateID, new SelectList(Model.StatesList, "State_ID", "State_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "txtEStateNameid", @enabled = true })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.InchargePhNo)
+                                    @Html.TextBoxFor(model => model.InchargePhNo, htmlAttributes: new { @class = "form-control", @id = "txtEInchargePhNoid", onkeypress = "return IsNumeric(event)" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.SiteAddress)
+                                    @Html.TextBoxFor(model => model.SiteAddress, htmlAttributes: new { @class = "form-control", @id = "txtESiteAddressid", @readonly = true })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PhoneNo)
+                                    @Html.TextBoxFor(model => model.PhoneNo, htmlAttributes: new { @class = "form-control", @id = "txtEPhoneNoid", onkeypress = "return IsNumeric(event)" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @*@Html.LabelFor(model => model.VoucherLimit)
+                                    @Html.TextBoxFor(model => model.VoucherLimit, htmlAttributes: new { @class = "form-control", @id = "txtEVoucherLimitid", onkeypress = "return ValidateAmount(this,event);", @readonly = true })*@
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DayLimit)
+                                    @Html.TextBoxFor(model => model.DayLimit, htmlAttributes: new { @class = "form-control", @id = "txtEDayLimitid", onkeypress = "return ValidateAmount(this,event);", @readonly = true })
+
+                                </div>
+                            </div>
+
+
+                            @if (Model.CCType == "Performing")
+                            {
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ProjectMgr)
+                                        @Html.TextBoxFor(model => model.ProjectMgr, htmlAttributes: new { @class = "form-control", @id = "ddlUpCCPrjmgr", @readonly = true })
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ClientInchargeName)
+                                            @Html.TextBoxFor(model => model.ClientInchargeName, htmlAttributes: new { @class = "form-control", @id = "txtupClientInchargeName" })
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ClientInchargePhNo)
+                                            @Html.TextBoxFor(model => model.ClientInchargePhNo, htmlAttributes: new { @class = "form-control", @id = "txtupclientInchargePhNo", onkeypress = "return IsNumeric(event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ClientInchargemailid)
+                                            @Html.TextBoxFor(model => model.ClientInchargemailid, htmlAttributes: new { @class = "form-control", @id = "txtupclientInchargemailid" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" id="divpCCStore">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.IsStoreApplicable)
+                                        <ul class="list-inline">
+                                            <li class="eagle-checkbox">
+                                                <label class="eagle-check custom-checkbox">
+                                                    @if (Model.IsStoreApplicable == "No")
+                                                    {
+                                                        <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="Yes" id="chkUpStoreY" onclick="StoreApplicableValidation(this)">
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="Yes" id="chkUpStoreY" onclick="StoreApplicableValidation(this)" checked>
+                                                    }
+                                                    <span class="eagle-check-indicator"></span>
+                                                    <span class="eagle-check-description">Yes</span>
+                                                </label>
+                                            </li>
+                                            <li class="eagle-checkbox">
+                                                <label class="eagle-check custom-checkbox">
+                                                    @if (Model.IsStoreApplicable == "No")
+                                                    {
+                                                        <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="No" id="chkUpStoreN" onclick="StoreApplicableValidation(this)" checked>
+                                                    }
+                                                    else
+                                                    { <input type="checkbox" class="eagle-check-input" name="UpStoreApplicable" value="No" id="chkUpStoreN" onclick="StoreApplicableValidation(this)">}
+                                                    <span class="eagle-check-indicator"></span>
+                                                    <span class="eagle-check-description">No</span>
+                                                </label>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.isRegionExist == true)
+                            {
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Group)
+                                        @Html.DropDownListFor(model => model.Group, new SelectList(Model.GroupsList, "GroupID", "GroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control  dropdown-toggle", @id = "groupEDDlid" })
+
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.CCType == "Non-Performing")
+                            {<div class="col-md-6" id="divNpCCStore">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.StoreType)
+                                        @Html.DropDownListFor(model => model.StoreType, new SelectList(Model.NPStoreTypesList, "Value", "TypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "ddlUpNpCCStore" })
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="text-right">
+                                    <input type="submit" value="Edit" class="btn btn1 btn-success" onclick="EditCostCenter('@Model.CC_Id','@Model.CCCode','@Model.status')" />
+                                    <input type="text" id="txtECreatedby" style="display:none" />
+                                    <input type="text" id="txtECCID" style="display:none" />
+                                    <input type="text" id="txtCCUpdateuid" style="display:none" />
+                                    @if (Model.isRegionExist == true)
+                                    {
+                                        <input type="hidden" id="txtRegionExist" value="Yes" />
+                                    }
+                                    else
+                                    {
+                                        <input type="hidden" id="txtRegionExist" value="No" />
+                                    }
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <br />
+                                <div class="text-center">
+                                    <div id="divEditCostCenterInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>  }
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+          var SessionUID = '@Session["UID"]';
+        $("#txtCCUpdateuid").val(SessionUID);
+       // alert('@Model.FinalOfferDate');
+        // Intialising Int fields to show Empty
+        $("#txtEFinalOfferDateid").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        });
+        $("#txtEClientAcceptanceDateid").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        });
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtECreatedby").val(Sessioncreated);
+        $('#txtEClientAcceptanceDateid').css('background-color', 'transparent');
+        $('#txtEFinalOfferDateid').css('background-color', 'transparent');
+
+
+        var cctype = '@Model.CCType';
+        $("#ECCTypeddlID").find("option:contains('" + cctype + "')").each(function () {
+            if ($(this).text() == cctype) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var subtype = '@Model.SubType';
+      //  alert(subtype);
+        $("#ESubTypeddlID").find("option:contains('" + subtype + "')").each(function () {
+            if ($(this).text() == subtype) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var state = '@Model.State';
+        $("#txtEStateNameid").find("option:contains('" + state + "')").each(function () {
+            if ($(this).text() == state) {
+                $(this).attr("selected", "selected");
+            }
+        });
+
+         var group = '@Model.Group';
+        $("#groupEDDlid").find("option:contains('" + group + "')").each(function () {
+            if ($(this).text() == group) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var ccid = '@Model.CC_Id';
+        $("#txtECCID").val(ccid);
+
+        if (cctype==='Non-Performing') {
+            var stype = '@Model.StoreType';
+            $("#ddlUpNpCCStore").find("option:contains('" + stype + "')").each(function () {
+                if ($(this).text() == stype) {
+                $(this).attr("selected", "selected");
+            }
+        });
+
+        }
+
+    });
+    function EditCostCenter(CcId, CCCode, status) {
+
+        var isValid = true;
+        var errorMsg = "";
+
+        var CCName = $("#txteCCNameid").val();
+        var CCInchargeName = $("#txtECCInchargeNameid").val();
+        var InchargePhNo = $("#txtEInchargePhNoid").val();
+        var PhoneNo = $("#txtEPhoneNoid").val();
+
+        if (CCName == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+            isValid = false;
+        }
+        if (CCInchargeName == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Incharge Name</p>";
+            isValid = false;
+        }
+        if (InchargePhNo == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Incharge  Phone Number</p>";
+            isValid = false;
+        }
+        else if (InchargePhNo.length != 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Phone No</p>";
+            isValid = false;
+        }
+        if (PhoneNo == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Cost Center Phone No</p>";
+            isValid = false;
+        }
+        else if (PhoneNo.length != 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Phone No</p>";
+            isValid = false;
+        }
+        var isregionexist = $("#txtRegionExist").val();
+        if (isregionexist === 'Yes') {
+            var GroupID = $("#groupEDDlid option:selected").index();
+            if (GroupID == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Group</p>";
+                isValid = false;
+            }
+        }
+        var CCType = $("#ECCTypeddlID option:selected").text();
+        if (CCType == "Performing") {
+            var ClientInchargeName = $("#txtupClientInchargeName").val();
+            var ClientInchargePhNo = $("#txtupclientInchargePhNo").val();
+            var ClientInchargemailid = $("#txtupclientInchargemailid").val();
+            if ($('#chkUpStoreY').is(":checked") === false && $('#chkUpStoreN').is(":checked") === false) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check If Store Applicable or Not</p>";
+                isValid = false;
+            }
+            if (ClientInchargeName == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Incharge Name</p>";
+                isValid = false;
+            }
+            if (ClientInchargePhNo == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Incharge  PhoneNumber</p>";
+                isValid = false;
+            }
+            else if (ClientInchargePhNo.length != 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Client Incharge Phone No</p>";
+                isValid = false;
+            }
+            if (ClientInchargemailid == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client E-Mail</p>";
+                isValid = false;
+            }
+            if (ClientInchargemailid != "") {
+                var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if (!expr.test(ClientInchargemailid)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Client Email</p>";
+                    isValid = false;
+                }
+            }
+        }
+        else if (CCType == "Non-Performing") {
+            var storetype = $("#ddlUpNpCCStore option:selected").index();
+            if (storetype == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Store Type</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divEditCostCenterInfoMsg").text("");
+            $("#divEditCostCenterInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divEditCostCenterInfoMsg").addClass("alert-danger");
+            $("#divEditCostCenterInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divEditCostCenterInfoMsg").text("");
+            $("#divEditCostCenterInfoMsg").addClass("hidden");
+            UpdateCC(CcId, CCCode, status);
+        }
+        return isValid;
+    }
+    function UpdateCC(CcId, CCCode, status) {
+        var CheckUpdationAction = '';
+        if (status === "000") {
+            CheckUpdationAction = 'ReturnUpdate';
+        }
+        else {
+            CheckUpdationAction = 'Insert';
+        }
+
+        var Groupname = '';
+        var isregionexist = $("#txtRegionExist").val();
+        if (isregionexist === 'Yes') {
+            Groupname = $("#groupEDDlid  option:selected").text();
+        }
+
+        var CCTypeval = $("#ECCTypeddlID option:selected").text();
+        var stype = "";
+        if (CCTypeval == "Non-Performing") {
+            storeApplicable = "Yes";
+            stype = $("#ddlUpNpCCStore option:selected").val();
+        }
+        else if (CCTypeval === 'Capital') {
+            storeApplicable = "No";
+            stype = '';
+
+        }
+        var d = new Date();
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+        var currentdate = d.getFullYear() + '-' +
+            (('' + month).length < 2 ? '0' : '') + month + '-' +
+            (('' + day).length < 2 ? '0' : '') + day;
+        var editCostCenterDetails = {};
+
+        if (CCTypeval == "Performing") {
+            var storeApplicable = "No";
+            if ($('#chkUpStoreY').is(":checked") === true) {
+                storeApplicable = "Yes";
+                stype = 'Normal';
+            }
+            editCostCenterDetails = {
+                CCType: $("#ECCTypeddlID option:selected").text(),
+                SubType: $("#ESubTypeddlID").val(),
+                EPPLFinalOfferNo: $("#txteEPPLFinalOfferNoid").val(),
+                FinalOfferDate: $("#txtEFinalOfferDateid").val(),
+                ClientAcceptanceReferenceNo: $("#txtEClientAcceptanceReferenceNoid").val(),
+                ClientAcceptanceDate: $("#txtEClientAcceptanceDateid").val(),
+                Group: Groupname,
+                CCName: $("#txteCCNameid").val(),
+                CCInchargeName: $("#txtECCInchargeNameid").val(),
+                InchargePhNo: $("#txtEInchargePhNoid").val(),
+                SiteAddress: $("#txtESiteAddressid").val(),
+                PhoneNo: $("#txtEPhoneNoid").val(),
+                //VoucherLimit: $("#txtEVoucherLimitid").val(),
+                DayLimit: $("#txtEDayLimitid").val(),
+                StateID: $("#txtEStateNameid option:selected").val(),
+                Createdby: $("#txtECreatedby").val(),
+                Action: 'Edit',
+                CCCode: $("#txtECCode").val(),
+                CC_Id: $("#txtECCID").val(),
+                CheckUpdationType: CheckUpdationAction,
+                UID: $("#txtCCUpdateuid").val(),
+                IsStoreApplicable: storeApplicable,
+                StoreType: stype,
+                ClientInchargeName: $("#txtupClientInchargeName").val(),
+                ClientInchargePhNo: $("#txtupclientInchargePhNo").val(),
+                ClientInchargemailid: $("#txtupclientInchargemailid").val()
+            };
+        }
+        else {
+            editCostCenterDetails = {
+                CCType: $("#ECCTypeddlID option:selected").text(),
+                SubType: $("#ECCTypeddlID option:selected").text(),
+                EPPLFinalOfferNo: $("#txteEPPLFinalOfferNoid").val(),
+                FinalOfferDate: currentdate,
+                ClientAcceptanceReferenceNo: $("#txtEClientAcceptanceReferenceNoid").val(),
+                ClientAcceptanceDate: currentdate,
+                Group: Groupname,
+                CCName: $("#txteCCNameid").val(),
+                CCInchargeName: $("#txtECCInchargeNameid").val(),
+                InchargePhNo: $("#txtEInchargePhNoid").val(),
+                SiteAddress: $("#txtESiteAddressid").val(),
+                PhoneNo: $("#txtEPhoneNoid").val(),
+                //VoucherLimit: $("#txtEVoucherLimitid").val(),
+                DayLimit: $("#txtEDayLimitid").val(),
+                StateID: $("#txtEStateNameid option:selected").val(),
+                Createdby: $("#txtECreatedby").val(),
+                Action: 'Edit',
+                CCCode: $("#txtECCode").val(),
+                CC_Id: $("#txtECCID").val(),
+                CheckUpdationType: CheckUpdationAction,
+                UID: $("#txtCCUpdateuid").val(),
+                IsStoreApplicable: storeApplicable,
+                StoreType: stype
+            };
+        }
+        addFailMsg = "Error Occurred While Updating Cost Center.";
+        addSuccessMsg = "Updated Successfully.";
+        if (status == "000") {
+            //for approval update
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/UpdateCostCenter',
+                data: { updateCostCenter: editCostCenterDetails },
+                success: function (Data) {
+                    if (Data.saveStatus == "Cost Center Updated") {
+                        $('#ApproveCCMsgModal').modal('show');
+                        msg = "<div>Cost Center " + addSuccessMsg + "</div>";
+                        $("#AppCCMsg").html(msg);
+                    }
+                    else {
+                        $('#ApproveCCMsgModal').modal('show');
+                        msg = "<div>" + Data.saveStatus + "</div>";
+                        $("#AppCCMsg").html(msg);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $('#ApproveCCMsgModal').modal('show');
+                    msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppCCMsg").html(msg);
+                }
+            });
+        }
+        else {
+            //for normal update
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/UpdateCostCenter',
+                data: { updateCostCenter: editCostCenterDetails },
+                success: function (Data) {
+                    if (Data.saveStatus == "Cost Center Updated") {
+                        $("#divEditCostCenterInfoMsg").text(addSuccessMsg);
+                        $("#divEditCostCenterInfoMsg").removeClass("hidden alert-danger");
+                        $("#divEditCostCenterInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divEditCostCenterInfoMsg").text(Data.saveStatus);
+                        $("#divEditCostCenterInfoMsg").addClass("alert-danger");
+                        $("#divEditCostCenterInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divEditCostCenterInfoMsg").text(addFailMsg);
+                    $("#divEditCostCenterInfoMsg").addClass("alert-danger");
+                    $("#divEditCostCenterInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+
+    }
+    function StoreApplicableValidation(checkbox) {
+
+        var selectedIds = [];
+        var checkboxes = document.getElementsByName('UpStoreApplicable');
+        for (var i in checkboxes)
+            checkboxes[i].checked = checkbox.checked;
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+        //var ids = document.getElementsByName('UpStoreApplicable');
+        //for (var i = 0; i < ids.length; i++) {
+        //    if (ids[i].checked == true) {
+        //        // alert(ids[i].value);
+        //        if (ids[i].value == 'Yes') {
+        //            $("#divSubClientGst").removeClass('hidden');
+        //            $("#divSubClientInfoMsg").text("");
+        //            $("#divSubClientInfoMsg").addClass("hidden");
+        //        }
+        //        else {
+        //            $("#divSubClientGst").addClass('hidden');
+        //            $("#SubClientGstTable tbody tr:not(:first)").remove();
+        //            $("#SubClientGstTable tbody tr:first").each(function () {
+        //                var currentRow = $(this);
+        //                var state = currentRow.find("td").eq(1).find("select").prop('selectedIndex', 0);
+        //                var gstno = currentRow.find("td").eq(2).find("input[type='text']").val("");
+        //                currentRow.find('input[type="checkbox"]').prop("checked", false);
+
+        //            });
+        //            $("#divSubClientInfoMsg").text("");
+        //            $("#divSubClientInfoMsg").addClass("hidden");
+        //        }
+        //    }
+        //}
+
+    }
+</script>
+

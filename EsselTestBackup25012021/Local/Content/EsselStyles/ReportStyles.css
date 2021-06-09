@@ -1,0 +1,178 @@
+﻿body {
+}
+.rowgap {
+    margin-top: -20px;
+}
+
+.Mainheader {
+    font-size: 25px;
+    height: 50px;
+    background-color: #202447;
+    color: white !important;
+}
+
+.Mainheader2 {
+    font-size: 16px;
+    background-color: #0a5ea7 !important;
+    color: #fff !important;
+}
+
+
+
+.panel-borderless {
+    border: 0;
+    box-shadow: none;
+}
+
+/*.box {
+            border: 1px solid black;
+            background-color: brown;
+            height: 100px;
+        }*/
+
+.small-box {
+    /*border: 1px solid green;*/
+    /*background-color: yellow;*/
+    /*height: 450px;*/
+    overflow-y: auto;
+    overflow-x:no-display;
+    min-height: 200px;
+}
+
+.tatalcls {
+    /*margin-left: 40px;*/
+}
+
+.lefttd {
+    width: 300px;
+}
+
+.righttd {
+    width: 150px;
+    text-align: left
+}
+
+#jstreeDirectExpense {
+    color: #000;
+}
+
+#jstreeDirectIncome {
+    color: #000;
+}
+
+#jstreeInDirExpense {
+    color: #000;
+}
+
+#jstreeInDireIncome {
+    color: #000;
+}
+
+.jstree-grid-cell span {
+    color: #000 !important
+}
+
+.totalcls {
+    color: #000 !important
+}
+
+.header2 {
+    color: #fff !important
+}
+
+.modal-dialog {
+    min-width: 100% !important;
+    margin: 2rem auto;
+    margin-left: 10px;
+}
+#jstreeLiabilityExpense {
+    color: #000;
+}
+
+#jstreeAssetsIncome {
+    color: #000;
+}
+@media screen and (max-width: 499px) {
+    /* For mobile phones: */
+    .piechart {
+        /*width: 500px;
+        height: 500px;*/
+        left: 0;
+        top: 0;
+    }
+
+    .chartpanel {
+        width: 400px;
+        text-align: center !important;
+    }
+
+    .PerChart {
+        left: 0;
+        top: 0;
+    }
+
+
+    .NonPerChart {
+        left: 0;
+        top: 0;
+    }
+}
+
+@media (min-width: 500px) and (max-width: 768px) {
+    /* For mobile phones: */
+    .piechart {
+        /*width: 400px;
+        height: 500px;*/
+        left: 0;
+        top: 0;
+    }
+
+    .chartpanel {
+        min-width: 300px;
+        max-width: 468px;
+        text-align: center !important;
+    }
+
+    .PerChart {
+        left: 0;
+        top: 0;
+    }
+
+
+    .NonPerChart {
+        left: 0;
+        top: 0;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 2500px) {
+    /* For mobile phones: */
+    .piechart {
+        min-width: 769px;
+        max-width: 900px;
+        height: 500px;
+        left: 30%;
+        top: 30%;
+    }
+
+    .chartpanel {
+        width: 100%;
+        text-align: center !important;
+    }
+
+    .PerChart {
+        min-width: 500px !important;
+        max-width: 500px;
+        height: 500px;
+        left: 0;
+        top: 30%;
+    }
+
+    .NonPerChart {
+        min-width: 500px;
+        max-width: 900px;
+        height: 500px;
+        left: 0;
+        top: 30%;
+    }
+}

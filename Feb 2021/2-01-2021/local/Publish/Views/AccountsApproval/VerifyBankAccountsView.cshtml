@@ -1,0 +1,348 @@
+﻿
+@model EsselTestLocalApplication.Models.AddBankDetails
+
+
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Bank Name:</label>
+                        <input type="text" class="form-control" value="@Model.BankName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Number:</label>
+                        <input type="text" class="form-control" value="@Model.Accountno" readOnly="readOnly" id="ApprAccno" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <input type="text" class="form-control" value="@Model.Banklocation" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nature of Group:</label>
+                        <input type="text" class="form-control" value="@Model.NatureGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Type:</label>
+                        <input type="text" class="form-control" value="@Model.AccountType" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Holder Name:</label>
+                        <input type="text" class="form-control" value="@Model.AccountHolderName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Opening Balance:</label>
+                        <input type="text" class="form-control" value="@Model.OpeningBalance" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Openning Date:</label>
+                        @Html.TextBoxFor(model => Model.AccOpeningDate, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text" })
+                        @*<input type="datetime" class="form-control" value="@Model.AccOpeningDate" readOnly="readOnly" />*@
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Balance As on Date:</label>
+                        @Html.TextBoxFor(model => Model.BalanceAsOn, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text" })
+                        @*<input type="text" class="form-control" value="@Model.BalanceAsOn" readOnly="readOnly" id="ApprBalason" />*@
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Minimum Balance:</label>
+                        <input type="text" class="form-control" value="@Model.MinimumBalance" id="ApprMinBal" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Bank Status:</label>
+                        <input type="text" class="form-control" value="@Model.BankStatus" id="ApprStatus" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Group Name:</label>
+                        <input type="text" class="form-control" readonly="readonly" value='@Model.GroupName' />
+                    </div>
+                </div>
+                @if (Model.SubGroupId != "0")
+                {
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sub Group Name:</label>
+                            <input type="text" class="form-control" readonly="readonly" value='@Model.SubGroupName' />
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppBankAccstatus" })
+                        @*<select class="form-control dropdown-toggle" id="AppBankAccstatus">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Verify">Verify</option>
+                                <option value="Approve">Approve</option>
+                                @if (Model.BankStatus == "Open")
+                                {
+                                    <option value="Return">Return</option>
+                                }
+                                <option value="Reject">Reject</option>
+                            </select>*@
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppBankNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveBankAccount('@Model.Bankid','@Model.Accountno','@Model.BankStatus')">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprBankInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    }
+    else if (Model.Status == "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Bank Name:</label>
+                        <input type="text" class="form-control" value="@Model.BankName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Number:</label>
+                        <input type="text" class="form-control" value="@Model.Accountno" readOnly="readOnly" id="ApprAccno" />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nature of Group:</label>
+                        <input type="text" class="form-control" value="@Model.NatureGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Type:</label>
+                        <input type="text" class="form-control" value="@Model.AccountType" readOnly="readOnly" id="UpBankType" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Holder Name:</label>
+                        <input type="text" class="form-control" value="@Model.AccountHolderName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Opening Balance:</label>
+                        <input type="text" class="form-control" value="@Model.OpeningBalance" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Openning Date:</label>
+                        @Html.TextBoxFor(model => Model.AccOpeningDate, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text", id = "ApprAccopeningdate" })
+                        @*<input type="text" class="form-control" value="@Model.AccOpeningDate" readOnly="readOnly" id="ApprAccopeningdate" />*@
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Balance As on Date:</label>
+                        @Html.TextBoxFor(model => @Model.BalanceAsOn, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text", id = "ApprBalason" })
+                        @*<input type="text" class="form-control" value="@Model.BalanceAsOn" readOnly="readOnly" id="ApprBalason" />*@
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Location:</label>
+                        <input type="text" class="form-control" value="@Model.Banklocation" id="UpBankLoc" />
+                    </div>
+                </div>
+                <div class="col-md-3" id="divupminbal">
+                    <div class="form-group">
+                        <label>Minimum Balance:</label>
+                        <input type="text" class="form-control" value="@Model.MinimumBalance" id="UpBankMinBal" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Group Name:</label>
+                        <input type="text" class="form-control" readonly="readonly" value='@Model.GroupName' />
+                    </div>
+                </div>
+                @if (Model.SubGroupId != "0")
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Sub Group Name:</label>
+                            <input type="text" class="form-control" readonly="readonly" value='@Model.SubGroupName' />
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <br /><br /><button onClick="UpdateReturnedBankAccount('@Model.Bankid','@Model.Accountno')">Submit</button>
+                        <input id='txtRegex1' type='text' value="^-?[0-9]*[.]*[0-9]*$" style="display:none;" />
+                        <input id='txtUpRole' type='hidden' />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divUpBankInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+
+    }
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        var status = '@Model.Status';
+        if (status != '0') {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppBankAccstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                          if ('@Model.BankStatus' == "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        }
+        var SessionRole = '@Session["Role"]';
+        $("#txtUpRole").val(SessionRole);
+        if (status == '0') {
+            var bankid = $("#currentBankAcc").val();
+
+            $("#currentBankAcc").val("");
+            var role = $("#txtUpRole").val();
+            //if (role == 'SuperAdmin') {
+            //    $("#divupminbal").removeClass('hidden');
+            //}
+            //else { $("#divupminbal").addClass("hidden"); }
+            $("#UpBankMinBal").keypress(function (event) {
+                var type = $("#UpBankType").val();
+                if (type == "Over Draft") {
+                    $("#divUpBankInfoMsg").text("");
+                    $("#divUpBankInfoMsg").addClass("hidden");
+                    if (event.keyCode != 8) {
+                        var regex = new RegExp($('#txtRegex').val());
+                        var InputValue = String.fromCharCode(!event.keyCode ? event.which : event.keyCode);
+                        var key = $(this).val();
+                        key = key + InputValue;
+                        if (!regex.test(key)) {
+                            event.preventDefault();
+                            return false;
+                        }
+                    }
+
+                }
+                else {
+                    $("#divUpBankInfoMsg").text("");
+                    $("#divUpBankInfoMsg").addClass("hidden");
+
+                    var charCode = (event.which) ? event.which : event.keyCode
+                    if (charCode == 46) {
+                        if (this.value.indexOf(".") < 0)
+                            return true;
+                        else
+                            return false;
+                    }
+                    if (this.value.indexOf(".") > 0) {
+                        var txtlen = this.value.length;
+                        var dotpos = this.value.indexOf(".");
+                        if ((txtlen - dotpos) > 2)
+                            return false;
+                    }
+
+                    if (charCode > 31 && (charCode < 48 || charCode > 57))
+                        return false;
+
+                    return true;
+                }
+            });
+        }
+    });
+</script>

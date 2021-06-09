@@ -1,0 +1,718 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.EmployeeRegistration
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    serializer.MaxJsonLength = Int32.MaxValue;
+}
+@Styles.Render("~/bundles/Accounts/css")
+
+<style>
+    .disabledTab {
+        pointer-events: none;
+    }
+
+    table > tbody > tr > td {
+        padding: 0px !important;
+        /*line-height: 1.42857143;*/
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+
+    .strike1 > span {
+        position: relative;
+        text-align: center;
+        /* margin-right: 80%; */
+        display: block;
+        font-size: 15px;
+        border-radius: 10px;
+        /* width: 80px; */
+        width: 22% !important;
+        /* height: 80px; */
+        right: -93px;
+        padding: 5px;
+        /* margin: 30px; */
+        font-weight: bold;
+        background: #fff;
+        border: 2px solid #666;
+    }
+
+    * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .Addmorecls {
+        background-color: #0b630b !important;
+        color: #fff;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <div id="divNewEmpTabData">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FirstName)
+                    @Html.TextBoxFor(model => model.FirstName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpfirstname", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LastName)
+                    @Html.TextBoxFor(model => model.LastName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmplastname", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MiddleName)
+                    @Html.TextBoxFor(model => model.MiddleName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpmiddlename", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DateofBirth)
+                    @Html.TextBoxFor(model => model.DateofBirth, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control", @id = "txtUpEmpDateofbirth", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-1 text-left">
+                @Html.LabelFor(model => model.EmpAge, htmlAttributes: new { @class = "hidelabel" })
+                @Html.TextBoxFor(model => model.EmpAge, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpAge", @readOnly = "true" })
+
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Gender)
+                    @Html.TextBoxFor(model => model.Gender, htmlAttributes: new { @class = "form-control", @id = "ddlUpEmpSex", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MartialStatus)
+                    @Html.TextBoxFor(model => model.MartialStatus, htmlAttributes: new { @class = "form-control", @id = "ddlUpEmpMaritalStatus", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3" id="divUpDateofMarriage">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DateofMarriage)
+                    @Html.TextBoxFor(model => model.DateofMarriage, htmlAttributes: new { @class = "form-control date-picker", @id = "txtUpempDateofMarriage", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Appointmenttype)
+                    @Html.TextBoxFor(model => model.Appointmenttype, htmlAttributes: new { @class = "form-control", @id = "ddlUpEmpAppointType", @readOnly = "true" })
+                </div>
+            </div>
+        </div>
+        <div class="row"><hr /></div>
+        <div class="row">
+            <ul class="nav nav-tabs" id="tabGroups" role="tablist">
+                <li class="active "><a data-toggle="tab" href="#PersonalInfo">Personal Info</a></li>
+                <li><a data-toggle="tab" href="#Qualification">Qualification Details</a></li>
+                <li><a data-toggle="tab" href="#EmploymentHistory">Employment History</a></li>
+                <li><a data-toggle="tab" href="#UploadDoc">Documents</a></li>
+                <li><a data-toggle="tab" href="#JoiningDetails">Joining Details</a></li>
+                <li><a data-toggle="tab" href="#BankDetails">Bank Details</a></li>
+                @if (Model.SalaryExist == "SalaryExist")
+                {
+                    <li><a data-toggle="tab" href="#SalaryDetails">Salary Details</a></li>
+                }
+            </ul>
+            <div class="tab-content">
+                <div id="PersonalInfo" class="tab-pane fade in active">
+                    @if (Model.FamilyMemberData.Count > 0)
+                    {
+                        <div id="divFamilyGrid" class="row">
+                            <div class="col-md-12" id="divUpdateFamilyGridData" style="margin-top:30px">
+                                <div class="col-md-12 change-tab">
+                                    <div class="strike">
+                                        <span>Family Details</span>
+                                    </div>
+                                    <div class="tabledynamic">
+                                        <br />
+                                        <table id="FamilyTable" class="table order-list familytable dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Name</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Date of Birth</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Age</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Gender</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Relationship</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Work</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff">Mobile No</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.FamilyMemberData)
+                                                {
+                                                    <tr>
+                                                        <td style="text-align:center;width:20%">
+                                                            @Html.DisplayFor(modelItem => item.FMName)
+                                                        </td>
+                                                        <td style="width:20%;text-align:center">
+                                                            @Html.DisplayFor(modelItem => item.FMDateofBirth)
+                                                        </td>
+
+                                                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMAge)</td>
+                                                        <td style="width:10%;text-align:center">
+                                                            @Html.DisplayFor(modelItem => item.FMGender)
+                                                        </td>
+                                                        <td style="width:10%;text-align:center">
+                                                            @Html.DisplayFor(modelItem => item.FMRelation)
+                                                        </td>
+                                                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMWork)</td>
+                                                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMMobileNo)</td>
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                    @if (Model.FamilyMemberData.Count > 0)
+                    {
+                        <div id="divChildGrid" class="row" style="margin-top:10px">
+                            <br />
+
+                            <div class="col-md-12" id="divUpdateChildGridData">
+
+                                <div class="col-md-12 change-tab">
+                                    <div class="strike">
+                                        <span>Children Details</span>
+                                    </div>
+                                    <div class="tabledynamic">
+                                        <br />
+                                        <table id="ChildrenTable" class="table order-list Childrentable  dataTable">
+                                            <thead>
+                                                <tr>
+
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Name</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Date of Birth</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Age</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Gender</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Marital Status</td>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                @foreach (var item in Model.ChildrensData)
+                                                {
+                                                    <tr>
+                                                        <td style="text-align:center;width:20%">
+                                                            @Html.DisplayFor(modelItem => item.ChildName)
+                                                        </td>
+                                                        <td style="width:20%;text-align:center;">
+                                                            @Html.DisplayFor(modelItem => item.ChildDateofBirth)
+                                                        </td>
+
+                                                        <td style="width:10%;text-align:center;"> @Html.DisplayFor(modelItem => item.ChildAge)</td>
+                                                        <td style="width:20%;text-align:center;">
+                                                            @Html.DisplayFor(modelItem => item.ChildGender)
+                                                        </td>
+                                                        <td style="width:20%;text-align:center;">
+                                                            @Html.DisplayFor(modelItem => item.ChildMaritalStatus)
+                                                        </td>
+
+                                                    </tr>
+
+                                                }
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                    <div class="row">
+                        <br />
+                        <div class="col-md-12">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Nominee Details</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12"><hr class="separationHr" /></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeName)
+                                    @Html.TextBoxFor(model => model.NomineeName, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeName", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeRelation)
+                                    @Html.TextBoxFor(model => model.NomineeRelation, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeRelation", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeDateofBirth)
+                                    @Html.TextBoxFor(model => model.NomineeDateofBirth, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeDateofBirth", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NomineeAge)
+                                    @Html.TextBoxFor(model => model.NomineeAge, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpNomineeAge", @readOnly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Contact Information</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12"><hr class="separationHr" /></div>
+                        </div>
+                        <div class="col-md-12">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactWorkPhone)
+                                    @Html.TextBoxFor(model => model.ContactWorkPhone, new { @id = "txtUpEmpContactWorkPhone", @class = "form-control", @type = "text", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ContactMobile)
+                                    @Html.TextBoxFor(model => model.ContactMobile, new { @id = "txtUpEmpMobileNo", @class = "form-control", @type = "text", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PlaceofBirth)
+                                    @Html.TextBoxFor(model => model.PlaceofBirth, new { @id = "txtUpEmpPlaceofBirth", @class = "form-control", @type = "text", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.WorkEmail)
+                                    @Html.TextBoxFor(model => model.WorkEmail, new { @id = "txtUpEmpWorkEmail", @class = "form-control", @type = "text", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PermanentAddress)
+                                    @Html.TextAreaFor(model => model.PermanentAddress, new { @id = "txtUpEmpPermanentAddress", @class = "form-control", @type = "text", @rows = "2", @readOnly = "true" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PresentAddress)
+                                    @Html.TextAreaFor(model => model.PresentAddress, new { @id = "txtUpEmpPresentAddress", @class = "form-control", @type = "text", @rows = "2", @readOnly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Qualification" class="tab-pane fade">
+                    @if (Model.AcademicQualificationData.Count > 0)
+                    {
+                        <div class="row" id="divUpdateAcademicQualGridData" style="margin-top:20px">
+                            <div class="col-md-12 change-tab">
+                                <div class="strike1">
+                                    <span>Academic Qualification</span>
+                                </div>
+                                <div class="tabledynamic">
+                                    <br />
+                                    <table id="AcademicTable" class="table order-list academictable dataTable">
+                                        <thead>
+                                            <tr>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">Class</td>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">Name of University</td>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">From</td>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">To</td>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">Percentage</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            @foreach (var item in Model.AcademicQualificationData)
+                                            {
+                                                <tr>
+
+                                                    <td style="text-align:center">
+                                                        @Html.DisplayFor(modelItem => item.AcademicClass)
+                                                    </td>
+                                                    <td style="text-align:center">
+                                                        @Html.DisplayFor(modelItem => item.NameofUniversity)
+                                                    </td>
+
+                                                    <td style="text-align:center">@Html.DisplayFor(modelItem => item.FromYear)</td>
+                                                    <td style="text-align:center">
+                                                        @Html.DisplayFor(modelItem => item.ToYear)
+                                                    </td>
+
+                                                    <td style="text-align:center">@Html.DisplayFor(modelItem => item.Percentage)</td>
+                                                </tr>
+
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (Model.TechnicalData.Count > 0)
+                    {
+                        <div class="row" id="divUpdateTechnicalGrid" style="margin-top:10px">
+                            <div class="col-md-12 change-tab">
+                                <div class="strike1">
+                                    <span>Technical Qualification</span>
+                                </div>
+                                <div class="tabledynamic">
+                                    <br />
+                                    <table id="TechnicalQuaTable" class="table order-list technicalquatable dataTable">
+                                        <thead>
+                                            <tr>
+
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">Technical Skills</td>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">Year Of Experience</td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @foreach (var item in Model.TechnicalData)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center">
+                                                        @Html.DisplayFor(modelItem => item.TechnicalSkill)
+                                                    </td>
+                                                    <td style="text-align:center">
+                                                        @Html.DisplayFor(modelItem => item.ExperienceYears)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div id="EmploymentHistory" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4 text-center">
+                            @if (Model.Experience == "Experienced")
+                            {
+                                <div class="form-group">
+                                    <input id="rbtUpExperience" name="UpExperiencHistory" value="Experience" type="radio" style="font-weight:bold;" checked>Experience
+                                    <input id="rbtUpFresher" name="UpExperiencHistory" value="Fresher" type="radio">Fresher
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div class="form-group">
+                                    <input id="rbtUpExperience" name="UpExperiencHistory" value="Experience" type="radio" style="font-weight:bold;">Experience
+                                    <input id="rbtUpFresher" name="UpExperiencHistory" value="Fresher" type="radio" checked>Fresher
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                    <div class="row" id="divUpExperienceHistorGrid">
+                        @if (Model.Experience == "Experienced")
+                        {
+                            <div class="col-md-12" id="divUpdateExperienceHistory" style="margin-top:20px">
+                                <div class="col-md-12 change-tab">
+                                    <div class="strike1">
+                                        <span>Experience Details</span>
+                                    </div>
+                                    <div class="tabledynamic">
+                                        <br />
+                                        <table id="ExperienceTable" class="table order-list experiencetable dataTable">
+                                            <thead>
+                                                <tr>
+
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Name of Organisation</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">From</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">To</td>
+                                                    <td style="text-align:center;background-color:#202447;color:#fff !important">Role/Designation</td>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.ExperienceData)
+                                                {
+                                                    <tr>
+                                                        <td style="text-align:center">
+                                                            @Html.DisplayFor(modelItem => item.OrganisationName)
+                                                        </td>
+                                                        <td style="text-align:center">@Html.DisplayFor(modelItem => item.FromYear)</td>
+                                                        <td style="text-align:center">
+                                                            @Html.DisplayFor(modelItem => item.ToYear)
+                                                        </td>
+                                                        <td style="text-align:center">@Html.DisplayFor(modelItem => item.Role)</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </div>
+                <div id="UploadDoc" class="tab-pane fade">
+                    @if (Model.DocumentData.Count > 0)
+                    {
+                        <div class="col-md-12" id="divUpdateDocuments" style="margin-top:20px">
+                            <div class="col-md-12 change-tab">
+                                <div class="strike1">
+                                    <span>Documents</span>
+                                </div>
+                                <div class="tabledynamic">
+                                    <br />
+                                    <table id="DocumentTable" class="table order-list doctable dataTable">
+                                        <thead>
+                                            <tr>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important">Name</td>
+                                                <td style="text-align:center;background-color:#202447;color:#fff !important"></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.DocumentData)
+                                            {
+                                                <tr>
+                                                    <td style="text-align:center">
+                                                        @Html.DisplayFor(modelItem => item.DocName)
+                                                    </td>
+                                                    <td style="text-align:center">
+                                                        <input type="button" class="ibtnshowPreview btn btn-md btn-danger" value="Preview" onclick="ShowPreview(@serializer.Serialize(item))">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div id="JoiningDetails" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DesignatedAs)
+                                @Html.TextBoxFor(model => model.DesignatedAs, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpDesignatedAs", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JoiningDate)
+                                @Html.TextBoxFor(model => model.JoiningDate, htmlAttributes: new { @class = "form-control", @id = "txtUpEmpJoiningDate", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JobType)
+                                @Html.TextBoxFor(model => model.JobType, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpJobType", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JoiningCostCenter)
+                                @Html.TextBoxFor(model => model.JoiningCCName, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpJoiningCostCenter", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransitDay)
+                                @Html.TextBoxFor(model => model.TransitDay, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpTransitdays", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReportTo)
+                                @Html.TextBoxFor(model => model.ReportToName, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpReportToCategory", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Department)
+                                @Html.TextBoxFor(model => model.Department, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpDepartment", @readOnly = "true" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="BankDetails" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankName)
+                                @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpEmpBank", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankAccountNo)
+                                @Html.TextBoxFor(model => model.BankAccountNo, new { @id = "txtUpEmpBankAccountNo", @class = "form-control", @type = "text", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IFSCcode)
+                                @Html.TextBoxFor(model => model.IFSCcode, new { @id = "txtUpEmpBankIFSC", @class = "form-control", @type = "text", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankAddress)
+                                @Html.TextAreaFor(model => model.BankAddress, new { @id = "txtUpEmpBankAddress", @class = "form-control", @type = "text", @rows = "2", @readOnly = "true" })
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                @if (Model.SalaryExist == "SalaryExist")
+                {
+                    <div id="SalaryDetails" class="tab-pane fade">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <table id="SalaryTable" class="table order-list Saltable">
+                                    <thead>
+                                        <tr>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important">EARNINGS</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important;border-right:1px solid #fff;">Rs</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important">DEDUCTIONS</td>
+                                            <td style="text-align:center;background-color:#202447;color:#fff !important">Rs</td>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.SalaryRuleData.AllSalaryHeadList)
+                                        {
+                                            <tr>
+                                                <td style="text-align:left;font-size:11px;vertical-align:middle">
+                                                    @if (item.EarningHeadName != null)
+                                                    {
+                                                        @Html.DisplayFor(modelItem => item.EarningHeadName)
+                                                    }
+                                                </td>
+                                                <td style="text-align:center;border-right:1px solid #000;">
+                                                    @if (item.EarningHeadName != null)
+                                                    {
+                                                        @Html.DisplayFor(modelItem => item.EarningHeadAmount)
+                                                    }
+                                                </td>
+                                                <td style="text-align:left;font-size:11px;vertical-align:middle">
+                                                    @if (item.DeductionHeadName != null)
+                                                    {
+                                                        @Html.DisplayFor(modelItem => item.DeductionHeadName)
+                                                    }
+                                                </td>
+                                                <td style="text-align:center">
+                                                    @if (item.DeductionHeadName != null)
+                                                    {
+                                                        @Html.DisplayFor(modelItem => item.DeductionHeadAmount)
+                                                    }
+                                                </td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="border-right:1px solid #000;"><b>GROSS SALARY</b></td>
+                                            <td style="text-align:center;border-right:1px solid #000;">@Model.SalaryRuleData.GrossAmount</td>
+                                            <td style="border-right:1px solid #000;"><b>TOTAL DEDUCTIONS</b></td>
+                                            <td style="text-align:center">@Model.SalaryRuleData.TotalDeduction</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                        <div class="row">
+                            <br />
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10">
+                                <div class="col-md-6 text-left">
+                                </div>
+                                <div class="col-md-6 text-right"> <b style="font-size:15px;">NET PAY:<label id="lblNetPay">@Model.SalaryRuleData.NetAmount</label></b></div>
+                            </div>
+                            <div class="col-md-1"></div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+        @if (Model.UANExist == true)
+        {
+        <div class="col-md-12">
+            @*<div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PFNumber)
+                @Html.TextBoxFor(model => model.PFNumber, new { @id = "txtUpEmpPFNumber", @class = "form-control", @type = "text", style = "text-transform:uppercase;", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ESINumber)
+                @Html.TextBoxFor(model => model.ESINumber, new { @id = "txtUpEmpESINumber", @class = "form-control", @type = "text", style = "text-transform:uppercase;",  @readOnly = "true" })
+            </div>
+        </div>*@
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UANNumber)
+                    @Html.TextBoxFor(model => model.UANNumber, new { @id = "txtNEmpUANNumber", @class = "form-control", @type = "text", @readOnly = "true" })
+                </div>
+            </div>
+
+        </div>
+        }
+    </div>
+    <div class="modal fade" id="PreviewModel" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {       
+        $('.nav-tabs li:eq(0) a').tab('show');
+        var maritalstatus = '@Model.MartialStatus';
+        if (maritalstatus === 'Married') {
+            $("#divUpDateofMarriage").removeClass('hidden');
+        }
+        else {
+            $("#divUpDateofMarriage").addClass('hidden');
+        }
+    });
+    function ShowPreview(Modeldata) {
+        $.ajax({
+            type: "POST",
+            url: "/HR/DocumentPreview",
+            data: JSON.stringify({ Pdfbase64: Modeldata.PDFBaseData, name: Modeldata.DocName, filetype: Modeldata.FileType }),
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#PreviewModel').html(data);
+                $('#PreviewModel').modal();
+            }
+        });
+    }
+</script>

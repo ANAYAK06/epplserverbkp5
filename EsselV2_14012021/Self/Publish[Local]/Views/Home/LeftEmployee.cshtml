@@ -1,0 +1,92 @@
+﻿
+@model EsselTestLocalApplication.Models.NewUsers
+<div class="modal-dialog modal-confirm">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="icon-box">
+                <i class="fa fa-check"></i>
+            </div>
+            <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="confirmmEmpsg">
+                <div class="row">
+                    <p>Do you really want to Change Employee As   Left Employee</p>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <div class="col-lg-6">
+                        <div class="col-lg-12"><label>UserName:@Model.Username</label></div>
+                        <div class="col-lg-12"><label>FirstName:@Model.Firstname</label></div>
+                        <div class="col-lg-12"><label>LastName:@Model.Lastname</label></div>
+                        <div class="col-lg-12"><label>MiddleName:@Model.Middlename</label></div>
+                        <div class="col-lg-12"><label>Role:@Model.Appointed</label></div>
+                    </div>
+                    <div class="col-lg-3"></div>
+                </div>
+                <div class="row"></div>               
+               
+            </div>
+            <div id="divDeleteEmployeeInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div id="confirmEmpbtn">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="SubmitLeftEmployee('@Model.Username')">Submit</button>
+                @*<input type="hidden" id="txtLeftEmployeeId" value="@Model.NewUserDetails.Userid"/>*@
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function SubmitLeftEmployee(Username) {
+        debugger;
+        saveNewUser = {           
+            Username: Username,           
+            Action: 'Left',                    
+        };
+        var addFailMsg = "Error Occurred While Updating Employee.";
+        var addSuccessMsg = "Employee Details Updated Successfully.";
+        $.ajax({
+            type: "POST",
+            url: "/Home/SubmitLeftEmployee",
+            data: JSON.stringify({ usr: saveNewUser }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (Data) {
+                if (Data.saveStatus == "Submitted") {
+                    $("#btnUpdateUser").prop('disabled', true);
+                    $("#divDeleteEmployeeInfoMsg").text(addSuccessMsg);
+                    $("#divDeleteEmployeeInfoMsg").removeClass("hidden alert-danger");
+                    $("#divDeleteEmployeeInfoMsg").addClass("alert-success");
+                    $("#confirmmEmpsg").addClass('hidden');
+                    $("#confirmEmpbtn").addClass('hidden');
+                    //$("#confirmms1").addClass('hidden');
+                }
+                else {
+                    $("#divDeleteEmployeeInfoMsg").text(addFailMsg);
+                    $("#divDeleteEmployeeInfoMsg").addClass("alert-danger");
+                    $("#divDeleteEmployeeInfoMsg").removeClass("hidden alert-success");
+                    $("#confirmmEmpsg").addClass('hidden');
+                    $("#confirmEmpbtn").addClass('hidden');
+                    //$("#confirmms1").addClass('hidden');
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divDeleteEmployeeInfoMsg").text(addFailMsg);
+                $("#divDeleteEmployeeInfoMsg").addClass("alert-danger");
+                $("#divDeleteEmployeeInfoMsg").removeClass("hidden alert-success");
+                $("#confirmmEmpsg").addClass('hidden');
+                $("#confirmEmpbtn").addClass('hidden');
+                //$("#confirmms1").addClass('hidden');
+            }
+
+        });
+
+    }
+
+</script>

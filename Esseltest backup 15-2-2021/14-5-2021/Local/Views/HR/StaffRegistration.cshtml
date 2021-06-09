@@ -1,0 +1,302 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmployeeRegistration
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Appointmenttype)
+            @Html.DropDownListFor(model => model.Appointmenttype, new SelectList(Model.EmpAppointmenttypeList, "EAppointmenttype", "EAppointmenttype"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpAppointType", onchange = "AppointmnetTypeChange()" })
+        </div>
+    </div>
+    <div id="divMainData">
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JoiningType)
+                @Html.DropDownListFor(model => model.JoiningType, new SelectList(Model.EmpJoiningTypeList, "EJoiningType", "EJoiningType"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpjoinType", onchange = "NewEmpJoiningTypeChange()" })
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Category)
+                @Html.DropDownListFor(model => model.Category, new SelectList(Model.EmpCategoryList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpCategory" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divNewOldUser">
+            <div class="form-group">
+                @Html.LabelFor(model => model.OldEmpUsername)
+                @Html.EditorFor(model => model.OldEmpUsername, new { htmlAttributes = new { @class = "form-control", @id = "txtOldEmpSearch", @onkeyup = "onchangeeventOldEmp();",
+
+               @type = "search",
+               @onpaste = "return false;" ,
+               style = "text-transform:uppercase" } })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <br />
+                <button class="btn btn1 btn-success" id="btnewEmpRejoin" onclick="GetEmpData()">View</button>
+                <button class="btn btn1 btn-success" id="btnewnewEmpSReset" onclick="ResetStaffRegistration()">Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divStffData">
+
+</div>
+<div id="divDirectStaffData">
+
+</div>
+<div class="col-md-12">
+    <br />
+    <div class="text-center">
+        <div id="divAddNewEmpInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+</div>
+<div id="AddNewDepartment" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New Department</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    @*<div class="container">*@
+                    <div class="row">
+                        <div class="col-lg-3 text-center"> <label>Department Name</label></div>
+                        <div class="col-lg-4"> <input type="text" id="txtNDeptname" class="form-control" /></div>
+                        <div class="col-lg-3">
+                            <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddnewDept" onclick="SubmitDeparment()" /> &nbsp;&nbsp;
+                            <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetDept()" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddDeptInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                    @*</div>*@
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="AddNewDesignation" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New Designation</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    @*<div class="container">*@
+                    <div class="row">
+                        <div class="col-lg-3 text-center"> <label>Designation Name</label></div>
+                        <div class="col-lg-4"> <input type="text" id="txtNDesignation" class="form-control" /></div>
+                        <div class="col-lg-3">
+                            <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddnewDesign" onclick="SubmitDesignation()" /> &nbsp;&nbsp;
+                            <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetDesign()" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddDesignInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                    @*</div>*@
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divNewOldUser").addClass("hidden");
+        $("#divStffData").addClass("hidden");
+        $("#divMainData").addClass("hidden");
+        $("#divDirectStaffData").addClass("hidden");
+    });
+    function NewEmpJoiningTypeChange() {
+        let jtypeindex = $("#ddlNEmpjoinType select:option").index();
+        let jtype = $("#ddlNEmpjoinType option:selected").val();
+        if (jtypeindex === 0) {
+            location.reload();
+        }
+        else if (jtype === "New") {
+            $("#divNewOldUser").addClass("hidden");
+
+        } else {
+            $("#divNewOldUser").removeClass("hidden");
+
+        }
+        // addFailMsg = "Something Went Wrong";
+        //$.ajax({
+        //    type: 'POST',
+        //    dataType: 'json',
+        //    url: '/HR/SetEmployeeAction',
+        //    data: { Action: EmpAction },
+        //    success: function (Data) {
+        //        //alert("Hi");
+        //        if (Data.saveStatus === EmpAction) {
+        //            alert(Data.saveStatus);
+        //        }
+        //        else {
+        //            $("#divAddNewEmpInfoMsg").text(addFailMsg);
+        //            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+        //            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        //        }
+        //    },
+        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+        //        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+        //        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+        //    }
+        //});
+    }
+    function GetEmpData() {
+        let jtypeindex = $("#ddlNEmpjoinType option:selected").index();
+        let jtype = $("#ddlNEmpjoinType option:selected").val();
+        let catIndex = $("#ddlNEmpCategory option:selected").index();
+        let catId = $("#ddlNEmpCategory option:selected").val();
+        if (jtypeindex == 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append("<div>Select Joining Type</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+
+        else if (catIndex === 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append("<div>Select Employee Category</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#ddlNEmpCategory").prop('disabled', true);
+            $("#ddlNEmpjoinType").prop('disabled', true);
+            if (jtype == "New") {
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/AddNewEmployee",
+                    data: '{ EmpCategoryId:"' + catId + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#divStffData').html(data);
+                        $("#divStffData").removeClass("hidden");
+                    }
+                });
+            }
+            else {
+                if ($("#txtOldEmpSearch").val() === "") {
+                    $("#divAddNewEmpInfoMsg").text("");
+                    $("#divAddNewEmpInfoMsg").append("<div>Enter Employee Name/ID</div>");
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#txtOldEmpSearch").prop('disabled', true);
+                    var EmpNo = $("#txtOldEmpSearch").val();
+                    $.get("/HR/UpdateStaffData?EmpRegno=" + EmpNo + "", null, function (data) {
+                        $('#divStffData').html(data);
+                        $("#divStffData").removeClass("hidden");
+                    });
+                }
+            }
+
+        }
+    }
+    function onchangeeventOldEmp() {
+        var catindex = $("#ddlNEmpCategory option:selected").val();
+        var cat = $("#ddlNEmpCategory option:selected").text();
+        var previxvalue = $("#txtOldEmpSearch").val();
+        if (catindex === 0) {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append("<div>Select Employee Category</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            if (previxvalue != "") {
+                $("#divAddNewEmpInfoMsg").text("");
+                $("#divAddNewEmpInfoMsg").addClass("hidden");
+                $("#txtOldEmpSearch").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/HR/GetOldEmpForRejoin',
+                            data: '{prefix:"' + request.term + '", Category:"' + cat + '"}',
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return { label: item.FirstName, value: item.EmpRefNo };
+                                }))
+                            },
+                            error: function (data) {
+                                alert(data.responseText);
+                            },
+                            failure: function (data) {
+                                alert(data.responseText);
+                            }
+                        });
+                    },
+                });
+            }
+        }
+    }
+    function ResetStaffRegistration() { location.reload(); }
+
+    function AppointmnetTypeChange() {
+        let appointtypeindex = $("#ddlNEmpAppointType option:selected").index();
+        let appointtype = $("#ddlNEmpAppointType option:selected").val();
+        if (appointtypeindex == 0) {
+            $("#divNewOldUser").addClass("hidden");
+            $("#divStffData").addClass("hidden");
+            $("#divMainData").addClass("hidden");
+            $("#divDirectStaffData").addClass("hidden");
+        }
+        else {
+            $("#ddlNEmpAppointType").prop('disabled', true);
+            if (appointtype == "Direct") {
+
+                $("#divMainData").addClass("hidden");
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/AddNewUser",
+                    data: '{}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#divDirectStaffData').html(data);
+                        $("#divDirectStaffData").removeClass("hidden");
+                        $("#divStffData").addClass("hidden");
+                    }
+                });
+            }
+            else if (appointtype == "Normal") {
+                $("#divMainData").removeClass("hidden");
+                $("#divStffData").addClass("hidden");
+                $("#divDirectStaffData").addClass("hidden");
+            }
+        }
+    }
+</script>

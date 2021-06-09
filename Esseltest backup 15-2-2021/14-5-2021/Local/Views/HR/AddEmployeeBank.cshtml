@@ -1,0 +1,156 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmployeeBanks
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">New Employee Bank</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-lg-3 text-center"> <label>Bank Name</label></div>
+                    <div class="col-lg-4"> <input type="text" id="txtNBank" class="form-control" /></div>
+                    <div class="col-lg-3">
+                        <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddnewBank" onclick="SubmitEmpBank()" /> &nbsp;&nbsp;
+                        <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetBank()" />
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divAddBankInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div id="divBankGrid">
+                @Html.Action("EmpBankGrid", "HR")
+            </div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+    function SubmitEmpBank() {
+            isValid = true;
+            var errorMsg = "";
+            var BankName = $("#txtNBank").val();
+            if (BankName === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Bank Name</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                $("#divAddBankInfoMsg").text("");
+                $("#divAddBankInfoMsg").append("<div>" + errorMsg + "</div>");
+                $("#divAddBankInfoMsg").addClass("alert-danger");
+                $("#divAddBankInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divAddBankInfoMsg").text("");
+                $("#divAddBankInfoMsg").addClass("hidden");
+
+                var NewBank = {
+                    BankName: BankName,
+                    Action:"New"
+                };
+                addFailMsg = "Error Occurred While Adding  Designation";
+                addSuccessMsg = "Designation Added Successfully.";
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/SaveEmployeeBank",
+                    data: JSON.stringify({ bank: NewBank }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus == "Submited") {
+                            $("#btnaddnewBank").prop('disabled', true);
+                            RebindBindBankGridAfterupdate();
+                            ////$("#divAddDesignInfoMsg").text(addSuccessMsg);
+                            ////$("#divAddDesignInfoMsg").removeClass("hidden alert-danger");
+                            ////$("#divAddDesignInfoMsg").addClass("alert-success");
+                            RebindBanks();
+                        }
+                        else {
+                            $("#btnaddnewBank").prop('disabled', true);
+                            $("#divAddBankInfoMsg").text(response.saveStatus);
+                            $("#divAddBankInfoMsg").removeClass("hidden alert-danger");
+                            $("#divAddBankInfoMsg").addClass("alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#btnaddnewBank").prop('disabled', true);
+                        $("#divAddBankInfoMsg").text(addFailMsg);
+                        $("#divAddBankInfoMsg").addClass("alert-danger");
+                        $("#divAddBankInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            }
+    }
+    function ResetBank() {
+        $("#txtNBank").val("");
+        $("#btnaddnewBank").prop('disabled', false);
+        $("#divAddBankInfoMsg").text("");
+        $("#divAddBankInfoMsg").addClass("hidden");
+        RebindBindBankGridAfterupdate();
+    }
+    function RebindBanks() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/BindAllEmployeeBanks",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                //debugger;
+                var Action = '@Session["EmpAction"]';
+                if (Action === "New") {
+                    ddlBank= $("#ddlEmpBank");
+                }
+                else { ddlBank = $("#ddlUpEmpBank"); }
+                ddlBank.empty().append('<option selected="selected" value="Select">Select</option>');
+                $.each(response, function () {
+                    ddlBank.append($("<option></option>").val(this['Bank_Id']).html(this['Bank_Name']));
+                });
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+
+    }
+    function RebindBindBankGridAfterupdate() {
+
+        $("#divBankGrid").load('/HR/EmpBankGrid');
+
+        //$.ajax({
+        //    type: 'GET',
+        //    dataType: 'html',
+        //    url: '/HR/EmpDesignationGrid',
+        //    data: {  },
+        //    success: function (Data) {
+        //        var count1 = Object.keys(Data).length;
+        //        var msg = "";
+        //        if (count1 > 0) {
+        //            $("#divDesignationGrid").html(Data);
+        //        }
+        //        else {
+        //            $("#divDesignationGrid").html('No Data Found');
+        //        }
+        //    },
+        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+        //        alert("error");
+        //    }
+        //});
+    }
+
+
+</script>

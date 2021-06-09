@@ -1,0 +1,188 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPayablebyCash
+@{
+    ViewBag.Title = "VerifyGeneralPayablebyCash";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/AccountsApprovaljs")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">General Payable by Cash Verification</h5>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @Html.LabelFor(model => model.VerifyCCCode)
+                                    @Html.DropDownListFor(model => model.VerifyCCCode, new SelectList(Model.VerifyCostCenter, "CCCode", "CCNAME"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVerifyCCCode", onchange = "SearchByCCChange()" })
+                                </div>
+                                <div class="col-md-3" id="divdca">
+                                    @Html.LabelFor(model => model.VerifyDCA)
+                                    @Html.DropDownListFor(model => model.VerifyDCA, new SelectList(Model.VerifyAccountHead, "DCACode", "DCAName"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVerifyDCA", onchange = "SearchByDCAChange()" })
+                                </div>
+                                <div class="col-md-3" id="divmonth">
+                                    @Html.LabelFor(model => model.EffectiveMonth)
+                                    @Html.DropDownListFor(model => model.EffectiveMonth, new SelectList(Model.monthlst, "name", "name"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVerifyMonth" })
+                                </div>
+                                <div class="col-md-3" id="divyear">
+                                    @Html.LabelFor(model => model.Year)
+                                    @Html.DropDownListFor(model => model.Year, new SelectList(Model.yearlst, "Year", "YearValue"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVerifyyear" })
+                                </div>
+                                <div class="col-md-4" id="divbtns">
+                                    <div class="form-group">
+                                        <br />
+                                        <input type="submit" value="View" class="btn btn1 btn-success" id="btnViewCashRpt" onclick="ShowCashReport()" />
+                                        <input type="submit" value="Reset" class="btn btn1 btn-success" id="btnResetCashRpt" onclick="ResetCashReport()" />
+                                    </div>
+                                </div>                               
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="divCMSRptGrid">                           
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divCashReportInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divCMSRptGrid").addClass('hidden');
+        $("#divdca").addClass('hidden');
+        $("#divmonth").addClass('hidden');
+        $("#divyear").addClass('hidden');
+        $("#divbtns").addClass('hidden');
+        
+    });
+    function SearchByCCChange() {
+        var searchindex = $("#ddlVerifyCCCode option:selected").index();
+        var search = $("#ddlVerifyCCCode option:selected").val();
+        if (searchindex === 0) {
+            $("#divCMSRptGrid").addClass('hidden');
+            $("#divdca").addClass('hidden');
+            $("#divmonth").addClass('hidden');
+            $("#divyear").addClass('hidden');
+            $("#divbtns").addClass('hidden');
+        }
+        else {           
+            var DCA = $("#ddlVerifyDCA");           
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetAllCashDCAs",
+                data: '{cc:"' + search + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#divdca").removeClass("hidden");
+                    $("#divCMSRptGrid").addClass('hidden');
+                    $("#divmonth").addClass('hidden');
+                    $("#divyear").addClass('hidden');
+                    $("#divbtns").addClass('hidden');
+                    DCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        DCA.append($("<option></option>").val(this['DCACode']).html(this['DCAName']));
+                    });                 
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+
+            });
+           
+        }
+        
+    }
+    function SearchByDCAChange() {
+        var searchindex = $("#ddlVerifyDCA option:selected").index();
+        var search = $("#ddlVerifyDCA option:selected").val();
+        if (searchindex === 0) {
+            $("#divCMSRptGrid").addClass('hidden');
+            $("#divmonth").addClass('hidden');
+            $("#divyear").addClass('hidden');
+            $("#divbtns").addClass('hidden');   
+        }
+        else {   
+            $("#divCMSRptGrid").addClass('hidden');
+            $("#divmonth").removeClass('hidden');
+            $("#divyear").removeClass('hidden');
+            $("#divbtns").removeClass('hidden');
+        }
+    }
+    function ResetCashReport() {
+        location.reload();
+    }
+    function ShowCashReport() {        
+        isValid = true;
+        var errorMsg = "";      
+        var ddlmonth = $("#ddlVerifyMonth option:selected").index();
+        var ddlyear = $("#ddlVerifyyear option:selected").index(); 
+        if (ddlmonth == 0) {            
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Month</p>";
+            isValid = false;
+        }
+        if (ddlyear == 0) { 
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Year</p>";
+            isValid = false;
+        }       
+        if (!isValid) {
+            $("#divCashReportInfoMsg").text("");
+            $("#divCashReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divCashReportInfoMsg").addClass("alert-danger");
+            $("#divCashReportInfoMsg").removeClass("hidden alert-success");
+            $("#divCashReportInfoMsg").removeClass("hidden");
+            return false;
+        }
+        else {
+            $("#divCashReportInfoMsg").text("");
+            $("#divCashReportInfoMsg").addClass("hidden");
+            var cc = $("#ddlVerifyCCCode option:selected").val();
+            var dca = $("#ddlVerifyDCA option:selected").val();  
+            var month = $("#ddlVerifyMonth option:selected").val();
+            var year = $("#ddlVerifyyear option:selected").val();  
+            $.ajax({
+                type: "GET",
+                url: "/AccountsApproval/VerifyGeneralpayablebycashGrid",
+                data: { cc: cc, dca: dca, month: month, year: year },
+                dataType: 'html',
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#divCMSRptGrid").html(response);
+                        $("#divCMSRptGrid").removeClass('hidden');
+                    }
+                    else {
+                        $("#divCMSRptGrid").html('No Data Found');
+                        $("#divCMSRptGrid").removeClass('hidden');
+                    }                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+            //}
+            //else {
+            //    $("#divBankStatementGrid").addClass("hidden");
+            //    alert("Select Bank Name");
+            //    return false;
+            //}
+        }
+    }
+</script>

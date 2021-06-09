@@ -1,0 +1,117 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.StaffSalaryHeads>
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblSalaryHeadGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th>HeadType</th>
+                    <th>Head Name</th>
+                    <th>Percentage/Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HeadType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HeadName)
+                        </td>
+                        <td>
+                            @if (item.Type == "Percentage")
+                            {
+                                @item.Amount<span>%</span>
+                            }
+                            else if (item.Type == "Rs")
+                            {
+
+                                <span>Rs.</span>@item.Amount
+                            }                           
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            var shGrid = null;
+            InitializeSalaryHeadGrid();
+
+            //$("#tblSalaryHeadGrid").on("click", ".deletesalhead", function (event) {
+            //    //alert('deleted');
+            //    var row = $(this).closest("tr");
+            //    var headname = $.trim(row.find("td").eq(1).html());
+            //    //$(this).closest("tr").remove();
+
+            //    addFailMsg = "Error Occurred While Adding.";
+            //    $.ajax({
+            //        type: 'POST',
+            //        dataType: 'json',
+            //        url: '/HR/DeleteSalaryHead',
+            //        data: { Headname: headname },
+            //        success: function (Data) {
+            //            //alert("Hi");
+            //            if (Data.saveStatus === "Deleted") {
+            //                row.remove();
+            //                //var shcount = $("#tblSalaryHeadGrid tbody tr").length;
+            //                //if (shcount > 0) {
+            //                //    $("#divGridSalaryHead").removeClass('hidden');
+            //                //}
+            //                //else { $("#divGridSalaryHead").addClass('hidden'); }
+            //            }
+            //            else {
+            //                $("#divSalaryHeadInfoMsg").text(addFailMsg);
+            //                $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+            //                $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+            //            }
+            //            var shcount = $("#tblSalaryHeadGrid tbody tr").length;
+            //            if (shcount > 0) {
+            //                $("#divGridSalaryHead").removeClass('hidden');
+            //            }
+            //            else { $("#divGridSalaryHead").addClass('hidden'); }
+
+            //        },
+            //        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            //            $("#divSalaryHeadInfoMsg").text(addFailMsg);
+            //            $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+            //            $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+            //        }
+            //    });
+            //});
+
+        });
+        function InitializeSalaryHeadGrid() {
+            shGrid = $('#tblSalaryHeadGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Salary Heads Found"
+                },
+                "createdRow": function (row, data, index) {
+
+                },
+                pageLength: 10
+            });
+        }
+    </script>
+}
+else
+{
+
+
+}

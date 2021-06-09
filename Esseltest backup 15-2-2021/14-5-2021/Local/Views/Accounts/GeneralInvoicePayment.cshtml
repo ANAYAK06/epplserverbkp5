@@ -1,0 +1,1028 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralInvoicePayment
+@{
+    ViewBag.Title = "GeneralInvoicePayment";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">General Invoice Payment</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    @if (Model.payAccessData.CashAccess == true)
+                                    {
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+                                                <div id="divSelfCC">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.SelfCC)
+                                                            @Html.DropDownListFor(model => model.SelfCC, new SelectList(Model.SelfCCList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSelfCC", onchange = "SelfCCChange()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.SelfCCBalance)
+                                                            @Html.TextBoxFor(model => model.SelfCCBalance, new { @id = "txtCCBalance", @class = "form-control", @type = "text", @readOnly = "true" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" id="divDebitype">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.DebitType)
+                                                        @Html.DropDownListFor(model => model.DebitType, new SelectList(Model.DebitTypeList, "Type", "TypeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlDebitType", onchange = "BindOtherCCCodes()" })
+                                                    </div>
+                                                </div>
+                                                <div id="divOtherCC">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.OtherCC)
+                                                            @Html.DropDownListFor(model => model.OtherCC, new SelectList(Model.OtherCCList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlOtherCC", onchange = "BindInvoices()" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="divInvData">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.InvoiceNo)
+                                                            @Html.DropDownListFor(model => model.InvoiceNo, new SelectList(Model.InvoiceNoList, "InvoiceNo", "InvoiceNo"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvNo", onchange = "InvoiceNoChange()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.InvoiceAmount)
+                                                            @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @id = "txtInvoiceAmount", onkeypress = "return ValidateAmount(this,event)", @readonly = true })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.InvoiceDate)
+                                                            @Html.TextBoxFor(model => model.InvoiceDate, new { @id = "txtInvoiceDate", @class = "form-control", type = "text", @readonly = true })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Name)
+                                                            @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtName", @readonly = true })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.DCACode)
+                                                            @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.DCAList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddldcacode", onchange = "DCAChange()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.SubDca)
+                                                            @Html.DropDownListFor(model => model.SubDca, new SelectList(Model.SUBDCAList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSubdca" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.PaidDate)
+                                                            @Html.TextBoxFor(model => model.PaidDate, new { @id = "txtPaidDate", @class = "form-control date-picker", type = "text", @readonly = true })
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.PaidAmount)
+                                                            @Html.TextBoxFor(model => model.PaidAmount, htmlAttributes: new { @class = "form-control", @id = "txtPaidAmount", onkeypress = "return ValidateAmount(this,event)" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Remarks)
+                                                            @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtRemarks", @rows = "2" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-right">
+                                                    <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitInvoiceCashPAy()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnReset" onclick="ResetInvoicePayCreation()">Reset</button>
+                                                </div>
+                                            </div>
+                                            <div class="row col-md-12 text-center">
+                                                <div id="divInvoiceCreationInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
+                                    else if (Model.payAccessData.BankAccess == true)
+                                    {
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label>Cost Center</label>
+                                                        @*@Html.LabelFor(model => model.OtherCC)*@
+                                                        @Html.DropDownListFor(model => model.OtherCC, new SelectList(Model.BankCCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBankCC", onchange = "BindBankInvoices()" })
+                                                    </div>
+                                                </div>
+                                                <div id="divInvData">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.InvoiceNo)
+                                                            @Html.DropDownListFor(model => model.InvoiceNo, new SelectList(Model.InvoiceNoList, "InvoiceNo", "InvoiceNo"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvNo", onchange = "BankInvoiceNoChange()" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.InvoiceAmount)
+                                                            @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @id = "txtInvoiceAmount", onkeypress = "return ValidateAmount(this,event)", @readonly = true })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.InvoiceDate)
+                                                            @Html.TextBoxFor(model => model.InvoiceDate, new { @id = "txtInvoiceDate", @class = "form-control", type = "text", @readonly = true })
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-12" id="divBankData">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Payment Details</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12"><hr class="separationHr" /></div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Name)
+                                                            @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtName", @readonly = true })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Bank)
+                                                            @Html.DropDownListFor(model => model.Bank, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBank", onchange = "GPPayModeChange()" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Modeofpay)
+                                                            @Html.DropDownListFor(model => model.Modeofpay, new SelectList(Model.ModeOfPayList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPayMode", onchange = "GPPayModeChange()" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.TransactionNo)
+                                                            @Html.TextBoxFor(model => model.TransactionNo, htmlAttributes: new { @class = "form-control", @id = "txtTransactionNo" })
+                                                            <select class="form-control dropdown-toggle GpNo" id="ddlTransactionNo">
+                                                                <option selected="selected" value="Select">-Select-</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.TransactionDate)
+                                                            @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtTransactionDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Remarks)
+                                                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtRemarks", @class = "form-control", @type = "text", @rows = "3" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.TransactionAmount)
+                                                            @Html.TextBoxFor(model => model.TransactionAmount, new { @id = "txtTransactionAmount", @class = "form-control", @type = "text" })
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 text-right">
+                                                    <button class="btn btn1 btn-success" id="btnGPSubmit" onclick="GeneralInvoiceBankPayData()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnGPReset" onclick="ResetInvoicePayCreation()">Reset</button>
+                                                </div>
+                                                <div class="row col-md-12 text-center">
+                                                    <div id="divInvoiceCreationInfoMsg" class="alert alert-danger hidden">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
+                                    <div class="row col-md-12 text-center">
+                                        <div id="divInvoiceCreationInfoMsg1" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        let Cashpaymenttype = '@Model.payAccessData.CashAccess';
+        let Bankpaymenttype = '@Model.payAccessData.BankAccess';
+        //debugger;
+        if (Cashpaymenttype === "True") {
+            $("#divOtherCC").addClass("hidden");
+            $("#divDebitype").addClass("hidden");
+            $("#divInvData").addClass("hidden");
+            $("#btnSubmit").addClass("hidden");
+            $("#txtPaidDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                }
+            }).datepicker("setDate", new Date());
+
+            $("#divInvoiceCreationInfoMsg1").text("");
+            $("#divInvoiceCreationInfoMsg1").addClass("hidden");
+        }
+        else if (Bankpaymenttype === "True") {
+            $("#divBankData").addClass("hidden");
+            $("#divInvData").addClass("hidden");
+            $("#btnSubmit").addClass("hidden");
+            $("#ddlTransactionNo").addClass('hidden');
+            $("#txtTransactionDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                }
+            }).datepicker("setDate", new Date());
+
+            $("#divInvoiceCreationInfoMsg1").text("");
+            $("#divInvoiceCreationInfoMsg1").addClass("hidden");
+        }
+        else if (Cashpaymenttype === "False" && Bankpaymenttype === "False"){
+            $("#divInvoiceCreationInfoMsg1").text("");
+            $("#divInvoiceCreationInfoMsg1").append("<div>Please Assign Workflows for Payments</div>");
+            $("#divInvoiceCreationInfoMsg1").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg1").removeClass("hidden alert-success");
+        }
+
+    });
+    function SelfCCChange() {
+        var sccindex = $("#ddlSelfCC option:selected").index();
+        var scc = $("#ddlSelfCC option:selected").val();
+        if (sccindex === 0) {
+            $("#divDebitype").addClass("hidden");
+            $("#divInvData").addClass("hidden");
+            $("#btnSubmit").addClass("hidden");
+            $("#txtCCBalance").val("");
+            $("#txtInvoiceAmount").val("");
+            $("#txtPaidAmount").val("");
+            $("#txtInvoiceDate").val("");
+            $('#ddlDebitType').prop('selectedIndex', 0);
+            $("#txtPaidDate").datepicker("setDate", 'dateToday');
+            $("#ddlOtherCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlInvNo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divOtherCC").addClass("hidden");
+        }
+        else {
+            $("#divDebitype").removeClass("hidden");
+            $("#divInvData").addClass("hidden");
+            $("#btnSubmit").addClass("hidden");
+            $("#divOtherCC").addClass("hidden");
+            $('#ddlDebitType').prop('selectedIndex', 0);
+            $("#ddlSelfCC").prop('disabled', true);
+
+            if (sccindex != 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetCCCash",
+                    data: '{Cashcc:"' + scc + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        $.each(response, function () {
+                            $("#txtCCBalance").val(this['SelfCCBalance']);
+                        });
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                })
+            }
+        }
+    }
+    function BindOtherCCCodes() {
+        var debitindex = $("#ddlDebitType option:selected").index();
+        var debittype = $("#ddlDebitType option:selected").val();
+        var sccindex = $("#ddlSelfCC option:selected").index();
+        var scc = $("#ddlSelfCC option:selected").val();
+        //debugger;
+        if (sccindex === 0) {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Self Cost Center</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (debitindex === 0) {
+            $("#divOtherCC").addClass("hidden");
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Debit Type</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            $("#divInvData").addClass("hidden");
+            $("#btnSubmit").addClass("hidden");
+            $("#txtInvoiceAmount").val("");
+            $("#txtPaidAmount").val("");
+            $("#txtInvoiceDate").val("");
+            $("#txtPaidDate").datepicker("setDate", 'dateToday');
+            $("#ddlOtherCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlInvNo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            $("#ddlDebitType").prop('disabled', true);
+            if (debittype === "OtherCC") {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetAllCashCC",
+                    data: '{cc:"' + scc + '" ,Type:"' + debittype + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        $("#ddlOtherCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            $("#ddlOtherCC").append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                        });
+                        $("#divOtherCC").removeClass("hidden");
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+            }
+            else {
+                $("#divOtherCC").addClass("hidden");
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetGeneralInvoice",
+                    data: '{CCCode:"' + scc + '" }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        $("#ddlInvNo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            $("#ddlInvNo").append($("<option></option>").val(this['InvoiceNo']).html(this['InvoiceNo']));
+                        });
+                        $("#divInvData").removeClass("hidden");
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+            }
+
+        }
+    }
+
+    function InvoiceNoChange() {
+
+        var invindex = $("#ddlInvNo option:selected").index();
+        var invno = $("#ddlInvNo option:selected").val();
+        if (invindex === 0) {
+
+            $("#btnSubmit").addClass("hidden");
+            $("#txtInvoiceAmount").val("");
+            $("#txtPaidAmount").val("");
+            $("#txtInvoiceDate").val("");
+            $("#txtPaidDate").datepicker("setDate", 'dateToday');
+
+        }
+        else {
+            $("#ddlInvNo").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetInvoiceData",
+                data: '{InvoiceNo:"' + invno + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+
+                        $("#btnSubmit").removeClass("hidden");
+                        $("#txtInvoiceAmount").val(response.Balance);
+                        $("#txtPaidAmount").val("");
+                        $("#txtInvoiceDate").val(response.InvoiceDate);
+
+                    $("#txtPaidDate").datepicker("setDate", 'dateToday');
+                    $("#txtName").val(response.Name);
+                    BindDCA();
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    }
+    function ResetInvoicePayCreation() { location.reload(); }
+
+    function BindInvoices() {
+        var otherindex = $("#ddlOtherCC option:selected").index();
+        var othercc = $("#ddlOtherCC option:selected").val();
+        if (otherindex === 0) {
+            $("#divInvData").addClass("hidden");
+        }
+        else {
+            $("#ddlOtherCC").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetGeneralInvoice",
+                data: '{CCCode:"' + othercc + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#ddlInvNo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        $("#ddlInvNo").append($("<option></option>").val(this['InvoiceNo']).html(this['InvoiceNo']));
+                    });
+                    $("#divInvData").removeClass("hidden");
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+
+    }
+
+    //Bank
+    function BindBankInvoices() {
+
+        var otherindex = $("#ddlBankCC option:selected").index();
+        var othercc = $("#ddlBankCC option:selected").val();
+        if (otherindex === 0) {
+            $("#divInvData").addClass("hidden");
+            $("#divBankData").addClass("hidden");
+        }
+        else {
+            $("#ddlBankCC").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetGeneralInvoice",
+                data: '{CCCode:"' + othercc + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#ddlInvNo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        $("#ddlInvNo").append($("<option></option>").val(this['InvoiceNo']).html(this['Name']));
+                    });
+                    $("#divInvData").removeClass("hidden");
+                    $("#divBankData").addClass("hidden");
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    }
+    function BankInvoiceNoChange() {
+        var invindex = $("#ddlInvNo option:selected").index();
+        var invno = $("#ddlInvNo option:selected").val();
+        if (invindex === 0) {
+
+            $("#btnSubmit").addClass("hidden");
+            $("#txtInvoiceAmount").val("");
+            $("#txtName").val("");
+            $("#txtInvoiceDate").val("");
+            $("#txtPaidDate").datepicker("setDate", 'dateToday');
+            $('#ddlBank').prop('selectedIndex', 0);
+            $('#txtTransactionDate').datepicker("setDate", 'dateToday');
+            $("#ddlTransactionNo").addClass("hidden");
+            $("#txtTransactionNo").val("");
+            $("#txtRemarks").val("");
+            $("#ddlTransactionNo").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#txtTransactionAmount").val("");
+        }
+        else {
+            //debugger;
+            $("#ddlInvNo").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetInvoiceData",
+                data: '{InvoiceNo:"' + invno + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    //console.log(response);
+
+                    $("#btnSubmit").removeClass("hidden");
+                    $("#txtInvoiceAmount").val(response.Balance);
+                    $("#txtTransactionAmount").val("");
+                    $("#txtInvoiceDate").val(response.InvoiceDate);
+                    $("#txtName").val(response.Name);
+                    $("#txtTransactionDate").datepicker("setDate", 'dateToday');
+                    $("#divBankData").removeClass("hidden");
+
+                   
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+
+    }
+    function GPPayModeChange() {
+
+        var bank = $("#ddlBank option:selected").text();
+        var Mode = $("#ddlPayMode option:selected").text();
+
+        var bankindex = $("#ddlBank option:selected").index();
+        var Modeindex = $("#ddlPayMode option:selected").index();
+
+        if (Modeindex != 0 && bankindex != 0) {
+            if (Modeindex == 1) {
+                $("#txtTransactionNo").addClass('hidden');
+                $("#ddlTransactionNo").removeClass('hidden');
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetChequeNos",
+                    data: '{bankname:"' + bank + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        //alert("Cheques"+count);
+                        var ddlGPPaymentNo = $("#ddlTransactionNo");
+                        if (count > 0) {
+
+                            ddlGPPaymentNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                ddlGPPaymentNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                            });
+                            $("#divInvoiceCreationInfoMsg").text("");
+                            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+                        } else { ddlGPPaymentNo.empty().append('<option selected="selected" value="0">-Please Select-</option>'); }
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+            else {
+                $("#txtTransactionNo").removeClass('hidden');
+                $("#ddlTransactionNo").addClass('hidden');
+                $("#divInvoiceCreationInfoMsg").text("");
+                $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            }
+        }
+        else if (Modeindex == 0 && bankindex != 0) {
+            $("#txtTransactionNo").removeClass('hidden');
+            $("#ddlTransactionNo").addClass('hidden');
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+
+        }
+        else if (Modeindex != 0 && bankindex == 0) {
+            $("#txtTransactionNo").removeClass('hidden');
+            $("#ddlTransactionNo").addClass('hidden');
+
+            $("#divInvoiceCreationInfoMsg").text("Select Bank Name");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            $("#divInvoiceCreationInfoMsg").prop('selectedIndex', 0);
+        }
+        else {
+            $("#txtTransactionNo").removeClass('hidden');
+            $("#ddlTransactionNo").addClass('hidden');
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+        }
+    }
+
+    function GeneralInvoiceBankPayData() {
+        var errorMsg = "";
+        isValid = true;
+        var ccindex = $("#ddlBankCC option:selected").index();
+        var Invindex = $("#ddlInvNo option:selected").index();
+        //var name = $("#txtName").val();
+        var bankindex = $("#ddlBank option:selected").index();
+        var paymodeindex = $("#ddlPayMode option:selected").index();
+        //debugger;
+        var date = $("#txtTransactionDate").val();
+        var Remarks = $("#txtRemarks").val();
+        var amount = $("#txtTransactionAmount").val();
+        if (ccindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (Invindex ==0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice No</p>";
+            isValid = false;
+        }      
+        if (bankindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+            isValid = false;
+        }
+        if (paymodeindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Mode of Pay</p>";
+            isValid = false;
+        }
+        if (paymodeindex > 1) {
+            var payno = $("#txtTransactionNo").val();
+            if (payno === "" || payno === null) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Payment No</p>";
+                isValid = false;
+            }
+        }
+        if (paymodeindex === 1) {
+            var payno1 = $("#ddlTransactionNo option:selected").index();
+            if (payno1 === 0 || payno1 === null) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Payment No</p>";
+                isValid = false;
+            }
+        }
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Transaction Date</p>";
+            isValid = false;
+        }
+        if (Remarks == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        var balance = $("#txtInvoiceAmount").val();
+        if (amount == "" || amount == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Transaction Amount</p>";
+            isValid = false;
+        }
+        else if (parseFloat(balance) < parseFloat(amount) ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Transaction Amount is Greater than Invoice Balance</p>";
+            isValid = false;
+        }       
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+
+            var number = 0;
+            //var paymode
+            //var paymodeindex = $("#ddlPayMode option:selected").index();
+            if (paymodeindex === 1) { number = $("#ddlTransactionNo option:selected").text(); }
+            else { number = $("#txtTransactionNo").val(); }
+            var saveData = {
+                InvoiceNo: $("#ddlInvNo option:selected").val(),
+                OtherCC: $("#ddlBankCC option:selected").val(),
+                BankId: $("#ddlBank option:selected").val(),
+                Modeofpay: $("#ddlPayMode option:selected").text(),
+                TransactionAmount: $("#txtTransactionAmount").val(),
+                Remarks: Remarks,
+                TransactionNo: number,
+                TransactionDate: date    
+            };
+            addFailMsg = "Error Occurred While Payment";
+            addSuccessMsg = "Payment Saved Successfully.";
+            $("#btnGPSubmit").prop("disabled", true);
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/SaveGenInvBankPayment",
+                data: JSON.stringify({ InvData: saveData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var typeArr = response.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') {
+                        var addSuccessMsg = 'TransactionRef No. ' + typeArr[1] + ' Created Successfully';
+                        $("#divInvoiceCreationInfoMsg").text(addSuccessMsg);
+                        $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-danger");
+                        $("#divInvoiceCreationInfoMsg").addClass("alert-success");                       
+                    }
+                    else {
+                        $("#divInvoiceCreationInfoMsg").text(response.saveStatus);
+                        $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                        $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                        $("#btnGPSubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnGPSubmit").prop('disabled', false);
+                    $("#divInvoiceCreationInfoMsg").text(addFailMsg);
+                    $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                    $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+
+        }
+    }
+    //Cash
+    function DCAChange() {
+        //debugger;
+        var dcaindex = $("#ddldcacode option:selected").index();
+        var DCA = $("#ddldcacode option:selected").val();       
+        var ddlsDCA = $("#ddlSubdca");
+        if (dcaindex == 0) {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Account Head</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            ddlsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');           
+        }
+        else {                     
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetSubDCAbyDCA",
+                data: "{DCACode:'" + DCA + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {                  
+                    ddlsDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(data, function () {
+                        ddlsDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));                       
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+        }
+
+    }
+
+    function BindDCA() {
+        var debitindex = $("#ddlDebitType option:selected").index();
+        var debittype = $("#ddlDebitType option:selected").val();
+        var sccindex = $("#ddlSelfCC option:selected").index();
+        var scc = $("#ddlSelfCC option:selected").val();       
+
+        var ddlDCA = $("#ddldcacode");
+        var ddlsDCA = $("#ddlSubdca");
+        //debugger;
+        if (sccindex === 0) {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Self Cost Center</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (debitindex === 0) {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Transaction Mode</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            if (debittype === "OtherCC") {
+                var otherindex = $("#ddlOtherCC option:selected").index();
+                var othercc = $("#ddlOtherCC option:selected").val();
+                if (otherindex === 0) {
+                    $("#divInvoiceCreationInfoMsg").text("");
+                    $("#divInvoiceCreationInfoMsg").append("<div>Select Other Cost Center</div>");
+                    $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                    $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                    ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddlsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetDCAbyCC",
+                        data: "{CCCode:'" + othercc + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                            $.each(data, function () {
+                                ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                            });
+
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+
+                }
+            }
+            else if (debittype == "SelfCC") {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetDCAbyCC",
+                    data: "{CCCode:'" + scc + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+
+                        ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(data, function () {
+                            ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        });
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+
+
+        }
+
+
+    }
+
+    function SubmitInvoiceCashPAy() {
+        var errorMsg = "";
+        isValid = true;
+        var debitindex = $("#ddlDebitType option:selected").index();
+        var debittype = $("#ddlDebitType option:selected").val();
+        var sccindex = $("#ddlSelfCC option:selected").index();
+        var scc = $("#ddlSelfCC option:selected").val();     
+        var otherindex = $("#ddlOtherCC option:selected").index();
+        var othercc = $("#ddlOtherCC option:selected").val();
+        var Invindex = $("#ddlInvNo option:selected").index();
+        var dcaindex = $("#ddldcacode option:selected").index();
+        var sdcaindex = $("#ddlSubdca option:selected").index();
+
+        //debugger;
+        var date = $("#txtPaidDate").val();
+        var Remarks = $("#txtRemarks").val();
+        var amount = $("#txtPaidAmount").val();
+        if (sccindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (debitindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Transaction Mode</p>";
+            isValid = false;
+        }
+        else if (debittype === "OtherCC") {          
+            if (otherindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Other CC</p>";
+                isValid = false;
+            }
+        }
+        if (Invindex ==0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice No</p>";
+            isValid = false;
+        }
+        if (dcaindex ==0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Account Head</p>";
+            isValid = false;
+        }
+        if (sdcaindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select SubAccount Head</p>";
+            isValid = false;
+        }
+
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Transaction Date</p>";
+            isValid = false;
+        }
+        if (Remarks == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        var balance = $("#txtInvoiceAmount").val();
+        if (amount == "" || amount == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Paid Amount</p>";
+            isValid = false;
+        }
+        else if(parseFloat(balance) < parseFloat(amount)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Paid Amount is Greater than Invoice Balance</p>";
+            isValid = false;
+        }     
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            var othercccode = "",transactionmode="";
+            //var paymode
+            //var paymodeindex = $("#ddlPayMode option:selected").index();
+            if (debittype === "OtherCC") {
+                othercccode = othercc;
+                transactionmode = "Debit From Other CC";
+            }
+            else if (debittype === "SelfCC") { transactionmode = 'Self Debit' }           
+            var saveData = {
+                InvoiceNo: $("#ddlInvNo option:selected").val(),
+                TransactionMode: transactionmode,
+                SelfCC: scc,
+                OtherCC: othercccode,
+                InvoiceDate: $("#txtInvoiceDate").val(),
+                PaidDate: date,
+                CashDCACode: $("#ddldcacode option:selected").val(),
+                CashSubDca: $("#ddlSubdca option:selected").val(),
+                Name: $("#txtName").val(),
+                TransactionAmount: amount,
+                Remarks: Remarks              
+            };
+            addFailMsg = "Error Occurred While Payment";
+            addSuccessMsg = "Payment Saved Successfully.";
+            $("#btnSubmit").prop("disabled", true);
+            //debugger;
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/SaveGenInvCashPayment",
+                data: JSON.stringify({ InvData: saveData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var typeArr = response.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') {
+                        var addSuccessMsg = 'Voucher Id ' + typeArr[1] + ' Created Successfully';
+                        $("#divInvoiceCreationInfoMsg").text(addSuccessMsg);
+                        $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-danger");
+                        $("#divInvoiceCreationInfoMsg").addClass("alert-success");
+                        
+                    }
+                    else {
+                        $("#divInvoiceCreationInfoMsg").text(response.saveStatus);
+                        $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                        $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                        $("#btnSubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnSubmit").prop('disabled', true);
+                    $("#divInvoiceCreationInfoMsg").text(addFailMsg);
+                    $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                    $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+
+        }
+    }
+</script>
+

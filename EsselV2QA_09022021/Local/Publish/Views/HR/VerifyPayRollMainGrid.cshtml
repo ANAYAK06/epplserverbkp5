@@ -1,0 +1,295 @@
+﻿@model EsselTestLocalApplication.Models.HR.GenaratedPayRollData
+@if (Model.MonthlySalaryData.Count > 0 && Model.PayRollExistStatus == "Exist")
+{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    System.Web.Script.Serialization.JavaScriptSerializer oSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var DataJson = "";
+    DataJson = serializer.Serialize(((EsselTestLocalApplication.Models.HR.GenaratedPayRollData)Session["GenaratedPayRollData"]));
+
+    <div class="table-responsive">
+        <table id="tblMainGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    @if (Model.Type == "EmployeeCategory")
+                    {
+
+                        <th>CategoryName</th>
+                        <th class="hidden">CategoryId</th>
+                    }
+                    else if (Model.Type == "CostCenter")
+                    {
+                        <th>CostCenter</th>
+                        <th class="hidden">CCCode</th>
+                    }
+                    else if (Model.Type == "AllEmployees")
+                    {
+                        <th>Employee Name</th>
+                        <th>Employee Id</th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model.Type == "EmployeeCategory")
+                {
+                    foreach (var item in Model.cactegorydata)
+                    {
+                        <tr>
+
+                            <td class="details-control"></td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoryName)
+                            </td>
+                            <td class="hidden">
+                                @Html.DisplayFor(modelItem => item.CategoryId)
+                            </td>
+                        </tr>
+                    }
+                }
+                else if (Model.Type == "CostCenter")
+                {
+                    foreach (var item in Model.ccdata)
+                    {
+                        <tr>
+                            <td class="details-control"></td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CC_Name)
+                            </td>
+                            <td class="hidden">
+                                @Html.DisplayFor(modelItem => item.CC_Code)
+                            </td>
+                        </tr>
+                    }
+                }
+                else if (Model.Type == "AllEmployees")
+                {
+                    foreach (var item in Model.empdata)
+                    {
+                        <tr>
+                            <td class="details-control1">
+                                <a href="#" style="color:darkblue">Edit/View</a>                           
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FirstName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EmpRefNo)
+                            </td>
+                        </tr>
+                    }
+
+                }
+
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <div>
+
+    </div>
+    <script>
+        var openRows = new Array();
+        $(document).ready(function () {
+
+            var mainGrid = null;
+            InitializePayRollMainGrid();
+            $('#txtCurrentTransactionno').val('@Model.CurrentTransactionNo');
+         $('#txtCurrentDate').val('@Model.CurrentDate');
+         $('#txtMOID').val('@Model.MOID');
+            $('#txtGPFinalAmount').val('@Model.TotalNetAmount');
+            debugger;
+            $('#txtPaymentAccess').val('@Model.PaymentAccess'); 
+            let payaccess = '@Model.PaymentAccess';
+            if (payaccess === "Exist") {
+                $("#divGPPaymentDetails").removeClass("hidden");
+            }
+            else {
+                $("#divGPPaymentDetails").addClass("hidden");
+            }
+         $("#ModalEmpPayRoll").on("hidden.bs.modal", function () {
+            //let type = $("#ddlType option:selected").val();
+            //if(type=="AllEmployees"){
+        
+             $.ajax({
+                    type: "POST",
+                    url: "/HR/ShowTotalNetAmount",
+                    data: '{ }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#divNET').html(data);
+                    }
+                });
+         
+        
+        });
+
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+            $("#divMainGrid").removeClass("hidden");
+            $("#divgrid").removeClass("hidden");
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppStaffstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] !== "Return" && this['Type'] !== "Reject") {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            }
+                        });
+                    }                 
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                   
+                }
+        });
+
+        });
+        function InitializePayRollMainGrid() {
+            mainGrid = $('#tblMainGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Data Found"
+                },
+                "createdRow": function (row, data, index) {
+
+                },
+                pageLength: 10
+            });
+            var type = $("#ddlType option:selected").val();;
+            if (type !== "AllEmployees") {
+                $('#tblMainGrid tbody').on('click', 'td.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var row = mainGrid.row(tr);
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    }
+                    else {
+                        // close all previously opened rows
+                        closeOpenedRows(mainGrid, tr);
+                        // Open this row
+                        row.child(formatPayrollMainGrid(row.data())).show();
+                        tr.addClass('shown');
+                        // store current selection
+                        openRows.push(tr);
+                    }
+                });
+            }
+            else {
+
+                $('#tblMainGrid tbody').on('click', 'td.details-control1', function () {
+                    var tr = $(this).closest('tr');
+                    var row = mainGrid.row(tr);
+
+                    ShowEmpPayRollPopUp(row.data());
+                });
+            }
+        }
+        function closeOpenedRows(table, selectedRow) {
+            $.each(openRows, function (index, openRow) {
+                // not the selected row!
+                if ($.data(selectedRow) !== $.data(openRow)) {
+                    var rowToCollapse = table.row(openRow);
+                    rowToCollapse.child.hide();
+                    openRow.removeClass('shown');
+                    // replace icon to expand
+                    //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                    // remove from list
+                    var index = $.inArray(selectedRow, openRows);
+                    openRows.splice(index, 1);
+                }
+            });
+        }
+        function formatPayrollMainGrid(d) {
+            var htmltext;
+            var name = 0, id = "", type = "";
+            debugger;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    name = value;
+                if (index == 2)
+                    id = value;
+
+            });
+
+            var type = $("#ddlType option:selected").val();
+            var divid = "divSubGrid" + id;
+            var divid1 = $("#" + divid + "");
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/HR/VerifyPayRollGenerationEmpGrid',
+                //data: '{ Type:"' + type + '",Value:"' + id + '"}',
+                data: { Type: type, Value: id },
+                success: function (Data) {
+                    var divid2 = "divSubGrid" + id;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+            return '<div id="divSubGrid' + id + '" class="row" ></div>';
+
+        }
+        function ShowEmpPayRollPopUp(data) {
+            debugger;
+            //alert('PopUp');
+            var empid = '';
+            $.each(data, function (index, value) {
+                if (index == 2)
+                    empid = value;
+            });
+            $.ajax({
+                type: "GET",
+                url: "/HR/VerifyPayRollGenerationEmpPopUp",
+                data: { EmpRefno: empid },
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    debugger;
+                    $('#ModalEmpPayRoll').html(data);
+                    $('#ModalEmpPayRoll').modal();
+                }
+            });
+        }
+
+    </script>
+}
+else
+{
+    <script>
+        debugger;
+        $(document).ready(function () {
+            $("#divPayRollInfoMsg").text("PayRoll Does Not For Current Month");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+        });
+    </script>
+
+}

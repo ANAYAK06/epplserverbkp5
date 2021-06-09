@@ -1,0 +1,98 @@
+﻿@model List<EsselTestLocalApplication.Models.viewcostcenter>
+<div class="col-md-12" style="align-content:center; border:1px solid #000;">
+    <br />
+    <div class="row text-center">
+        <h5 style="font-weight:bold;">Cost Center Detiails</h5>
+        <hr style="margin-top:-1%;margin-bottom:0%;border:1px medium #091c4f" />
+    </div>
+    @foreach (var item in Model)
+    {
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_Code)
+                    @Html.TextBoxFor(model => item.CC_Code, htmlAttributes: new { @class = "form-control", @id = "txtcc_code",  @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_Name)
+                    @Html.TextBoxFor(model => item.CC_Name, htmlAttributes: new { @class = "form-control", @id = "txtcc_name", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Ref_Date)
+                    @Html.TextBoxFor(model => item.Ref_Date, "{0:dd-MMM-yyyy}", new { @class = "form-control", @id = "txtdate", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_Type)
+                    @Html.TextBoxFor(model => item.CC_Type, htmlAttributes: new { @class = "form-control", @id = "txtcc_type", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_SubType)
+                    @Html.TextBoxFor(model => item.CC_SubType, htmlAttributes: new { @class = "form-control", @id = "txtcc_subtype", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Final_Offerdate)
+                    @Html.TextBoxFor(model => item.Final_Offerdate, "{0:dd-MMM-yyyy}", new { @class = "form-control", @id = "txtfinalofferdate", @readonly = "readonly" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Final_Offerno)
+                    @Html.TextBoxFor(model => item.Final_Offerno, htmlAttributes: new { @class = "form-control", @id = "txtfinalapproval_no", @readonly = "readonly" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Ref_No)
+                    @Html.TextBoxFor(model => item.Ref_No, htmlAttributes: new { @class = "form-control", @id = "txtclientacceptancerefno", @readonly = "readonly" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_Phoneno)
+                    @Html.TextBoxFor(model => item.CC_Phoneno, htmlAttributes: new { @class = "form-control", @id = "txtincharge_Phno1", @readonly = "readonly" })
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_Inchargename)
+                    @Html.TextBoxFor(model => item.CC_Inchargename, htmlAttributes: new { @class = "form-control", @id = "txtadminincharge_name", @readonly = "readonly" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.CC_Incharge_Phno)
+                    @Html.TextBoxFor(model => item.CC_Incharge_Phno, htmlAttributes: new { @class = "form-control", @id = "txtincharge_Phno1", @readonly = "readonly" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Address)
+                    @Html.TextAreaFor(model => item.Address, htmlAttributes: new { @class = "form-control", @id = "txtincharge_Address", @rows = "2", @readonly = "readonly" })
+
+                </div>
+            </div>
+
+
+        </div>
+    }
+</div>

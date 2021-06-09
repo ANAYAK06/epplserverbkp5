@@ -1,0 +1,424 @@
+﻿@model EsselTestLocalApplication.Models.Termloancreation
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LoanType)
+                    @Html.TextBoxFor(model => model.LoanType, htmlAttributes: new { @class = "form-control", @id = "txtupdTloantype", @Value = "", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LoanNo)
+                    @Html.TextBoxFor(model => model.LoanNo, htmlAttributes: new { @class = "form-control", @id = "txtupdTloanno", @Value = "", @readonly = "true" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AgencyNo)
+                    @Html.TextBoxFor(model => model.AgencyNo, htmlAttributes: new { @class = "form-control", @id = "txtupdagencycode", @Value = "", @readonly = "true" })
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LoanAppliedDate)
+                    @Html.TextBoxFor(model => model.LoanAppliedDate, "{0:dd-MMM-yyyy}", new { @id = "txtTupdLoanApplieddate", @class = "form-control", @readonly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DisbursalAmt)
+                    @Html.TextBoxFor(model => model.DisbursalAmt, htmlAttributes: new { @class = "form-control", @id = "txtupdTloandistAmt", @Value = "", onkeypress = "return IsNumeric(event)", onKeyup = "Totalsumcount()" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IntrestRate)
+                    @Html.TextBoxFor(model => model.IntrestRate, htmlAttributes: new { @class = "form-control", @id = "txtupdTLInstrate", @Value = "" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProcessingAmt)
+                    @Html.TextBoxFor(model => model.ProcessingAmt, htmlAttributes: new { @class = "form-control", @id = "txtupdTlprocessamount", @Value = "", onkeypress = "return IsNumeric(event)", onKeyup = "Totalsumcount()" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Installmentstartdate)
+                    @Html.TextBoxFor(model => model.Installmentstartdate, "{0:dd-MMM-yyyy}", new { @id = "txtupdTLoaninststartdate", @class = "form-control", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InstallmentEndDate)
+                    @Html.TextBoxFor(model => model.InstallmentEndDate, "{0:dd-MMM-yyyy}", new { @id = "txtupdTLoaninstenddate", @class = "form-control", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Emitype)
+                    @Html.DropDownListFor(model => model.Emitype, new SelectList(Model.Emis, "emiid", "emivalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TLEMIUtype", onchange = "emichange();" })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Calculate</label></br>
+                    <button id="calculate" class='btn btn-default btn-success btn-group-xs;' onclick="monthcal()">EMI Nos</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InstallmentNos)
+                    @Html.TextBoxFor(model => model.InstallmentNos, htmlAttributes: new { @class = "form-control", @id = "txtupdTLInstnos", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TotalAmt)
+                    @Html.TextBoxFor(model => model.TotalAmt, htmlAttributes: new { @class = "form-control", @id = "txtupdTltotalamount", @Value = "", @readonly = "true" })
+                </div>
+            </div>
+        </div>
+        @if (Model.LoanType == "Capital")
+        {
+            <div class="row" id="divbankdetails">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BankName)
+                        @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtupdbankname", @Value = "", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Bankdate)
+                        @Html.TextBoxFor(model => model.Bankdate, "{0:dd-MMM-yyyy}", new { @id = "txtupdTLoanbankdate", @class = "form-control", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Modeofpay)
+                        @Html.TextBoxFor(model => model.Modeofpay, htmlAttributes: new { @id = "txtupdmodeofpay", @class = "form-control", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Instrumentno)
+                        @Html.TextBoxFor(model => model.Instrumentno, htmlAttributes: new { @class = "form-control", @id = "txtupdTLinstno", @Value = "", @readonly = "true" })
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Loanpurpose)
+                    @Html.TextAreaFor(model => model.Loanpurpose, new { @id = "txtupdTLPurpose", @class = "form-control", @type = "text", @rows = "3" })
+                </div>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtChequeRoleId" style="display:none" />
+                    <button class="btn btn1 btn-success" id="btntlreturnSubmit" onclick="btntlrnSubmit('@Model.Termloanid')">Submit</button>
+                    <input type="text" id="txtcbdCreatedby" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div id="divTLInfoReturnMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        
+        $("#txtTupdLoanApplieddate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtupdTLoaninststartdate").datepicker("option", "minDate", selectedDate);
+                $("#txtupdTLoanbankdate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtupdTLoaninststartdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtupdTLoaninstenddate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtupdTLoaninstenddate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+        }).datepicker("setDate", new Date());
+
+        $("#txtupdTLoanbankdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        }).datepicker("setDate", new Date());
+
+         var applydate = '@Model.Appdate';
+        $("#txtTupdLoanApplieddate").val(applydate);
+         var Instartdate = '@Model.Istartdate';
+        $("#txtupdTLoaninststartdate").val(Instartdate);
+        var Ienddate = '@Model.Ienddate';
+        $("#txtupdTLoaninstenddate").val(Ienddate);
+           var bankdate = '@Model.Bkdate';
+        $("#txtupdTLoanbankdate").val(bankdate);
+
+        var loanno = '@Model.LoanNo';
+        $("#txtupdTloanno").val(loanno);
+        var loantype = '@Model.LoanType';
+        $("#txtupdTloantype").val(loantype);
+        var agencycode = '@Model.AgencyNo';
+        $("#txtupdagencycode").val(agencycode);
+       
+         var disbamount = '@Model.DisbursalAmt';
+        $("#txtupdTloandistAmt").val(disbamount);
+         var intrate = '@Model.IntrestRate';
+        $("#txtupdTLInstrate").val(intrate);
+          var prcamt = '@Model.ProcessingAmt';
+        $("#txtupdTlprocessamount").val(prcamt);
+       
+         var instnos = '@Model.InstallmentNos';
+        $("#txtupdTLInstnos").val(instnos);
+        var totalamt = '@Model.TotalAmt';
+        $("#txtupdTltotalamount").val(parseFloat(disbamount) + parseFloat(prcamt));
+          var bankname = '@Model.BankName';
+        $("#txtupdbankname").val(bankname);
+       
+          var paymode = '@Model.Modeofpay';
+        $("#txtupdmodeofpay").val(paymode);
+          var no = '@Model.Instrumentno';
+        $("#txtupdTLinstno").val(no);
+        var remarks = '@Model.Loanpurpose';
+        $("#txtupdTLPurpose").val(remarks);
+        var type = '@Model.Emitype';
+        $("#ddl_TLEMIUtype").find("option:contains('" + type + "')").each(function () {
+            if ($(this).text() == type) {
+                $(this).attr("selected", "selected");
+            }
+        });
+  
+    });
+    function emichange() {
+        $("#txtupdTLInstnos").val("");
+    }
+    function monthcal() {
+        if ($("#txtupdTLoaninststartdate").val() != "" && $("#txtupdTLoaninstenddate").val() != "" && $("#ddl_TLEMIUtype option:selected").text() != "-Please Select-") {
+            var type = $("#ddl_TLEMIUtype option:selected").val();
+            var From_date = new Date($("#txtupdTLoaninststartdate").val());
+            var To_date = new Date($("#txtupdTLoaninstenddate").val());
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            if (type == "Monthly") {
+                var months = (To_date.getFullYear() - From_date.getFullYear()) * 12;
+                months += To_date.getMonth() - From_date.getMonth();
+                $("#txtupdTLInstnos").val(months)
+            }
+            if (type == "Yearly") {
+                $("#txtupdTLInstnos").val(years)
+            }
+            if (type == "Daily") {
+                const ONE_DAY = 1000 * 60 * 60 * 24;
+                const differenceMs = Math.abs(From_date - To_date);
+                $("#txtupdTLInstnos").val(Math.round(differenceMs / ONE_DAY))
+            }
+            if (type == "Weekly") {
+                $("#txtupdTLInstnos").val(Math.round((To_date - From_date) / (7 * 24 * 60 * 60 * 1000)))
+            }
+        }
+        else {
+            alert("Please select installment start and end dates and EMI Type");
+            return false;
+        }
+    }
+    function Totalsumcount() {
+        var disbursalamt = $("#txtupdTloandistAmt").val();
+        var processing = $("#txtupdTlprocessamount").val();
+        if (disbursalamt != "" && processing == "") {
+            $("#txtupdTltotalamount").val(parseFloat(disbursalamt));
+        }
+        else if (processing != "" && disbursalamt == "") {
+            $("#txtupdTltotalamount").val(parseFloat(processing));
+        }
+        else if (disbursalamt != "" && processing != "") {
+            $("#txtupdTltotalamount").val(parseFloat(processing) + parseFloat(disbursalamt));
+        }
+        else {
+            $("#txtupdTltotalamount").val('0');
+        }
+    }
+
+    function btntlrnSubmit(Rid) {
+        refno = "divTLInfoReturnMsg-" + Rid;
+        msg = $("#" + refno + "");
+        var Roleid = '@Session["Roleid"]';
+        var Crtedby = '@Session["Createdby"]';
+        isValid = true;
+        var errorMsg = "";
+        var loanType = $("#txtupdTloantype").val();
+        var disbursalamt = $("#txtupdTloandistAmt").val();
+        var processamt = $("#txtupdTlprocessamount").val();
+        var instnos = $("#txtupdTLInstnos").val();
+        var instrate = $("#txtupdTLInstrate").val();
+        var loanpurpose = $("#txtupdTLPurpose").val();
+        var TotalAmount = $("#txtupdTltotalamount").val();
+        var installmentfrequency = $("#ddl_TLEMIUtype option:selected").index();
+        var LaonApplydate = $("#txtTupdLoanApplieddate").val();
+        var EMIStartDate = $("#txtupdTLoaninststartdate").val();
+        var EMIEndDate = $("#txtupdTLoaninstenddate").val();
+        var BankDate = $("#txtupdTLoanbankdate").val();
+        if (disbursalamt == "" || disbursalamt == null || disbursalamt == 0 ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Disbursal amount</p>";
+            isValid = false;
+        }
+        if (processamt == "" || processamt == null || processamt == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Processing amount</p>";
+            isValid = false;
+        }
+        if (instnos == "" || instnos == null || instnos == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter No of Installments</p>";
+            isValid = false;
+        }
+        if (instrate == "" || instrate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Interst Rate</p>";
+            isValid = false;
+        }
+        if (loanpurpose == "" || loanpurpose == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter purpose of loan</p>";
+            isValid = false;
+        }
+        if (TotalAmount == "" || TotalAmount == null || TotalAmount == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Total Amount</p>";
+            isValid = false;
+        }
+        if (installmentfrequency == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Installment Frequency</p>";
+            isValid = false;
+        }
+        if (instnos == "" || instnos == null || instnos == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Check No of Installments</p>";
+            isValid = false;
+        }
+        if (Date.parse(EMIStartDate) < Date.parse(LaonApplydate)) {       
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Installment Start Date</p>";
+            isValid = false;
+        }
+        if (Date.parse(EMIStartDate) > Date.parse(EMIEndDate)) {        
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Installment End Date</p>";
+            isValid = false;
+        }
+        if (loanType == "Capital") {          
+            if (Date.parse(EMIStartDate) < Date.parse(BankDate)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Invalid Bank Date</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divTLInfoReturnMsg").text("");
+            $("#divTLInfoReturnMsg").append(finalerror + errorMsg + "</div>");
+            $("#divTLInfoReturnMsg").addClass("alert-danger");
+            $("#divTLInfoReturnMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divTLInfoReturnMsg").text("");
+            $("#divTLInfoReturnMsg").addClass("hidden");
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var Roleid = '@Session["Roleid"]';
+            var Createdby = '@Session["Createdby"]';
+            var loantype = $("#txtupdTloantype").val();
+            var loanid = '@Model.Termloanid';
+            var TLDetails = {
+                Termloanid: loanid,
+                LoanAppliedDate: $("#txtTupdLoanApplieddate").val(),
+                DisbursalAmt: $("#txtupdTloandistAmt").val(),
+                ProcessingAmt: $("#txtupdTlprocessamount").val(),
+                TotalAmt: $("#txtupdTltotalamount").val(),
+                Installmentstartdate: $("#txtupdTLoaninststartdate").val(),
+                InstallmentEndDate: $("#txtupdTLoaninstenddate").val(),
+                InstallmentNos: $("#txtupdTLInstnos").val(),
+                IntrestRate: $("#txtupdTLInstrate").val(),
+                Bankdate: $("#txtupdTLoanbankdate").val(),
+                Loanpurpose: $("#txtupdTLPurpose").val(),
+                Emifrequency: $("#ddl_TLEMIUtype option:selected").val(),
+                RoleID: Roleid,
+                Createdby: Createdby,
+                LoanType: loantype
+            };
+            addFailMsg = "Error Occurred While Adding Record.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/AccountsApproval/UpdateTermLoanData',
+                data: JSON.stringify({ apprdetails: TLDetails }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    if (msg == "Successfull") {
+                        $('#ApprovetlMsgModal').modal('show');
+                        var msg = "<div>Term Loan Return Updated Successfully</div>";
+                        $("#ApprovetlMsgModal").on("hide.bs.modal", function () {
+                            $("#divApprtlGrid").load('/AccountsApproval/VerifyTermLoanGrid');
+                        });
+                        $("#ApprtlMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + msg + "</div>";
+                        $("#ApprtlMsg").html(msg);
+                        $('#ApprovetlMsgModal').modal('show');
+                    }
+
+                },
+                failure: function (response) {
+
+                    // alert(response.responseText);
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprtlMsg").html(msg);
+                    $('#ApprovetlMsgModal').modal('show');
+                },
+                error: function (response) {
+
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprtlMsg").html(msg);
+                    $('#ApprovetlMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

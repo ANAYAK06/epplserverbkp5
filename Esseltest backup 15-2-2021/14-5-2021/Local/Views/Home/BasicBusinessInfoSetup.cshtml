@@ -1,0 +1,172 @@
+﻿@model EsselTestLocalApplication.Models.BasicBusinessInfoSetup
+@{
+    ViewBag.Title = "BasicBusinessInfoSetup";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*@Styles.Render("~/Content/bootstrap-multiselect/bootstrap-multiselect.css")*@
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+@*<script src="~/Scripts/Multiselectdropdown/bootstrap-multiselect.js"></script>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">                   
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div id="BasicBussinessTabs">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        @*<li role="presentation"><a href="#BusinessInfo" data-toggle="tab">Firm Info</a></li>*@
+
+                                        @if (Session["Roleid"].ToString() == "100")
+                                        {
+                                            <li role="presentation"><a href="#ApprovalHierarchy" data-toggle="tab">Approval Hierarchy</a></li>
+                                            <li role="presentation"><a href="#BusinessUsers" data-toggle="tab">Add Employee</a></li>
+                                            <li role="presentation"><a href="#RolesDesign" data-toggle="tab">Roles Design</a></li>
+
+                                            <li role="presentation" onClick="ClearRolePermission()"><a href="#RoleOperations" data-toggle="tab">Role Operations</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li role="presentation"><a href="#ApprovalHierarchy" data-toggle="tab">Approval Hierarchy</a></li>
+                                            foreach (var item in Model.Statuslist)
+                                            {
+                                                if (item.MID == 190 && item.WorkflowExist == true)
+                                                {
+                                                    <li role="presentation"><a href="#BusinessInfo" data-toggle="tab">Firm Info</a></li>
+                                                }
+                                                if (item.MID == 102 && item.WorkflowExist == true)
+                                                {
+                                                    <li role="presentation"><a href="#BusinessUsers" data-toggle="tab">Add Employee</a></li>
+                                                }
+
+                                                if (item.MID == 192 && item.WorkflowExist == true)
+                                                {
+                                                    <li role="presentation"><a href="#RolesDesign" data-toggle="tab">Roles Design</a></li>
+                                                }
+                                                if (item.MID == 196 && item.WorkflowExist == true)
+                                                {
+                                                    <li role="presentation" onClick="ClearRolePermission()"><a href="#RoleOperations" data-toggle="tab">Role Operations</a></li>
+                                                }
+                                            }
+
+                                        }
+                                        @*@foreach (var item in Model.Statuslist)
+                                        {
+                                            if (item.MID == 196 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation" onClick="ClearRolePermission()"><a href="#RoleOperations" data-toggle="tab">Role Operations</a></li>
+                                            }
+
+                                        }*@
+                                    </ul>
+                                    <div class="tab-content">
+
+                                        @if (Session["Roleid"].ToString() == "100")
+                                        {
+
+                                            <div role="tabpanel" class="tab-pane fade" id="ApprovalHierarchy">
+                                                @Html.Action("BusinessInfoApprovalHierarchy", "Home")
+                                                <br />
+                                                <br />
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="BusinessUsers">
+                                                @Html.Action("CreateUser", "Home")
+                                                <br />
+                                                <br />
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="RolesDesign">
+                                                @Html.Action("BusinessInfoRolesDesign", "Home")
+                                                <br />
+                                                <br />
+                                            </div>
+
+                                            <div role="tabpanel" class="tab-pane fade" id="RoleOperations">
+                                                @Html.Action("BusinessInfoRoleOperations", "Home")
+                                                <br />
+                                                <br />
+                                            </div>
+                                        }
+                                        else
+                                        {
+
+                                            <div role="tabpanel" class="tab-pane fade" id="ApprovalHierarchy">
+                                                @Html.Action("BusinessInfoApprovalHierarchy", "Home")
+                                                <br />
+                                                <br />
+                                            </div>
+
+                                            foreach (var item in Model.Statuslist)
+                                            {
+                                                if (item.MID == 102 && item.WorkflowExist == true)
+                                                {
+                                                    <div role="tabpanel" class="tab-pane fade" id="BusinessUsers">
+                                                        @Html.Action("CreateUser", "Home")
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                }
+                                                if (item.MID == 192 && item.WorkflowExist == true)
+                                                {
+                                                    <div role="tabpanel" class="tab-pane fade" id="RolesDesign">
+                                                        @Html.Action("BusinessInfoRolesDesign", "Home")
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                }
+                                                if (item.MID == 196 && item.WorkflowExist == true)
+                                                {
+                                                    <div role="tabpanel" class="tab-pane fade" id="RoleOperations">
+                                                        @Html.Action("BusinessInfoRoleOperations", "Home")
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                }
+                                            }
+
+
+                                        }
+                                        @*@foreach (var item in Model.Statuslist)
+        {
+            if (item.MID == 196 && item.WorkflowExist == true)
+            {
+                <div role="tabpanel" class="tab-pane fade" id="RoleOperations">
+                    @Html.Action("BusinessInfoRoleOperations", "Home")
+                    <br />
+                    <br />
+                </div>
+            }
+
+        }*@
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+    $('.nav-tabs li:eq(0) a').tab('show');
+    //$("#BasicBussinessTabs").click(function () {
+    //    //getter , get the active tab
+    //    var active = $("#tabs").tabs("option", "active");
+    //    $.cookie("tabs_selected", active);
+    //});
+
+    //var cookieValue = $.cookie("tabs_selected");
+    // setter, set the active tab stocked 
+   
+});
+</script>
+

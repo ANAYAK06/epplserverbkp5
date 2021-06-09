@@ -1,0 +1,343 @@
+﻿@model EsselTestLocalApplication.Models.HR.LongTermAdvance
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="col-md-12 verifydiv">
+    <br />
+    <div class="row">
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.EmployeName)
+            @Html.TextBoxFor(model => model.EmployeName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.LTAAmount)
+            @Html.TextBoxFor(model => model.LTAAmount, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+        </div>
+        @if (Model.AdvanceType == "LTA")
+        {
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.NoOfInstallments)
+            @Html.TextBoxFor(model => model.NoOfInstallments, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+        </div>
+        }
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.PaymentRequestDate)
+            @Html.TextBoxFor(model => model.PaymentRequestDate, htmlAttributes: new { @class = "form-control", @readOnly = true })
+        </div>       
+    </div>
+    <div class="row">
+        <br />
+     <div class="col-md-3">
+            @*@Html.LabelFor(model => model.ReportingMgrRemarks)*@
+            <label>Purpose</label>
+            @Html.TextAreaFor(model => model.EmpRemarks, new { @id = "txtEmpRemarks", @class = "form-control", @type = "text", @rows = "2", @readOnly = true })
+        </div>
+     <div class="col-md-3">
+         @Html.LabelFor(model => model.AdvanceRuleForLTAData.LTADCAName)
+         @if (Model.RequestStatus == "0")
+         {
+             @Html.TextBoxFor(model => model.AdvanceRuleForLTAData.LTADCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+         }
+         else
+         {
+             @Html.TextBoxFor(model => model.AdvanceRuleForLTAData.LTADCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+         }
+     </div>
+     <div class="col-md-3">
+         @Html.LabelFor(model => model.AdvanceRuleForLTAData.LTASubDCAName)
+         @if (Model.RequestStatus == "0")
+         {
+             @Html.TextBoxFor(model => model.AdvanceRuleForLTAData.LTASubDCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+         }
+         else
+         {
+             @Html.TextBoxFor(model => model.AdvanceRuleForLTAData.LTASubDCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+         }
+     </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DisbursementDate)
+                @Html.TextBoxFor(model => model.DisbursementDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtDisbursementDate", @value = "", @readOnly = true })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <br />
+        <div class="col-md-3">
+            @*@Html.LabelFor(model => model.ReportingMgrRemarks)*@
+            <label>Manager Remarks</label>
+            @Html.TextAreaFor(model => model.ReportingMgrRemarks, new { @id = "txtEmpRemarks", @class = "form-control", @type = "text", @rows = "2", @readOnly = true })
+        </div>
+       
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CCCode)
+                @if (Model.RequestStatus == "0")
+                {
+                    @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CClist, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCostCenter" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => model.AdvanceRuleForLTAData.CCName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+                }
+            </div>
+        </div>
+
+
+    </div>
+        @if (Model.RequestStatus != "0")
+        {
+            <div class="col-md-12">
+                <br />
+                <div class="row"><hr style="color:#000;height:2px" /></div>
+                <table style="width:100%;border:1px solid gray">
+                    <thead>
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                            <th style="text-align:center;color:#fff"></th>
+                            <th style="text-align:center;color:#fff">Employee Name</th>
+                            <th style="text-align:center;color:#fff">Remarks </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int count2 = 1; }
+                        @foreach (var item in Model.ApprovedFlowData)
+                        {
+                            <tr>
+                                <th style="text-align:center" class="hidden">count2</th>
+                                @if (count2 == 1)
+                                {
+                                    <th style="text-align:center">Created By:@item.Role</th>
+                                }
+                                else
+                                {
+                                    <th style="text-align:center">Verified By </th>
+                                }
+                                <th style="text-align:center">@item.Username</th>
+                                <th style="text-align:center">@item.Note </th>
+
+                            </tr>
+                            count2++;
+                        }
+                    </tbody>
+                </table>
+                <br />
+            </div>
+        }
+        <div class="col-md-12">
+            <br />
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @if (Model.RequestStatus == "0")
+                    {
+                        <select class="form-control dropdown-toggle" id="Apprstatus">
+                            <option selected="selected" value="Select">Select</option>
+                            <option value="Verify">Verify</option>
+
+                        </select>
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprstatus" })
+
+                    }
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprNote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveLTARequest(@serializer.Serialize(Model))" nid="btnApprStaffReg">Submit</button>
+
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divLTAInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+        @*<input id="txtdca" value="@Model.AdvanceRuleForLTAData.LTADCA" />
+            <input id="txtsdca" value="@Model.AdvanceRuleForLTAData.LTADCA" />
+            <input id="txtcc" value="@Model.AdvanceRuleForLTAData.CCCode" />*@
+    </div>
+    <script>
+    $(document).ready(function () {
+
+       // //debugger;
+        var status = '@Model.RequestStatus';
+
+        if (status !== '0') {
+
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Apprstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] !== "Return" && this['Type'] !== "Reject") {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            }
+                        });
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+        else {
+            $("#txtDisbursementDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                minDate: 'dateToday',
+                yearRange: "-100:+0",
+                onClose: function (selectedDate) {
+                }
+            });
+        }
+     });
+    function ApproveLTARequest(Model) {
+        var ltarulestatus = Model.AdvanceRuleForLTAData.RuleStatus;
+        if (ltarulestatus === 'NotExist') {
+            $("#divLTAInfoMsg").text("");
+            $("#divLTAInfoMsg").append("<div>LTA Rules Does Not Exist For This Employee Category</div>");
+            $("#divLTAInfoMsg").addClass("alert-danger");
+            $("#divLTAInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divLTAInfoMsg").text("");
+            $("#divLTAInfoMsg").addClass("hidden");
+            isValid = true;
+            var errorMsg = "";
+            var appstatus = $("#Apprstatus option:selected").text();
+            retnote = $("#ApprNote").val();
+            msg = $("#divLTAInfoMsg");
+            var date = $("#txtDisbursementDate").val();
+            if (Model.RequestStatus == '0') {
+                var CCindex = $("#ddlCostCenter option:selected").index();
+                var CC = $("#ddlCostCenter option:selected").val();
+            }
+            if (appstatus === "Select") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                isValid = false;
+            }
+            if (retnote === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+                isValid = false;
+            }
+            if (date === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Disbursement Date</p>";
+                isValid = false;
+            }
+            if (Model.RequestStatus == '0') {
+                if (CCindex === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                    isValid = false;
+                }
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $(msg).text("");
+                $(msg).append(finalerror1 + errorMsg + "</div>");
+                $(msg).addClass("alert-danger");
+                $(msg).removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $(msg).text("");
+                $(msg).addClass("hidden");
+                var apprData = {};
+                var ruledata = {};
+                if (Model.RequestStatus == '0') {
+                    ruledata = {
+                        RuleStatus: Model.AdvanceRuleForLTAData.RuleStatus,
+                        CCCode: CC,
+                        LTADCA: Model.AdvanceRuleForLTAData.LTADCA,
+                        LTASubDCA: Model.AdvanceRuleForLTAData.LTASubDCA,
+                        
+                    }
+                }
+                else { ruledata = Model.AdvanceRuleForLTAData; }
+                apprData = {
+                    EmployeeID: Model.EmployeeID,
+                    LTAAmount: Model.LTAAmount,
+                    PaymentRequestDate: Model.PaymentRequestDate,
+                    NoOfInstallments: Model.NoOfInstallments,
+                    ReportingMgrRemarks: Model.ReportingMgrRemarks,
+                    TransactionRefNo: Model.TransactionRefNo,
+                    ApprovalNote: retnote,
+                    Action: appstatus,
+                    DisbursementDate: date,
+                    AdvanceRuleForLTAData: ruledata,
+                    AdvanceType: Model.AdvanceType
+                };
+                //} else { }
+                //addFailMsg = "Error Occurred While Adding IT Verification";
+                addFailMsg = "Error Occurred";
+                //addSuccessMsg = "IT Verified Successfully.";
+                //debugger;
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+                else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/ApproveLTARequest",
+                    data: JSON.stringify({ advance: apprData }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus === "Submited") {
+                            $('#ApproveMsgModal').modal('show');
+                            var msg = "<div>" + finalmsg + "</div>";
+                            $("#ApprMsg").html(msg);
+                        }
+                        else {
+                            var msg1 = "<div>" + response.saveStatus + "</div>";
+                            $("#ApprMsg").html(msg1);
+                            $('#ApproveMsgModal').modal('show');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        var msg2 = "<div>" + addFailMsg + " </div>";
+                        $("#ApprMsg").html(msg2);
+                        $('#ApproveMsgModal').modal('show');
+                    }
+                });
+
+            }
+        }
+    }
+    </script>

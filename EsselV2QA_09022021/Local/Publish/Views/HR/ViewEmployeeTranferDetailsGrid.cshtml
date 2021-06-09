@@ -1,0 +1,58 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.EmployeeTransfer>
+@foreach (var item in Model)
+{
+    <div class="col-md-12">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Employee Id:</label>
+                        <input type="text" class="form-control" value="@item.EmployeeId" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label>Employee Name:</label>
+                        <input type="text" class="form-control" value="@item.EmployeeName" readOnly="readOnly" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Relieving Cost Center:</label>
+                        <input type="text" class="form-control" value="@item.FromCC" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Joining Cost Center:</label>
+                        <input type="text" class="form-control" value="@item.ToCC" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Relieving Date:</label>
+                        <input type="text" class="form-control" value="@item.RelievingDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Joining Date:</label>
+                        <input type="text" class="form-control" value="@item.JoiningDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Remarks:</label>
+                        <input rows="3" cols="60" type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>          
+        </form>
+    </div>    
+}

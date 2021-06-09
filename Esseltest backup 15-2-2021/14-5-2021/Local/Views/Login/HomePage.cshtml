@@ -1,0 +1,180 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.HomeChartData
+@{
+    /**/
+
+    ViewBag.Title = "HomePage";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Reports/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="body">
+                    @if (Model.CheckAccess == false)
+                    {
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <img src="~/Content/EsselImages/SL.jpg" alt="Home">
+                            </div>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 verifydiv">
+                                    <div id="CCPerformingpiechart" class="PerChart"></div>
+                                </div>
+                                <div class="col-lg-6 verifydiv">
+                                    <div id="CCNonPerformingpiechart" class="NonPerChart" style="float:left"></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12"><hr /></div>
+                            <div class="col-lg-12"></div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-4"></div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.CCCode)
+                                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.lstCostCenter, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHPCCCode", onchange = "HomePageCCChange()" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4"></div>
+                                    </div>
+                                    <div class="row">
+                                        @*grids style="border:1px solid #DCDCDC"*@
+                                        <div class="col-md-1"></div>
+                                        <div id="divHomeRptChart" class="col-md-10">
+                                            <div id="divHomeRptDetails">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-12">
+                                            <div class="text-center">
+                                                <br />
+                                                <div id="divHomeReportInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script type="text/javascript">
+    $(document).ready(function () {
+        $("#divHomeRptChart").addClass("hidden");
+             function drawChart2() {
+               var Performingdata = google.visualization.arrayToDataTable(@Html.Raw(Json.Encode(@Model.PerfomingchartData)));
+               var options = {
+                   title: $('<div class="text-center">' + Heading1 + '</div>').html(),
+                     chartArea: { width: "80%", height: "80%", float: "left", overflow: "auto" }
+
+                     };
+                     var chart = new google.visualization.PieChart(document.getElementById('CCPerformingpiechart'));
+                     chart.draw(Performingdata, options);
+                 }
+                 function drawChart3() {
+                     var NPerformingdata = google.visualization.arrayToDataTable(@Html.Raw(Json.Encode(@Model.NonPerfomingchartData)));
+                     var options = {
+                        title: $('<div class="text-center">' + Heading2 + '</div>').html(),
+                         chartArea: { width: "80%", height: "80%", float: "left", overflow: "auto" }
+
+                 };
+                 var chart = new google.visualization.PieChart(document.getElementById('CCNonPerformingpiechart'));
+                     chart.draw(NPerformingdata, options);
+                 }
+
+             google.charts.load('current', { 'packages': ['corechart'] });
+
+        if (@Model.PerfomingchartData.Count> 0) {
+            var Heading1 = 'Perfoming Cost Center Budget Report Diagram';
+            google.charts.setOnLoadCallback(drawChart2);
+
+        }
+
+
+        if (@Model.NonPerfomingchartData.Count> 0) {
+            var Heading2 = 'Non Perfoming Cost Center Report Diagram';
+            google.charts.setOnLoadCallback(drawChart3);
+        }
+
+
+
+
+    });
+                        </script>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function HomePageCCChange() {
+
+        isValid = true;
+        var errorMsg = "";
+        var CCindex = $("#ddlHPCCCode option:selected").index();
+        var CCCode = $("#ddlHPCCCode option:selected").val();
+        if (CCindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divHomeReportInfoMsg").text("");
+            $("#divHomeReportInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divHomeReportInfoMsg").addClass("alert-danger");
+            $("#divHomeReportInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divHomeReportInfoMsg").text("");
+            $("#divHomeReportInfoMsg").addClass("hidden");
+            $("#divHomeRptChart").removeClass('hidden');
+            //var year = '2019-20';
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Login/ViewHomeReportChart',
+                data: { CCCode: CCCode },
+                //beforeSend: function () {
+                //    $('#ajax-container').html('');
+                //    addSpinner($('#ajax-container'));
+                //},
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#divHomeRptDetails").html(Data);
+                        $("#divHomeRptChart").removeClass('hidden');
+
+
+                    }
+                    else {
+                        $("#divHomeRptDetails").html('No Data Found');
+                        $("#divHomeRptChart").removeClass('hidden');
+                    }
+
+                    //removeSpinner($('#ajax-container'), function () {
+                    //    $('#ajax-container').html('Content loaded.');
+                    //});
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //removeSpinner($('#ajax-container'), function () {
+                    //    $('#ajax-container').html('Content loaded.');
+                    //});
+                    alert("error");
+                }
+            });
+        }
+
+    }
+</script>
+

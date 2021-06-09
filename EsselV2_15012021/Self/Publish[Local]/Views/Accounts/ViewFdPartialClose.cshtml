@@ -1,0 +1,757 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.FDPayments
+<div class="col-md-12">
+    <div class="col-md-3" id="divpcfdrno">
+        @Html.LabelFor(model => model.FDRNo)
+        @Html.DropDownListFor(model => model.FDRNo, new SelectList(Model.FDRNosList, "FdID", "FdNo"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFdNos", onchange = "FDParNochnage()" })
+    </div>
+    <div id="divparfdopendetails">
+        @if (Model.Action == "Update")
+        {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Begin Date</label>
+                        <input type="text" value="@Model.NewFDDetails.NewFDRFromDate" class="form-control" readOnly="readOnly" id="begindate" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="text" value="@Model.NewFDDetails.NewFDRToDate" class="form-control" readOnly="readOnly" id="enddate" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="text" value="@Model.NewFDDetails.NewFDRAmount" class="form-control" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Balance</label>
+                        @if (Model.Fdtype == "Close")
+                        {
+                            <input type="text" value="@Model.FDRBalanceAmount" class="form-control" readOnly="readOnly" id="txtfdPclosebalamount" />
+                        }
+                        else
+                        {
+                            <input type="text" value="@Model.NewFDDetails.NewFDBalance" class="form-control" readOnly="readOnly" id="txtfdPclosebalamount" />
+
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Rate of Interest</label>
+                        <input type="text" value="@Model.NewFDDetails.NewFDRROI" class="form-control" readOnly="readOnly" />
+                    </div>
+                </div>
+            
+        }
+        else
+        {
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRFromDate)
+                    @Html.TextBoxFor(model => model.FDRFromDate, new { @id = "txtfdPcloseFromdate", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRToDate)
+                    @Html.TextBoxFor(model => model.FDRToDate, new { @id = "txtfdPcloseTodate", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRAmount)
+                    @Html.TextBoxFor(model => model.FDRAmount, new { @id = "txtfdPclOpenAmount", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRROI)
+                    @Html.TextBoxFor(model => model.FDRROI, new { @id = "txtfdPclOpenRoi", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRBalanceAmount)
+                    @Html.TextBoxFor(model => model.FDRBalanceAmount, new { @id = "txtfdPclosebalamount", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <br />
+                <a href="#" onclick="ShowFDBankDetailsModel()" style="font-size:15px;text-align:right;text-decoration:underline">View Previous Payment Details</a>
+            </div>
+        }
+    </div>
+</div>
+<div id="divparfddetails" class="col-md-12">
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FDRClosingDate)
+            @Html.TextBoxFor(model => model.FDRClosingDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtFdPClosedate", @type = "text", @readonly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label>Maturity Amount</label>
+            @if (Model.Action == "Update")
+            {
+                <input type="text" class="form-control" value="@Model.FDRAmount"  id="txtfdParcloseMaturityAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountFdPerTotal()" />
+            }
+            else
+            {
+                <input type="text" class="form-control" id="txtfdParcloseMaturityAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountFdPerTotal()" />
+            }
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label>Interest</label>
+            @if (Model.Action == "Update")
+            {
+                <input type="text" class="form-control" value="@Model.FDRROI" id="txtfdParcloseInterest" onkeypress="return ValidateAmount(this,event);" />
+            }
+            else
+            { <input type="text" class="form-control" id="txtfdParcloseInterest" onkeypress="return ValidateAmount(this,event);" />}
+        </div>
+    </div>
+</div>
+<div id="divparfdDed">
+    <div class="col-md-12" style="margin-top:15px">
+        <hr />
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="col-md-4 text-center">
+                    <div class="form-group">
+                        <input id="chkDedFDPerY" name="FDParCloseDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                        <input id="chkDedFDPerN" name="FDParCloseDeduction" value="No" type="radio" checked>No
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    </div>
+<div class="col-md-12" id="divparfdDedGrid">
+    <div class="strike">
+        <span>Deduction Details</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="FDParCloseDedTable" class="table order-list fdpclgrid">
+            <thead>
+                <tr>
+                    <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important" class="hidden">Row No</td>
+                    <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Account Head</td>
+                    <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Sub Account Head</td>
+                    <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Amount</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                @*@if (Model.Action == "New")
+                {
+                    <tr>
+                        <td style="text-align:center;width:20%" class="hidden">1</td>
+                        <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdpDCA"><option selected="selected" value="Select">Select</option></select></td>
+                        <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdpSubDCA"><option selected="selected" value="Select">Select</option></select></td>
+                        <td style="text-align:center;width:20%"><input type="text" value="" class="form-control fdpDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPerFdDedTotal()" /></td>
+                        <td style="text-align:center;width:20%">
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input" id="chkfdpDeduction" name="chkfdpDeduction">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="text-align:center;width:5%"></td>
+                    </tr>
+                }*@
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td style="text-align:center;"><b>Total</b></td>
+                    <td></td>
+                    <td>
+                        
+                    </td>
+                    <td style="text-align:center;width:5%"><input type="button" class="btn btn-default  btn-block" style="width:200px" id="addDeduction" value="Add More Deduction Dca" onclick="FdparClDeductionGridNewRow();" /></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+        <div id="divparfdpayment">
+            @if (Model.Action == "New")
+            {
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.PaymentBankName)
+                    @Html.TextBoxFor(model => model.PaymentBankName, new { @id = "txtfdPclPayBank", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentModeofPay)
+                        @Html.DropDownListFor(model => model.PaymentModeofPay, new SelectList(Model.FDPaymentmodeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFdpclPayMode" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentNo)
+                        @Html.TextBoxFor(model => model.PaymentNo, htmlAttributes: new { @class = "form-control", @id = "txtfdpclchqNo" })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FDRPaymentDate)
+                        @Html.TextBoxFor(model => model.FDRPaymentDate, "{0:dd-MMM-yyyy}", new { @id = "txtfdpPaymentDate", @class = "form-control  date-picker", @readonly = "true" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentRemarks)
+                        @Html.TextAreaFor(model => model.PaymentRemarks, new { @id = "txtFDpclRemarks", @class = "form-control", @rows = "3" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentAmount)
+                        @Html.TextBoxFor(model => model.PaymentAmount, new { @id = "txtFDpclAmount", @class = "form-control", @readOnly = "readOnly" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.BankName)
+                    @Html.TextBoxFor(model => model.BankName, new { @id = "txtfdPclPayBank", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ModeofPay)
+                        @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.FDPaymentmodeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFdpclPayMode" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.No)
+                        @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtfdpclchqNo" })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentDate)
+                        @Html.TextBoxFor(model => model.PaymentDate, "{0:dd-MMM-yyyy}", new { @id = "txtfdpPaymentDate", @class = "form-control  date-picker", @readonly = "true" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Remarks)
+                        @Html.TextAreaFor(model => model.Remarks, new { @id = "txtFDpclRemarks", @class = "form-control", @rows = "3" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FDRAmount)
+                        @Html.TextBoxFor(model => model.FDRAmount, new { @id = "txtFDpclAmount", @class = "form-control", @readOnly = "readOnly" })
+                    </div>
+                </div>
+
+            }
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtpartialRoleId" style="display:none" />
+                    @if (Model.Action == "New")
+                    {
+                        <button class="btn btn1 btn-success" id="btnParFDSubmit" onclick="SubmitPartialFDData()">Submit</button>
+                        <button class="btn btn1 btn-success" id="btnParFDRest" onclick="ResetPartialFDData()">Reset</button>
+                    }
+                    else
+                    {
+                        <br /><br /><button class="btn btn1 btn-success" onClick="UpdatePartialFDData('@Model.BankTransactionRefNo','@Model.Fdtype')">Submit</button>
+                        <input type="hidden" id="Updatepfdbankid" value="@Model.Bankid" />
+                        <input type="hidden" id="Updatepfdrno" value="@Model.FDRNo" />
+                        <input type="hidden" id="Updatepoldamount" />
+                    }
+                    <input type="hidden" id="Updatestatus" value="@Model.BankTransactionId" />
+                    @*<input type="hidden" id="txtfdIntCC" />
+                        <input type="hidden" id="txtfdIntDca" />
+                        <input type="hidden" id="txtfdIntSdca" />
+                        <input type="hidden" id="txtfdIntIt" />
+                        <input type="hidden" id="txtfdPriDca" />
+                        <input type="hidden" id="txtfdPriSdca" />
+                        <input type="hidden" id="txtfdPriIt" />*@
+                    <input type="hidden" id="txtfdcreatedby" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <br />
+                    <div id="divFDPArClInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+    <div id="ParFDBankDetailsModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">FD Bank Details</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">
+                    <div class="row">
+                        <div class="col-md-4"><label>Bank Name:</label><input type="text" value="" id="txtfdpclBank1" class="form-control" /></div>
+                        <div class="col-md-4"><label>Payment Mode:</label><input type="text" value="" id="txtfdpclPaymode1" class="form-control" /></div>
+                        <div class="col-md-4"><label>Number:</label><input type="text" value="" id="txtfdpclno1" class="form-control" /></div>
+                        <div class="col-md-4"><label>Amount:</label><input type="text" value="" id="txtfdpclamount1" class="form-control" /></div>
+                        <div class="col-md-4"><label>Date:</label><input type="text" value="" id="txtfdpcldate1" class="form-control" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    $(document).ready(function () {
+        //alert('@Model.Action')
+        var RoleID = '@Session["Roleid"]';
+        $("#txtpartialRoleId").val(RoleID);
+        ///alert(@Model.BankTransactionId);
+          var Sessioncreated = '@Session["Createdby"]';
+        $("#txtfdcreatedby").val(Sessioncreated);
+        $("#divparfdDedGrid").addClass("hidden");
+        if ('@Model.Action' === "New") {
+
+            $("#divpcfdrno").removeClass('hidden');
+            $("#txtFdPClosedate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtfdpPaymentDate").datepicker("option", "minDate", selectedDate);
+                    ClearFDDeductions();
+                    $("#divparfdDedGrid").addClass("hidden");
+                    $("#chkDedFDPerY").prop("checked", false);
+                    $("#chkDedFDPerN").prop("checked", true);
+                },
+            });
+            $("#txtFDRPaymentDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+            }).datepicker("setDate", "");
+
+        }
+        else {
+           // $("#btnParFDRest").addClass('hidden');
+           // var fdate = $("#begindate").val();
+           // var fdate1 = "'" + fdate + "'";
+           // var fdate2 = moment(fdate1, "DD-MM-YYYY").format('DD-MMM-YYYY');
+           //$("#begindate").val(fdate2);
+           // var edate = $("#enddate").val();
+           // var edate1 = "'" + edate + "'";
+           // var edate2 = moment(edate1, "DD-MM-YYYY").format('DD-MMM-YYYY');
+           // $("#enddate").val(edate2);
+
+            @*var date = '@Model.PaymentDate';
+            //var date1 = date.split('');
+            var idate = date.toString().split(' ');
+            var idate1 = idate.toString().split(' ');
+            var tdate = "'" + idate1 + "'";
+            var tdate1 = moment(tdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+
+            var cldate = '@Model.FDRClosingDate';
+            var cdate = cldate.toString().split(' ');
+            var cdate1 = cdate.toString().split(' ');
+            var cdate2 = "'" + cdate1 + "'";
+            var cdate3 = moment(cdate2, "DD-MM-YYYY").format('DD-MMM-YYYY');*@
+             // alert("close-"+cdate3 + '===pay' + tdate1);
+
+           // alert('@Model.FDRClosingDate');
+            $("#txtFdPClosedate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtfdpPaymentDate").datepicker("option", "minDate", selectedDate);
+                    ClearFDDeductions();
+                    $("#divparfdDedGrid").addClass("hidden");
+                    $("#chkDedFDPerY").prop("checked", false);
+                    $("#chkDedFDPerN").prop("checked", true);
+                },
+            }).datepicker("setDate", '@Model.FDRClosingDate');
+
+            $("#txtfdpPaymentDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                minDate: '@Model.FDRClosingDate',
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            }).datepicker("setDate", '@Model.PaymentDate');
+
+            $("#divpcfdrno").addClass('hidden');
+
+            //var closingdate = $("#txtFdPClosedate").val();
+            var closingdate = '@Model.FDRClosingDate';
+            var Deductions = @Html.Raw(Json.Encode(Model.FDDeductionList));
+            var count = Deductions.length;
+            var type = '@Model.Fdtype';
+            if (type== "Close") {
+                $("#txtfdParcloseMaturityAmount").prop('disabled', true);
+
+            }
+          //  alert(count);
+            if (count > 0) {
+                $("#divparfdDedGrid").removeClass("hidden");
+                $("#chkDedFDPerY").prop("checked", true);
+                $("#chkDedFDPerN").prop("checked", false);
+                for (var i = 0; i < Deductions.length; i++) {
+                    var rowno = i + 1;
+                    var newRow = $("<tr>");
+                    var cols = "";
+                    cols += '<td style="text-align:center;width:20%" class="hidden">' + rowno+'</td>';
+                    cols += ' <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdpDCA"><option selected="selected" value="Select">Select</option>';
+
+                    cols += '</select></td>';
+                    cols += '<td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdpSubDCA"><option selected="selected" value="Select">Select</option></select></td>';
+                    cols += '<td style="text-align:center;width:20%"><input type="text" value="" class="form-control fdpDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPerFdDedTotal()" /></td>';
+                    cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox"><label class="eagle-check custom-checkbox">';
+                    cols += '<input type="checkbox" class="eagle-check-input" id="chkfdpDeduction"><span class="eagle-check-indicator"></span>';
+                    cols += '</label></li></ul></td>';
+                    //if (rowno > 1) {
+                        cols += '<td style="text-align:center;width:5%"><input type="button" class="ibtnfdparclDel btn btn-md btn-danger" value="Delete"></td>';
+                   // }
+                    newRow.append(cols);
+                    $("#FDParCloseDedTable").append(newRow);
+
+                }
+                var deductiontotal = 0;
+                var j = 0;
+                //for (var i = 0; i < Deductions.length; i++) {
+
+                //    var Deduction = Deductions[i];
+                //    var currentdca = Deduction.DCACode;
+                //    var currensdca = Deduction.SubDCACode;
+                //    var currentamount = Deduction.DeductionValue;
+                    $("#FDParCloseDedTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var rowno = currentRow.find("td").eq(0).html();
+                        var dcaddl = currentRow.find("td").eq(1).find("select");
+                        var ddlSubDCA = currentRow.find('.fdpSubDCA'); // get the other select in the same row
+                        var amount = currentRow.find('.fdpDcaAmount');
+                        
+                          var Deduction = Deductions[j];
+                          var currentdca = Deduction.DCACode;
+                         var currensdca = Deduction.SubDCACode;
+                         var currentamount = Deduction.DeductionValue;
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/GetFDDeductionDCA",
+                            data: '{closingdate:"' + closingdate + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                $.each(response, function () {
+                                    var dbdcacode = this['DCACode'];
+                                    if (currentdca == dbdcacode) {
+                                        dcaddl.append($("<option selected='selected'></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                    }
+                                    else { dcaddl.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR'])); }
+                                });
+
+
+                            },
+                            failure: function (response) {
+
+                            },
+                            error: function (response) {
+
+                            }
+                        });
+                        $.ajax({
+                            type: "POST",
+                            url: "/Accounts/GetSubDCAbyDCA",
+                            data: '{ DCACode:"' + currentdca + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                $.each(response, function () {
+                                    var dbsdcacode = this['SubDCACode'];
+                                    if (currensdca == dbsdcacode) {
+                                        ddlSubDCA.append($("<option selected='selected'></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                    }
+                                    else { ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR'])); }
+                                });
+
+                            },
+                            failure: function (response) {
+
+                            },
+                            error: function (response) {
+
+                            }
+                        });
+                        //$("#txtFdPClosedate").datepicker("option", "disabled", true);
+                        amount.val(currentamount);
+                        currentRow.find("td").eq(4).find('input[type="checkbox"]').prop("checked", true);
+                        deductiontotal = parseFloat(deductiontotal) + parseFloat(currentamount);
+                        j++;
+                    });
+                   // $("#txtFdPClosedate").datepicker("option", "disabled", true);
+
+                //}
+
+
+                var total = parseFloat('@Model.FDRAmount') + parseFloat(deductiontotal);
+                $("#txtfdParcloseMaturityAmount").val(total);
+                $("#txtFDpclAmount").val(parseFloat('@Model.FDRAmount').toFixed(2));
+                $("#Updatepoldamount").val(total);
+
+                $("#FDParCloseDedTable tfoot tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(2).html(parseFloat(deductiontotal).toFixed(2));
+                });
+                //$("#txtfdParcloseMaturityAmount").val(parseFloat($("#txtfdParcloseMaturityAmount").val()) + parseFloat(deductiontotal));
+                //var FinalAmount = parseFloat($("#txtfdParcloseMaturityAmount").val()) - parseFloat(deductiontotal);
+                //$("#txtfdParcloseMaturityAmount").val(parseFloat(FinalAmount).toFixed(2));
+
+
+            }
+            else {
+                var closedate='@Model.FDRClosingDate'
+                $("#txtFDpclAmount").val(parseFloat($("#txtfdParcloseMaturityAmount").val()).toFixed(2));
+                $("#divparfdDedGrid").addClass("hidden");
+                $("#chkDedFDPerY").prop("checked", false);
+                $("#chkDedFDPerN").prop("checked", true);
+                //var rowno = i + 1;
+                //var newRow = $("<tr>");
+                //var cols = "";
+                //cols += '<td style="text-align:center;width:20%" class="hidden">1</td>';
+                //cols += ' <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdpDCA"><option selected="selected" value="Select">Select</option>';
+                //cols += '</select></td>';
+                //cols += '<td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdpSubDCA"><option selected="selected" value="Select">Select</option></select></td>';
+                //cols += '<td style="text-align:center;width:20%"><input type="text" value="" class="form-control fdpDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPerFdDedTotal()" /></td>';
+                //cols += ' <td style="text-align:center;width:20%">';
+                //cols += '<ul class="list-inline"> <li class="eagle-checkbox"> <input type="checkbox" class="eagle-check-input" id="chkfdpDeduction" name="chkfdpDeduction">';
+                //cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span>';
+                //cols += '</label></li></ul></td>';
+                //cols += '<td style="text-align:center;width:5%"></td>';
+                //newRow.append(cols);
+                //$("#FDParCloseDedTable").append(newRow);
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Accounts/GetFDDeductionDCA",
+                //    data: '{closingdate:"' + closedate + '"}',
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (response) {
+                //        $("#FDParCloseDedTable tbody tr").each(function () {
+                //            var currentRow = $(this);
+                //            var dcaddl = currentRow.find("td").eq(1).find("select");
+                //            dcaddl.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                //            $.each(response, function () {
+                //                dcaddl.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                //            });
+                //        });
+                //        $("#txtFdPClosedate").datepicker("option", "disabled", true);
+
+                //    },
+                //    failure: function (response) {
+
+                //    },
+                //    error: function (response) {
+
+                //    }
+                //});
+            }
+
+        }
+
+        $("input:radio[name='FDParCloseDeduction']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var DedExist = _val;         
+
+            if (DedExist == "Yes") {
+                var closedate = $("#txtFdPClosedate").val();
+                if (closedate === "") {
+                    $("#divFDPArClInfoMsg").text("");
+                    $("#divFDPArClInfoMsg").append("<div>Select Closing Date</div>");
+                    $("#divFDPArClInfoMsg").addClass("alert-danger");
+                    $("#divFDPArClInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    BindEmptyrowtoDeductionFDPer();
+                    $("#divparfdDedGrid").removeClass("hidden");
+                    BindDeductionDCA();
+                }
+                // BindEmptyrowtoDeduction();
+            }
+            else if (DedExist == "No") {
+                $("#divparfdDedGrid").addClass("hidden");
+
+                ClearFDDeductions();
+            }
+            CountFdPerTotal();
+        });
+
+        $('#FDParCloseDedTable').on('change', '.fdpDCA', function () {
+
+        var closingdate = $("#txtFdPClosedate").val();
+        var ddlDCA = $(this).find("option:selected").val();
+        var row = $(this).closest('tr'); // get the row
+        var ddlSubDCA = row.find('.fdpSubDCA'); // get the other select in the same row
+        var amount = row.find('.fdpDcaAmount');
+        if (closingdate == "") {
+            ddlDCA.prop('selectedIndex', 0);
+            $("#divFDPArClInfoMsg").text("");
+            $("#divFDPArClInfoMsg").append("<div>Select Closing Date</div>");
+            $("#divFDPArClInfoMsg").addClass("alert-danger");
+            $("#divFDPArClInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divFDPArClInfoMsg").text("");
+            $("#divFDPArClInfoMsg").addClass("hidden");
+
+            if ($(this).find("option:selected").index() == 0) {
+                ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                amount.val("");
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetSubDCAbyDCA",
+                    data: '{ DCACode:"' + ddlDCA + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                        $.each(response, function () {
+                            ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        });
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+        }
+        });
+        $("table.order-list.fdpclgrid").on("click", ".ibtnfdparclDel", function (event) {
+            //$(this).closest("tr").remove();
+            $("#divFDPArClInfoMsg").text("");
+            $("#divFDPArClInfoMsg").addClass("hidden");
+            var rowcount = $("#FDParCloseDedTable tbody tr").length;
+            if (rowcount == 1) {
+                $("#chkDedFDPerY").prop("checked", false);
+                $("#chkDedFDPerN").prop("checked", true);
+                ClearFDDeductions();
+                $("#divparfdDedGrid").addClass("hidden");
+
+            }
+            $(this).closest("tr").remove();
+        });
+        //GetAppsettings();
+    });
+    //function GetAppsettings() {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Accounts/GetAppSetting",
+    //        data: '{}',
+    //        contentType: "application/json; charset=utf-8",
+    //        dataType: "json",
+    //        success: function (response) {
+
+    //            $.each(response, function () {
+    //                $("#txtfdIntCC").val(this['ParIntCC']);
+    //                $("#txtfdIntDca").val(this['ParIntDca']);
+    //                $("#txtfdIntSdca").val(this['ParIntSdca']);
+    //                $("#txtfdIntIt").val(this['ParIntItcode']);
+    //                $("#txtfdPriDca").val(this['ParPrincipleDca']);
+    //                $("#txtfdPriSdca").val(this['ParPrincipleSdca']);
+    //                $("#txtfdPriIt").val(this['ParPrincipleItcode']);
+    //                // alert(this['ParIntCC'] + "=" + this['ParIntDca'] + "=" + this['ParIntSdca'] + "=" + this['ParIntItcode'] + "=" + this['ParPrincipleDca'] + "=" + this['ParPrincipleSdca'] + "=" + this['ParPrincipleItcode']);
+    //            });
+
+    //        },
+    //        failure: function (response) {
+
+    //        },
+    //        error: function (response) {
+
+    //        }
+    //    });
+
+    //}
+        function ClearFDDeductions() {
+            // alert('cleared');
+            $("#FDParCloseDedTable tbody tr").remove();
+            //$("#FDParCloseDedTable tbody tr").each(function () {
+            //    var currentRow = $(this);
+            //    currentRow.find("td").eq(1).find("select").prop('SelectedIndex', 0);
+            //    var sdca = currentRow.find("td").eq(2).find("select");
+            //    sdca.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            //    currentRow.find("td").eq(3).find("input[type='text']").val("");
+            //    currentRow.find("td").eq(4).find('input[type="checkbox"]').prop("checked", false);
+            //});
+            $("#FDParCloseDedTable tfoot tr").each(function () {
+                var footerRow = $(this);
+                footerRow.find("td").eq(1).html("<b>Total</b>");
+                footerRow.find("td").eq(2).html("");
+            });
+            
+            CountFdPerTotal();
+
+        }
+        function BindEmptyrowtoDeductionFDPer() {            
+            var newRow = $("<tr>");
+            var cols = "";
+            cols += '<td  style="text-align:center" class="hidden">' + 1 + '</td>';
+            cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle fdpDCA"><option selected="selected" value="Select">Select</option></select></td>';
+           
+            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle fdpSubDCA"><option selected="selected" value="Select">Select</option></select></td>';          
+            cols += '<td style="text-align:center"><input type="text" value="" class="form-control fdpDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPerFdDedTotal()" /></td>';
+            cols += '<td style="text-align:center"> <ul class="list-inline"><li class="eagle-checkbox">';
+            cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input"  name="chkfdpDeduction">';
+            cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+            cols += '<td style="text-align:center;width:5%"><input type="button" class="ibtnfdparclDel btn btn-md btn-danger" value="Delete"></td>';
+            newRow.append(cols);
+            $("table.order-list.fdpclgrid").append(newRow);
+
+        }
+    </script>
+    

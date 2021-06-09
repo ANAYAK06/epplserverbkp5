@@ -1,0 +1,85 @@
+﻿@model EsselTestLocalApplication.Models.BusinessRoles
+<div class="col-md-12">
+    <table id="tblUserRoleGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="hidden">Role Id</th>
+                <th>Role Name</th>
+                <th>Status</th>
+                <th>Applicable For CostCenter</th>
+                <th>CostCenter Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.RoleList)
+            {
+            <tr>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.RoleID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoleCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicableForCC)
+                </td>
+                <td>
+                    <ol>
+                        @foreach (var level in item.ApplicableCCTypeslist)
+                        {
+                            <li>@Html.DisplayFor(levelItem => level.CostCenterTypeName)</li>
+                        }
+                    </ol>
+                </td>
+                <td>
+                <select class="form-control dropdown-toggle" onchange="RoleDesignGridchange(@item.RoleID,'@item.RoleCode','@item.Status','@item.ApplicableForCC','@item.ApplicableForCCType',this)">
+                    @*<select class="form-control dropdown-toggle" onchange="RoleDesignGridchange(this,@Html.Raw(Json.Encode(Model)))">*@
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="E">Edit</option>
+                        <option value="D">Delete</option>
+                  </select>
+                </td>
+            </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            InitializeUserRoleGrid();
+        });
+        function InitializeUserRoleGrid() {
+            var hierGrid = $('#tblUserRoleGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,  
+                "createdRow": function (row, data, index) {
+                    var oldstatus = $('td:eq(2)', row).html();
+                   // alert(oldstatus);
+                    if (oldstatus.trim() == 'Approved') {
+                        $('td:eq(2)', row).html("Active");
+                    }
+                    else { $('td:eq(2)', row).html("InActive"); }
+                },
+
+                language: {
+                    "emptyTable": "No Roles Found"
+                },
+                pageLength: 10
+            });
+
+        }
+
+    </script>

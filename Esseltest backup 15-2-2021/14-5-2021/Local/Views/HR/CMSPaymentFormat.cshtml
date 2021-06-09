@@ -1,0 +1,112 @@
+﻿@model EsselTestLocalApplication.Models.HR.CMSPaymentFormat
+@{
+    ViewBag.Title = "CMSPaymentFormat";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">CMS Payment Report</h5>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @Html.LabelFor(model => model.EffectiveMonth)
+                                    @Html.DropDownListFor(model => model.EffectiveMonth, new SelectList(Model.monthlst, "name", "name"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCMSMonth" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.LabelFor(model => model.Year)
+                                    @Html.DropDownListFor(model => model.Year, new SelectList(Model.yearlst, "Year", "YearValue"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCMSyear" })
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <br />
+                                        <input type="submit" value="View" class="btn btn1 btn-success" id="btnViewCMSRpt" onclick="ShowCMSReport()" />
+                                        <input type="submit" value="Reset" class="btn btn1 btn-success" id="btnResetCMSRpt" onclick="ResetCMSReport()" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2  text-center">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="divCMSRptGrid">
+                            <div id="divCMSRptDetails">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divCMSReportInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ShowCMSReport() {
+        isValid = true;
+        var errorMsg = "";
+        var Monthindex = $("#ddlCMSMonth option:selected").index();
+        var Yearindex = $("#ddlCMSyear option:selected").index();
+        if (Monthindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Month</p>";
+            isValid = false;
+        }
+        if (Yearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select  Year</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror2 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCMSReportInfoMsg").text("");
+            $("#divCMSReportInfoMsg").append(finalerror2 + errorMsg + "</div>");
+            $("#divCMSReportInfoMsg").addClass("alert-danger");
+            $("#divCMSReportInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCMSReportInfoMsg").text("");
+            $("#divCMSReportInfoMsg").addClass("hidden");
+            var Month = $("#ddlCMSMonth option:selected").val();
+            var Year = $("#ddlCMSyear option:selected").val();
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/HR/ViewCMSReportGrid',
+                data: { Month: Month, Year: Year },
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#divCMSRptDetails").html(Data);
+                        $("#divCMSRptDetails").removeClass('hidden');
+                    }
+                    else {
+                        $("#divCMSRptDetails").html('No Data Found');
+                        $("#divCMSRptDetails").removeClass('hidden');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+
+        }
+
+    }
+    function ResetCMSReport() {
+        location.reload();
+    }
+</script>

@@ -1,0 +1,149 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.LedgerReport
+@{
+    ViewBag.Title = "LedgerReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Reports")
+@Styles.Render("~/bundles/Accounts/css")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">LedgerReport</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="row">
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.LedgerName)
+                                        @Html.DropDownListFor(model => model.LedgerName, new SelectList(Model.LedgerList, "LedgerId", "LedgerName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLRptLedgername" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Year)
+                                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLRptYear", onchange = "LedgerRptYearChange()" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3" id="divLRptFromdate">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FromDate)
+                                        @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtLRFromDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                    </div>
+                                    </div>
+                                <div class="col-md-3" id="divLRptTodate">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ToDate)
+                                        @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txtLRToDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                    </div> </div>
+                                    <div class="col-md-3" id="divLRRptBtns">
+                                        <div class="form-group">
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewLedgerRpt" onclick="ShowLedgerReport()" />
+                                                </div>
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetLedgerRpt" onclick="ResetLedgerReport()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            <div class="row">
+                                @*grids*@
+                                <div id="divLedgerRptGrid">
+                                    <div id="divLedgerRptDetails">
+                                    </div>
+
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divLedgerReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divLRptFromdate").addClass("hidden");
+        $("#divLRptTodate").addClass("hidden");
+        $("#divLedgerRptDetails").addClass("hidden");
+
+        $('#txtLRFromDate').css('background-color', 'transparent');
+        $('#txtLRToDate').css('background-color', 'transparent');
+        $("#txtLRFromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+                //var year = $("#ddlLRptYear option:selected").index();
+                //var yearArr = year.toString().split(' ');
+                //var fromyear = typeArr[0];
+                //var toyear = parseInt(typeArr[0]) + 1;               
+                //$("#txtLRFromDate").datepicker("option", "minDate", new Date(fromyear, 3, 1));
+                //$("#txtLRToDate").datepicker("option", "minDate", new Date(toyear, 2, 1));
+                $("#txtLRToDate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtLRToDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+
+      
+    });
+
+    function LedgerRptYearChange() {
+
+        $("#divLRptFromdate").removeClass("hidden");
+        $("#divLRptTodate").removeClass("hidden");
+        var year = $("#ddlLRptYear option:selected").text();
+        var yearArr = year.toString().split('-');
+        var fromyear = yearArr[0];
+        var toyear = parseInt(yearArr[0]) + 1;
+        //alert(fromyear + '====' + toyear);
+
+        // $("#txtLRToDate").datepicker('setDate', new Date(2020, 0, 1));
+        $("#txtLRFromDate").datepicker("option", "minDate", new Date(fromyear, 3, 1));
+        $("#txtLRFromDate").datepicker("option", "maxDate", new Date(toyear, 2, 31));
+        $("#txtLRToDate").datepicker("option", "minDate", new Date(fromyear, 3, 1));
+        $("#txtLRToDate").datepicker("option", "maxDate", new Date(toyear, 2, 31));
+        $("#txtLRFromDate").datepicker('setDate', new Date(fromyear, 3, 1));
+        $("#txtLRToDate").datepicker('setDate', new Date(toyear, 2, 31));
+        //$('#txtLRFromDate').datepicker({
+        //    minDate: new Date(2015, 1-1, 1),
+        //    maxDate: new Date(2015, 12-1, 31)
+        //});
+
+       
+    }
+</script>

@@ -1,0 +1,33 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Transfer
+
+<div class="col-md-12" id="divTransferItemsDetailsGrid"></div>
+<div class="col-md-12" id="divTransferItemsRemarks"></div>
+<script>
+    $(document).ready(function () {
+        var RNo = '@Model.RefNo'
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewTransferItemsDetails',
+            data: { Refno: RNo },
+            success: function (data) {
+                $("#divTransferItemsDetailsGrid").html(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });       
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewTransferItemsRemarks',
+            data: { Refno: RNo },
+            success: function (data) {
+                $("#divTransferItemsRemarks").html(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+    });
+</script>

@@ -1,0 +1,381 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPaymentInvoice
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCCode)
+                        @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DCA)
+                        @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CreditSubDCA)
+                        @Html.TextBoxFor(model => model.CreditSDCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DebitSubDCA)
+                        @Html.TextBoxFor(model => model.DebitSDCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PartyName)
+                        @Html.TextBoxFor(model => model.PartyName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceDate)
+                        @Html.TextBoxFor(model => model.InvoiceDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceAmount)
+                        @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+                @if (Model.GSTNo != null)
+                {<div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GSTNo)
+                            @Html.TextBoxFor(model => model.GSTNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                }
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Remarks)
+                        @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppInvstatus" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-6 ">
+                        <div class="form-group">
+                            <label>Notes:</label><br />
+                            <textarea rows="3" cols="60" class="form-control" id="AppNote"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <br /><br /><button onClick="ApproveGenPayInvoice('@Model.InvoiceNo','@Model.CCCode','@Model.DCA')">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApprGenPayInvoiceInfoMsg" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+        </form>
+    }
+    else
+    {
+        <form onsubmit="return false">
+            <form onsubmit="return false">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCCode)
+                            @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DCA)
+                            @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CreditSubDCA)
+                            @Html.TextBoxFor(model => model.CreditSDCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DebitSubDCA)
+                            @Html.TextBoxFor(model => model.DebitSDCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PartyName)
+                            @Html.TextBoxFor(model => model.PartyName, htmlAttributes: new { @class = "form-control", @id = "txtgpiPartyName" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.InvoiceDate)
+                            @Html.TextBoxFor(model => model.InvoiceDate, htmlAttributes: new { @class = "form-control", @id= "txtInvoiceDate" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.InvoiceAmount)
+                            @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @id = "txtgpiamount", onkeypress = "return ValidateAmount(this,event);" })
+                        </div>
+                    </div>
+                    @if (Model.GSTNo != null)
+                    {<div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.GSTNo)
+                                @Html.TextBoxFor(model => model.GSTNo, htmlAttributes: new { @class = "form-control", @readOnly = "true", @id = "txtGstno" })
+                            </div>
+                        </div>
+                    }
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Remarks)
+                            @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtremarks" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 text-right">                    
+                  
+                        <div class="form-group">                           
+                            <br /><br /><button type="submit" class="btn btn1 btn-success" onClick="UpdateGenPayInvoice('@Model.InvoiceNo','@Model.CCCode','@Model.DCA','@Model.GSTNo','@Model.CreditSubDCA','@Model.DebitSubDCA')">Submit</button>
+                        </div>
+                            
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApprGenPayInvoiceInfoMsg" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+            </form>
+        </form>
+     }
+    </div>
+<script  type="text/javascript">
+     $(document).ready(function () {
+        if (@Model.Status != "0") {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppInvstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                              @*if ('@Model.ITStatus' == "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}*@
+                        });
+                        //ddlaprovalstatus.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+                    }
+
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+        else {
+            $("#txtInvoiceDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                }
+            }).datepicker("setDate", '@Model.InvoiceDate');
+
+        }
+    });
+    function ApproveGenPayInvoice(InvNo, CC, dca) {
+       // alert(InvNo + '===' + CC + '===' + DCA);
+        var appstatus = $("#AppInvstatus option:selected").text();
+        retnote = $("#AppNote").val();
+        msg = $("#divApprGenPayInvoiceInfoMsg");
+
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter  Note</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var apprInv = {              
+                InvoiceNo: InvNo,
+                Action: appstatus,
+                ApprovalNote: retnote,
+                CCCode: CC,
+                DCA: dca
+            };
+            debugger;
+            //addFailMsg = "Error Occurred While Adding IT Verification";
+            addFailMsg = "Error Occurred";
+            //addSuccessMsg = "IT Verified Successfully.";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/ApproveGenPayInvoice",
+                data: JSON.stringify({ gpInv: apprInv }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $('#ApproveInvMsgModal').modal('show');
+                        var msg = "<div>Invoice " + finalmsg + "</div>";
+                        $("#ApprInvMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#ApprInvMsg").html(msg);
+                        $('#ApproveInvMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + " </div>";
+                    $("#ApprInvMsg").html(msg);
+                    $('#ApproveInvMsgModal').modal('show');
+                }
+            });
+        }
+    }
+    function UpdateGenPayInvoice(Invno,CC,dca,gstno,creditsdca,debitsdca) {
+
+        alert(Invno, CC, dca, gstno, creditsdca, debitsdca);
+        var errorMsg = "";
+        isValid = true;        
+        var partyname = $("#txtgpiPartyName").val();
+        var invamt = $("#txtgpiamount").val();
+        var remarks = $("#txtremarks").val();
+        var invdate = $("#txtInvoiceDate").val();
+        if (partyname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Party Name</p>";
+            isValid = false;
+        }
+        if (invdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Date</p>";
+            isValid = false;
+        }
+        if (invamt === "" || invamt < 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Invoice Amount</p>";
+            isValid = false;
+        }
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divGenPayInvInfoMsg").text("");
+            $("#divGenPayInvInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divGenPayInvInfoMsg").addClass("alert-danger");
+            $("#divGenPayInvInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divGenPayInvInfoMsg").text("");
+            $("#divGenPayInvInfoMsg").addClass("hidden");
+            var InvData = {
+                CCCode: CC,
+                DCA: dca,
+                GSTNo: gstno,
+                CreditSubDCA: creditsdca,
+                DebitSubDCA: debitsdca,
+                PartyName: partyname,
+                InvoiceAmount: invamt,
+                InvoiceDate: invdate,
+                Remarks: remarks,               
+                Action: 'Update',
+                InvoiceNo : Invno
+            };
+            debugger;
+            addFailMsg = "Error Occurred While Updating Invoice.";
+            $.ajax({
+                type: "POST",
+                url: '/Accounts/InsertUpdateGenPayInvoice',
+                data: { gpInv: InvData },               
+                dataType: "json",
+                success: function (Data) {                    
+                    var typeArr = Data.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') { 
+                        $('#ApproveInvMsgModal').modal('show');
+                        var msg = "<div>Invoice Updated Successfully</div>";
+                        $("#ApprInvMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + result + "</div>";
+                        $("#ApprInvMsg").html(msg);
+                        $('#ApproveInvMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprInvMsg").html(msg);
+                    $('#ApproveInvMsgModal').modal('show');
+                }
+              
+            });
+        }
+    }
+</script>

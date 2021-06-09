@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "SampleBar";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<h2>SampleBar</h2>
+<style>
+    #fade {
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: #ababab;
+        z-index: 1001;
+        -moz-opacity: 0.8;
+        opacity: .70;
+        filter: alpha(opacity=80);
+    }
+
+    #modal {
+        display: none;
+        position: absolute;
+        top: 45%;
+        left: 45%;
+        width: 64px;
+        height: 64px;
+        padding: 30px 15px 0px;
+        border: 3px solid #ababab;
+        box-shadow: 1px 1px 10px #ababab;
+        border-radius: 20px;
+        background-color: white;
+        z-index: 1002;
+        text-align: center;
+        overflow: auto;
+    }
+</style>
+<div id="divDCADtailsGrid">
+
+</div>
+<div id="fade"></div>
+<div id="modal">
+    @*<img id="loader" src="images/progress.gif" />*@
+    <img src="~/Content/EsselImages/progress.gif" id="loader"/>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    $.ajax({
+        type: "POST",
+        url: "/Home/ViewDCAGrid",
+        data: '{}',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        beforeSend: function () {
+            openModal();
+        },
+        success: function (response) {
+            consol.log(response);
+            //ddlLoanNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            //$.each(response, function () {
+            //    ddlLoanNo.append($("<option></option>").val(this['UnsecuredLoadId']).html(this['LoanNumber']));
+            //});
+            closeModal();
+        },
+        failure: function (response) {
+
+        },
+        error: function (response) {
+
+        }
+        });
+    });
+    function openModal() {
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('fade').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('fade').style.display = 'none';
+    }
+</script>

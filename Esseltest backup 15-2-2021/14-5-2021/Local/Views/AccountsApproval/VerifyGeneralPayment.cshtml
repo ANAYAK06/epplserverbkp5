@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "VerifyGeneralPayment";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/AccountsApprovaljs")
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">General Payment Verification</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <input type="text" value="0" id="txtAppGenCreatedby" style="display:none" />
+                                <input type="hidden" id="currentGenTransno" />
+                                <input type="hidden" id="roleid" />
+                                <div id="divApprGenGrid">
+                                    @Html.Action("VerifyGeneralPaymentGrid", "AccountsApproval")
+                                </div>
+                                <div id="ApproveGenMsgModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                    <div class="modal-dialog modal-lg">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <br />
+                                                <div id="AppgenMsg" style="text-align:center;font-size:20px;color:forestgreen"></div>
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+</div>

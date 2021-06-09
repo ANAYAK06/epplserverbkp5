@@ -1,0 +1,646 @@
+﻿
+@model EsselTestLocalApplication.Models.NewUsers
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Update Employee</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.joiningcategory)
+                                <select class="form-control dropdown-toggle" id="ddlUpjoiningCategory">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Staff">Staff</option>
+                                    <option value="Labour">Labour</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.JoiningType)
+                                <select class="form-control dropdown-toggle" id="ddlUpJoiningType" disabled>
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="New">New</option>
+                                    <option value="ReJoin">ReJoin</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Category)
+                                <select class="form-control dropdown-toggle" id="ddlUpCategory">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Directors">Directors</option>
+                                    <option value="Senior Management Staff">Senior Management Staff</option>
+                                    <option value="Management Staff">Management Staff</option>
+                                    <option value="Contract Management Staff">Contract Management Staff</option>
+                                    <option value="Dummy Employees">Dummy Employees</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Appointmenttype)
+                                <select class="form-control dropdown-toggle" id="ddlUpAppointmenttype">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Direct">Direct</option>
+                                    <option value="Normal">Normal</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Firstname)
+                                @Html.TextBoxFor(model => model.Firstname, new { @id = "txtUpfirstname", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Middlename)
+                                @Html.TextBoxFor(model => model.Middlename, new { @id = "txtUpmiddlename", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Lastname)
+                                @Html.TextBoxFor(model => model.Lastname, new { @id = "txtUplastname", @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Gender)
+                                <select class="form-control dropdown-toggle" id="ddlUpGender">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="TransGender">TransGender</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.UpDob)
+                                @Html.TextBoxFor(model => model.UpDob, "{0:dd-MMM-yyyy}", new { @id = "txtUpdob", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Calculate Age</label></br>
+                                <button id="Upcalculate" onclick="CalculateAge()">Calculate</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Age)
+                                @Html.TextBoxFor(model => model.Age, new { @id = "txtUpage", @class = "form-control", @readonly = "true" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MartialStatus)
+                                <select class="form-control dropdown-toggle" id="ddlUpMartialStatus">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widower">Widower</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.UpDateofMarriage)
+                                @Html.TextBoxFor(model => model.UpDateofMarriage, "{0:dd-MMM-yyyy}", new { @id = "txtUpdomarriage", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SpouseName)
+                                @Html.TextBoxFor(model => model.SpouseName, new { @id = "txtUpspousename", @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NomineeName)
+                                @Html.TextBoxFor(model => model.NomineeName, new { @id = "txtUpnomineename", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NomineeGender)
+                                <select class="form-control dropdown-toggle" id="ddlUpNomineeGender" onchange="NomineeGenderUpChange()">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Relation)
+                                <select class="form-control dropdown-toggle" id="ddlUpRelation">
+                                    <option selected="selected" value="Select">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Mobile)
+                                @Html.TextBoxFor(model => model.Mobile, new { @id = "txtUpMobile", @maxlength = "10", @class = "form-control", onkeypress = "return IsNumeric(event)" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.workemail)
+                                @Html.TextBoxFor(model => model.workemail, new { @id = "txtUpworkemail", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Jobtype)
+                                <select class="form-control dropdown-toggle" id="ddlUpJobtype">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Permanent">Permanent</option>
+                                    <option value="Semi Permanent/Contractual">Semi Permanent/Contractual</option>
+                                    <option value="Temporary">Temporary</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PermanentAddress)
+                                @Html.TextAreaFor(model => model.PermanentAddress, new { @id = "txtUpPermanentAddress", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Department)
+                                @Html.DropDownListFor(model => model.Department, new SelectList(Model.DepartmentList, "DepartmentId", "DepartmentName"),  htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpDepartment" })
+
+                               
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Appointed)
+                                @Html.DropDownListFor(model => model.Appointed, new SelectList(Model.DesignationList, "DesignationId", "DesignationName"), @Model.Appointed, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpDesignation" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Username)
+                                @Html.TextBoxFor(model => model.Username, htmlAttributes: new { @class = "form-control", @id = "txtUpNUsername",
+                                    @title = "Enter Username",readOnly=true })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+
+                     
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <input type="submit" class="btn btn1 btn-success" id="btnUpdateUser" onclick="UpdateUserData('@Model.Username')" value="Update" />
+                            <input type="hidden" value="0" id="txtSelectedrole" />
+                            <input type="hidden" value="0" id="txtUpCCExist" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <br />
+                            <div id="divUpUserInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+         
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#txtUpdomarriage").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+        }).datepicker("setDate", '@Model.UpDateofMarriage');
+        $("#txtUpdob").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+        }).datepicker("setDate", '@Model.UpDob');
+
+         var joincategory = '@Model.joiningcategory';
+        $("#ddlUpjoiningCategory").find("option:contains('" + joincategory + "')").each(function () {
+            if ($(this).text() == joincategory) {
+                    $(this).attr("selected", "selected");
+                }
+        });
+
+
+        if ('@Model.Status' !== 'Left') {//for active user update show newoption or rejoin
+            var jointype = '@Model.JoiningType';
+            $("#ddlUpJoiningType").find("option:contains('" + jointype + "')").each(function () {
+                if ($(this).text() == jointype) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+        }
+        else {//for left employee rejoin show only rejoin
+            var jointype = 'ReJoin';
+            $("#ddlUpJoiningType").find("option:contains('" + jointype + "')").each(function () {
+                if ($(this).text() == jointype) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+        }
+        var category = '@Model.Category';
+        $("#ddlUpCategory").find("option:contains('" + category + "')").each(function () {
+            if ($(this).text() == category) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var Appointmenttype = '@Model.Appointmenttype';
+        $("#ddlUpAppointmenttype").find("option:contains('" + Appointmenttype + "')").each(function () {
+            if ($(this).text() == Appointmenttype) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var Gender = '@Model.Gender';
+        $("#ddlUpGender").find("option:contains('" + Gender + "')").each(function () {
+            if ($(this).text() == Gender) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var MartialStatus = '@Model.MartialStatus';
+        $("#ddlUpMartialStatus").find("option:contains('" + MartialStatus + "')").each(function () {
+            if ($(this).text() == MartialStatus) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var NomineeGender = '@Model.NomineeGender';
+        $("#ddlUpNomineeGender").find("option:contains('" + NomineeGender + "')").each(function () {
+            if ($(this).text() == NomineeGender) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        var Jobtype = '@Model.Jobtype';
+        $("#ddlUpJobtype").find("option:contains('" + Jobtype + "')").each(function () {
+            if ($(this).text() == Jobtype) {
+                $(this).attr("selected", "selected");
+            }
+        });
+
+     
+        var ddlr = $("#ddlUpRelation");
+        ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+        if (NomineeGender === 'Male') {
+            ddlr.append($("<option></option>").val('Father').html('Father'));
+            ddlr.append($("<option></option>").val('Husband').html('Husband'));
+            ddlr.append($("<option></option>").val('Husband').html('Brother'));
+
+        }
+        else if (NomineeGender === 'Female') {
+            ddlr.append($("<option></option>").val('Mother').html('Mother'));
+            ddlr.append($("<option></option>").val('Wife').html('Wife'));
+            ddlr.append($("<option></option>").val('Wife').html('Sister'));
+        }
+
+        var Relation = '@Model.Relation';
+
+        $("#ddlUpRelation").find("option:contains('" + Relation + "')").each(function () {
+            if ($(this).text() == Relation) {
+                $(this).attr("selected", "selected");
+            }
+        });
+
+        if ($("#txtUpdob").val() != "") {
+            var From_date = new Date($("#txtUpdob").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtUpage").val(years);
+        }
+
+         var Appointed = '@Model.Appointed';
+
+        $("#ddlUpDesignation").find("option:contains('" + Appointed + "')").each(function () {
+            if ($(this).text() == Appointed) {
+                $(this).attr("selected", "selected");
+            }
+        });
+
+    });
+
+    function UpdateUserData(UserName) {
+        //debugger;
+        isValid = true;
+        var errorMsg = "";
+        var username = $("#txtUpNUsername").val();
+        //var role = $("#ddlUpUserRole option:selected").index();
+        var Designation = $("#ddlUpDesignation option:selected").index();
+        //var Roleid = $("#ddlUpUserRole  option:selected").val();
+
+        var joiningCategory = $("#ddlUpjoiningCategory option:selected").index();
+        var JoiningType = $("#ddlUpJoiningType option:selected").index();
+        var Category = $("#ddlUpCategory option:selected").index();
+        var Appointmenttype = $("#ddlUpAppointmenttype option:selected").index();
+        var firstname = $("#txtUpfirstname").val();
+        var middlename = $("#txtUpmiddlename").val();
+        var lastname = $("#txtUplastname").val();
+        var Gender = $("#ddlUpGender option:selected").index();
+        var dob = $("#txtUpdob").val();
+        var age = $("#txtUpage").val();
+        var MartialStatus = $("#ddlUpMartialStatus option:selected").index();
+        var domarriage = $("#txtUpdomarriage").val();
+        var spousename = $("#txtUpspousename").val();
+        var nomineename = $("#txtUpnomineename").val();
+        var NomineeGender = $("#ddlUpNomineeGender option:selected").index();
+        //var Relation = $("#txtUpRelation").val();
+        var Relation = $("#ddlUpRelation option:selected").index();
+        var Mobile = $("#txtUpMobile").val();
+        var workemail = $("#txtUpworkemail").val();
+        var Jobtype = $("#ddlUpJobtype option:selected").index();
+        var PermanentAddress = $("#txtUpPermanentAddress").val();
+        var Department = $("#ddlUpDepartment option:selected").index();
+
+
+
+        var username1 = $("#txtUpNUsername").val();
+        if (joiningCategory === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Category</p>";
+            isValid = false;
+        }
+        if (JoiningType === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Type</p>";
+            isValid = false;
+        }
+        if (Category === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+            isValid = false;
+        }
+        if (Appointmenttype === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Appointment type</p>";
+            isValid = false;
+        }
+
+        if (middlename == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Middle Name</p>";
+            isValid = false;
+        }
+        if (firstname == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter First Name</p>";
+            isValid = false;
+        }
+        if (lastname == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Last Name</p>";
+            isValid = false;
+        }
+        if (Gender === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Gender</p>";
+            isValid = false;
+        }
+        if (dob == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Date of Birth</p>";
+            isValid = false;
+        }
+        if (age == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Calculate Age</p>";
+            isValid = false;
+        }
+        if (age === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Age</p>";
+            isValid = false;
+        }
+        if (MartialStatus === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Martial Status</p>";
+            isValid = false;
+        }
+        if (MartialStatus != 0) {
+            var MartialStatusval = $("#ddlUpMartialStatus option:selected").val();
+            if (MartialStatusval != "Single") {
+                if (domarriage == "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Date of Marriage</p>";
+                    isValid = false;
+                }
+                if (spousename == "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Spouse Name</p>";
+                    isValid = false;
+                }
+            }
+        }
+        if (nomineename == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Name</p>";
+            isValid = false;
+        }
+        if (NomineeGender === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Gender</p>";
+            isValid = false;
+        }
+        if (Relation ===0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Relation</p>";
+            isValid = false;
+        }
+        if (Mobile == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Mobile No</p>";
+            isValid = false;
+        }
+        if (Mobile != "") {
+            var length = Mobile.length;
+            if (length < 10 || length > 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Invalid number; must be ten digits Mobile No</p>";
+                isValid = false;
+            }
+        }
+        if (workemail == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Work E-Mail</p>";
+            isValid = false;
+        }
+        if (workemail != "") {
+            var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+            if (!expr.test(workemail)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Work Emailid</p>";
+                isValid = false;
+            }
+        }
+        if (Jobtype === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Job Type</p>";
+            isValid = false;
+        }
+        if (PermanentAddress == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Permanent Address</p>";
+            isValid = false;
+        }
+        if (Department === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Department</p>";
+            isValid = false;
+        }
+
+        if (Designation === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Appointed As</p>";
+            isValid = false;
+        }
+       
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divUpUserInfoMsg").text("");
+            $("#divUpUserInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divUpUserInfoMsg").addClass("alert-danger");
+            $("#divUpUserInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divUpUserInfoMsg").text("");
+            $("#divUpUserInfoMsg").addClass("hidden");
+            var saveNewUser = {};
+           
+                saveNewUser = {
+                   
+                    Username: username,
+                    //RoleId: $("#ddlUpUserRole option:selected").val(),
+                    DesignationId: $("#ddlUpDesignation option:selected").val(),
+                    Action: 'Update',
+                    CheckUpdationType: 'ReturnUpdate',
+                    joiningcategory: $("#ddlUpjoiningCategory option:selected").val(),
+                    JoiningType: $("#ddlUpJoiningType option:selected").val(),
+                    Category: $("#ddlUpCategory option:selected").val(),
+                    Appointmenttype: $("#ddlUpAppointmenttype option:selected").val(),
+                    Firstname: $("#txtUpfirstname").val(),
+                    Middlename: $("#txtUpmiddlename").val(),
+                    Lastname: $("#txtUplastname").val(),
+                    Gender: $("#ddlUpGender option:selected").val(),
+                    Dob: $("#txtUpdob").val(),
+                    Age: $("#txtUpage").val(),
+                    MartialStatus: $("#ddlUpMartialStatus option:selected").val(),
+                    DateofMarriage: $("#txtUpdomarriage").val(),
+                    SpouseName: $("#txtUpspousename").val(),
+                    NomineeName: $("#txtUpnomineename").val(),
+                    NomineeGender: $("#ddlUpNomineeGender option:selected").val(),
+                    Relation: $("#ddlUpRelation option:selected").val(),
+                    Mobile: $("#txtUpMobile").val(),
+                    workemail: $("#txtUpworkemail").val(),
+                    Jobtype: $("#ddlUpJobtype option:selected").val(),
+                    PermanentAddress: $("#txtUpPermanentAddress").val(),
+                    Department: $("#ddlUpDepartment option:selected").val()
+                 
+            };
+           
+            $("#btnUpdateUser").prop('disabled', true);
+
+            addFailMsg = "Error Occurred While Updating User";
+            addSuccessMsg = "User Detials Updated Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Home/UpdateUser",
+                data: JSON.stringify({ usr: saveNewUser }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Data) {
+                    if (Data.saveStatus == "Submitted") {
+                       
+                        $("#divUpUserInfoMsg").text(addSuccessMsg);
+                        $("#divUpUserInfoMsg").removeClass("hidden alert-danger");
+                        $("#divUpUserInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnUpdateUser").prop('disabled', false);
+                        $("#divUpUserInfoMsg").text(addFailMsg);
+                        $("#divUpUserInfoMsg").addClass("alert-danger");
+                        $("#divUpUserInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppUserMsg").html(msg);
+                    $('#ApproveUserMsgModal').modal('show');
+                }
+
+            });
+        }
+
+
+    }
+
+    function CalculateAge() {
+
+        if ($("#txtUpdob").val() != "") {
+            var From_date = new Date($("#txtUpdob").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtUpage").val(years);
+        }
+        else {
+            alert("Select Date of Birth");
+            return false;
+        }
+    }
+
+    function NomineeGenderUpChange() {
+
+        var NomineeGenderIndex = $("#ddlUpNomineeGender option:selected").index();
+        var NomineeGender = $("#ddlUpNomineeGender option:selected").val();
+        if (NomineeGenderIndex != 0) {
+            var ddlr = $("#ddlUpRelation");
+            ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+            if (NomineeGender === 'Male') {
+                ddlr.append($("<option></option>").val('Father').html('Father'));
+                ddlr.append($("<option></option>").val('Mother').html('Mother'));
+                ddlr.append($("<option></option>").val('Wife').html('Wife'));
+
+            }
+            else if (NomineeGender === 'Female') {
+                ddlr.append($("<option></option>").val('Father').html('Father'));
+                ddlr.append($("<option></option>").val('Mother').html('Mother'));
+                ddlr.append($("<option></option>").val('Husband').html('Husband'));
+            }
+
+        }
+        else {
+            var ddlr = $("#ddlRelation");
+            ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+
+        }
+
+    }
+</script>

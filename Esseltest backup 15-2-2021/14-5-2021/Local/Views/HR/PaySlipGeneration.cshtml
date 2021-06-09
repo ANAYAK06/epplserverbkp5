@@ -1,0 +1,185 @@
+﻿@model EsselTestLocalApplication.Models.HR.PaySlipGeneration
+@{
+    ViewBag.Title = "PaySlipGeneration";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">PaySlip Generation</h5>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @Html.LabelFor(model => model.EffectiveMonth)
+                                    @Html.DropDownListFor(model => model.EffectiveMonth, new SelectList(Model.monthlst, "name", "name"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPSMonth" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.LabelFor(model => model.Year)
+                                    @Html.DropDownListFor(model => model.Year, new SelectList(Model.yearlst, "Year", "YearValue"), " - Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPSyear" })
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <br />
+                                        <input type="submit" value="View" class="btn btn1 btn-success" id="btnViewPSRpt" onclick="ShowPSReport()" />
+                                        <input type="submit" value="Reset" class="btn btn1 btn-success" id="btnResetPSRpt" onclick="ResetPSReport()" />
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-md-2  text-center">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="divPSRptGrid" class="col-md-12">
+                            <div id="divPSRptDetails">
+                            </div>
+                        </div>
+                        <div class="col-md-12 text-right">
+                            <br />
+                            <input type="submit" value="Download" class="btn btn1 btn-success" id="btnDownload" onclick="ExportPaySlippdf()" />
+                            <input id="txtnet" type="hidden" />
+
+
+                        </div>
+                        <div class="col-md-12 text-left" style="color:#000;margin-left:-10px !important" id="divpwdnot"><span><b>Note:</b>Password of PDF file is Employee BirthDay in DDMMYYY Format(Ex.13041995)</span></div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divPSReportInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                                <label id="alertReport"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#btnDownload").addClass("hidden");
+        $("#divpwdnot").addClass("hidden");
+    });
+    function ShowPSReport() {
+        isValid = true;
+        var errorMsg = "";
+        var Monthindex = $("#ddlPSMonth option:selected").index();
+        var Yearindex = $("#ddlPSyear option:selected").index();
+        if (Monthindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Month</p>";
+            isValid = false;
+        }
+        if (Yearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select  Year</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror2 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPSReportInfoMsg").text("");
+            $("#divPSReportInfoMsg").append(finalerror2 + errorMsg + "</div>");
+            $("#divPSReportInfoMsg").addClass("alert-danger");
+            $("#divPSReportInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divPSReportInfoMsg").text("");
+            $("#divPSReportInfoMsg").addClass("hidden");
+            var Month = $("#ddlPSMonth option:selected").val();
+            var Year = $("#ddlPSyear option:selected").val();
+            var Createdby = '@Session["Createdby"]';
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/HR/ViewPSReportGrid',
+                data: { Month: Month, Year: Year, EmpUID: Createdby },
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#btnDownload").removeClass("hidden");
+                        $("#divPSRptDetails").html(Data);
+                        $("#divPSRptDetails").removeClass('hidden');
+                    }
+                    else {
+                        $("#divPSRptDetails").html('No Data Found');
+                        $("#divPSRptDetails").removeClass('hidden');
+                        $("#btnDownload").addClass("hidden");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+
+        }
+
+    }
+    function ResetPSReport() {
+        location.reload();
+    }
+    function ExportPaySlippdf() {
+
+       // alert("Downloding");
+        var month = $("#ddlPSMonth option:selected").val();
+        var year = $("#ddlPSyear option:selected").val();
+        var Createdby = '@Session["Createdby"]';
+       
+        var netinwords = $("#txtnet").val();
+        $.ajax({
+            type: 'POST',           
+            url: '/HR/ExportPaySlippdf', 
+            data: {NetInWords:netinwords },
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+               
+                link.download = "" + Createdby + "_" + month + "_" + year + "" + "_PaySlip.pdf";
+                link.click();
+                $("#divpwdnot").removeClass("hidden");
+            },
+            error: function (err) {
+            }          
+        });
+
+        //$.ajax({
+        //    type: 'POST',
+        //    url: '/HR/ExportPaySlippdf', 
+        //    data: {NetInWords:netinwords },
+        //    success: function (data, status, xhr) {
+        //        console.log("data");
+        //        console.log(data);
+        //        console.log(status);
+        //        console.log(xhr);
+        //        var cd = xhr.getResponseHeader("Content-Disposition");
+        //        var blob = new Blob([data], { type: 'application/octet-stream' });
+        //        console.log(blob);
+        //        var link = document.createElement('a');
+        //        link.href = window.URL.createObjectURL(blob);
+        //        link.download = cd.split("filename=")[1];
+        //        link.click();
+        //    },
+        //    error: function (err) {
+        //        console.log(err);
+        //        if (err.status == 404) {
+        //            $("#alertTitle").html("Failed to download Report. The report is not generated for the patient !!");
+        //        } else {
+        //            $("#alertTitle").html("Failed to download Report. Check with Administrator !!");
+        //        }
+        //        $("#alertReport").modal("show");
+        //    },
+
+        //});
+    }
+</script>

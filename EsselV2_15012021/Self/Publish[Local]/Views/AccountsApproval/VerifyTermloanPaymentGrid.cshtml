@@ -1,0 +1,148 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.TermLoanPayment>
+<div class="table-responsive w-100">
+    <table id="tblApprovetloanGrid" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Bank Name</th>
+                <th>Date</th>
+                <th>Transaction No</th>
+                <th>Amount</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.PaymentTransactionNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BankName)
+                </td>
+                <td >
+                    @Html.DisplayFor(modelItem => item.BDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentTransactionNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalAmount)
+                </td>              
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.paymentstatus)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+      var openRows = new Array();
+    $(document).ready(function () {
+        //debugger;
+        var ApprovetlGrid = null;
+            InitializeApprtlGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprtlpCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtApprtlpRole").val(SessionRole);
+        });
+    function InitializeApprtlGrid() {       
+        ApprovetlGrid = $('#tblApprovetloanGrid').DataTable({
+                destroy: true,
+                paging: true,
+                lengthChange: false,
+                searching: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+               
+            },
+                pageLength: 10
+            });
+        $('#tblApprovetloanGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApprovetlGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApprovetlGrid, tr);
+                // Open this row
+                    row.child(formatApprtl(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {        
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+
+    function formatApprtl(d) {
+        //debugger;
+        var htmltext;
+        var Rid, transstatus;;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Rid = value;
+            if (index == 6)
+                transstatus = value;
+        });    
+        var divid = "divapprtlc" + Rid;
+        var divid1 = $("#" + divid + "");
+        $("#currentloanid").val(Rid);
+        if (transstatus == 0) {   
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'html',
+                    url: '/AccountsApproval/UpdateTermLoanpaymentView',
+                    data: { Rowid: Rid },
+                    success: function (Data) {
+                        var divid2 = "divapprtlc" + Rid;
+                        var divid3 = $("#" + divid2 + "");
+                        $(divid3).html(Data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });           
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyTermLoanPaymentView',
+                data: { Rowid: Rid },
+                success: function (Data) {                  
+                    var divid2 = "divapprtlc" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {                   
+                    alert("error");
+                }
+            });
+        }
+        return '<div id="divapprtlc' + Rid + '"></div>';
+    } 
+</script>

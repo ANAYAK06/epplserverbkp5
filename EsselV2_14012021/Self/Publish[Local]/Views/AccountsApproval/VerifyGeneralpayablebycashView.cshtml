@@ -1,0 +1,160 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.GeneralPayablebyCashDetails>
+@foreach (var item in Model)
+{
+    <div class="col-md-12 verifydiv">
+    <br/>
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                @*@if (item.SelfCCCode == item.PaidAgainstCCCode)*@
+                @if (item.PaidAgainstCCCode == null)
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Mode of Transaction:</label>
+                            <input type="text" class="form-control" value="Self Debit" readOnly="readOnly" id="Apprwithdrawnname-@item.Voucherno" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Self Cost Center:</label>
+                            <input type="text" class="form-control" value="@item.SelfCCCode" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Mode of Transaction:</label>
+                            <input type="text" class="form-control" value="Debit from other CC" readOnly="readOnly" id="Apprwithdrawnname-@item.Voucherno" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Self Cost Center:</label>
+                            <input type="text" class="form-control" value="@item.SelfCCCode" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Other Cost Center:</label>
+                            <input type="text" class="form-control" value="@item.PaidAgainstCCCode" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+                @*@if (item.SelfCCCode != item.PaidAgainstCCCode)
+                    {
+
+                    }*@               
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Date:</label>
+                        <input type="text" class="form-control" value="@item.InvoiceDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Paid Date:</label>
+                        <input type="text" class="form-control" value="@item.PaymentDate" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Head :</label>
+                        <input type="text" class="form-control" value="@item.DCACode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sub AccountHead:</label>
+                        <input type="text" class="form-control" value="@item.SubDCACode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Name :</label>
+                        <input type="text" class="form-control" value="@item.Name" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <label>Remarks :</label>
+                        <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input type="text" class="form-control" value="@item.Amount" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprgeneralpayablebycashstatus" })
+                       
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="ApprgeneralpayablebycashNote-@item.Voucherno"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="Approvegeneralpayablebycash('@item.Voucherno')">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprgeneralpayablebycashInfoMsg-@item.Voucherno" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+}
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Apprgeneralpayablebycashstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                
+                },
+                failure: function (response) {
+                 
+                },
+                error: function (response) {
+                  
+                }
+            });
+    });
+</script>

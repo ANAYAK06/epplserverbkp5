@@ -1,0 +1,251 @@
+﻿@model List<EsselTestLocalApplication.Models.AddCostCenter>
+
+
+<div class="table-responsive">
+    <table id="tblApproveCCDetailsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Cost Center Code</th>
+                <th> Name</th>
+                <th>Type</th>
+                <th>State</th>
+                <th class="hidden">VoucherLimit</th>
+                <th class="hidden">DayLimit</th>
+                <th class="hidden">PhoneNo</th>
+                <th class="hidden">InchName</th>
+                <th class="hidden">InchNo</th>
+                <th class="hidden">SiteAddress</th>
+                <th class="hidden">SubType</th>
+                <th class="hidden">EPPLFinalOfferNo</th>
+                <th class="hidden">FinalOfferDate</th>
+                <th class="hidden">ClientAcceptanceReferenceNo</th>
+                <th class="hidden">ClientAcceptanceDate</th>
+                <th>Cost Center Status</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">MOID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CC_Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.State)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.VoucherLimit)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.DayLimit)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.PhoneNo)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CCInchargeName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.InchargePhNo)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.SiteAddress)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.SubType)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.EPPLFinalOfferNo)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.FinalOfferDate)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ClientAcceptanceReferenceNo)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ClientAcceptanceDate)
+                </td>
+                <td >
+                    @Html.DisplayFor(modelItem => item.CC_Status)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                  <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.MOID)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var CostCentersGrid = null;
+        InitializeCostCenterDetialsGrid();
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppccCreatedby").val(Sessioncreated);
+        var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+
+    });
+    function InitializeCostCenterDetialsGrid() {
+        CostCentersGrid = $('#tblApproveCCDetailsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Cost Centers Found"
+            },
+            "createdRow": function (row, data, index) {
+             
+                var oldstatus = $('td:eq(18)', row).html();
+              
+                if (oldstatus !=0) {
+                    $('td:eq(18)', row).html("Verification Pending");
+                }
+                else { $('td:eq(18)', row).html("Return"); }
+
+            },
+            pageLength: 10
+        });
+
+        $('#tblApproveCCDetailsGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = CostCentersGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(CostCentersGrid, tr);
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+       
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function format(d) {
+        var id = 0;
+        //var cctype;
+        var htmltext;
+        var code,ccid,cctype,status,ccstatus;
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 2)
+                code = value;
+            if (index == 1)
+                ccid = value;
+            if (index == 4)
+                if (index == 17)
+                    ccstatus = value;
+                cctype = value;
+            if (index == 18)
+                status = value;
+
+        });
+        ////debugger;
+        var divid = "divappcc"+ccid ;
+        var divid1 = $("#" + divid + "");
+        $("#currentccid").val(ccid);
+        if (status != '0') {
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/ViewApproveCostCenter',
+                data: { CCCode: code },
+                success: function (Data) {
+                    var divid2 = "divappcc" + ccid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Home/UpdateApprovalCostCenter',
+                data: { CCCode: code },
+                success: function (Data) {
+                    var divid2 = "divappcc" + ccid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+
+            //$.ajax({
+            //    type: "GET",
+            //    url: "/Home/UpdateApprovalCostCenter",
+            //    data: { CCCode: code },                
+            //    dataType: "html",
+            //    success: function (response) {
+            //        var divid2 = "divappcc" + ccid;
+            //        var divid3 = $("#" + divid2 + "");
+            //        $(divid3).html(Data);
+
+            //    },
+            //    failure: function (response) {
+            //        alert(response.responseText);
+            //    },
+            //    error: function (response) {
+            //        alert(response.responseText);
+            //    }
+            //});
+
+        }
+        return '<div id="divappcc' + ccid +'" class="col-md-12"><br/></div>';
+    }
+
+</script>

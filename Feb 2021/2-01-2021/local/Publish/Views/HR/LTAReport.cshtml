@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "LTAReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*<h2>LTAReport</h2>*@
+
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <h4 style="text-align:left;font-weight:bold">Long Term Advances</h4>
+                        </div>
+                        <div class="col-md-6" style="text-align:right">
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div id="divGrid">
+                                    @Html.Action("LTAReportGrid", "HR")
+                                </div>
+                                                         
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#LTAPreCloseModel").on("hidden.bs.modal", function () {
+            $("#divGrid").load('/HR/LTAReportGrid');
+        });
+    });
+
+
+</script>
+

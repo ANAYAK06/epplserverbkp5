@@ -1,0 +1,157 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmpDesignation
+<div class="modal-dialog modal-lg">
+<!-- Modal content-->
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">New Designation</h4>
+    </div>
+    <div class="modal-body" style="overflow-x:hidden">
+        <form onsubmit="return false">            
+            <div class="row">
+                <div class="col-lg-3 text-center"> <label>Designation Name</label></div>
+                <div class="col-lg-4"> <input type="text" id="txtNDesignation" class="form-control" /></div>
+                <div class="col-lg-3">
+                    <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddnewDesign" onclick="SubmitDesignation()" /> &nbsp;&nbsp;
+                    <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetDesign()" />
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divAddDesignInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>       
+        </form>
+        <div id="divDesignationGrid">
+            @Html.Action("EmpDesignationGrid", "HR")
+        </div>
+    </div>
+</div>
+
+    </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+         function SubmitDesignation() {
+            isValid = true;
+            var errorMsg = "";
+            var DesignName = $("#txtNDesignation").val();
+            if (DesignName === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Designation Name</p>";
+                isValid = false;
+            }
+            if (!isValid) {               
+                $("#divAddDesignInfoMsg").text("");
+                $("#divAddDesignInfoMsg").append("<div>" + errorMsg + "</div>");
+                $("#divAddDesignInfoMsg").addClass("alert-danger");
+                $("#divAddDesignInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divAddDesignInfoMsg").text("");
+                $("#divAddDesignInfoMsg").addClass("hidden");
+
+                var NewDesign = {
+                    DesignationName: $("#txtNDesignation").val(),
+                    Action:"New"
+                };
+                addFailMsg = "Error Occurred While Adding  Designation";
+                addSuccessMsg = "Designation Added Successfully.";
+                $("#btnaddnewDesign").prop('disabled', true);
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/SaveDesignation",
+                    data: JSON.stringify({ Design: NewDesign }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus == "Submited") {
+                       
+                            RebindBindGridAfterupdate();
+                            //$("#divAddDesignInfoMsg").text(addSuccessMsg);
+                            //$("#divAddDesignInfoMsg").removeClass("hidden alert-danger");
+                            //$("#divAddDesignInfoMsg").addClass("alert-success");
+                            RebindDesignation();
+                        }
+                        else {
+                            $("#btnaddnewDesign").prop('disabled', false);
+                            $("#divAddDesignInfoMsg").text(response.saveStatus);
+                            $("#divAddDesignInfoMsg").removeClass("hidden alert-danger");
+                            $("#divAddDesignInfoMsg").addClass("alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#btnaddnewDesign").prop('disabled', false);
+                        $("#divAddDesignInfoMsg").text(addFailMsg);
+                        $("#divAddDesignInfoMsg").addClass("alert-danger");
+                        $("#divAddDesignInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            }
+    }
+    function ResetDesign() {
+        $("#txtNDesignation").val("");
+        $("#btnaddnewDesign").prop('disabled', false);
+        $("#divAddDesignInfoMsg").text("");
+        $("#divAddDesignInfoMsg").addClass("hidden");
+        RebindBindGridAfterupdate();
+    }
+    function RebindDesignation() {
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetAllDesignations",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                //debugger;
+                var Action = '@Session["EmpAction"]';
+                if (Action === "New") {
+                    ddlDesign = $("#ddlNEmpDesignatedAs");
+                }
+                else { ddlDesign = $("#ddlUpEmpDesignatedAs"); }
+                ddlDesign.empty().append('<option selected="selected" value="Select">Select</option>');
+                $.each(response, function () {
+                    ddlDesign.append($("<option></option>").val(this['DesignationId']).html(this['DesignationName']));
+                });
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+
+    }
+    function RebindBindGridAfterupdate() {
+     
+            $("#divDesignationGrid").load('/HR/EmpDesignationGrid');
+        
+        //$.ajax({
+        //    type: 'GET',
+        //    dataType: 'html',
+        //    url: '/HR/EmpDesignationGrid',
+        //    data: {  },
+        //    success: function (Data) {
+        //        var count1 = Object.keys(Data).length;
+        //        var msg = "";
+        //        if (count1 > 0) {
+        //            $("#divDesignationGrid").html(Data);
+        //        }
+        //        else {
+        //            $("#divDesignationGrid").html('No Data Found');
+        //        }
+        //    },
+        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+        //        alert("error");
+        //    }
+        //});
+    }
+
+
+</script>

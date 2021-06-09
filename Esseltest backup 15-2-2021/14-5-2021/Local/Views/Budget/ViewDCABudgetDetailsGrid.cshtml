@@ -1,0 +1,131 @@
+﻿@model List<EsselTestLocalApplication.Models.Budget.DCABudgetDetails>
+<div id="divDCABudgetDetails">
+    <div class="table-responsive">
+        <table id="tblDcaBudgetDetails" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="hidden">DCABudget Id</th>
+                    <th class="hidden">CC Code</th>
+                    <th class="hidden">Account Head Code</th>
+                    <th style="text-align:left;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Account Head Name</th>
+                    <th style="text-align:left;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Budget Created Date</th>
+                    <th style="text-align:left;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Assigned Budget</th>
+                    <th style="text-align:left;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Account Head Balance</th>
+                    <th style="text-align:left;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Amend</th>
+                    <th class="hidden">Type</th>
+                    <th class="hidden">subtype</th>
+                    <th class="hidden">Year</th>
+                    <th class="hidden">CCTypeid</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.DCABudgetId)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.CCCode)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.DCACode)
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.DCACode),@Html.DisplayFor(modelItem => item.DCAName)
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.DCABudgetCreationdate)
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.DCABudgetValue)
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.DCABudgetBalance)
+                        </td>
+
+                        <td style="font-weight:normal; white-space: normal;font-size:11px">
+                            @if (item.AmendStatus == "Approved")
+                            {
+                                <a title="AmendBudget" href="javascript:void(0)" data-toggle="modal" onclick="AmendDCABudget(@item.DCABudgetId,'@item.DCACode', '@item.CCCode', @item.DCABudgetValue, @item.DCABudgetBalance, '@item.DCABudgetCreationdate','@item.cc_Type','@item.DCAName','@item.CCName','@item.FYyear','@item.Subtype',@item.CCtypeId);">Amend</a>
+                                @*<a title="CloseBudget" href="javascript:void(0)" data-toggle="modal" onclick="CloseDCABudget(@item.DCABudgetId,'@item.DCACode', '@item.CCCode', @item.DCABudgetValue, @item.DCABudgetBalance, '@item.DCABudgetCreationdate');">Close</a>*@
+                                @*<input type="button" data-toggle="modal" value="Amend" onclick="AmendDCABudget(@item.DCABudgetId, '@item.DCACode', '@item.DCABudgetValue', @item.DCABudgetBalance, '@item.DCABudgetCreationdate');" />*@
+                            }
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.cc_Type)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.Subtype)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.FYyear)
+                        </td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.CCtypeId)
+                        </td>
+                    </tr>
+                }
+            </tbody>           
+        </table>
+        
+    </div>
+    
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dcaGrid = null;
+        //$("#divAmendDetails").addClass("hidden");
+        InitializeDCADetailsGrid();
+        $("#txtdone").val('0');
+        //var val = $("#divNewAmendDCAInfoMsg").text();
+        var val = $("#divAmendDCAInfoMsg").text();
+        
+        
+        $("#DCAAmendModal").on("hidden.bs.modal", function () {
+            //if (val.trim() != '') {
+              
+               // RebindBudgetDCAGrid();
+            //}
+            //else {
+               
+            //}
+        });
+        $("#NewDCAAmend").on("hidden.bs.modal", function () {
+            RebindBudgetDCAGrid();
+        });
+    });
+
+    
+    function InitializeDCADetailsGrid() {
+        dcaGrid = $('#tblDcaBudgetDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            pagingType: false, 
+        
+            language: {
+                "emptyTable": "No DCAs Found"
+            },
+            pageLength: 10,
+            "initComplete": function (settings, json) {
+                //GetBudgetAsignedCCDetails();
+                //alert('DataTables has finished its initialisation.');
+                //RebindBudgetDCAGrid();
+            },
+            fixedHeader: {                header: true,                footer: true            }
+
+        });
+        $("#tfooter").show();
+
+    }
+
+    function BindCCDetailsToGrid() { }
+   
+</script>

@@ -1,0 +1,405 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.UnSecuredLoan
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Unsecured Loans</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.LoanType)
+                                                        @Html.DropDownListFor(model => model.LoanType, new SelectList(Model.UnsLoanTypeList, "Type", "TypeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_UnsLoanType", onChange = "UnsLoanTypeChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divLoanNo">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.LoanNo)
+                                                        @Html.TextBoxFor(model => model.LoanNo, new { @id = "txtUnsLoanNo", @class = "form-control", @type = "text" })
+                                                        <select class="form-control dropdown-toggle UnsLoanNo" id="ddl_UnsLoanNo" onchange="UnsLoanNoChange()">
+                                                            <option selected="selected" value="Select">-Please Select-</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divLoanDate">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.LoanDate)
+                                                        @Html.TextBoxFor(model => model.LoanDate, new { @class = "form-control date-picker", @id = "txtUnsLoanDate", @readOnly = "true", @type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divAdditionalLoanDate">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.LoanDate, new { @id = "lblLoanDate" })
+                                                        @Html.TextBoxFor(model => model.LoanDate, new { @class = "form-control  date-picker", @id = "txtUnsLoanAdditionalDate", @readOnly = "true", @type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divUnsName">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Name)
+                                                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @id = "txtUnsLoanPersonName", @type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divAmount">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.LoanAmount)
+                                                        @Html.TextBoxFor(model => model.LoanAmount, new { @class = "form-control", @id = "txtUnsLoanAmount", @type = "text", Value = "", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountFinalAmount()" })
+                                                        @Html.TextBoxFor(model => model.LoanAmount, new { @class = "form-control", @id = "txtUnsLoanAdditionalAmount", @type = "text", Value = "", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountAdditionalLoanFinalAmount()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divUnsRateOfInterest">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.RateOfIntrest)
+                                                        @Html.TextBoxFor(model => model.RateOfIntrest, new { @id = "txtUnsLoanIntrest", @class = "form-control", @type = "text", Value = "", onkeypress = "return ValidateAmount(this,event);" })
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="divUnsDeduction">
+                                                <div class="col-md-12" style="margin-top:15px">
+                                                    <hr />
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <div class="col-md-4 text-center">
+                                                                <div class="form-group">
+                                                                    <input id="chkDedUnIntY" name="UnDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                                                    <input id="chkDedUnIntN" name="UnDeduction" value="No" type="radio" checked>No
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1"></div>
+                                                </div>
+
+                                                <div id="divUnsDeductionGrid" class="col-md-12  change-tab">
+                                                    <div class="strike">
+                                                        <span>Add Deduction</span>
+                                                    </div>
+                                                    <div class="tabledynamic">
+                                                        <br />
+                                                        <table id="UnloanDeductionTable" class="table order-list" style="width:100%">
+                                                            <thead>
+                                                                <tr>
+                                                                    <td style="text-align:center"><label>Account Head Code</label></td>
+                                                                    <td style="text-align:center"><label>SubAccount Head Code</label></td>
+                                                                    <td style="text-align:center"><label>Deduction Amount</label></td>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr style="text-align:center">
+                                                                    <td>
+                                                                        <select class="form-control dropdown-toggle loandca" id="ddldcacode"><option selected="selected" value="Select">-Select-</option></select>
+                                                                        @*@Html.DropDownListFor(model => model.UnsLoanDCACode, new SelectList(Model.UnsLoanDcaCodesList, "DCA_Code", "DCA_CodeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle UnsLoanDca", @id = "ddlUnsLoanDCACode" })*@
+                                                                    </td>
+                                                                    <td>
+                                                                        <select class="form-control dropdown-toggle loansdca" id="ddlsdcacode"><option selected="selected" value="Select">-Select-</option></select>
+
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="text" id="txtUnsLoanDedAmount" class="form-control DedAmount" onkeypress="return ValidateAmount(this,event);" onKeyup="CountAdditionalLoanFinalAmount()" />
+
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row change-tab" id="divUnsPayment">
+
+                                                <div class="col-md-10">
+                                                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-20px">Payment Details</h5>
+                                                </div>
+
+                                                <div class="col-md-12"><hr class="separationHr" /></div>
+
+
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.BankID)
+                                                            @Html.DropDownListFor(model => model.BankID, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_UnsLoanBank", onChange = "UnsLoanPayModeChange();" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.ModeofPay)
+                                                            @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.UnsLoanPayModesList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_UnsLoanPayMode", onChange = "UnsLoanPayModeChange();" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.UnsLoanPaymentNo)
+                                                            @Html.TextBoxFor(model => model.UnsLoanPaymentNo, htmlAttributes: new { @class = "form-control", @id = "txtUnsLoanPaymentNo" })
+                                                            <select class="form-control dropdown-toggle WdNo" id="ddl_UnsLoanPaymentNo">
+                                                                <option selected="selected" value="Select">-Select-</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.PaymentDate)
+                                                            @Html.TextBoxFor(model => model.PaymentDate, new { @id = "txtUnsLoanPayDate", @class = "form-control date-picker", @type = "text" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Remarks)
+                                                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtUnsLoanReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.LoanfinalAmount)
+                                                            @Html.TextBoxFor(model => model.LoanfinalAmount, new { @id = "txtUnsLoanFinalAmount", @class = "form-control", @type = "text", Value = "0", @readOnly = "true" })
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="text-right">
+                                                        <input type="text" value="0" id="txtMainLoanDate" style="display:none" />
+                                                        <input type="text" value="0" id="txtIntrestExist" style="display:none" />
+                                                        <input type="text" value="0" id="AdditionalTotal" style="display:none" />
+                                                        <input type="hidden" id="TotalLoanAmount" />
+                                                        @* <input type="text" value="0" id="DeductionExist" style="display:none" />*@
+                                                        <input type="text" value="0" id="txtULRoleId" style="display:none" />
+                                                        <button class="btn btn1 btn-success" id="btnUnsLoanSubmit" onclick="btnSubmitUnsLoanData()">Submit</button>
+                                                        <button class="btn btn1 btn-success" id="btnUnsLoamReset" onclick="btnResetUnsLoanData()">Reset</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-center">
+                                                    <br />
+                                                    <div id="divUnsLoanInfoMsg" class="alert alert-danger hidden">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function CheckReturnLoanDate() {
+        var LoanTypeIndex = $("#ddl_UnsLoanType option:selected").index();
+        if (LoanTypeIndex == 3 || LoanTypeIndex == 2) {
+            var loandate = $("#txtMainLoanDate").val();
+            var returndate = $("#txtUnsLoanAdditionalDate").val();
+           // alert("loandate:" + loandate + "---returndate:" + returndate);
+            if (new Date(returndate) < new Date(loandate)) {
+
+                if (LoanTypeIndex == 2) {
+                    $("#divUnsLoanInfoMsg").text("");
+                    $("#divUnsLoanInfoMsg").append("<div>Additional loan Date must be greater than Loan Date</div>");
+                    $("#divUnsLoanInfoMsg").addClass("alert-danger");
+                    $("#divUnsLoanInfoMsg").removeClass("hidden alert-success");
+
+                }
+                else if (LoanTypeIndex == 3) {
+                    $("#divUnsLoanInfoMsg").text("");
+                    $("#divUnsLoanInfoMsg").append("<div>Return Date must be greater than Loan Date</div>");
+                    $("#divUnsLoanInfoMsg").addClass("alert-danger");
+                    $("#divUnsLoanInfoMsg").removeClass("hidden alert-success");
+
+                }
+            }
+            else {
+                $("#divUnsLoanInfoMsg").text("");
+                $("#divUnsLoanInfoMsg").addClass("hidden");
+                $("#txtUnsLoanPayDate").datepicker("option", "minDate", returndate);
+
+            }
+
+        }
+
+
+    }
+    function CheckPaymentDate() {
+        var LoanTypeIndex = $("#ddl_UnsLoanType option:selected").index();
+        if (LoanTypeIndex == 3 || LoanTypeIndex == 2) {
+            var returndate = $("#txtUnsLoanAdditionalDate").val();
+            var paymentdate = $("#txtUnsLoanPayDate").val();
+            // alert("loandate:" + loandate + "---returndate:" + returndate);
+            if (new Date(paymentdate) < new Date(returndate)) {
+                if (LoanTypeIndex == 2) {
+                    $("#divUnsLoanInfoMsg").text("");
+                    $("#divUnsLoanInfoMsg").append("<div>Payment Date must be greater than Additional  Loan Date</div>");
+                    $("#divUnsLoanInfoMsg").addClass("alert-danger");
+                    $("#divUnsLoanInfoMsg").removeClass("hidden alert-success");
+
+                }
+                else if (LoanTypeIndex == 3) {
+                    $("#divUnsLoanInfoMsg").text("");
+                    $("#divUnsLoanInfoMsg").append("<div>Payment Date must be greater than Return Date</div>");
+                    $("#divUnsLoanInfoMsg").addClass("alert-danger");
+                    $("#divUnsLoanInfoMsg").removeClass("hidden alert-success");
+
+                }
+            }
+            else {
+                $("#divUnsLoanInfoMsg").text("");
+                $("#divUnsLoanInfoMsg").addClass("hidden");
+                $("#txtUnsLoanPayDate").datepicker("option", "minDate", returndate);
+
+            }
+
+        }
+
+        else {
+            var loandate = $("#txtUnsLoanAdditionalDate").val();
+            var paymentdate = $("#txtUnsLoanDate").val();
+            if (new Date(paymentdate) < new Date(loandate)) {
+                $("#divUnsLoanInfoMsg").text("");
+                $("#divUnsLoanInfoMsg").append("<div>Payment Date must be greater than Loan Date</div>");
+                $("#divUnsLoanInfoMsg").addClass("alert-danger");
+                $("#divUnsLoanInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divUnsLoanInfoMsg").text("");
+                $("#divUnsLoanInfoMsg").addClass("hidden");
+                $("#txtUnsLoanPayDate").datepicker("option", "minDate", returndate);
+
+            }
+
+        }
+
+
+    }
+    $(document).ready(function () {
+        var RoleID = '@Session["Roleid"]';
+        $("#txtULRoleId").val(RoleID);
+        $("#txtMainLoanDate").val("");
+        $("#divUnsName").addClass('hidden');
+        // $("#hrledger").addClass('hidden');
+        //$("#divLedger").addClass('hidden');
+        $("#divUnsPayment").addClass('hidden');
+        $("#divLoanNo").addClass('hidden');
+        $("#hrPayment").addClass('hidden');
+        $("#divLoanDate").addClass('hidden');
+        $("#divAdditionalLoanDate").addClass('hidden');
+        $("#divAmount").addClass('hidden');
+        $("#divUnsDeduction").addClass('hidden');
+        $("#divUnsRateOfInterest").addClass('hidden');
+        $("#divUnsDeductionGrid").addClass("hidden");
+
+        $("input:radio[name='UnDeduction']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var DedExist = _val;
+            if (DedExist == "Yes") {
+                $("#divUnsDeductionGrid").removeClass("hidden");
+            }
+            else if (DedExist == "No") {
+                $("#divUnsDeductionGrid").addClass("hidden");
+                $("#UnloanDeductionTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(0).find("select").prop('selectedIndex', 0);
+                   // var ddlSDCA = currentRow.find("td").eq(1).find("select");
+                    //var ddlPayNode = $("#ddl_UnsLoanPayMode");
+                    ddlSDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    currentRow.find("td").eq(2).find("input[type='text']").val("");
+                });
+            }
+            CountAdditionalLoanFinalAmount();
+        });
+
+        //alert('page load');
+        $("#txtUnsLoanDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtUnsLoanPayDate").datepicker("option", "minDate", selectedDate);
+
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtUnsLoanPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", new Date());
+
+        $("#txtUnsLoanAdditionalDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                CheckReturnLoanDate();
+            }
+        }).datepicker("setDate", new Date());
+        $('#UnloanDeductionTable').on('change', '.loandca', function () {
+            var ddlDCA = $(this).find("option:selected").val();
+            var row = $(this).closest('tr'); // get the row
+            var ddlSubDCA = row.find('.loansdca'); // get the other select in the same row
+            var amount = row.find('.DcaAmount');
+            if ($(this).find("option:selected").index() == 0) {
+                ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                amount.val("");
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindClientRec_Deduction_SubDCA",
+                    data: '{ DCAID:"' + ddlDCA + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                        $.each(response, function () {
+                            ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        });
+
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+        });
+    });
+</script>

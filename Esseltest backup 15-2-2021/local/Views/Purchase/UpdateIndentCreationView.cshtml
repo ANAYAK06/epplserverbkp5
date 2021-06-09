@@ -1,0 +1,403 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Indent
+<div class="col-md-12 verifydiv">
+    <form onsubmit="return false">
+        <div class="card-header">
+            <h4 style="text-align:left;font-weight:bold">Indent Updation</h4>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemCategoryCode)
+                    @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.IndentItemCategoryList, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_IndentItemCategory", onchange = "Clearcat()" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SelectionType)
+                    @Html.DropDownListFor(model => model.SelectionType, new SelectList(Model.ItemSelectionTypeList, "Selectionid", "SelectionValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemSelectiontype", onchange = "Clearsel()" })
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SearchItem)
+                    @Html.EditorFor(model => model.SearchItem, new { htmlAttributes = new { @class = "form-control", @id = "txtIndentItemSearch", @onkeyup = "onchangeevent();" ,
+                       @onKeyDown = "preventBackspace();" ,@onpaste = "return false;"} })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group">
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    </br>
+                    </br>
+                    <input type="submit" value="Add" class="btn btn1 btn-success" id="btnaddnewitems" onclick="SubmitCategoryItem()" /> &nbsp;
+                    <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                </div>
+            </div>
+        </div>
+        <div id="divgriddata">
+            <div id="GridData">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprindentupdateNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div>
+                    <br />
+                    <br />
+                    <br />
+                    <button id="btnIndentSubmit" onclick="btnSubmitIndentData()">Submit</button>
+                    <input type="text" value="0" id="txtIndentCreatedby" style="display:none" />
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <div id="divIndentInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+     var Sessioncreated = '@Session["Createdby"]';
+        $("#txtIndentCreatedby").val(Sessioncreated);
+        var Indno = '@Model.Indentno';
+        ////alert(Indno);
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/ViewIndentDetailsReturnGrid',
+            data: { Indentno: Indno  },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridData").html(data);
+                    //$("#GridData").removeClass('hidden');
+                    $("#divgriddata").removeClass("hidden");
+                }
+                else {
+                    $("#GridData").html();
+                    $("#divgriddata").addClass("hidden");
+                    //$("#GridData").addClass('hidden');
+                }
+            },
+        });
+    });
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+    function SubmitClearItem() {
+        $("#txtIndentItemSearch").val("");
+        $("#btnaddnewitems").prop('disabled', false);
+    }
+    function SubmitCategoryItem() {
+        //debugger;
+        isValid = true;
+        var errorMsg = "";
+        var typecat = $("#ddl_IndentItemCategory option:selected").index();
+        var typesel = $("#ddl_ItemSelectiontype option:selected").index();
+        var Itemtext = $("#txtIndentItemSearch").val();
+        if (typecat === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Category</p>";
+            isValid = false;
+        }
+        if (typesel === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Type</p>";
+            isValid = false;
+        }
+        if (Itemtext === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Search Data</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divIndentInfoMsg").text("");
+            $("#divIndentInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divIndentInfoMsg").addClass("alert-danger");
+            $("#divIndentInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var Indno = '@Model.Indentno';
+            var ccenter = '@Model.Costcenter';
+            var itemcode = $("#txtIndentItemSearch").val();
+            var nameArr1 = itemcode.split(',');
+            var catidonly = nameArr1[0];
+            $("#divIndentInfoMsg").text("");
+            $("#divIndentInfoMsg").addClass("hidden");
+            var Items = {
+                ItemCode: catidonly,
+                Costcenter: ccenter,
+                Indentno: Indno
+            };
+            addFailMsg = "Error Occurred While Adding Items";
+            addSuccessMsg = "Items Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveUpdateIndentItems",
+                data: JSON.stringify({ Item: Items }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        //alert(addSuccessMsg);
+                        $("#txtIndentItemSearch").val("");
+                        $.ajax({
+                            type: 'GET',
+                            dataType: 'html',
+                            url: '/Purchase/ViewIndentDetailsReturnGrid',
+                            data: { Indentno: Indno},
+                            success: function (data) {
+                                var count = Object.keys(data).length;
+                                if (count > 0) {
+                                    $("#GridData").html(data);
+                                    $("#GridData").removeClass('hidden');
+                                }
+                                else {
+                                    $("#GridData").html();
+                                    $("#GridData").addClass('hidden');
+                                }
+
+                            },
+                            error: function (data) {
+
+                            },
+                            failure: function (data) {
+
+                            }
+                        });
+                    }
+                    else {
+                        alert(response.saveStatus);
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewitems").prop('disabled', false);
+                    $("#divIndentInfoMsg").text(addFailMsg);
+                    $("#divIndentInfoMsg").addClass("alert-danger");
+                    $("#divIndentInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function onchangeevent() {
+        var typecat = $("#ddl_IndentItemCategory option:selected").index();
+        var typesel = $("#ddl_ItemSelectiontype option:selected").index();
+        if (typecat != 0) {
+            if (typesel != 0) {
+                var typeval = $("#ddl_ItemSelectiontype option:selected").val();
+                var typecatval = $("#ddl_IndentItemCategory option:selected").val();
+                if ($("#txtIndentItemSearch").val() != "") {
+                    $("#txtIndentItemSearch").autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: '/Purchase/AutoComplete',
+                                data: '{prefix:"' + request.term + '", Type:"' + typeval + '", Cat:"' + typecatval + '"}',
+                                dataType: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (data) {
+                                    response($.map(data, function (item) {
+                                        return { label: item.SearchItem, value: item.SearchItem };
+                                    }))
+                                },
+                                error: function (data) {
+                                    alert(data.responseText);
+                                },
+                                failure: function (data) {
+                                    alert(data.responseText);
+                                }
+                            });
+                        },
+                    });
+                }
+                else {
+                    $("#ddl_ItemSelectiontype").prop('selectedIndex', 0);
+                }
+            }
+            else {
+                alert("Select Search By Type");
+                $("#txtIndentItemSearch").val("");
+                return false;
+            }
+        }
+        else {
+
+            alert("Select Search By Category");
+            $("#txtIndentItemSearch").val("");
+            return false;
+        }
+    }
+    function Clearcat() {
+        $("#txtIndentItemSearch").val("");
+        $("#ddl_ItemSelectiontype").prop('selectedIndex', 0);
+    }
+    function Clearsel() {
+        var typecat = $("#ddl_IndentItemCategory option:selected").index();
+        if (typecat != 0) {
+            $("#txtIndentItemSearch").val("");
+        }
+        else {
+            alert("Select Search By Category");
+            $("#txtIndentItemSearch").val("");
+            return false;
+        }
+    }
+
+    function btnSubmitIndentData() {
+        var Notes = $("#ApprindentupdateNotes").val();
+        isValid = true;
+        var errorMsg = "";
+        var qtycount = 0, amtcount = 0, chkcount = 0;        
+        var totalRowCount = $("#ItemIndentDetailsDataTable1 tbody tr").length;
+        $("#ItemIndentDetailsDataTable1 tbody tr").each(function () {
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var Quantity = currentRow.find("td").eq(7).find("input[type='text']").val();
+            if (check == false) { chkcount = chkcount + 1; }
+            if (Quantity == "" || Quantity == 0) { qtycount = qtycount + 1; }
+           
+        });      
+        if (totalRowCount == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;' >Please Add Items to Indent</p > ";
+            isValid = false;
+        }
+        if (chkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+            isValid = false;
+        }
+        if (qtycount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Quantity</p>";
+            isValid = false;
+        }
+        if (Notes =="") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divIndentInfoMsg").text("");
+            $("#divIndentInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divIndentInfoMsg").addClass("alert-danger");
+            $("#divIndentInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var selectedledlist = [];
+            $("#ItemIndentDetailsDataTable1 tbody tr").each(function () {
+                var currentRow = $(this);
+                var Inedntid = currentRow.find("td").eq(10).html();
+                if (Inedntid !== 0) {
+                    selectedledlist.push(currentRow.find("td").eq(10).html());
+                }
+            });
+            var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+            if (duplicatelist.length > 0) {
+                var finalerror2 = "<div style='align:center'><p>Duplicate ItemCode for Indent</p>";
+                $("#divIndentInfoMsg").text("");
+                $("#divIndentInfoMsg").append(finalerror2 + "</div>");
+                $("#divIndentInfoMsg").addClass("alert-danger");
+                $("#divIndentInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divIndentInfoMsg").text("");
+                $("#divIndentInfoMsg").addClass("hidden");
+                ReturnUpdateIndent();
+            }
+        }
+
+    }
+    function ReturnUpdateIndent() {
+        debugger;
+        var Indno = '@Model.Indentno';
+        var ccenter = '@Model.Costcenter';
+        var Rowids = "", Quantitys = "", Amounts = "", SubTotal = 0;       
+        $("#ItemIndentDetailsDataTable1 tbody tr").each(function () {
+            var currentRow = $(this);
+            var Rowid = currentRow.find("td").eq(10).html();
+            var Quantity = currentRow.find("td").eq(7).find("input[type='text']").val();
+            var Amount = currentRow.find("td").eq(8).html();;
+            Rowids += Rowid;
+            Rowids += ",";
+            Quantitys += Quantity;
+            Quantitys += ",";
+            Amounts += Amount;
+            Amounts += ",";
+            SubTotal = parseFloat(SubTotal) + parseFloat(Amount);
+        });
+        var Indentdetails = {
+            IndentListIds: Rowids,
+            Quantitys: Quantitys,
+            Amounts: Amounts,
+            TotalAmount: SubTotal,
+            Costcenter: ccenter,
+            Indentno: Indno,
+            Remarks: $("#ApprindentupdateNotes").val()
+        };
+        $("#divIndentInfoMsg").text("");
+        $("#divIndentInfoMsg").addClass("hidden");
+        addFailMsg = "Error Occurred While Verification";
+        finalmsg = "Return Updation Successfully";     
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/Purchase/ReturnUpdateIndent",
+            data: { Ind: Indentdetails },           
+            success: function (response) {
+                var msg = response.saveStatus;
+                if (response.saveStatus == "Submited") {
+                    var msg = '';
+                    $('#ApproveindMsgModal').modal('show');
+                    msg = "<div>Indent  " + Indno + finalmsg + "  </div>";
+                    $("#ApproveindMsgModal").on("hide.bs.modal", function () {
+                        $("#divApprindGrid").load('/Purchase/VerifyIndentCreationGrid');
+                    });
+                    $("#ApprindMsg").html(msg);
+                }
+                else {
+                    msg = "<div>" + response.saveStatus + "</div>";
+                    $("#ApprindMsg").html(msg);
+                    $('#ApproveindMsgModal').modal('show');
+                }
+            },
+            failure: function (response) {
+                var msg = "<div>" + addFailMsg + "</div>";
+                $("#ApprindMsg").html(msg);
+                $('#ApproveindMsgModal').modal('show');
+            },
+            error: function (response) {
+                var msg = "<div>" + addFailMsg + "</div>";
+                $("#ApprindMsg").html(msg);
+                $('#ApproveindMsgModal').modal('show');
+            }
+        });        
+    }
+</script>

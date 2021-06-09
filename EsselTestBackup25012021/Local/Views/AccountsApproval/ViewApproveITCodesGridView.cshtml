@@ -1,0 +1,148 @@
+﻿@model List<EsselTestLocalApplication.Models.ITCode>
+<div class="table-responsive">
+    <table id="tblapproveItcodesGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">ID</th>
+                <th>IT Code</th>
+                <th>IT Name</th>
+                <th>Nature Of Group</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">IT Code Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Itid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NatureGroupName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ITStatus)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveItcodeGrid = null;
+        InitializeApproveItcodeGrid();
+           var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppITCreatedby").val(Sessioncreated);
+             var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+    });
+    function InitializeApproveItcodeGrid() {
+        ApproveItcodeGrid = $('#tblapproveItcodesGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No IT Codes Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(5)', row).html();
+                if (oldstatus == 1) {
+                    $('td:eq(5)', row).html("Verification Pending");
+                }
+                else { $('td:eq(5)', row).html("Return"); }
+            },
+            pageLength: 10
+        });
+        $('#tblapproveItcodesGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveItcodeGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveItcodeGrid, tr);
+                // Open this row
+                row.child(formatApproveIT(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApproveIT(d) {
+            var id = 0;         
+            var htmltext;
+            var itid, itcode, itname;
+            $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 2)
+                    itcode = value;
+                if (index == 1)
+                    itid = value;
+                if (index == 3)
+                    itname = value;
+        });
+        //debugger;
+        var divid = "divapprit" + itid;
+        var divid1 = $("#" + divid + "");
+        $("#currentITid").val(itid);
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/AccountsApproval/ViewApproveITCodebyid',
+            data: { id: itid },
+            success: function (Data) {
+                //alert(Data);
+                var divid2 = "divapprit" + itid;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //alert(XMLHttpRequest.data);
+            }
+        });
+        return '<div id="divapprit' + itid + '"></div>';
+    }
+</script>
+

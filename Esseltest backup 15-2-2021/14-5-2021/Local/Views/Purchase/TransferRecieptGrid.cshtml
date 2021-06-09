@@ -1,0 +1,138 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.TransferReciept>
+<div class="table-responsive w-100">
+    <table id="tblApprovetrGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Ref/PO No</th>
+                <th>Stock Recieving</th>
+                <th>Vendor Name</th>
+                <th>Indent No</th>
+                <th>Cost Center</th>
+                <th class="hidden"></th>
+                <th class="hidden"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RefNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VendorName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IndentNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.PresentLevel)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApprovetrGrid = null;
+            InitializeApprhsnGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprtrCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtApprtrRole").val(SessionRole);
+        });
+    function InitializeApprhsnGrid() {
+        ApprovetrGrid = $('#tblApprovetrGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+            },
+                pageLength: 10
+            });
+        $('#tblApprovetrGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApprovetrGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApprovetrGrid, tr);
+                // Open this row
+                    row.child(formatApprhsn(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+
+    function formatApprhsn(d) {
+        var htmltext;
+        var Refno, Type, IndentNo, Id;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Refno = value;
+            if (index == 2)
+                Type = value;
+            if (index == 4)
+                IndentNo = value;  
+            if (index == 7)
+                Id = value;  
+        });
+        var divid = "divapprtr" + Id;
+        var divid1 = $("#" + divid + "");
+        //debugger;
+        $("#currenttrid").val(Id);       
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/TransferRecieptView',
+                data: { Refno: Refno, Type: Type, IndentNo: IndentNo },
+                success: function (Data) {
+                    var divid2 = "divapprtr" + Id;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });       
+        return '<div id="divapprtr' + Id + '"></div>';
+    }
+</script>

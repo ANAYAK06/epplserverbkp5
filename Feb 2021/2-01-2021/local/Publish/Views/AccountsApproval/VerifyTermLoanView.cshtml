@@ -1,0 +1,262 @@
+﻿@model List<EsselTestLocalApplication.Models.Termloancreation>
+@foreach (var item in Model)
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.LoanType)
+                    <input type="text" class="form-control" value="@item.LoanType" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.LoanNo)
+                    <input type="text" class="form-control" value="@item.LoanNo" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.AgencyNo)
+                    <input type="text" class="form-control" value="@item.AgencyNo" readOnly="readOnly" />
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.LoanAppliedDate)
+                    <input type="text" class="form-control" value="@item.Appdate" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.DisbursalAmt)
+                    <input type="text" class="form-control" value="@item.DisbursalAmt" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.IntrestRate)
+                    <input type="text" class="form-control" value="@item.IntrestRate" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.ProcessingAmt)
+                    <input type="text" class="form-control" value="@item.ProcessingAmt" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Installmentstartdate)
+                    <input type="text" class="form-control" value="@item.Istartdate" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.InstallmentEndDate)
+                    <input type="text" class="form-control" value="@item.Ienddate" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Emitype)
+                    <input type="text" class="form-control" value="@item.Emitype" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.InstallmentNos)
+                    <input type="text" class="form-control" value="@item.InstallmentNos" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.TotalAmt)
+                    <input type="text" class="form-control" value="@item.TotalAmt" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        @if (item.LoanType == "Capital")
+        {
+            <div class="row" id="divbankdetails">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => item.BankName)
+                        <input type="text" class="form-control" value="@item.BankName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => item.Bankdate)
+                        <input type="text" class="form-control" value="@item.Bkdate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => item.Modeofpay)
+                        <input type="text" class="form-control" value="@item.Modeofpay" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => item.Instrumentno)
+                        <input type="text" class="form-control" value="@item.Instrumentno" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row ">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => item.Loanpurpose)
+                    <input type="text" class="form-control" value="@item.Loanpurpose" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprTLstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprtlNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApprovetlDetails('@item.Termloanid')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprTLInfoMsg-@item.Termloanid" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+    break;
+}
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprTLstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        });
+        function ApprovetlDetails(Rowid) {
+            appstatusid = "ApprTLstatus-" + Rowid;
+            var appstatus = $("#ApprTLstatus").val();
+            var ReturnText = $("#ApprtlNotes").val();
+            var retnoteid = "ApprtlNotes-" + Rowid;
+            retnote = $("#" + retnoteid + "").val();
+            Rid = "divApprTLInfoMsg-" + Rowid;
+            msg = $("#" + Rid + "");
+            isValid = true;
+            var errorMsg = "";
+            if (appstatus == "Select" || appstatus == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                isValid = false;
+            }
+            if (ReturnText == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $(msg).text("");
+                $(msg).append(finalerror1 + errorMsg + "</div>");
+                $(msg).addClass("alert-danger");
+                $(msg).removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $(msg).text("");
+                $(msg).addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+                else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/AccountsApproval/Approvetermloan",
+                    data: '{Rowid:"' + Rowid + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprtlCreatedby").val() + '",Remarks:"' + $("#ApprtlNotes").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var msg = response.saveStatus;
+                        if (msg == "Submitted") {
+                            $('#ApprovetlMsgModal').modal('show');
+                            var msg = "<div>Termloan " + finalmsg + "</div>";
+                            $("#ApprovetlMsgModal").on("hide.bs.modal", function () {
+                                $("#divApprtlGrid").load('/AccountsApproval/VerifyTermLoanGrid');
+                            });
+                            $("#ApprtlMsg").html(msg);
+                        }
+                        else {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprtlMsg").html(msg);
+                            $('#ApprovetlMsgModal').modal('show');
+                        }
+
+                    },
+                    failure: function (response) {
+
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprtlMsg").html(msg);
+                        $('#ApprovetlMsgModal').modal('show');
+                    },
+                    error: function (response) {
+
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprtlMsg").html(msg);
+                        $('#ApprovetlMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+</script>

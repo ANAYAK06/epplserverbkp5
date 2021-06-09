@@ -1,0 +1,189 @@
+﻿@model List<EsselTestLocalApplication.Models.Budget.DCABudgetDetails>
+<script>
+    $(document).ready(function () {
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();        
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppDCABudgetstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        //var code = $("#currentcc").val();
+        //var typeArr = code.toString().split('-');
+        //var msg = typeArr[0];
+        //var msgcc = typeArr[1];
+        //var txtid = "apprdcabudcc-" + msgcc;
+        //$("#" + txtid + "").val(msgcc);
+        //var t = $("#divtblbycc").find("table");
+        //if (t.length == 1) {
+        //    t.attr("id", "tblapprdcab" + msgcc + "");
+        //}
+        //$("#currentcc").val("");
+
+    });
+</script>
+<div class="col-md-12 verifydiv">
+    <br />
+
+    @*<form onsubmit="return false">*@
+        @*<div class="col-md-12">*@
+            @foreach (var item1 in Model)
+            {
+                <div class="col-md-12">
+                    <table id="tblApprDCABudget1" style="width:100%;border:1px solid gray;border-bottom:1px solid gray">
+                        <thead>
+                            <tr>
+                                <th class="hidden">CC Code</th>
+                                <th class="hidden">DCABudgetid</th>
+                                <td style="text-align:center"><label>Chk</label></td>
+                                <th style="text-align:center">Account Head Code</th>
+                                <th style="text-align:left">Account Head Name</th>
+                                <th style="text-align:center">Budget Value</th>
+                                <th style="text-align:center">Date</th>
+                                @if (item1.cc_Type != "Performing")
+                                {
+                                    <th style="text-align:center">Financial Year</th>
+                                }
+                                else
+                                {
+                                    <th class="hidden">Financial Year</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td class="hidden">
+                                    @Html.DisplayFor(modelItem => item.CCCode)
+                                </td>
+                                <td class="hidden">
+                                    @Html.TextBoxFor(modelItem => item.DCABudgetId)
+                                    @*@Html.DisplayFor(modelItem => item.DCABudgetId)*@
+                                </td>
+                                <td style="text-align:center;">
+                                    <ul class="list-inline">
+                                        <li class="eagle-checkbox">
+                                            <label class="eagle-check custom-checkbox">
+                                                <input type="checkbox" class="eagle-check-input">
+                                                <span class="eagle-check-indicator"></span>
+                                                <span class="eagle-check-description"></span>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td style="text-align:center">
+                                    @Html.DisplayFor(modelItem => item.DCACode)
+                                </td>
+                                <td style="text-align:left;word-wrap:normal">
+                                    @Html.DisplayFor(modelItem => item.DCAName)
+                                </td>
+                                <td style="text-align:center">
+                                    @Html.DisplayFor(modelItem => item.DCABudgetValue)
+                                </td>
+                                <td style="text-align:center">
+                                    @Html.DisplayFor(modelItem => item.DCABudgetCreationdate)
+                                </td>
+                                @if (item1.cc_Type != "Performing")
+                                {
+                                    <td style="text-align:center">
+                                        @Html.DisplayFor(modelItem => item.FYyear)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td style="text-align:center" class="hidden">
+                                        @Html.DisplayFor(modelItem => item.FYyear)
+                                    </td>
+                                }
+
+                            </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td style="text-align:center">Total</td>
+                                <td style="text-align:center">@Model.Sum(i => i.DCABudgetValue)</td>
+                                <td></td>
+                                @if (item1.cc_Type != "Performing")
+                                {
+                                    <td></td>
+                                }
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <br />
+                </div>
+
+                <div class="col-md-12">
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="hidden" value="@item1.MOID" id="txtMOID" />
+                            <input type="hidden" value="@Model.Sum(i => i.DCABudgetValue)" id="txtApprDCABudget" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => item1.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppDCABudgetstatus" })
+
+                            @*<select class="form-control dropdown-toggle" id="AppDCABudgetstatus">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Verify">Verify</option>
+                                    <option value="Approve">Approve</option>
+                                    <option value="Return">Return</option>
+                                    <option value="Reject">Reject</option>
+                                </select>*@
+                        </div>
+                    </div>
+                    <div class="col-md-8 ">
+                        <div class="form-group">
+                            <lable>Notes:</lable> <br />
+                            <textarea rows="3" cols="60" class="dcabudgetnote" id="AppDCABudgetNote"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <br /><button onClick="ApproveDCABudget('@item1.CCCode','@item1.FYyear',@item1.cc_Type)">Submit</button>
+                            <input type="hidden" value=@Model.Sum(i => i.DCABudgetValue) id="txttotalbudgetamount" />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApprDCABudgetInfoMsg" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+                return;
+
+            }
+        @*</div>*@
+    @*</form>*@
+</div>
+
+
+

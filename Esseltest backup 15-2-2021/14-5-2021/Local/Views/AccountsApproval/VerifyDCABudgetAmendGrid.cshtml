@@ -1,0 +1,152 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Budget.AmendDCABudget>
+
+<div class="table-responsive">
+    <table id="tblApprDCABudgetAmendDetails" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                @*<th>AmendId</th>*@
+                <th>Cost Center Code</th>
+                <th>Cost Center Name</th>
+                <th>Amended Date</th>
+                <th>Financial Year</th>
+                <th>CCType</th>
+                <th class="hidden">Status</th>
+
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    @*<td>
+                            @Html.DisplayFor(modelItem => item.DCABudgetAmendmentId)
+                        </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCName)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.AmdDate)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.FYYear)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.cc_Type)
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+
+
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<script>
+    var openRows = new Array();
+        $(document).ready(function () {
+            var AppDCABudgetAmendGrid = null;
+            InitializeAppDCABudgetAmendGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppDcaBudAmendCreatedby").val(Sessioncreated);
+              var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeAppDCABudgetAmendGrid() {
+        //debugger;
+        AppDCABudgetAmendGrid = $('#tblApprDCABudgetAmendDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row, data, index) {                
+            },           
+        });
+    }
+        $('#tblApprDCABudgetAmendDetails tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = AppDCABudgetAmendGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(AppDCABudgetAmendGrid, tr);
+                // Open this row
+                row.child(formatApprDcaBudgetAmend(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+        }
+    });
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprDcaBudgetAmend(d) {
+
+            var htmltext;
+        var amendid,code, Fyyear, Ctype,status;
+        $.each(d, function (index, value) {
+            amendid = 1;
+            if (index == 1)
+                code = value;
+            if (index == 4)
+                Fyyear = value;
+            if (index == 5)
+                Ctype = value;
+            if (index == 6)
+                status = value;
+
+        });
+        var divid = "divapprdcabAmend" + amendid;
+        var divid1 = $("#" + divid + "");
+        $("#currentAmendcc").val(amendid);
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/GetVerifyDCABudgetAmendbyId',
+                data: { CCCode: code, Fyear: Fyyear, Ctype: Ctype, Status: status},
+                success: function (Data) {
+                    var divid2 = "divapprdcabAmend" + amendid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+        return '<div id="divapprdcabAmend' + amendid + '"></div>';
+        }
+</script>

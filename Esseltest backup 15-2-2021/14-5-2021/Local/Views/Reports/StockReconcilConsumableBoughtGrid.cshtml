@@ -1,0 +1,394 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.StockReconcilation
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+
+    .tdalign {
+        text-align: center !important;
+        /*white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;*/
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+
+    .firstheaderborder {
+        border-left: 1px solid white;
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .startheaderborder {
+        border-left: 1px solid white;
+    }
+
+    .endheaderborder {
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .linkcls {
+        color: blue !important;
+        text-decoration: underline !important;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 0 0;
+        border-bottom: 1px solid #111;
+    }
+</style>
+@*<div>Consumable</div>*@
+<div align="right" class="col-md-12">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelCBGrid();" />
+    <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfCBGrid();" />
+
+</div>
+<div class="col-md-12">
+    <div class="table-responsive">
+        <table id="tblCBGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th colspan="4" class="firstheaderborder">Total Reciept At CC</th>
+                    <th colspan="4" class="firstheaderborder">Total Out From CC</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th class="wrapcls">Item Code</th>
+                    <th class="wrapcls">Item Name</th>
+                    <th class="wrapcls">Specification</th>
+                    <th class="wrapcls">Units</th>
+                    <th class="wrapcls startheaderborder">Recived From CentralStore</th>
+                    <th class="wrapcls">Recieved From OtherCC</th>
+                    <th class="wrapcls ">Purchase At CC</th>
+                    <th class="wrapcls endheaderborder">Total Recieved at CC</th>
+                    <th class="wrapcls startheaderborder">Transfer To Central Store</th>
+                    <th class="wrapcls">Transfer To OtherCC</th>
+                    <th class="wrapcls ">Issued For CC Consumption</th>
+                    <th class="wrapcls ">Total Out From CC</th>
+                    <th class="wrapcls endheaderborder">Balance Stock At CC</th>
+                    <th class="wrapcls ">LostDamaged Accepted</th>
+
+                    <th class="wrapcls ">Basic Price</th>
+                    <th class="wrapcls ">Amount Against TotalRecieved</th>
+                    <th class="wrapcls ">Amt Of Consumed Items At CC</th>
+                    <th class="wrapcls ">Amt Against Total Transfered To Other CC</th>
+                    <th class="wrapcls ">Amt Of Balance Stock At CC</th>
+                    <th class="wrapcls ">Amt Of Lost&Damage</th>
+                    <th class="wrapcls ">Comments On Balance</th>
+                    <th class="wrapcls ">CC Store Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ConsumableBoughtOutList)
+                {
+                    <tr>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemCode)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemName)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Specification)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Units)
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls">@Html.DisplayFor(model => item.rcv_frm_central)</span>
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.rcv_frm_othercc)</span>
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.purchased_at_cc)</span>
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TotalRecievedAtCC)
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls">@Html.DisplayFor(modelItem => item.Trans_to_central)</span>
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.Trans_to_othercc)</span>
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.Issue_for_cons)</span>
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TotalOutFromCC)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.BalanceStockAtCC)
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls">@Html.DisplayFor(modelItem => item.lostdamaged_rep_accep)</span>
+                        </td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmountAgainstTotalRecievedCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmtOfConsumedItemsAtCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmtAgainstTotalTransferedToOtherCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmtOfBalanceStockAtCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmtOfLostDamage)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.Comments)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.CCStatus)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @if (Model.ConsumableBoughtOutList.Count > 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="tdalign">@Model.AmountAgainstTotalRecievedCon</td>
+                        <td class="tdalign">@Model.AmountOfConsumedItemsAtCcCon</td>
+                        <td class="tdalign">@Model.AmountAgainstTotalTransferedToOtherCCCon</td>
+                        <td class="tdalign">@Model.AmountOfBalanceStockAtCCCon</td>
+                        <td class="tdalign">@Model.AmountOfLostAndDamagedCon</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+            </tfoot>
+        </table>
+    </div>
+</div>
+@if (Model.ConsumableBoughtOutList.Count > 0)
+{
+   
+<div class="col-md-12 text-center">
+    <br />
+    <div class="col-lg-4">
+    </div>
+    <div class="col-lg-4">
+
+        <table runat="server" id="tblGvconsumable">
+            <tr style="border:1px solid gray">
+                <th style="text-align:center">
+                    RECONCILIATION SUMMARY
+
+                </th>
+            </tr>
+            <tr id="Tr1" runat="server" style="border:1px solid gray">
+                <td id="Td1" runat="server">
+                    <table id="Table2" runat="server" class="estbl" width="100%">
+                        <tr>
+                            <td width="100%" style="border:1px solid gray">
+                                TOTAL RECEIVED AT CC
+                            </td>
+                            <td width="100%" align="right" style="border:1px solid gray">
+                                @Model.AmountAgainstTotalRecievedCon
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="200px" style="border:1px solid gray">
+                                CONSUMED AT CC
+                            </td>
+                            <td width="100px" align="right" style="border:1px solid gray">
+                                @Model.AmountOfConsumedItemsAtCcCon
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="200px" style="border:1px solid gray">
+                                TRANSFERED
+                            </td>
+                            <td width="100px" align="right" style="border:1px solid gray">
+                                @Model.AmountAgainstTotalTransferedToOtherCCCon
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="200px" style="border:1px solid gray">
+                                BALANCE STOCK AT CC
+                            </td>
+                            <td width="100px" align="right" style="border:1px solid gray">
+                                @Model.AmountOfBalanceStockAtCCCon
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="200px" style="border:1px solid gray">
+                                LOST DAMAGED
+                            </td>
+                            <td width="300px" align="right" style="border:1px solid gray">
+                                @Model.AmountOfLostAndDamagedCon
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-lg-4">
+    </div>
+
+</div>
+}
+    <div class="modal fade" id="ModalCBSummaryData" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        let CBGrid = null;
+        InitializeCBGrid();
+
+
+        //$('#tblSemiAseetGrid').on('click', 'td.linkcls', function (e) {
+        //    alert();
+        //    e.preventDefault();
+        //    var table = $('#tblSemiAseetGrid').DataTable();
+        //    var data = semiassetGrid.row($(this).closest('tr')).data();
+        //});
+
+
+        //$('#tblAseetGrid tbody').on('click', 'tr', function () {
+        //    console.log(assetGrid.row(this).data());
+        //});
+    });
+    function InitializeCBGrid() {
+        CBGrid = $('#tblCBGrid').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function () {
+
+            }
+
+
+        });
+        $('#tblCBGrid tbody').on('click', 'td', function () {
+            let tr = $(this).closest('tr');
+            let data = CBGrid.row(tr).data();
+            //console.log(data);
+            let colno = CBGrid.cell(this).index().columnVisible;
+            console.log("Colno=" + colno);
+            let colvalue = data[colno].replace(/(<([^>]+)>)/ig, '');
+            //alert('Clicked on cell in visible column: ' + semiassetGrid.cell(this).index().columnVisible);
+
+            //console.log("ColValue=" + colvalue);
+            let type = "3";
+            let For = "";
+            //debugger;
+            if (colvalue != "0" && colno==4) {
+                For = "RecivedFromCentralStore";
+                // e.Row.Cells[5].Attributes.Add("onclick", "OpenNewPage('" + e.Row.Cells[0].Text + "','" + type.ToString() + "','" + For.ToString() + "','" + ddlcccode.SelectedValue + "')");
+            }
+            if (colvalue != "0" && colno == 5) {
+                For = "RECEIVEDFROMOTHERCC";
+                // e.Row.Cells[6].Attributes.Add("onclick", "OpenNewPage('" + e.Row.Cells[0].Text + "','" + type.ToString() + "','" + For.ToString() + "','" + ddlcccode.SelectedValue + "')");
+            }
+            if (colvalue != "0" && colno == 6) {
+                For = "PURCHASEDATCC";
+
+            }
+            if (colvalue != "0" && colno == 8) {
+                For = "TRANSFEREDTOCENTRALSTORE";
+
+            }
+            if (colvalue != "0" && colno == 9) {
+                For = "TRANSFERTOOTHERCC";
+
+            }
+            if (colvalue != "0" && colno == 10) {
+                For = "IssuedForCCConsumption";
+            }
+            if (colvalue != "0" && colno == 13) {
+                For = "LOSTANDDAMAGESREPORTACCPETED";
+            }
+            //alert(For);
+            let CC = $("#ddlSRRptCC option:selected").val();
+            let item = data[0];
+            $.ajax({
+                type: "POST",
+                url: "/Reports/StockReconcilationSummary",
+                data: '{CCCode:"' + CC + '",Type:"' + type +'",For:"' + For+'",ItemCode:"' + item + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#ModalCBSummaryData').html(data);
+                    $('#ModalCBSummaryData').modal();
+
+                }
+            });
+        });
+
+    }
+    function ExportExcelCBGrid() {
+
+         $.ajax({
+                type: 'POST',
+             url: '/Reports/ExportExcelStockCBGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                @*var CC = '@Session["ACCIntCC"]';
+                var From = '@Session["ACCIntCCFromDate"]';
+                var To = '@Session["ACCIntCCToDate"]';*@
+                link.download = "Reconcilation Of Stock Report.xlsx";
+
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+    function ExportpdfCBGrid() {
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfCBGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = "Reconcilation Of Stock Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+    </script>

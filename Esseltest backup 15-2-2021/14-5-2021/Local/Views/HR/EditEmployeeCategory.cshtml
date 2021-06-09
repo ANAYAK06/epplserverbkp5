@@ -1,0 +1,144 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmpCategorys
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Edit Category</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2"> @Html.LabelFor(model => model.CategoryName)</div>
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.CategoryName, htmlAttributes: new { @class = "form-control", @id = "txtUpCategoryName" })
+                    </div>
+                </div>
+
+                @if (Model.ReportToId > 0)
+                {
+                    <div class="row" style="margin-top:10px">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-2"> @Html.LabelFor(model => model.ReportToId)</div>
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.ReportToId, new SelectList(Model.EmpReportToCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpReportToCategory" })
+                        </div>
+                    </div>
+                }
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2"> @Html.LabelFor(model => model.CategoryCode)</div>
+                    <div class="col-md-3">
+                        @Html.TextBoxFor(model => model.CategoryCode, htmlAttributes: new { @class = "form-control", @id = "txtUpCategoryCode", oninput = "this.value = this.value.toUpperCase()", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="row text-right">
+                    <button class="btn btn1 btn-success" id="btneditCatSubmit" onclick="EditCatogoryData(@serializer.Serialize(Model))">Update</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divUpCategoryInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function EditCatogoryData(Model) {
+        var errorMsg = "";
+        isValid = true;
+        var code = $("#txtUpCategoryCode").val();
+        var name = $("#txtUpCategoryName").val();
+        if (name === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Category Name</p>";
+            isValid = false;
+        }
+        if (code === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Category Code</p>";
+            isValid = false;
+        }
+        else {
+            var letters = /^[A-Z]+$/;
+            if (!code.match(letters)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Capital Alphabets For Category Code</p>";
+                isValid = false;
+            }
+        }
+        var oldReportToId = Model.ReportToId;
+        if (oldReportToId > 0) {
+            var ddlreporttoindex = $("#ddlUpReportToCategory option:selected").index();
+            if (ddlreporttoindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Report To</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divUpCategoryInfoMsg").text("");
+            $("#divUpCategoryInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divUpCategoryInfoMsg").addClass("alert-danger");
+            $("#divUpCategoryInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divUpCategoryInfoMsg").text("");
+            $("#divUpCategoryInfoMsg").addClass("hidden");
+            let reporto = "";
+            if (oldReportToId > 0) {
+                reporto = $("#ddlUpReportToCategory option:selected").val();
+            }
+            else { reporto = 0; }
+            let catdata = {
+                CategoryName: name,
+                ReportToId: reporto,              
+                CategoryCode: code,
+                CategoryId:Model.CategoryId
+
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+            $("#btneditCatSubmit").prop("disabled", true);
+            //debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/UpdateEmpCategory',
+                data: { CategoryData: catdata },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        //$('#liEmpCategory').trigger('click');
+                        //$("#divGridCategories").load('/HR/GetAllEmpCategories');                        
+
+                        $("#divUpCategoryInfoMsg").text("Updated Successfully");
+                        $("#divUpCategoryInfoMsg").removeClass("hidden alert-danger");
+                        $("#divUpCategoryInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divUpCategoryInfoMsg").text(Data.saveStatus);
+                        $("#divUpCategoryInfoMsg").addClass("alert-danger");
+                        $("#divUpCategoryInfoMsg").removeClass("hidden alert-success");
+                        $("#btneditCatSubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btneditCatSubmit").prop("disabled", false);
+                    $("#divUpCategoryInfoMsg").text(addFailMsg);
+                    $("#divUpCategoryInfoMsg").addClass("alert-danger");
+                    $("#divUpCategoryInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+
+        }
+    }
+</script>

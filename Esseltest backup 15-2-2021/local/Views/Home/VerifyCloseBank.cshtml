@@ -1,0 +1,85 @@
+﻿@model List<EsselTestLocalApplication.Models.AddBankDetails>
+@{
+    ViewBag.Title = "VerifyCloseBank";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table id="tblbankcloseGrid" style="width:100%" class="hover stripe nowrap example">
+                        <thead>
+                            <tr>
+                                <th class="hidden">ID</th>
+                                <th>Bank Name</th>
+                                <th>Nature Of Group</th>
+                                <th>Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.Bankid)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BankName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NatureGroupName)
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-default  btn-block" onClick="ViewBankCloseDetails(@item.Bankid,'@item.BankName','@item.Accountno')">View</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal fade" id="closeBankcodeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<div class="modal fade" id="closeBankcodeConfirmationVerification" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<script src="~/Scripts/moment.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var BankGrid = null;
+        InitializeBankcodeGrid();
+
+    });
+    function InitializeBankcodeGrid() {
+        BankGrid = $('#tblbankcloseGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Banks Found"
+            },
+            "createdRow": function (row, data, index) {                
+            },
+            pageLength: 10
+        });
+
+    }
+</script>

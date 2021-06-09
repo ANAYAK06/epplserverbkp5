@@ -1,0 +1,164 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.CentralDayBook
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VoucherDate)
+                    @Html.TextBoxFor(model => model.VoucherDate, "{0:dd-MMM-yyyy}", new { @id = "txtcbdtransferdate", @class = "form-control", type = "text", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Category)
+                    @*@Html.DropDownListFor(model => model.TransferType, new SelectList(Model.TransactionMode, "PaymentModeid", "PaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_CDBPaymentType", onchange = "paymenttypechange()" })*@
+                    @Html.TextBoxFor(model => model.Category, htmlAttributes: new { @class = "form-control", @id = "txtCDBPaymentType", type = "text", @readonly = true })
+
+                </div>
+            </div>
+            <div class="col-md-4" id="divCDBbankname">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtCDBbankname", type = "text", @readonly = true })
+                    @*@Html.DropDownListFor(model => model.Bankname, new SelectList(Model.BanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_CDBbankname" })*@
+                </div>
+            </div>
+            @*<div class="col-md-4">
+                    <div class="form-group" id="divCDBcostcenter">
+                        @Html.LabelFor(model => model.CostCenter)
+                        @Html.TextBoxFor(model => model.Bankname, htmlAttributes: new { @class = "form-control", @id = "txtCDBcostcenter", type = "text", @readonly = true })
+                    </div>
+                </div>*@
+
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtcbdreturnremarks", @Value = "" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Amount)
+                    @Html.TextBoxFor(model => model.Amount, htmlAttributes: new { @class = "form-control", @id = "txtcbdreturnamount", onkeypress = "return IsNumeric(event)" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Unassignedbalance)
+                    @Html.TextBoxFor(model => model.Unassignedbalance, htmlAttributes: new { @class = "form-control", @id = "txtcbdunassignedbalance", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Allccbalance)
+                    @Html.TextBoxFor(model => model.Allccbalance, htmlAttributes: new { @class = "form-control", @id = "txtcbdcostcenterbalance", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Pendingbalance)
+                    @Html.TextBoxFor(model => model.Pendingbalance, htmlAttributes: new { @class = "form-control", @id = "txtcbdpendingbalance", @readonly = true })
+                </div>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtChequeRoleId" style="display:none" />
+                    <button class="btn btn1 btn-success" id="btnCBDreturnSubmit" onclick="btnCBDrnSubmit('@Model.Rowid')">Submit</button>
+                    <input type="text" id="txtcbdCreatedby" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div id="divcbdInfoReturnMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function btnCBDrnSubmit(Rid) {        
+        refno = "divcbdInfoReturnMsg-" + Rid;
+        msg = $("#" + refno + "");
+        var Roleid = '@Session["Roleid"]';
+        var Crtedby = '@Session["Createdby"]';
+        isValid = true;
+        var errorMsg = "";
+        var Remarks = $("#txtcbdreturnremarks").val();
+        var Amount = $("#txtcbdreturnamount").val();
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remark</p>";
+            isValid = false;
+        }
+        if (Amount == "" || Amount == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divcbdInfoReturnMsg").text("");
+            $("#divcbdInfoReturnMsg").append(finalerror + errorMsg + "</div>");
+            $("#divcbdInfoReturnMsg").addClass("alert-danger");
+            $("#divcbdInfoReturnMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divcbdInfoReturnMsg").text("");
+            $("#divcbdInfoReturnMsg").addClass("hidden");
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var Details = {
+                Remarks: $("#txtcbdreturnremarks").val(),
+                Amount: $("#txtcbdreturnamount").val(),
+                Rowid: Rid,
+                RoleID: Roleid,
+                Createdby: Crtedby
+            };
+            addFailMsg = "Error Occurred While Adding Record.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/AccountsApproval/UpdateCentralDaybookData',
+                data: JSON.stringify({ apprdetails: Details }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    if (msg == "Successfull") {
+                        $('#ApprovecdbMsgModal').modal('show');
+                        var msg = "<div>CentralDayBook Return Updated Successfully</div>";
+                        $("#ApprcdbMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprcdbMsg").html(msg);
+                        $('#ApprovecdbMsgModal').modal('show');
+                    }
+                 
+                },
+                failure: function (response) {
+                   
+                    // alert(response.responseText);
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcdbMsg").html(msg);
+                    $('#ApprovecdbMsgModal').modal('show');
+                },
+                error: function (response) {
+                   
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcdbMsg").html(msg);
+                    $('#ApprovecdbMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

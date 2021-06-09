@@ -1,0 +1,54 @@
+﻿@model List<EsselTestLocalApplication.Models.BasicFirmInfo>
+<div class="table-responsive">
+    <table id="tblfirmGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr style="font-weight:200; align-content:center;" ><th colspan="4" >Firm Details</th></tr>
+            <tr>
+                <th>Firm Name</th>
+                <th>Firm Details</th>
+                <th>Firm Regions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>                   
+                    <td>
+                        @Html.DisplayFor(modelItem => item.firmName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.firmDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Regionslist)
+                    </td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {       
+        var ApprovecccashtransferGrid = null;
+        InitializeApprcccashtransferGrid();       
+    });
+    function InitializeApprcccashtransferGrid() {
+        ApprovecccashtransferGrid = $('#tblfirmGrid').DataTable({
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            pagingType: false,
+            ordering: false,
+            formatNumber: false,
+            language: {
+                "emptyTable": "No Records Found"
+            },
+        });        
+    }
+   
+</script>
+

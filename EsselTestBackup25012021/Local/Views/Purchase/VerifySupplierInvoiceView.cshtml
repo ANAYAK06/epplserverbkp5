@@ -1,0 +1,624 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.SupplierPOInvoice
+<style>
+    .tdtextcls {
+        word-wrap: break-word;
+        word-break: break-all !important;
+        white-space: normal;
+    }
+
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: center !important;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+
+    .datacls {
+        font-weight: normal;
+        white-space: normal;
+        font-size: 11px;
+        text-align: center !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />  <form onsubmit="return false">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorType)
+                @Html.TextBoxFor(model => model.VendorType, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorName", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.MRR)
+                @Html.TextBoxFor(model => model.MRR, htmlAttributes: new { @class = "form-control", @id = "txtPOMRR", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorId)
+                @Html.TextBoxFor(model => model.VendorId, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorCode", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorName)
+                @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorName", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccountHead)
+                @Html.TextBoxFor(model => model.AccountHead, htmlAttributes: new { @class = "form-control", @id = "txtPODCA", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VendorGST)
+                @Html.TextBoxFor(model => model.VendorGST, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorName", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.GSTType)
+                @Html.TextBoxFor(model => model.GSTType, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorName", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CompanyGST)
+                @Html.TextBoxFor(model => model.CompanyGST, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorName", @readOnly = true })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="table-responsive">
+            <table id="tblPOGrid" style="width:100%;overflow:hidden" class="hover stripe nowrap example dataTable no-footer">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+
+                        @*<th class="tdcls"></th>*@
+                        <th class="tdcls">ItemCode</th>
+                        <th class="tdcls">ItemName</th>
+                        <th class="tdcls">Specification</th>
+                        <th class="tdcls">AccountHead</th>
+                        <th class="tdcls">SubAccountHead</th>
+                        <th class="tdcls">Units</th>
+                        <th class="tdcls">RcvQty</th>
+                        <th width="50px" class="tdcls">New Purchase Price</th>
+                        <th class="tdcls">Amount</th>
+                        <th width="50px" class="tdcls hidden">CGST%</th>
+                        <th class="tdcls  hidden">CGSTAmt</th>
+                        <th width="50px" class="tdcls hidden">SGST%</th>
+                        <th class="tdcls hidden">SGSTAmt</th>
+                        <th width="50px" class="tdcls hidden">IGST%</th>
+                        <th class="tdcls hidden">IGSTAmt</th>
+                        <th class="tdcls hidden">ID</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model.MRRItemData)
+                    {
+                        <tr>
+                            @*<td style="text-align:center">
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chksingle" name="chksingle"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                                    </li>
+                                </ul>
+                            </td>*@
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.itemcode)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.itemname)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.specification)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.dcacode)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.subdcacode)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.units)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.Requestedqty)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.NewBasicprice)
+                            </td>
+                            <td class="datacls">
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+
+                            <td class="datacls hidden">
+                                @Html.DisplayFor(modelItem => item.CGSTpercent)
+                            </td>
+                            <td class="datacls hidden">
+                                @Html.DisplayFor(modelItem => item.CGSTAmt)
+                            </td>
+                            <td class="datacls hidden">
+                                @Html.DisplayFor(modelItem => item.SGSTpercent)
+                            </td>
+                            <td class="datacls hidden">@Html.DisplayFor(modelItem => item.SGSTAmt)</td>
+
+                            <td class="datacls hidden">
+                                @Html.DisplayFor(modelItem => item.IGSTpercent)
+                            </td>
+                            <td class="datacls hidden">@Html.DisplayFor(modelItem => item.IGSTAmt)</td>
+                            <td class="datacls hidden">@Html.DisplayFor(modelItem => item.Id)</td>
+                        </tr>
+
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        @*<td></td>*@
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="datacls">@Model.ItemTotal</td>
+                        <td class="datacls hidden"></td>
+                        <td  class="datacls hidden">@Model.CGSTTotal</td>
+                        <td class="datacls hidden"></td>
+                        <td style="text-align:center"  class="datacls hidden">@Model.SGSTTotal</td>
+                        <td  class="datacls hidden"></td>
+                        <td  class="datacls hidden">@Model.IGSTTotal</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </div>
+    <div class="row" id="divtransport" style="margin-top:10px;">
+        <div class="row">
+            <div class="col-md-12">
+                <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%;font-size:15px">Transportation</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12"><hr class="separationHr" style="margin-top:10px;"/></div>
+        </div>
+        @*<div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4 text-center">
+                <div class="form-group">
+                    <input id="rTransportY" name="Transport" value="Yes" type="radio" style="font-weight:bold;">Yes
+                    <input id="rTransportN" name="Transport" value="No" type="radio" checked>No
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>*@
+        <div id="divShowTransport" class="row">
+
+            <div class="col-lg-2">
+                @Html.LabelFor(model => model.TransportDCA)
+                @Html.TextBoxFor(model => model.TransportDCA, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportAmount", @readOnly = true })
+            </div>
+            <div class="col-lg-2">
+                @Html.LabelFor(model => model.TransportSubDCA)
+                @Html.TextBoxFor(model => model.TransportSubDCA, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportAmount", @readOnly = true })
+            </div>
+            <div class="col-lg-2">
+                @Html.LabelFor(model => model.TransportAmount)
+                @Html.TextBoxFor(model => model.TransportAmount, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportAmount", @readOnly = true })
+            </div>
+            <div class="col-lg-1">
+                @Html.LabelFor(model => model.TransportCGSTpercent)
+                @Html.TextBoxFor(model => model.TransportCGSTpercent, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportCGSTpercent", @readOnly = true })
+            </div>
+            <div class="col-lg-1">
+                @Html.LabelFor(model => model.TransportCGSTAmt)
+                @Html.TextBoxFor(model => model.TransportCGSTAmt, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportCGSTAmt", @readOnly = true})
+            </div>
+            <div class="col-lg-1">
+                @Html.LabelFor(model => model.TransportSGSTpercent)
+                @Html.TextBoxFor(model => model.TransportSGSTpercent, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportSGSTpercent", @readOnly = true })
+            </div>
+            <div class="col-lg-1">
+                @Html.LabelFor(model => model.TransportSGSTAmt)
+                @Html.TextBoxFor(model => model.TransportSGSTAmt, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportSGSTAmt", @readOnly = true  })
+            </div>
+            <div class="col-lg-1">
+                @Html.LabelFor(model => model.TransportIGSTpercent)
+                @Html.TextBoxFor(model => model.TransportIGSTpercent, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportIGSTPercent", @readOnly = true })
+            </div>
+            <div class="col-lg-1">
+                @Html.LabelFor(model => model.TransportIGSTAmt)
+                @Html.TextBoxFor(model => model.TransportIGSTAmt, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportIGSTAmount", @readOnly = true })
+            </div>
+
+        </div>
+    </div>
+    <div class="row" id="divnvinfo" style="margin-top:10px;">
+        <div class="row">
+            <div class="col-md-12">
+                <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%;font-size:15px">Invoice Info</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12"><hr class="separationHr" style="margin-top:5px;"/></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PONo)
+                    @Html.TextBoxFor(model => model.PONo, new { @id = "txtPONo", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceNo)
+                    @Html.TextBoxFor(model => model.InvoiceNo, new { @id = "txtInvNo", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceDate)
+                    @Html.TextBoxFor(model => model.InvoiceDate, "{0:dd/MM/yyyy}", new { @id = "txtInvDate", @class = "form-control  date-picker", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceMakingDate)
+                    @Html.TextBoxFor(model => model.InvoiceMakingDate, "{0:dd/MM/yyyy}", new { @id = "txtInvMakingDate", @class = "form-control  date-picker", type = "text", @readOnly = true })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BasicValue)
+                    @Html.TextBoxFor(model => model.BasicValue, new { @id = "txtBasicValue", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvTotalCGSTAmt)
+                    @Html.TextBoxFor(model => model.InvTotalCGSTAmt, new { @id = "txtInvTotalCGSTAmt", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvTotalSGSTAmt)
+                    @Html.TextBoxFor(model => model.InvTotalSGSTAmt, new { @id = "txtInvTotalSGSTAmt", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvTotalIGSTAmt)
+                    @Html.TextBoxFor(model => model.InvTotalIGSTAmt, new { @id = "txtInvTotalIGSTAmt", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvGSTTotal)
+                    @Html.TextBoxFor(model => model.InvGSTTotal, new { @id = "InvGSTTotal", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InvoiceValue)
+                    @Html.TextBoxFor(model => model.InvoiceValue, new { @id = "txtInvoiceValue", @class = "form-control", type = "text", @readOnly = true })
+                </div>
+            </div>
+        </div>
+        @if (Model.OtherChargeList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvChargetable">
+                    <div class="strike">
+                        <span>Other Charges</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.OtherChargeList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.ChargesTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.DeductionList.Count > 0)
+        {
+            <div class="col-md-12">
+                <div class="row change-tab text-right" id="divapprSPPOInvDeductiontable">
+                    <div class="strike">
+                        <span>Deductions</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <br />
+                        <table class="table order-list">
+                            <thead>
+                                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                    <th style="text-align:center;color:#fff">S.No</th>
+                                    <th style="text-align:center;color:#fff">CostCenter</th>
+                                    <th style="text-align:center;color:#fff">Account Head </th>
+                                    <th style="text-align:center;color:#fff">Sub Account Head</th>
+                                    <th style="text-align:center;color:#fff">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int count = 1; }
+                                @foreach (var item in Model.DeductionList)
+                                {
+                                    <tr>
+                                        <td class="tbodytdcls">@count</td>
+                                        <td class="tbodytdcls">@item.CCCode</td>
+                                        <td class="tbodytdcls">@item.DCACode</td>
+                                        <td class="tbodytdcls">@item.SubDCACode</td>
+                                        <td class="tbodytdcls">@item.Amount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>SubTotal:@Model.DeductionTotal</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.NetAmount)
+                @Html.TextBoxFor(model => model.NetAmount, new { @id = "txtNetAmount", @class = "form-control", type = "text", @readOnly = true })
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table style="width:100%;border:1px solid gray">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                    <th style="text-align:center;color:#fff">Action </th>
+                    <th style="text-align:center;color:#fff">Role Name</th>
+                    <th style="text-align:center;color:#fff">Employee </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count2 = 1; }
+                @foreach (var item in Model.ApprUserList)
+                {
+                    <tr>
+                        <th style="text-align:center" class="hidden">count2</th>
+                        @if (count2 == 1)
+                        {
+                            <th style="text-align:center">Created By </th>
+                        }
+                        else
+                        {
+                            <th style="text-align:center">Verified By </th>
+                        }
+                        <th style="text-align:center">@item.Rolename</th>
+                        <th style="text-align:center">@item.Empname </th>
+
+                    </tr>
+                    count2++;
+                }
+            </tbody>
+        </table>
+        <br />
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                <label>Status</label>
+                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppsppoInvstatus" })
+
+            </div>
+        </div>
+        <div class="col-md-6 ">
+            <div class="form-group">
+                <label>Notes:</label><br />
+                <textarea rows="3" cols="60" class="form-control" id="AppSPPOInvNote"></textarea>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <br /><br /><button onClick="ApproveSupplierOInvoice('@Model.InvoiceNo','@Model.CCCode')">Submit</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprSPPOInvInfoMsg" class="alert alert-danger hidden"></div>
+        </div>
+    </div>
+
+
+</form>
+</div>
+<script>
+    $(document).ready(function () {
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#AppsppoInvstatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        if (this['Type'] === 'Verify' || this['Type'] === 'Approve' ) {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        }
+                    });
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    });
+    function ApproveSupplierOInvoice(invno,CC) {
+        
+          
+            var appstatus = $("#AppsppoInvstatus option:selected").text();
+            retnote = $("#AppSPPOInvNote").val();
+            msg = $("#divApprSPPOInvInfoMsg");
+
+            isValid = true;
+            var errorMsg = "";
+            if (appstatus === "Select") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                isValid = false;
+            }
+            if (retnote === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $(msg).text("");
+                $(msg).append(finalerror1 + errorMsg + "</div>");
+                $(msg).addClass("alert-danger");
+                $(msg).removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $(msg).text("");
+                $(msg).addClass("hidden");
+                //var TaxTypes = "", Taxdcas = "", TaxAmounts = "";
+                //var Otherdcas = "", OtherAmounts = "";
+                //var Deddcas = "", DedAmounts = "";
+                //if (InvoiceData.TaxList.length > 0) {
+                //    InvoiceData.TaxList.forEach((element, index) => {
+
+                //        TaxTypes += element.TaxType + ',';
+                //        Taxdcas += element.DCACode + ',';
+                //        TaxAmounts += element.Amount + ',';
+                //    });
+                //}
+                //if (InvoiceData.OtherChargeList.length > 0) {
+                //    InvoiceData.OtherChargeList.forEach((element, index) => {
+
+                //        Otherdcas += element.DCACode + ',';
+                //        OtherAmounts += element.Amount + ',';
+                //    });
+                //}
+                //if (InvoiceData.DeductionList.length > 0) {
+                //    InvoiceData.DeductionList.forEach((element, index) => {
+
+                //        Deddcas += element.DCACode + ',';
+                //        DedAmounts += element.Amount + ',';
+                //    });
+                //}
+                var ApproveInvoice = {
+                    InvoiceNo: invno,
+                    CCCode: CC,
+                    Action: appstatus,
+                    ApprovalNote: retnote,
+                    
+                };
+                debugger;
+                addFailMsg = "Error Occurred";
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+                else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/ApproveSupplierInvoice",
+                    data: JSON.stringify({ InvData: ApproveInvoice }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus === "Submited") {
+                            $('#ApproveInvMsgModal').modal('show');
+                            var msg = "<div>Inovice " + finalmsg + "</div>";
+                            $("#AppInvMsg").html(msg);
+                        }
+                        else {
+                            var msg1 = "<div>" + response.saveStatus + "</div>";
+                            $("#AppInvMsg").html(msg);
+                            $('#ApproveInvMsgModal').modal('show');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        var msg = "<div>" + addFailMsg + " </div>";
+                        $("#AppInvMsg").html(msg);
+                        $('#ApproveInvMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+
+</script>

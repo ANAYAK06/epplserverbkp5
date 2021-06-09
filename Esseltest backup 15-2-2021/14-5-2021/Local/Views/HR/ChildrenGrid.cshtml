@@ -1,0 +1,147 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.Childrens>
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    System.Web.Script.Serialization.JavaScriptSerializer oSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    
+    var ChildJson = "";
+    var EditChildJson = "";
+    var Action = Session["EmpAction"].ToString();
+    if (Action == "New")
+    {
+        ChildJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.Childrens>)Session["Childrens"]).ToArray());
+    }
+    else { EditChildJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.Childrens>)Session["EditChildrens"]).ToArray()); }
+}
+
+<div class="col-md-12 change-tab">
+    <div class="strike">
+        <span>Children Details</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="ChildrenTable" class="table order-list Childrentable  dataTable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">S.No</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Name</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Date of Birth</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Age</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Gender</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Marital Status</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count1 = 1;
+                }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center;width:1%">@count1</td>
+                        <td style="text-align:center;width:20%">
+                            @Html.DisplayFor(modelItem => item.ChildName)
+                        </td>
+                        <td style="width:20%;text-align:center;">
+                            @Html.DisplayFor(modelItem => item.ChildDateofBirth)
+                        </td>
+
+                        <td style="width:10%;text-align:center;"> @Html.DisplayFor(modelItem => item.ChildAge)</td>
+                        <td style="width:20%;text-align:center;">
+                            @Html.DisplayFor(modelItem => item.ChildGender)
+                        </td>
+                        <td style="width:20%;text-align:center;">
+                            @Html.DisplayFor(modelItem => item.ChildMaritalStatus)
+                        </td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddnewempChildTabledelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count1++;
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var chGrid = null;
+        InitializeChildGrid();
+       
+           var Action = '@Session["EmpAction"]';
+        if (Action!== "") {
+            if (Action=== "New") {    $("#HiddenChildData").val(@Html.Raw(Json.Encode(@ChildJson)));}
+            else if(Action === "Edit") {
+                $("#UpdateHiddenChildData").val(@Html.Raw(Json.Encode(@EditChildJson)));
+            }
+        }
+        $("table.order-list.Childrentable").on("click", ".ibtnAddnewempChildTabledelete", function (event) {
+            var row = $(this).closest("tr");
+            var chname = $.trim(row.find("td").eq(1).html());
+            var rowno = $.trim(row.find("td").eq(0).html());
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteChildMemberData',
+                data: { Name: chname },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") { 
+                         var Action1 = '@Session["EmpAction"]';
+                        if (Action1 !== "") {
+                            if (Action1 === "New") {
+                                $("#divChildGridData").load('/HR/ChildrenGrid');
+                            }
+                            else {
+                                $("#divUpdateChildGridData").load('/HR/ChildrenGrid');
+                            }
+                        }
+                      
+                      
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+    });
+    function ReassignRowNoforChildMemberGrid() {
+        var rowno = 1;
+        $("#ChildrenTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(rowno);
+            rowno++;
+        });
+    }
+
+    function InitializeChildGrid() {
+        chGrid = $('#ChildrenTable').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+
+    }
+</script>

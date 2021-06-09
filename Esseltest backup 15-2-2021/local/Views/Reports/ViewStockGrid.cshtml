@@ -1,0 +1,79 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.StockReport>
+<div class="table-responsive">
+    <table id="tblItemsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+               
+                <th>Item Code</th>
+                @*<th>Item Name</th>
+                <th>Specification</th>
+                <th>DCA Code</th>
+                <th>SDCA Code</th>
+                <th>Purchase Price</th>
+                <th>Units</th>
+                <th>Qty</th>
+                <th>Total Value</th>*@
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.Itemcode)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Specification)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DCA)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubDca)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Basic)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Units)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalValue)
+                </td>*@
+            </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>   
+</div>
+<script>
+   // var openRows = new Array();
+    //$(document).ready(function () {
+    //    var ApprovecccashtransferGrid = null;
+    //    InitializeApprcccashtransferGrid();
+    //});
+    //function InitializeApprcccashtransferGrid() {
+    //    ApprovecccashtransferGrid = $('#tblItemsGrid').DataTable({
+    //        //destroy: false,
+    //        paging: true,
+    //        //lengthChange: false,
+    //        //searching: false,
+    //        //pagingType: false,
+    //        //ordering: false,
+    //        //formatNumber: false,
+    //        language: {
+    //            "emptyTable": "No Records Found"
+    //        },
+    //    });
+    //}
+</script>

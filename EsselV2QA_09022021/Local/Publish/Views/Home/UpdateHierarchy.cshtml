@@ -1,0 +1,430 @@
+﻿@model EsselTestLocalApplication.Models.WorkFlowLevels
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Update Work Flow</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <div class="row">
+
+                    @*<div class="row">
+                        <div class="text-center">
+                            <br />
+                            <div id="divUpHierarchyInfoMsg1" class="alert alert-danger  row">
+                            </div>
+                        </div>
+                    </div>*@
+
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+
+                        </div>
+                        <div class="col-md-6">
+                            <input type="hidden" value="@Model.MasterOperationID" id="txtupmasterid" />
+                            <input type="text" class="form-control text-center" value="@Model.MasterOperationDescription" readonly="readonly" style="font-weight:bold" />
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <br /><br /><br />
+                        @{ int rowNo = 0; }
+                        <table id="tblUpHierarchy" class=" table order-list updatehier hover stripe nowrap example dataTable no-footer" style="width:100%;color:#fff">
+                            <thead>
+                                <tr>
+                                    <td style="text-align:center" class="hidden">Masterid</td>
+                                    <td style="text-align:center" class="hidden">Row No</td>
+                                    <td style="text-align:center" class="hidden">RoleId</td>
+                                    <td style="text-align:center" class="hidden">Level no</td>
+                                    <td style="text-align:center" class="hidden"><b>Level of Verification</b> </td>
+                                    <td style="text-align:center" class="hidden"><b>User Roles</b></td>
+                                    <td style="text-align:center" class="hidden"><b>Action</b></td>
+                                    <td style="text-align:center"  class="hidden">OldLevel</td>
+                                </tr>
+                            </thead>
+                            <tbody style="width:100%;color:#000">
+                                @foreach (var item in Model.lstFlowDetails)
+                                {
+                                    <tr>
+                                        <td style="text-align:center"  class="hidden">
+                                            @Html.DisplayFor(modelItem => item.MasterID)
+                                        </td>
+                                        <td style="text-align:center"  class="hidden">
+                                            @{rowNo++;} @rowNo
+                                        </td>
+                                        <td style="text-align:center"  class="hidden">
+                                            @Html.DisplayFor(modelItem => item.UserRoleID)
+                                        </td>
+                                        <td style="text-align:center"   class="hidden">
+                                            @Html.DisplayFor(modelItem => item.LevelOfApproval)
+                                        </td>
+                                        <td style="text-align:center">
+                                            @if (item.LevelOfApproval == 1)
+                                            {
+                                                <Label type="text" class="control-label"> Request Initiation</Label>
+                                            }
+                                            else if (item.LevelOfApproval == 2)
+                                            {
+                                                var levelname = string.Concat(item.LevelOfApproval-1, "st Level of Verification");
+                                                <Label type="text" class="control-label">@levelname</Label>
+                                            }
+                                            else if (item.LevelOfApproval == 3)
+                                            {
+                                                var levelname = string.Concat(item.LevelOfApproval-1, "nd Level of Verification");
+                                                <Label type="text" class="control-label">@levelname</Label>
+                                            }
+                                            else if (item.LevelOfApproval == 4)
+                                            {
+                                                var levelname = string.Concat(item.LevelOfApproval-1, "rd Level of Verification");
+                                                <Label type="text" class="control-label">@levelname</Label>
+                                            }
+                                            else
+                                            {
+                                                var levelname = string.Concat(item.LevelOfApproval, "th Level of Verification");
+                                                <Label type="text" class="control-label">@levelname</Label>
+                                            }
+                                        </td>
+                                        <td style="text-align:center">
+                                            @Html.DisplayFor(modelItem => item.UserRoleCode)
+                                        </td>
+                                        <td style="text-align:center">
+                                            <input type="button" class="ibtnUpDelRole btn btn-md btn-danger" value="Delete" />
+                                        </td>
+                                        <td style="text-align:center"  class="hidden">
+                                            @Html.DisplayFor(modelItem => item.LevelOfApproval)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                @if (Model.MasterOperationID != 100 && Model.MasterOperationID != 102 && Model.MasterOperationID != 104 && Model.MasterOperationID != 192 && Model.MasterOperationID != 196 && Model.MasterOperationID != 198)
+                                {
+                                    <tr>
+                                        @*<td></td>
+                                        <td></td>
+                                        <td></td>*@
+                                        <td></td>
+                                        <td style="text-align: center;" colspan="4">
+                                            <input type="button" class="btn btn-default  btn-block" id="UpdLevelOfVerificationBtn" value="Add Next Level Of Verification"
+                                                   style="width:60%;text-wrap:normal" onclick="AddnewRowForUpdateHierarchy()" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tfoot>
+                        </table>
+
+                    </div>
+
+                    <div class="ol-md-12">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <br />  <br />  <br />
+                                @*<input type="submit" value="Update" class="btn btn1 btn-success" onclick="UpdateApprovalHierarchy()" />*@
+                                <input type="submit" class="btn btn1 btn-success" id="btnWFupdate" onclick="UpdateWorkFlowDetails(@Model.MasterOperationID)" value="Update" />
+                                <input type="hidden" id="upmdlcode" />
+                                <input type="hidden" id="txtupcounter" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <br />
+                            <div id="divUpHierarchyInfoMsg" class="alert alert-danger hidden row">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divDeletedRolelist" class="hidden">
+                        <table id="tblUpdelRoles" class=" table order-list upDelrole">
+                            <thead>
+                                <tr>
+                                    <td style="text-align:center">Masterid</td>
+                                    <td style="text-align:center">RoleId</td>
+                                    <td style="text-align:center">Level</td>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // alert($("#tblUpHierarchy tbody tr").length);
+        $('#tblUpHierarchy').on('change', '#ddlUpHirRole', function () {
+            var Selectedroleid = $(this).val();
+            var Selectedrole = $(this).text();
+            var row = $(this).closest('tr');
+            row.find("td").eq(2).html(Selectedroleid);
+        });
+        $("table.order-list.updatehier").on("click", ".ibtnUpDelRole", function (event) {
+            var row = $(this).closest("tr");
+            var Masterid = row.find("td").eq(0).html();
+            var roleid = row.find("td").eq(2).html();
+            var levelid = row.find("td").eq(7).html();
+            var str = levelid.trim();
+            var nooflevels = $("#tblUpHierarchy  tbody tr").length;
+            //  alert(nooflevels);
+            if (nooflevels == 1) {
+                $("#tblUpHierarchy tbody tr").remove();
+                BindSingleRowToGrid();
+            }
+            else {
+                if (str != "00") {
+                    var selectedrole = row.find("td").eq(5).html();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/GetVerificationPendingForRole",
+                        data: '{Roleid:"' + roleid + '",Masterid:"' + Masterid + '",Levelno:"' + levelid + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            //debugger;
+                            var count1 = Object.keys(response).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                var msg = "";
+                                var msg1 = "Verifications are in Pending";
+                                var code = "";
+                                $.each(response, function () {
+                                    code = this['Code'];
+                                    msg += " " + this['PendingNo'] + ",";
+                                });
+                                var newmsg = msg.slice(0, -1);
+                                newmsg += "<br/>";                               
+                                $("#divUpHierarchyInfoMsg").text("");
+                                $("#divUpHierarchyInfoMsg").append("<div>" + code + newmsg + msg1 + "</div>");
+                                $("#divUpHierarchyInfoMsg").addClass("alert-danger");
+                                $("#divUpHierarchyInfoMsg").removeClass("hidden alert-success");
+                                $("#divUpHierarchyInfoMsg").removeClass("hidden");
+                            }
+                            else {
+
+                                //$("#divUpHierarchyInfoMsg").text("");
+                                //$("#divUpHierarchyInfoMsg").addClass("hidden");
+
+                                var newRow = $("<tr>");
+                                var cols = "";
+                                cols += '<td style="text-align:center"   class="hidden">' + Masterid + '</td>';
+                                cols += '<td style="text-align:center"  class="hidden">' + roleid + '</td>';
+                                cols += '<td style="text-align:center"  class="hidden">' + levelid + '</td>';
+                                newRow.append(cols);
+                                $("table.order-list.upDelrole").append(newRow);
+                                row.remove();
+                                ReAssignLevels();
+                                if (roleid != 0) {
+                                    BindDeletedRoleToddl(roleid, selectedrole);
+                                }
+                            }
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+                else {
+                    var selectedrole = row.find("td").eq(5).find("select option:selected").text();
+                    if (roleid != 0) {
+                        BindDeletedRoleToddl(roleid, selectedrole);
+                    }
+                    row.remove();
+                    ReAssignLevels();
+                }
+            }
+
+        });
+    });
+
+    function AddnewRowForUpdateHierarchy() {
+        var isValid = true;
+        var errorMsg = "";
+        var NotSelectedcount = 0;
+        $("#upmdlcode").val("");
+        $("#tblUpHierarchy tbody tr").each(function () {
+            var currentRow = $(this);
+            var levelid = currentRow.find("td").eq(7).html();
+            var str = levelid.trim();
+            if (str === "00") {
+                var selected = currentRow.find("td").eq(5).find("select option:selected").index();
+                if (selected === 0) {
+                    NotSelectedcount = NotSelectedcount + 1;
+                }
+            }
+        });
+
+        if (NotSelectedcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Roles for Verification</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            // alert();
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divUpHierarchyInfoMsg").text("");
+            $("#divUpHierarchyInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divUpHierarchyInfoMsg").addClass("alert-danger");
+            $("#divUpHierarchyInfoMsg").removeClass("hidden alert-success");
+            $("#divUpHierarchyInfoMsg").removeClass("hidden");
+        }
+        else {
+            
+            var rows = $("#tblUpHierarchy tbody tr").length;
+            var counter = parseInt(rows);
+            var selectedroles = [];
+            var idvalues = '';
+            $("#tblUpHierarchy tbody tr").each(function () {
+                var currentRow = $(this);
+                var selected = currentRow.find("td").eq(2).html();
+                selected = selected.trim();
+                idvalues += selected + ',';
+            });
+            $("#upmdlcode").val("");
+            if (idvalues != '') {
+                var rowcount = rows + 1;
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'html',
+                    url: '/Home/ShowUpdateHierachyDDLView',
+                    data: { iddata: idvalues },
+                    success: function (Data) {
+                        //$("#upmdlcode").val(Data);
+                        //alert($("#tblUpHierarchy tbody tr").length);
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center"   class="hidden">' + $("#txtupmasterid").val() + '</td>'
+                        cols += '<td style="text-align:center"  class="hidden">' + rowcount + '</td>';
+                        cols += '<td style="text-align:center"  class="hidden">' + 0 + '</td>';
+                        cols += '<td style="text-align:center" class="hidden">' + (parseInt(counter)+1) + '</td>';
+                        if (counter == 1) {
+                            cols += '<td style="text-align:center"><Label type="text" class="control-label" >' +  '1st Level of Verification</Label></td>';
+                        }
+                        else if (counter == 2) {
+                            cols += '<td style="text-align:center"><Label type="text" class="control-label">' +  '2nd Level of Verification</Label></td>';
+                        }
+                        else if (counter == 3) {
+                            cols += '<td style="text-align:center"><Label type="text" class="control-label" >' +'3rd Level of Verification</Label></td>';
+                        }
+                        else {
+                            cols += '<td style="text-align:center"><Label type="text" class="control-label" >' + (parseInt(counter)) + 'th Level of Verification</Label></td>';
+                        }
+
+                        cols += '<td style="text-align:center">';
+                        //cols += $("#upmdlcode").val();
+                        cols += Data;
+                        cols += '</td ><td style="text-align:center">  <input type="button" class="ibtnUpDelRole btn btn-md btn-danger" value="Delete" /></td>';
+                        cols += '<td style="text-align:center"  class="hidden">00</td>';
+                        newRow.append(cols);
+                        $("table.order-list.updatehier").append(newRow);
+                        counter++;
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+        }
+    }
+
+    function ReAssignLevels() {
+        var levelno = 1;
+        var rownoo = 1;
+       
+        $("#tblUpHierarchy tbody tr").each(function () {
+         
+            var currentRow = $(this);
+            currentRow.find("td").eq(1).html(rownoo);
+            if (levelno === 1) {
+                currentRow.find("td").eq(3).html(levelno);
+                currentRow.find("td").eq(4).find('label').html("Request Initiation");
+            }
+            //else if (levelno === 1) {
+
+            //    currentRow.find("td").eq(3).html(levelno);
+            //    currentRow.find("td").eq(4).find('label').html(levelno + "st Level of Verification");
+            //}
+            else if (levelno === 2) {
+
+                currentRow.find("td").eq(3).html(levelno);
+                currentRow.find("td").eq(4).find('label').html( "1st Level of Verification");
+
+            }
+            else if (levelno === 3) {
+                currentRow.find("td").eq(3).html(levelno);
+                currentRow.find("td").eq(4).find('label').html("2nd Level of Verification");
+
+            }
+            else if (levelno === 4) {
+                currentRow.find("td").eq(3).html(levelno);
+                currentRow.find("td").eq(4).find('label').html("3rd Level of Verification");
+
+            }
+            else {
+                currentRow.find("td").eq(3).html(levelno);
+                currentRow.find("td").eq(4).find('label').html((levelno - 1) + "th Level of Verification");
+
+            }
+            levelno++;
+            rownoo++;
+
+        });
+    }
+    function BindDeletedRoleToddl(roleid, selectedrole) {
+        $("#tblUpHierarchy tbody tr").each(function () {
+
+            var currentRow1 = $(this);
+            var levelid1 = currentRow1.find("td").eq(7).html();
+            var str1 = levelid1.trim();
+            if (str1 === "00") {
+                var ddl = currentRow1.find("td").eq(5).find("select");
+                ddl.append('<option  value=' + roleid + '>' + selectedrole + '</option>');
+            }
+        });
+    }
+
+    function BindSingleRowToGrid() {
+        //$("#txtcounter").val(0);
+        var counter = 0;
+        var idvalues = '';
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/Home/ShowUpdateHierachyDDLView',
+            data: { iddata: idvalues },
+            success: function (Data) {
+               
+               // $("#upmdlcode").val(Data);
+                //alert($("#tblUpHierarchy tbody tr").length);
+                var newRow = $("<tr>");
+                var cols = "";
+                cols += '<td style="text-align:center"  class="hidden">' + $("#txtupmasterid").val() + '</td>'
+                cols += '<td style="text-align:center"   class="hidden">' + 1 + '</td>';
+                cols += '<td style="text-align:center"   class="hidden">' + 0 + '</td>';
+                cols += '<td style="text-align:center" class="hidden">' + 1 + '</td>';
+                cols += '<td style="text-align:center"><Label type="text" class="control-label" >Request Initiation</Label></td>';
+                cols += '<td style="text-align:center">';
+                cols += Data;
+                cols += '</td ><td style="text-align:center">  <input type="button" class="ibtnUpDelRole btn btn-md btn-danger" value="Delete" /></td>';
+                cols += '<td style="text-align:center" class="hidden">00</td>';
+                newRow.append(cols);
+                $("table.order-list.updatehier").append(newRow);
+                counter++;
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+
+        $("#txtupcounter").val(counter);
+
+    }
+</script>

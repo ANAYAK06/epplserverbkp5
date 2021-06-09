@@ -1,0 +1,350 @@
+﻿@model EsselTestLocalApplication.Models.ItemsTransferData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab " id="divItemTransferDetailsGrid">
+    <div class="strike">
+        <span>Transfer Items</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemTransferDetailsDataTable" class="table order-list itemTransferDetails">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                    @if (Model.Presentlevel >= Model.DefineLevel)
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    }
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Issued Qty</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Status</label></td>
+                    @if (Model.Presentlevel == Model.DefineLevel)
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Before Depriciation</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Depriciation</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">After Depriciation</label></td>
+                    }
+                    @if (Model.Presentlevel > Model.DefineLevel)
+                    {
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">CSK %</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">CSK Depriciation</label></td>
+                    }
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                <tr>
+                    <td style="text-align:center;width:10px!important;">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    <input type="checkbox" class="eagle-check-input">
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                    <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.Specification</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>
+                    @if (Model.Presentlevel >= Model.DefineLevel)
+                    {
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Basic)</td>
+                    }
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.IssQuantity)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemStatus)</td>
+                    @if (Model.Presentlevel == Model.DefineLevel)
+                    {
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;">
+                            <select class="form-control dropdown-toggle" id="ddldeppercent" onchange="Calculate(this)" style="width:100px">
+                                <option value="0" selected="selected">Select</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                                <option value="50">50</option>
+                                <option value="60">60</option>
+                                <option value="70">70</option>
+                                <option value="80">80</option>
+                                <option value="90">90</option>
+                                <option value="100">FullValue</option>
+                            </select>
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.AfterDep)</td>
+                    }
+                    @if (Model.Presentlevel > Model.DefineLevel)
+                    {
+                        
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px;">
+                            <select class="form-control dropdown-toggle" id="ddldeppercentcmc" onchange="Calculate(this)" style="width:100px">
+                                @if (item.CskPercent == "10")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10" Selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "20")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20" Selected>20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "30")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30" Selected>30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "40")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40" Selected>40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "50")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50" Selected>50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "60")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10" Selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60" Selected>60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "70")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70" Selected>70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "80")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80" Selected>80</option>
+                                    <option value="90">90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "90")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90" Selected>90</option>
+                                    <option value="100">FullValue</option>
+                                }
+                                @if (item.CskPercent == "FullValue")
+                                {
+                                    <option value="0">Select</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                    <option value="40">40</option>
+                                    <option value="50">50</option>
+                                    <option value="60">60</option>
+                                    <option value="70">70</option>
+                                    <option value="80">80</option>
+                                    <option value="90">90</option>
+                                    <option value="100" Selected>FullValue</option>
+                                }
+
+                            </select>
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.CskDep)</td>
+                        }
+                        <td class="hidden"> @Html.DisplayFor(modelItem => item.ItId)</td>
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    @if (Model.Presentlevel >= Model.DefineLevel)
+                    {
+                        <td class="text-center" colspan="3"><label style="color:green" id="lblSumtotal"></label></td>
+                    }
+                    @if (Model.Presentlevel >= Model.DefineLevel)
+                    {
+                        <td class="text-center" colspan="2"><label style="color:green" id="lblDepsumtotal"></label></td>
+                    }
+                </tr>
+
+            </tfoot>
+
+        </table>
+        <table id="ItemIndentDetailsRemDataTable" class="table order-list itemIndentDetailRemlist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remarks</label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Remarks)
+                {
+                    <tr>
+                        <td style="font-weight:normal; white-space: normal;font-size:smaller"> @Html.DisplayFor(modelItem => item.Remarks)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @foreach (var item in Model.Data)
+    {
+        <input type="text" id="txtPresentlevel" value="@item.IndentPresentLevel" style="display:none" />
+        <input type="text" id="txtDefineLevel" value="@item.IndentDefineLevel" style="display:none" />
+        break;
+    }
+</div>
+<script>
+    
+    $(document).ready(function () {
+        //$("table.order-list.itemTransferDetails").on("keyup", ".countcheck1", function (event) {
+        //debugger;
+        var sumtotal = 0;
+        var Afterdeptotal = 0;
+        $("#ItemTransferDetailsDataTable tbody tr").each(function () {
+            var currentRow = $(this).closest("tr");
+            var Total = currentRow.find("td").eq(10).html();
+            var Total2 = currentRow.find("td").eq(12).html();
+            sumtotal = parseFloat(sumtotal) + parseFloat(Total);
+            var num = isNaN(parseFloat(Total2)) ? 0 : parseFloat(Total2)
+            Afterdeptotal = parseFloat(Afterdeptotal) + parseFloat(num);
+        });
+        $("#ItemTransferDetailsDataTable tfoot tr").each(function () {
+            $("#lblSumtotal").html("Sum Total:-" + parseFloat(sumtotal).toFixed(2));
+            $("#lblDepsumtotal").html(parseFloat(Afterdeptotal).toFixed(2));
+        });
+    });
+
+    function Calculate(val) {
+        //alert(val.value);
+        ////debugger;
+        var sumvalue = 0;
+        $("#ItemTransferDetailsDataTable tbody tr").each(function () {
+            var currentRow = $(this).closest("tr");
+            var code = currentRow.find("td").eq(1).html().trim();
+            var itemcode = code.substring(0, 1);
+            //var depval = val.value;
+            var depval = currentRow.find("td").eq(11).find("select option:selected").val();
+            if (depval != 0 && itemcode == 1) {
+                alert("Depreciation Value is not applicable for Asset Items")
+                return false;
+            }
+            else if (depval == 100 && itemcode != 1) {
+                currentRow.find("td").eq(12).html(0);
+                sumvalue = parseFloat(sumvalue) + parseFloat(0);
+            }
+            else if (depval != 100 && itemcode != 1) {
+                var beforedep = currentRow.find("td").eq(10).html().replace(/,/g, "");
+                var sumtot = parseFloat(beforedep) * parseFloat(depval) / 100;
+                currentRow.find("td").eq(12).html(parseFloat(sumtot).toFixed(2));
+                sumvalue = parseFloat(sumvalue) + parseFloat(sumtot);
+            }
+        });
+        $("#ItemTransferDetailsDataTable tfoot tr").each(function () {
+
+            $("#lblDepsumtotal").html(parseFloat(sumvalue).toFixed(2));
+        });
+    }
+
+</script>
+
+

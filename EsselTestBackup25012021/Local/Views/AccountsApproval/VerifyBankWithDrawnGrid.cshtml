@@ -1,0 +1,157 @@
+﻿    @model List< EsselTestLocalApplication.Models.Accounts.BankWithDrawnDetails>
+<div class="table-responsive w-100">
+    <table id="tblApproveBankWithdrawnGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Name</th>
+                <th>Bank Name</th>
+                <th>Amount</th>
+                <th class="hidden">Status</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.BankName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Approvalstatus)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApprovewithdrawnGrid = null;
+        InitializeApprWithdrawnGrid();
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprBankWithdrawnCreatedby").val(Sessioncreated);
+        var SessionRole = '@Session["Roleid"]';
+        $("#txtApprBankWithdrawnRole").val(SessionRole);
+
+    });
+    function InitializeApprWithdrawnGrid() {
+        ApprovewithdrawnGrid = $('#tblApproveBankWithdrawnGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row) {
+                var oldstatus = $('td:eq(5)', row).html();
+                if (oldstatus == 0) {
+                    $('td:eq(5)', row).html("Return");
+                }
+                else { $('td:eq(5)', row).html("Verification Pending"); }
+            },
+            pageLength: 10
+        });
+        $('#tblApproveBankWithdrawnGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApprovewithdrawnGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                closeOpenedRows(ApprovewithdrawnGrid, tr);
+                // Open this row
+                row.child(formatApprWithdrawn(row.data())).show();
+                tr.addClass('shown');
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprWithdrawn(d) {
+        var htmltext;
+        var BankTranid, transstatus;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                BankTranid = value;
+            if (index == 5)
+                transstatus = value;
+        });
+        var divid = "divapprwitdrawn" + BankTranid;
+        var divid1 = $("#" + divid + "");
+
+        $("#currentWithdrawnid").val(BankTranid);
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/UpdateWithdrawnView',
+                data: { Id: BankTranid },
+                success: function (Data) {
+                    var divid2 = "divapprwitdrawn" + BankTranid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+
+                 
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyWithdrawnView',
+                data: { Id: BankTranid },
+                success: function (Data) {
+                    var divid2 = "divapprwitdrawn" + BankTranid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+        }
+        return '<div id="divapprwitdrawn' + BankTranid + '" ></div>';
+    }
+</script>

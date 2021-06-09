@@ -1,0 +1,253 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.StockReconcilation
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+
+    .tdalign {
+        text-align: center !important;
+        /*white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;*/
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+
+    .firstheaderborder {
+        border-left: 1px solid white;
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .startheaderborder {
+        border-left: 1px solid white;
+    }
+
+    .endheaderborder {
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .linkcls {
+        color: blue !important;
+        text-decoration: underline !important;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 0 0;
+        border-bottom: 1px solid #111;
+    }
+</style>
+@if (Model.AssetData.Count > 0)
+{
+    @*<div>Assets</div>*@
+    <div align="right" class="col-md-12">
+        <span>Export to : </span>
+        <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelAssetGrid();" />
+        <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfAssetGrid();" />
+
+    </div>
+    <div class="table-responsive">
+        <table id="tblAseetGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th colspan="4" class="firstheaderborder">Total Reciept At CC</th>
+
+                    <th></th>
+                </tr>
+                <tr>
+                    <th class="wrapcls">Item Code</th>
+                    <th class="wrapcls">Item Name</th>
+                    <th class="wrapcls">Specification</th>
+                    <th class="wrapcls">Price In The System</th>
+                    <th class="wrapcls ">Quantity</th>
+                    <th class="wrapcls startheaderborder">Recieved Date</th>
+                    <th class="wrapcls">Returned From CC And Confirmed Date Of Transfer </th>
+                    <th class="wrapcls">Balance At Site</th>
+                    <th class="wrapcls">Comments On Status Today</th>
+                    <th class="wrapcls">CC Store Status CLOSED/ACTIVE</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AssetData)
+                {
+                    <tr>
+
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemCode)
+                        </td>
+                        <td class="tdalign" style="white-space: pre-wrap !important;word-wrap: break-word !important;">
+                            @Html.DisplayFor(modelItem => item.ItemName)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Specification)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Basicprice)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Quantity)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.RecievedDate)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TransferDate)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.BalanceAtSite)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Comments)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.CCStorStatus)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @if (Model.AssetData.Count > 0)
+                {
+                    <tr>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"> @Model.AssetCost</td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                    </tr>
+                }
+
+            </tfoot>
+        </table>
+    </div>
+   
+        <div class="row">
+            <br />
+            <div class="col-lg-2">
+            </div>
+            <div class="col-lg-11 text-center">
+                <label style="font-weight:bold;background-color:red;color:white"> RECONCILAITION STATUS ASSET COSTING   @Model.AssetCost  STILL PENDING AT CC</label>
+            </div>
+            @*<div class="col-lg-1">
+                </div>*@
+        </div>
+       
+    }
+    else
+    {
+        <div class="row text-center">No Data Found</div>
+}
+    <div class="modal fade" id="ModalAssetSummaryData" role="dialog" data-backdrop="static" data-keyboard="false">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        let assetGrid = null;
+        InitializeassetGridGrid();
+
+        //$('#tblAseetGrid tbody').on('click', 'tr', function () {
+        //    var data = assetGrid.row(this).data();
+        //    alert('You clicked on ' + data[0] + '\'s row');
+        //});
+
+        //$('#tblAseetGrid tbody').on('click', 'tr', function () {
+        //    console.log(assetGrid.row(this).data());
+        //});
+    });
+    function InitializeassetGridGrid() {
+        assetGrid = $('#tblAseetGrid').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function () {
+                $(document).on("click", "tr[role='row']", function () {
+                  //  alert($(this).children('td:first-child').text());
+                    let CC = $("#ddlSRRptCC option:selected").val();
+                    let item =$.trim($(this).children('td:first-child').text());
+                    $.ajax({
+                        type: "POST",
+                        url: "/Reports/StockReconcilationAssetSummary",
+                        data: '{CCCode:"' + CC + '",Type:"1",For:"",ItemCode:"' + item+'"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'html',
+                        success: function (data) {
+                            $('#ModalAssetSummaryData').html(data);
+                            $('#ModalAssetSummaryData').modal();
+
+                        }
+                    });
+                })
+            }
+
+
+        });
+
+    }
+
+
+    
+        function ExportpdfAssetGrid() {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfAssetGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = "Reconcilation Of Stock Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+    }
+
+        function ExportExcelAssetGrid() {
+            $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelStockAssetGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                var CC = '@Session["ACCIntCC"]';
+                var From = '@Session["ACCIntCCFromDate"]';
+                var To = '@Session["ACCIntCCToDate"]';
+                link.download = "Reconcilation Of Stock Report.xlsx";
+
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+        }
+    </script>

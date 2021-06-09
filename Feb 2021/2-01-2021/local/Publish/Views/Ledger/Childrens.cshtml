@@ -1,0 +1,17 @@
+﻿
+@model EsselTestLocalApplication.Models.Ledger.Employee
+    @foreach (var item in Model.Employees) {
+<ul>
+    @if (item != null)
+    {
+    <li>
+        <a href="#" class="usr">@item.Name</a>
+        @if (item.Employees.Count > 0)
+        {
+            @Html.Partial("Childrens", item)
+        }
+    </li>
+    }
+</ul>
+
+    }

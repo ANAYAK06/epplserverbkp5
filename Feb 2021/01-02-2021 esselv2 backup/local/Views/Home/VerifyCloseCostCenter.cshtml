@@ -1,0 +1,131 @@
+﻿@model List<EsselTestLocalApplication.Models.AddCostCenter>
+@{
+    ViewBag.Title = "VerifyCloseCostCenter";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table id="tblCCCloseDetailsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                        <thead>
+                            <tr>
+                                @*<th></th>*@
+                                <th class="hidden">Id</th>
+                                <th>Cost Center Code</th>
+                                <th> Name</th>
+                                <th>Type</th>
+                                <th>State</th>
+                                <th class="hidden">VoucherLimit</th>
+                                <th class="hidden">DayLimit</th>
+                                <th class="hidden">PhoneNo</th>
+                                <th class="hidden">InchName</th>
+                                <th class="hidden">InchNo</th>
+                                <th class="hidden">SiteAddress</th>
+                                <th class="hidden">SubType</th>
+                                <th class="hidden">EPPLFinalOfferNo</th>
+                                <th class="hidden">FinalOfferDate</th>
+                                <th class="hidden">ClientAcceptanceReferenceNo</th>
+                                <th class="hidden">ClientAcceptanceDate</th>
+                                <th>Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    @*<td class="details-control"></td>*@
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.CC_Id)
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CCCode)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CCName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CCType)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.State)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.VoucherLimit)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.DayLimit)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.PhoneNo)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.CCInchargeName)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.InchargePhNo)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.SiteAddress)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.SubType)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.EPPLFinalOfferNo)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.FinalOfferDate)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.ClientAcceptanceReferenceNo)
+                                    </td>
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.ClientAcceptanceDate)
+                                    </td>
+                                    <td>
+                                        <button onClick="ViewCCCloseDetails(@item.CC_Id,'@item.CCCode', '@item.CCType','@item.CCName')">View</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="closeConfirmationForVerifyAppr" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script>
+    $(document).ready(function () {
+        var CostCentersGrid = null;
+        InitializeCostCenterDetialsGrid();
+        var Sessioncreated = '@Session["Createdby"]';   
+    });
+
+    function InitializeCostCenterDetialsGrid() {
+        CostCentersGrid = $('#tblCCCloseDetailsGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No Closing Cost Centers Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+</script>

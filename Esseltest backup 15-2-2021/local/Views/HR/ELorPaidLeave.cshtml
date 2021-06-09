@@ -1,0 +1,788 @@
+﻿@model EsselTestLocalApplication.Models.HR.ELorPaidLeaveRule
+
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <ul class="list-inline">
+                <li class="eagle-checkbox">
+                    <label class="eagle-check custom-checkbox">
+                        <input type="checkbox" class="eagle-check-input" name="CustomOrOher" value="Other" id="chkOther" onclick="CustomOrOherValidation(this)">
+                        <span class="eagle-check-indicator"></span>
+                        <span class="eagle-check-description">Other</span>
+                    </label>
+                </li>
+                <li class="eagle-checkbox">
+                    <label class="eagle-check custom-checkbox">
+                        <input type="checkbox" class="eagle-check-input" name="CustomOrOher" value="Custom" id="chkCustom" onclick="CustomOrOherValidation(this)">
+                        <span class="eagle-check-indicator"></span>
+                        <span class="eagle-check-description">Custom</span>
+                    </label>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-3"></div>
+
+</div>
+<div class="row"><hr /></div>
+
+<div class="row" id="divOther">
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.LeaveType)
+        @Html.DropDownListFor(model => model.LeaveType, new SelectList(Model.LeaveTypeslist, "LeaveTypeid", "LeaveTypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLeaveType", onchange = "OtherLeavetypeChange()" })
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.ELPaidCategory)
+        @Html.DropDownListFor(model => model.ELPaidCategory, new SelectList(Model.elofpaidleaveCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlELPaidCategory" })
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ElPaidLeaveEffectiveDate)
+            @Html.TextBoxFor(model => model.ElPaidLeaveEffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtELPaidWithEffectDate", @readOnly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ELPaidState)<br />
+            @Html.ListBoxFor(model => model.ELPaidState, new SelectList(Model.elofpaidleaveStatesList, "State_ID", "State_Name"), new { @class = "listbox form-control", @id = "ddlMultiELPaidState" })
+        </div>
+    </div>
+    <div class="col-md-3" id="divNoofleaves">
+        @Html.LabelFor(model => model.NoofLeaves)
+        @Html.TextBoxFor(model => model.NoofLeaves, htmlAttributes: new { @class = "form-control", @id = "txtNoofLeaves" })
+    </div>
+    <div class="col-md-3">
+        <br />
+        <ul class="list-inline">
+            <li class="eagle-checkbox">
+                <label class="eagle-check custom-checkbox">
+                    <input type="checkbox" class="eagle-check-input" id="chkLeaveCaryFwdOther">
+                    <span class="eagle-check-indicator"></span>
+                    <span class="eagle-check-description">Carry Forward To Next Year</span>
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div id="divLeavebtn">
+        <div class="row rowspace">
+            <div class="col-md-12 text-right">
+                <br />
+                <button class="btn btn1 btn-success" id="btnOtherLeavesSubmit" onclick="SubmitOtherLeavesData()">Submit</button>
+                <button class="btn btn1 btn-success" id="btnOtherLeavesReset" onclick="ResetOtherLeavesLeavesData()">Reset</button>
+            </div>
+        </div>
+        <div class="col-md-12 rowspace">
+            <div class="text-center">
+                <br />
+                <div id="divOtherLeavesInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" id="divCustom">
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ElPaidLeaveEffectiveDate)
+                @Html.TextBoxFor(model => model.ElPaidLeaveEffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtELPaidCustomWithEffectDate", @readOnly = "true" })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <br />
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" id="chkCustomLeaveCaryFwd">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Carry Forward To Next Year</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-9">
+            <label>Leaves are Calculated As:</label><span style="font-weight:500">(No of days in a month/No of days in a year)*No of days attendance in a year</span>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+    <div id="divLeavebtn">
+        <div class="row rowspace">
+            <div class="col-md-12 text-right">
+                <br />
+                <button class="btn btn1 btn-success" id="btnCustomLeavesSubmit" onclick="SubmitCustomLeavesData()">Submit</button>
+                <button class="btn btn1 btn-success" id="btnCustomLeavesDelete" onclick="SubmitCustomRemoveLeavesData()">Delete</button>
+                <button class="btn btn1 btn-success" id="btnCustomLeavesReset" onclick="ResettCustomLeavesLeavesData()">Reset</button>
+                <input type="hidden" id="txtcustomid" value="0" />
+            </div>
+        </div>
+        <div class="col-md-12 rowspace">
+            <div class="text-center">
+                <br />
+                <div id="divCustomLeavesInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="txtcurrentleavetypeid" value="0" />
+    </div>
+</div>
+
+<div id="divgridleaves">
+    @if (Model.CurrentActiveRuleData.leavetypeid != 0 && Model.CurrentActiveRuleData.leavetypeid!=7) {
+    @Html.Action("GetAllELorPaidLeaves", "HR" )
+    }
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.listbox').multiselect({
+            includeSelectAllOption: true
+        });
+        $("#txtELPaidWithEffectDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+            yearRange: "-100:+1",
+        });
+        $("#txtELPaidCustomWithEffectDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+            yearRange: "-100:+1",
+        });
+     
+        let currentActiveruletypeid = '@Model.CurrentActiveRuleData.leavetypeid';
+        $("#txtcurrentleavetypeid").val(currentActiveruletypeid);
+        if (currentActiveruletypeid === "0") {
+            $("#chkOther").prop("checked", false);
+            $("#chkCustom").prop("checked", false);
+            $("#divOther").addClass('hidden');
+            $("#divCustom").addClass('hidden');
+            $("#divgridleaves").addClass('hidden');
+            $("#btnCustomLeavesDelete").addClass('hidden');
+            $("#btnCustomLeavesSubmit").removeClass('hidden');
+
+        }
+        else if (currentActiveruletypeid === "7") {
+            $("#chkOther").prop("checked", false);
+            $("#chkOther").prop("disabled", true);
+            $("#chkCustom").prop("checked", true);
+            $("#divOther").addClass('hidden');
+            $("#divCustom").removeClass('hidden');
+            $("#divgridleaves").addClass('hidden');
+            $("#txtELPaidCustomWithEffectDate").datepicker("setDate", '@Model.CurrentActiveRuleData.EffectiveDate');
+            $("#txtcustomid").val("@Model.CurrentActiveRuleData.ELPaidId");
+            if ('@Model.CurrentActiveRuleData.CarryFWd' === 'Yes') {
+                $("#chkCustomLeaveCaryFwd").prop("checked", true);
+            }
+            else {
+                $("#chkCustomLeaveCaryFwd").prop("checked", false);
+            }
+            $("#btnCustomLeavesDelete").removeClass('hidden');
+            $("#btnCustomLeavesSubmit").addClass('hidden');
+
+        }
+        else {
+            $("#chkOther").prop("checked", true);
+            $("#chkOther").prop("disabled", false);
+            $("#chkCustom").prop("checked", false);
+            $("#divOther").removeClass('hidden');
+            $("#divCustom").addClass('hidden');
+            $("#divgridleaves").removeClass('hidden');
+            $("#btnCustomLeavesDelete").addClass('hidden');
+            $("#btnCustomLeavesSubmit").removeClass('hidden');
+        }
+
+    });
+    ///Start of leaves *************************************************************
+
+    function CustomOrOherValidation(checkbox) {
+        var selectedIds = [];
+        var checkboxes = document.getElementsByName('CustomOrOher');
+        for (var i in checkboxes)
+            checkboxes[i].checked = checkbox.checked;
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+        var ids = document.getElementsByName('CustomOrOher');
+        for (var i = 0; i < ids.length; i++) {
+            if (ids[i].checked == true) {
+                // alert(ids[i].value);
+                if (ids[i].value == 'Other') {
+                    $("#divOther").removeClass('hidden');
+                    $("#divCustom").addClass('hidden');
+                    $("#divgridleaves").removeClass('hidden');
+
+                    $("#divOtherLeavesInfoMsg").text("");
+                    $("#divOtherLeavesInfoMsg").addClass("hidden");
+                   
+                }
+                else {
+                    //let currentleavetypeid = $("#txtcurrentleavetypeid").val();
+                    //if (currentleavetypeid == "1") {
+                    //    var msg1 = confirm('Do You Really Want To Remove Other Leave Rules?');
+                    //    if (msg1 == true) {
+                    //    }
+
+                    //}
+                    //else {
+                        $("#divOther").addClass('hidden');
+                        $("#divCustom").removeClass('hidden');
+                        $("#divgridleaves").addClass('hidden');
+
+                        $("#divOtherLeavesInfoMsg").text("");
+                        $("#divOtherLeavesInfoMsg").addClass("hidden");
+                   // }
+                }
+            }
+        }
+    }
+    function SubmitOtherLeavesData() {
+        var errorMsg = "";
+        isValid = true;
+        var leavetypeindex = $("#ddlLeaveType option:selected").index();
+        var CategoryIndex = $("#ddlELPaidCategory option:selected").index();
+        var effectivedate = $("#txtELPaidWithEffectDate").val();
+        var leavestates = $('#ddlMultiELPaidState > option:selected');
+        var noofleaves = $("#txtNoofLeaves").val();
+        var leavecarryfwd = 'No';
+        if (leavetypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Leave Type</p>";
+            isValid = false;
+        }
+        if (CategoryIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Emp Category</p>";
+            isValid = false;
+        }
+        if (effectivedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+            isValid = false;
+        }
+        if (noofleaves === "" || noofleaves === "0" || noofleaves === 0 ) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter No of Leaves</p>";
+            isValid = false;
+        }
+        if (leavestates.length == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Applicable States</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divOtherLeavesInfoMsg").text("");
+            $("#divOtherLeavesInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+            $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divOtherLeavesInfoMsg").text("");
+            $("#divOtherLeavesInfoMsg").addClass("hidden");
+            if ($('#chkLeaveCaryFwdOther').is(':checked') == true) { leavecarryfwd = 'Yes'; }
+            let catid = 0;
+            if (CategoryIndex == 1) {
+                catid = 0;
+            }
+            else {
+                catid = $("#ddlELPaidCategory option:selected").val();
+            }
+
+            var statecount = $('#ddlMultiELPaidState option').length;
+            var Selectedstatecount = $('#ddlMultiELPaidState option:selected').length;
+            var SelectedState = '';
+            if (Selectedstatecount === statecount) {
+                SelectedState = 0;//all selected
+            }
+            else {
+                var SelectedState = $('#ddlMultiELPaidState option:selected').toArray().map(item => item.value).join() + ',';
+            }
+
+            let Leavedata = {
+                LeaveTypeId: $("#ddlLeaveType option:selected").val(),
+                EffectiveDate: effectivedate,
+                ELPaidCategoryId: catid,
+                ELPaidState: SelectedState,
+                CarryforwardToNextYear: leavecarryfwd,
+                Action: 'New',
+                CurrentLeaveTypeId: $("#txtcurrentleavetypeid").val(),
+                NoofLeaves: noofleaves
+            };
+            //let Leavedata = {
+            //    LeaveType: $("#ddlLeaveType option:selected").val(),
+            //    CarryforwardToNextYear: leavecarryfwd
+            //};
+            //debugger;
+
+            addFailMsg = "Error Occurred While Adding.";
+            var leaveid = $("#ddlLeaveType option:selected").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/CheckifLeaveExist",
+                    data: '{leavetypeid:"' + leaveid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                       // debugger;
+                        var msg = response.ExistMsg;
+                        if (msg === "Do You Want To Remove Other EL/PaidLeave Rules") {
+                            //show confirm msg for removing other leave before inserting custom leave
+                            var msg1 = confirm('Do You Really Want To Remove Other Leave Rules?');
+                            if (msg1 == true) {
+                                $.ajax({
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    url: '/HR/InsertELorPaidLeaves',
+                                    data: { leaveData: Leavedata },
+                                    success: function (Data) {
+                                        // alert("Hi");
+                                        if (Data.saveStatus === "Submited") {
+                                            $("#divOtherLeavesInfoMsg").text("Rules Added Successfully");
+                                            $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                                            $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                                        }
+                                        else {
+                                            $("#divOtherLeavesInfoMsg").text(addFailMsg);
+                                            $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                                            $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                                        }
+
+                                    },
+                                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                        $("#divOtherLeavesInfoMsg").text(addFailMsg);
+                                        $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                                        $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                                    }
+                                });
+
+                            }
+                            else {
+                                location.reload();
+                            }
+                        }
+                        else if (msg === "Custom Rule Already Exist") {//in case of custom msg inserting second time
+
+                            $("#divOtherLeavesInfoMsg").text(msg);
+                            $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                            $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+
+                        }
+                        else if (msg === "Leave Already Exist") {// in case of inserting othe leaves
+                            //other leave already exist
+                            $("#divOtherLeavesInfoMsg").text("Leave Already Exist");
+                            $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                            $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                        }
+                        else if (msg === "Please Remove Custom Rule") {//in case of inserting othe leaves
+                            //Custom leave exist then cannot insert other other leave before removing custom leave
+                            $("#divOtherLeavesInfoMsg").text(msg);
+                            $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                            $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                        }
+                        else {
+                            $("#divOtherLeavesInfoMsg").text("");
+                            $("#divOtherLeavesInfoMsg").addClass("hidden");
+                            $.ajax({
+                                type: 'POST',
+                                dataType: 'json',
+                                url: '/HR/InsertELorPaidLeaves',
+                                data: { leaveData: Leavedata },
+                                success: function (Data) {
+                                    // alert("Hi");
+                                    if (Data.saveStatus === "Submited") {
+                                        $('#liELorPaidLeaveRules').trigger('click');
+                                      //  location.reload();
+                                        //$("#divOtherLeavesInfoMsg").text("Rules Added Successfully");
+                                        //$("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                                        //$("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                                    }
+                                    else {
+                                        $("#divOtherLeavesInfoMsg").text(addFailMsg);
+                                        $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                                        $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                                    }
+
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    $("#divOtherLeavesInfoMsg").text(addFailMsg);
+                                    $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                                    $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                                }
+                            });
+                        }
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            //alert('submit');
+            //$.ajax({
+            //    type: 'POST',
+            //    dataType: 'json',
+            //    url: '/HR/InsertELorPaidLeaves',
+            //    data: { leaveData: Leavedata },
+            //    success: function (Data) {
+            //        // alert("Hi");
+            //        if (Data.saveStatus === "Submited") {
+            //            BindExistingLeaves();
+            //            BindLeaveTypes();
+            //            $('#chkLeaveCaryFwd').prop('checked', false);
+            //        }
+            //        else if (Data.saveStatus === "Exist") {
+            //            $("#divLeavesInfoMsg").text("Head Name Already Exist");
+            //            $("#divLeavesInfoMsg").addClass("alert-danger");
+            //            $("#divLeavesInfoMsg").removeClass("hidden alert-success");
+            //        }
+            //        else {
+            //            $("#divLeavesInfoMsg").text(addFailMsg);
+            //            $("#divLeavesInfoMsg").addClass("alert-danger");
+            //            $("#divLeavesInfoMsg").removeClass("hidden alert-success");
+            //        }
+
+            //    },
+            //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+            //        $("#divLeavesInfoMsg").text(addFailMsg);
+            //        $("#divLeavesInfoMsg").addClass("alert-danger");
+            //        $("#divLeavesInfoMsg").removeClass("hidden alert-success");
+            //    }
+            //});
+        }
+
+    }
+
+    function SubmitCustomLeavesData() {
+        var errorMsg = "";
+        isValid = true;
+
+        var effectivedate = $("#txtELPaidCustomWithEffectDate").val();
+
+        var leavecarryfwd = 'No';
+
+        if (effectivedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCustomLeavesInfoMsg").text("");
+            $("#divCustomLeavesInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+            $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCustomLeavesInfoMsg").text("");
+            $("#divCustomLeavesInfoMsg").addClass("hidden");
+            if ($('#chkCustomLeaveCaryFwd').is(':checked') == true) { leavecarryfwd = 'Yes'; }
+
+            let Leavedata = {
+                LeaveTypeId:7,
+                EffectiveDate: effectivedate,
+                ELPaidCategoryId: 0,
+                ELPaidState:0,
+                CarryforwardToNextYear: leavecarryfwd,
+                Action: 'New',
+                CurrentLeaveTypeId: $("#txtcurrentleavetypeid").val()
+            };
+            //debugger;
+
+            addFailMsg = "Error Occurred While Adding.";
+            var leaveid = 7;
+
+            $.ajax({
+                type: "POST",
+                url: "/HR/CheckifLeaveExist",
+                data: '{leavetypeid:"' + leaveid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                   // debugger;
+                    var msg = response.ExistMsg;
+                    if (msg === "Do You Want To Remove Other EL/PaidLeave Rules") {
+                        //show confirm msg for removing other leave before inserting custom leave
+                        var msg1= confirm('Do You Really Want To Remove Other Leave Rules?');
+                        if (msg1 == true) {
+                            $.ajax({
+                                type: 'POST',
+                                dataType: 'json',
+                                url: '/HR/InsertELorPaidLeaves',
+                                data: { leaveData: Leavedata },
+                                success: function (Data) {
+                                    // alert("Hi");
+                                    if (Data.saveStatus === "Submited") {
+                                        $("#divCustomLeavesInfoMsg").text("Custom Rules Added Successfully");
+                                        $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                                        $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                                        $("#chkOther").prop("disabled", true);
+                                        $("#divgridleaves").addClass('hidden');
+                                    }
+                                    else {
+                                        $("#divCustomLeavesInfoMsg").text(addFailMsg);
+                                        $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                                        $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                                    }
+
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    $("#divCustomLeavesInfoMsg").text(addFailMsg);
+                                    $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                                    $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                                }
+                            });
+                        }
+                        else {
+                           // location.reload();
+                            $('#liELorPaidLeaveRules').trigger('click');
+                        }
+                    }
+                    else if (msg === "Custom Rule Already Exist") {//in case of custom msg inserting second time
+
+                        $("#divCustomLeavesInfoMsg").text(msg);
+                        $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                        $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+
+                    }
+                    else if (msg === "Leave Already Exist") {// in case of inserting othe leaves
+                        //other leave already exist
+                        $("#divCustomLeavesInfoMsg").text("Leave Already Exist");
+                        $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                        $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else if (msg === "Please Remove Custom Rule") {//in case of inserting othe leaves
+                        //Custom leave exist then cannot insert other other leave before removing custom leave
+                        $("#divCustomLeavesInfoMsg").text(msg);
+                        $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                        $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                    }
+                    else {
+                        //table is empty and first time custom rule inserting
+                        $("#divCustomLeavesInfoMsg").text("");
+                        $("#divCustomLeavesInfoMsg").addClass("hidden");
+
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            url: '/HR/InsertELorPaidLeaves',
+                            data: { leaveData: Leavedata },
+                            success: function (Data) {
+                                // alert("Hi");
+                                if (Data.saveStatus === "Submited") {
+                                    $("#btnCustomLeavesSubmit").addClass('hidden');
+                                    $("#chkOther").prop("disabled", true);
+                                    $("#divCustomLeavesInfoMsg").text("Custom Rules Added Successfully");
+                                    $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                                    $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                                }
+                                else {
+                                    $("#divCustomLeavesInfoMsg").text(addFailMsg);
+                                    $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                                    $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                                }
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                $("#divCustomLeavesInfoMsg").text(addFailMsg);
+                                $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                                $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                            }
+                        });
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+            //alert('submit');
+        }
+    }
+    function SubmitCustomRemoveLeavesData() {
+        var data = {
+            ELPaidId: $("#txtcustomid").val(),
+            LeaveTypeId:7
+        };
+        addFailMsg = "Error Occurred While Deleting.";
+        $.ajax({
+                type: 'POST',
+                dataType: 'json',
+            url: '/HR/DeleteELorPaidLeavess',
+            data: { leaveData: data },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        $('#liELorPaidLeaveRules').trigger('click');
+                       // location.reload();
+                        //$("#divCustomLeavesInfoMsg").text("Rule Deleted Successfully");
+                        //$("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                        //$("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                        //$("#btnCustomLeavesDelete").addClass('hidden');
+                        //$("#chkOther").prop("disabled", true);
+                    }
+                    else {
+                        $("#divCustomLeavesInfoMsg").text(addFailMsg);
+                        $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                        $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCustomLeavesInfoMsg").text(addFailMsg);
+                    $("#divCustomLeavesInfoMsg").addClass("alert-danger");
+                    $("#divCustomLeavesInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+    }
+    function ResetOtherLeavesLeavesData() {
+        //location.reload();
+        //$('.nav-tabs li:eq(4) a').tab('show');
+        $('#liELorPaidLeaveRules').trigger('click');
+    }
+    function BindExistingLeaves() {
+        //$("#divgridleaves").load('/HR/GetAllELorPaidLeaves');
+    }
+    function BindLeaveTypes() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/GetRemainingLeaves",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success: function (response) {
+                var ddl = $("#ddlLeaveType");
+                ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                $.each(response, function () {
+                    ddl.append($("<option></option>").val(this['LeaveTypeid']).html(this['LeaveTypeName']));
+                });
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+
+    }
+    function ELPaidLeaveTypeChange() {
+       // debugger;
+        var leavetypeindex = $("#ddlLeaveType option:selected").index();
+        var leavetypeid = $("#ddlLeaveType option:selected").val();
+        if (leavetypeindex === 0) {
+            $("#divNoofleaves").addClass("hidden");
+            $("#divCustomNoofleaves").addClass("hidden");
+            var ddl = $("#ddlELPaidCategory");
+            ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            if (leavetypeid === 7) {//Custom
+                $("#divNoofleaves").addClass("hidden");
+                $("#divCustomNoofleaves").removeClass("hidden");
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/GetEmpCategoriesForOtherLeaves",
+                    data: { Leavetypeid: leavetypeid},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+
+                    success: function (response) {
+                        var ddl = $("#ddlELPaidCategory");
+                        ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        ddl.append($("<option></option>").val(0).html("SelectAll"));
+                        $.each(response, function () {
+                            ddl.append($("<option></option>").val(this['CategoryId']).html(this['CategoryName']));
+                        });
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+                $("#divNoofleaves").removeClass("hidden");
+                $("#divCustomNoofleaves").addClass("hidden");
+            }
+        }
+
+    }
+    function ResettCustomLeavesLeavesData() {
+       // location.reload();
+        $('#liELorPaidLeaveRules').trigger('click');
+    }
+    function OtherLeavetypeChange() {
+        // alert('Change');
+       
+        var leavetypeindex = $("#ddlLeaveType option:selected").index();
+        var typeid = $("#ddlLeaveType option:selected").val();
+        if (leavetypeindex === 0) {
+            //$("#divNoofleaves").addClass("hidden");
+            //$("#divCustomNoofleaves").addClass("hidden");
+            var ddl = $("#ddlELPaidCategory");
+            ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+         
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/HR/GetEmpCategoriesForOtherLeaves",
+                //    data: { Leavetypeid: typeid },
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (response) {
+                        
+                //        var ddl = $("#ddlELPaidCategory");
+                //        ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                //        ddl.append($("<option></option>").val(0).html("SelectAll"));
+                //        $.each(response, function () {
+                //            ddl.append($("<option></option>").val(this['CategoryId']).html(this['CategoryName']));
+                //        });
+                //    },
+                //    failure: function (response) {
+                //    },
+                //    error: function (response) {
+                //    }
+                //});
+                //$("#divNoofleaves").removeClass("hidden");
+                //$("#divCustomNoofleaves").addClass("hidden");
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetEmpCategoriesForOtherLeaves",
+                data: '{ Leavetypeid:"' + typeid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    var ddl = $("#ddlELPaidCategory");
+                    ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddl.append($("<option></option>").val(0).html("SelectAll"));
+                    $.each(response, function () {
+                        ddl.append($("<option></option>").val(this['CategoryId']).html(this['CategoryName']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+            
+        }
+    }
+    
+   //End of leaves
+</script>

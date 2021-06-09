@@ -1,0 +1,92 @@
+﻿@model EsselTestLocalApplication.Models.HR.CMSPaymentFormat
+
+<div align="right">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="Exportexcel();" />
+</div>
+<div></div>
+<div id="divCMSDetails">
+    <div class="table-responsive">
+        <table id="tblCMSReportGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Debited Account No</th>
+                    <th>Beneficiary A/c No</th>
+                    <th>Beneficiary Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.CMSReportData)
+                {
+                    <tr>
+                        <td class="details-control"></td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DebitAcNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BeneficiaryAcNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BeneficiaryName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var CMSgrid = null;
+        InitializeReportGrid();
+    });
+    function InitializeReportGrid() {
+        CMSgrid = $('#tblCMSReportGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 500,
+            "initComplete": function (settings, json) {
+            }
+        });
+
+    }
+    function Exportexcel() {
+        var month = '@Model.EffectiveMonth';
+        var year = '@Model.Year';
+        $.ajax({
+            type: 'POST',
+            url: '/HR/CMSExportExcel',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "ST_SAL_MS_" + month + "_" + year + ".xls";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+</script>

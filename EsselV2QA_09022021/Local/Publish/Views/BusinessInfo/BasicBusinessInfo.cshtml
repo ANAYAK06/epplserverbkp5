@@ -1,0 +1,1462 @@
+﻿@model EsselTestLocalApplication.Models.BasicFirmInfo
+@{
+    Layout = "~/Views/Shared/BusinesInfoMaster.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style type="text/css">
+        .bs-example {
+            margin: 20px;
+        }
+
+        .rotate {
+            -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+            -moz-transform: rotate(90deg); /* Firefox */
+            -ms-transform: rotate(90deg); /* IE 9 */
+            transform: rotate(90deg); /* Standard syntax */
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            // Add minus icon for collapse element which is open by default
+            $(".collapse.in").each(function () {
+                $(this).siblings(".panel-heading").find(".glyphicon").addClass("rotate");
+            });
+
+            // Toggle plus minus icon on show hide of collapse element
+            $(".collapse").on('show.bs.collapse', function () {
+                $(this).parent().find(".glyphicon").addClass("rotate");
+            }).on('hide.bs.collapse', function () {
+                $(this).parent().find(".glyphicon").removeClass("rotate");
+            });
+        });
+    </script>
+    <title>BasicBusinessInfo</title>
+    @Scripts.Render("~/bundles/FirmInfo")
+</head>
+<body>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <form onsubmit="return false">
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.firmName, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                                        @Html.EditorFor(model => model.firmName, new { htmlAttributes = new { @class = "form-control", @id = "BusInfofirmNameId" } })
+                                        @Html.ValidationMessageFor(model => model.firmName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.firmDescription, htmlAttributes: new { @class = "control-label" })<span style="color:red">*</span>
+                                        <textarea rows="2" cols="2" class="form-control" id="BusInfoFirmDescId"></textarea>
+                                        @Html.ValidationMessageFor(model => model.firmDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div id="divRegions">
+                                        <div class="form-group">
+                                            <ul class="list-inline">
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input" name="" value="Yes" id="chkRegions" onclick="OnRegionChkChange(this)">
+                                                        <span class="eagle-check-indicator"></span>
+                                                        <span class="eagle-check-description">Do You Have Regions</span>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="control-label">Firm Logo</label><span style="color:red">*</span>
+                                    <input type="file" class="form-control col-md-2" title="search image" id="BusInfoFirmLogoId" name="file" onchange="show(this)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="form-group">
+                                    <img id="user_img" height="170" width="170" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divRegionsGrid" class="col-md-12">
+                        <div class="col-md-12">
+                            <table id="tblRegion" class="table order-list region" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <td></td>
+                                        <td style="text-align:center">RegionName</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align:center">
+                                        <td>1</td>
+                                        <td>
+                                            <input type="text" id="txtRegionName" class="form-control" />
+                                        </td>
+                                        <td style="text-align:center"><input type="button" class="ibtndeleteRegion btn btn-md btn-danger" value="Delete"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-right">
+                                            <input type="button" class="btn" id="addNewRegion" value="Add New Region" onclick="AddNewRowForRegion()" />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div  class="col-md-12"><hr/></div>
+                <div class="container">
+                    <div class="col-md-12">
+                        <div class="col-md-2"><label class="control-label">Nature Of Business</label></div>
+                        <div class="col-md-3 text-left">
+                            <select class="form-control dropdown-toggle" id="ddlNatureofBusiness"  onchange="NatureOfBusinessChange()">
+                                <option selected="selected" value="0">Select</option>
+                                <option value="PrivateLtdCompany">Private Ltd Company</option>
+                                <option value="PartnershipFirm">Partnership Firm</option>
+                                <option value="ProprietorshipFirm">Proprietorship Firm</option>
+                                <option value="HUF">HUF(Hindu United Family)</option>
+                                <option value="PublicLtdCompany">Public Ltd Company</option>
+                            </select>
+                        </div>     
+                    </div>
+                    <div class="col-md-12" id="divAccordion">
+                        <div class="bs-example">
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default" id="AccCapital">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-menu-right"></span>Capital Details </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div class="panel-body">
+                                            <div id="divCapitalGrid" class="col-md-12">
+                                                <div class="col-md-12">
+                                                    @*Authorised Capital*@
+                                                    <div class="col-md-12" style="margin-top:20px">
+                                                        <label>AUTHORISED CAPITAL</label>
+                                                        <hr style="margin-top:0px" />
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4"><label>No of Shares</label></div>
+                                                        <div class="col-md-4"><label>Price Of Each Share</label></div>
+                                                        <div class="col-md-4"><label>Amount</label></div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtACnoofshares" onkeypress="return IsNumeric(event)" onkeyup="CountCapitalShareTotal()" /></div>
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtACEachSharePrice" onkeypress="return ValidateAmount(this,event)" onkeyup="CountCapitalShareTotal()" /></div>
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtACAmount" readonly="readonly" /></div>
+                                                    </div>
+                                                    @*Issued Capital*@
+                                                    <div class="col-md-12" style="margin-top:20px">
+                                                        <label>ISSUED CAPITAL</label>
+                                                        <hr style="margin-top:0px" />
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4"><label>No of Shares</label></div>
+                                                        <div class="col-md-4"><label>Price Of Each Share</label></div>
+                                                        <div class="col-md-4"><label>Amount</label></div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtICnoofshares" onkeypress="return IsNumeric(event)" onkeyup="CountIssuedShareTotal()" /></div>
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtICEachSharePrice" onkeypress="return ValidateAmount(this,event)" onkeyup="CountIssuedShareTotal()" /></div>
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtICAmount" readonly="readonly" /></div>
+                                                    </div>
+                                                    @*Paid Up Capital*@
+                                                    <div class="col-md-12" style="margin-top:20px">
+                                                        <label>PAID UP CAPITAL</label>
+                                                        <hr style="margin-top:0px" />
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4"><label>No of Shares</label></div>
+                                                        <div class="col-md-4"><label>Price Of Each Share</label></div>
+                                                        <div class="col-md-4"><label>Amount</label></div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtPUCnoofshares" onkeypress="return IsNumeric(event)" onkeyup="CountPaidUpShareTotal()" /></div>
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtPUCEachSharePrice" onkeypress="return ValidateAmount(this,event)" onkeyup="CountPaidUpShareTotal()" /></div>
+                                                        <div class="col-md-4"><input type="text" class="form-control" id="txtPUCAmount" readonly="readonly" /></div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default" id="AccPromoter">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><span class="glyphicon glyphicon-menu-right"></span>Promoter Details</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div id="divPromotersGrid" class="col-md-12">
+                                                <hr />
+                                                <div class="col-md-12">
+                                                    <table id="tblPramotor" class="table order-list pramoter" style="width:100%">
+                                                        <thead>
+                                                            @*<tr>
+                                                                   <td colspan="2">Details Of Pramoters</td>
+                                                                    <td></td>
+                                                                </tr>*@
+                                                            <tr style="text-align:center">
+                                                                <td style="text-align:center">Name</td>
+                                                                <td>Address</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr style="text-align:center">
+                                                                <td>
+                                                                    <input type="text" id="txtPramoterName" class="form-control" />
+                                                                </td>
+                                                                <td style="text-align:center"><textarea rows="2" class="form-control" onkeypress="return isValidSpecialCharacters(event)" id="txtPromoterAddress"></textarea></td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td class="text-right">
+                                                                    <input type="button" class="btn" id="addNewPromoter" value="Add New Promoter" onclick="AddNewRowForPramoter()" />
+                                                                </td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                                <div class="col-md-3"></div>
+                                            </div>
+                                            @*<p>Bootstrap is a sleek, intuitive, and powerful front-end framework for faster and easier web development. It is a collection of CSS and HTML conventions. <a href="https://www.tutorialrepublic.com/twitter-bootstrap-tutorial/" target="_blank">Learn more.</a></p>*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default"  id="AccShareholder">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"><span class="glyphicon glyphicon-menu-right"></span>Share Holder Details</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div id="divShareHolderGrid" class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <table id="tblShareHolder" class="table order-list sholder" style="width:100%">
+                                                        <thead>
+                                                            @*<tr>
+                                                                    <td colspan="7">Details Of ShareHolder</td>
+
+                                                                </tr>*@
+                                                            <tr style="text-align:center">
+                                                                <td style="text-align:center">Name</td>
+                                                                <td>% of Share Holding</td>
+                                                                <td>No of Shares</td>
+                                                                <td>Price</td>
+                                                                <td>Total Value</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr style="text-align:center">
+                                                                <td>
+                                                                    <input type="text" id="txtSHolderName" class="form-control" onkeypress="return isValidSpecialCharacters(event)" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtSharePercentage" class="form-control spercent" onkeypress="return IsNumeric(event)" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtNoofShares" class="form-control shareholdernoofshares" onkeypress="return IsNumeric(event)" onkeyup="CountShareTotal()" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtSharePrice" class="form-control sprice" onkeypress="return ValidateAmount(this,event);" onkeyup="CountShareTotal()" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtSTotalValue" class="form-control totalsprice" readonly="readonly" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr style="text-align:center">
+                                                                <td>
+                                                                    <input type="text" id="txtSHolderName" onkeypress="return isValidSpecialCharacters(event)" class="form-control" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtSharePercentage" class="form-control spercent" onkeypress="return isValidSpecialCharacters(event)" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtNoofShares" class="form-control shareholdernoofshares" onkeypress="return IsNumeric(event)" onkeyup="CountShareTotal()" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtSharePrice" class="form-control sprice" onkeypress="return ValidateAmount(this,event);" onkeyup="CountShareTotal()" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtSTotalValue" class="form-control totalsprice" readonly="readonly" />
+                                                                </td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td class="text-right">
+                                                                    <input type="button" class="btn" id="addNewShareHolder" value="Add New Share holder" onclick="AddNewRowForShareHolder()" />
+                                                                </td>
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default"  id="AccDirectors">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><span class="glyphicon glyphicon-menu-right"></span>Directors Details</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div id="divDirectorGrid" class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <table id="tblDirector" class="table order-list Director" style="width:100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <td style="text-align:center">Name</td>
+                                                                <td style="text-align:center">Address</td>
+                                                                <td style="text-align:center">Designations</td>                                                              
+                                                                <td></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr style="text-align:center">
+                                                                <td>
+                                                                    <input type="text" id="txtDirName" class="form-control" onkeypress="return isValidSpecialCharacters(event)" />
+                                                                </td>
+                                                                <td>
+                                                                    <textarea rows="2" class="form-control" id="txtDirAddress" onkeypress="return isValidSpecialCharacters(event)"></textarea>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="txtDirDesignation" class="form-control" onkeypress="return isValidSpecialCharacters(event)" />
+                                                                </td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td></td>
+                                                               
+                                                                <td class="text-right">
+                                                                    <input type="button" class="btn" id="addNewDirector" value="Add New Director" onclick="AddNewRowForDirector()" />
+                                                                </td>
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-12" id="divdepbtns">
+                    <div class="text-right">
+                        <input type="button" value="Submit" class="btn btn-default firmbtns-hover" onclick="SaveBasicFirmInfo();" />
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <div id="divFirmInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="FirmInfoMsgModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <br />
+                    <div id="FirmInfoMsg" style="text-align:center;font-size:20px;color:forestgreen"></div>
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function isValidSpecialCharacters(event) {
+            var character = String.fromCharCode(event.keyCode);
+            return !/[~`!#$%\^&*()+=\-\[\]\\';,/{}|\\":<>\?]/g.test(character);
+        }
+        function isValid(str) {
+
+            return !/[~`!#$%\^&*()+=\-\[\]\\';,/{}|\\":<>\?]/g.test(str);
+        }      
+
+        function show(input) {
+            if (input.files && input.files[0]) {
+                var filerdr = new FileReader();
+                filerdr.onload = function (e) {
+                    $('#user_img').attr('src', e.target.result);
+                    //alert(e.target.result);
+                }
+                filerdr.readAsDataURL(input.files[0]);
+            }
+        }
+        $(document).ready(function () {
+            $("#divRegionsGrid").addClass('hidden');
+            $("#divAccordion").addClass('hidden');
+            $("#divdepbtns").addClass('hidden');
+            $("#tblRegion tbody tr:not(:first)").remove();
+            //BindCapitalGrid();
+            $("table.order-list.region").on("click", ".ibtndeleteRegion", function (event) {
+                var count = $("#tblRegion tbody tr").length;
+                if (count > 1) {
+                    $(this).closest("tr").remove();
+                    ReassignRownumbersForRegionTable();
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    //  BindSingleRowToRegionTable();
+                    DeleteAllRegions();
+                }
+            });
+            $("table.order-list.pramoter").on("click", ".ibtndeletePramoter", function (event) {
+                $(this).closest("tr").remove();
+
+            });
+
+            $("table.order-list.sholder").on("click", ".ibtndeleteSholder", function (event) {
+                $(this).closest("tr").remove();
+
+            });
+            $("table.order-list.Director").on("click", ".ibtndeleteDirector", function (event) {
+                $(this).closest("tr").remove();
+
+            });
+            $("#FirmInfoMsgModal").on("hide.bs.modal", function () {
+               // window.location.href = "https://esselv2.esselprojects.com/";
+                //window.location.href = "http://localhost:65438/Login/AuthenticateLogin";
+
+                window.location.href = '@Url.Action("BasicBusinessInfoSetup", "Home")';
+            });
+        });
+        function binEncode(data) {
+            var binArray = []
+            var datEncode = "";
+
+            for (i = 0; i < data.length; i++) {
+                binArray.push(data[i].charCodeAt(0).toString(2));
+            }
+            for (j = 0; j < binArray.length; j++) {
+                var pad = padding_left(binArray[j], '0', 8);
+                datEncode += pad + ' ';
+            }
+            function padding_left(s, c, n) {
+                if (!s || !c || s.length >= n) {
+                    return s;
+                }
+                var max = (n - s.length) / c.length;
+                for (var i = 0; i < max; i++) {
+                    s = c + s;
+                } return s;
+            }
+
+            return binArray;
+        }
+        function SaveBasicFirmInfo() {
+
+            var isValid = ValidateBasicFirmInfo();
+            if (!isValid) return false;
+
+
+            var imgpath = $("#BusInfoFirmLogoId").val(); var imgbytes = "";
+            if (imgpath !== null || imgpath !== "") {
+                var myCanvas = $('<canvas/>');
+                var myImageSrc = myCanvas.attr('src', imgpath);
+                myCanvas.attr('src', myImageSrc);
+                var dataInBase64 = $(myCanvas)[0].toDataURL('image/png').replace(/data\:image\/png;base64,/, '');
+                imgbytes = binEncode(dataInBase64);
+
+
+            }
+            //Regions
+            var IsRegionExist = false, Regionlist = "";
+            if ($('#chkRegions').is(":checked") === true) {
+                IsRegionExist = true;
+                $("#tblRegion tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var regionname = currentRow.find("td").eq(1).find("input[type='text']").val();
+                    Regionlist = Regionlist + regionname + ",";
+                });
+            }
+
+            var natureofbusiness = $("#ddlNatureofBusiness option:selected").val();
+            //Pramoters
+            var pnames = "", praddress = "";
+            if (natureofbusiness === "PrivateLtdCompany" || natureofbusiness === "PublicLtdCompany") {
+                $("#tblPramotor tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var pname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                    var paddress = currentRow.find("td").eq(1).find("textarea").val();
+                    pnames += pname + "|";
+                    praddress += paddress + "|";
+
+                });
+            }
+
+            //Share Holders
+            var hnames = "", hpercents = "", hnofshares = "", hprices = "", htotal = "";
+            if (natureofbusiness === "PrivateLtdCompany") {
+            $("#tblShareHolder tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var hname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                    var hpercent = currentRow.find("td").eq(1).find("input[type='text']").val();
+                    var hnoofcount = currentRow.find("td").eq(2).find("input[type='text']").val();
+                    var hprice = currentRow.find("td").eq(3).find("input[type='text']").val();
+                    var total = currentRow.find("td").eq(4).find("input[type='text']").val();
+                    hnames += hname + "|";
+                    hpercents += hpercent + "|";
+                    hnofshares += hnoofcount + "|";
+                    hprices += hprice + "|";
+                    htotal += total + "|";
+
+                });
+            }
+           
+
+            var dnames = "", daddresslist = "", designationlist = "", demailidslist = "", dissuperslist = "";
+
+            if (natureofbusiness === "PrivateLtdCompany" || natureofbusiness === "PublicLtdCompany") {
+                $("#tblDirector tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var dname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                    var daddress = currentRow.find("td").eq(1).find("textarea").val();
+                    var designation = currentRow.find("td").eq(2).find("input[type='text']").val();
+
+                    dnames += dname + '|';
+                    daddresslist += daddress + '|';
+                    designationlist += designation + '|';
+
+                });
+            }
+
+            //insert data
+            var basicFirmDetails = {
+                firmName: $("#BusInfofirmNameId").val(),
+                firmDescription: $("#BusInfoFirmDescId").val(),
+                firmLogo: imgbytes,
+                IsRegionExist: IsRegionExist,
+                IsFirmExist: true,
+                Regionslist: Regionlist,
+                Promoternames: pnames,
+                PromoterAddress: praddress,
+                ShareHolderNames: hnames,
+                ShareHolderPrecent: hpercents,
+                ShareHolderNoofShares: hnofshares,
+                ShareHolderSharePrice: hprices,
+                ShareHolderTotal: htotal,
+                DirNames: dnames,
+                Diraddresses: daddresslist,
+                DirDesignations: designationlist,
+
+                AccountCapitalNoofShare: $("#txtACnoofshares").val(),
+                AccountCapitalEachSharePrice: $("#txtACEachSharePrice").val(),
+                AccountCapitalAmount: $("#txtACAmount").val(),
+                IssuedCapitalNoofShare: $("#txtICnoofshares").val(),
+                IssuedCapitalEachSharePrice: $("#txtICEachSharePrice").val(),
+                IssuedCapitalAmount: $("#txtICAmount").val(),
+                PaidCapitalNoofShare: $("#txtPUCnoofshares").val(),
+                PaidCapitalEachSharePrice: $("#txtPUCEachSharePrice").val(),
+                PaidCapitalAmount: $("#txtPUCAmount").val(),
+                NatureofBusiness: $("#ddlNatureofBusiness option:selected").text()
+            };
+            debugger;
+            var addFailMsg = "Error Occurred While Adding Firm Information.";
+            var addSuccessMsg = "Firm Information Added Successfully.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/BusinessInfo/SaveFirmInfo',
+                data: { basicFirmInfo: basicFirmDetails },
+                success: function (Data) {
+                    if (Data.saveStatus === "Submited") {
+                        $('#FirmInfoMsgModal').modal('show');
+                        msg = "<div>Firm Successfully Created</div>";
+                        $("#FirmInfoMsg").html(msg);
+                        
+                    }
+                    else {
+
+                        $("#divFirmInfoMsg").text(Data.saveStatus);
+                        $("#divFirmInfoMsg").addClass("alert-danger");
+                        $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    }
+                    
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                    $("#divFirmInfoMsg").text(addFailMsg);
+                    $("#divFirmInfoMsg").addClass("alert-danger");
+                    $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+        function ValidateBasicFirmInfo() {
+            var isValid = true;
+            var errorMsg = "Please enter all required fields!\n";
+            var firmName = $("#BusInfofirmNameId").val();
+            // var firmAddress = $("#BusInfofirmAddressId").val();
+            var firmDescription = $("#BusInfoFirmDescId").val();
+
+            var firmLogo = $("#BusInfoFirmLogoId").val();
+
+
+
+            if (firmName === "" || firmName === null || firmDescription === "" || firmDescription === null
+            ) {
+                isValid = false;
+            }
+            var regioncount = 0;
+            var selectedregion = [];
+            if ($('#chkRegions').is(":checked") === true) {
+                $("#tblRegion tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var regionname = currentRow.find("td").eq(1).find("input[type='text']").val();
+
+                    if (regionname === "") { regioncount = regioncount + 1; }
+                    else {
+                        selectedregion.push(regionname);
+                    }
+                });
+
+
+                if (regioncount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Region</p>";
+                    isValid = false;
+                }
+
+                else {
+                    var duplicatelist = selectedregion.filter(i => selectedregion.filter(ii => ii === i).length > 1);
+                    if (duplicatelist.length > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Region</p>";
+                        isValid = false;
+                    }
+                }
+            }
+            var natureIndex = $("#ddlNatureofBusiness option:selected").index();
+            var natureofbusiness = $("#ddlNatureofBusiness option:selected").val();
+            if (natureIndex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Nature of Business</p>";
+                isValid = false;
+            }
+            else { 
+
+
+            var ACnoofshares = $("#txtACnoofshares").val();
+            var ACEachSharePrice = $("#txtACEachSharePrice").val();
+            var ACAmount = $("#txtACAmount").val();
+
+            var ICnoofshares = $("#txtICnoofshares").val();
+            var ICEachSharePrice = $("#txtICEachSharePrice").val();
+            var ICAmount = $("#txtICAmount").val();
+
+            var PUCnoofshares = $("#txtPUCnoofshares").val();
+            var PUCEachSharePrice = $("#txtPUCEachSharePrice").val();
+            var PUCAmount = $("#txtPUCAmount").val();
+
+
+            //Capital
+            if (ACnoofshares === "" || ACnoofshares === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Number of Share For Capital</p>";
+                isValid = false;
+            }
+            if (ACEachSharePrice === "" || ACEachSharePrice === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Price of Each Share For Capital</p>";
+                isValid = false;
+            }
+
+            if (ACAmount === "" || ACAmount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Capital Amount</p>";
+                isValid = false;
+                }
+            //issued Capital
+            if (ICnoofshares === "" || ICnoofshares === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Number of Share For Issued Capital</p>";
+                isValid = false;
+            }
+            if (ICEachSharePrice === "" || ICEachSharePrice === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Price of Each Share For  Issued Capital</p>";
+                isValid = false;
+            }
+
+            if (ICAmount === "" || ICAmount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Issued Capital Amount</p>";
+                isValid = false;
+            }
+
+            //paid up capital
+            if (PUCnoofshares === "" || PUCnoofshares === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Number of Share For Issued Capital</p>";
+                isValid = false;
+            }
+
+            if (PUCEachSharePrice === "" || PUCEachSharePrice === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Price of Each Share For  Issued Capital</p>";
+                isValid = false;
+            }
+
+            if (PUCAmount === "" || PUCAmount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Issued Capital Amount</p>";
+                isValid = false;
+            }
+            if ((PUCAmount !== "" || PUCAmount !== 0) && (ICAmount !== "" || ICAmount !== 0) && (ACAmount !== "" || ACAmount !== 0)) {
+                if (parseFloat(ACAmount) < parseFloat(ICAmount)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Issued Capital Amount is Not More Than Capital Amount</p>";
+                    isValid = false;
+
+                }
+                else if (parseFloat(ACAmount) < parseFloat(PUCAmount)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Paid Up Capital Amount is Not More Than Capital Amount</p>";
+                    isValid = false;
+                }
+            }
+
+
+                if (natureofbusiness === "PrivateLtdCompany" || natureofbusiness === "PublicLtdCompany") {
+                //Promoters
+                    var pcount = 0, paddrcount = 0;
+                    var selectedpromoter = [];
+                    $("#tblPramotor tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var pname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                        var paddress = currentRow.find("td").eq(1).find("textarea").val();
+
+                        if (pname === "") { pcount = pcount + 1; }
+                        else {
+                            selectedpromoter.push(pname);
+                        }
+                        if (paddress === "") { paddrcount = paddrcount + 1; }
+                    });
+                    if (pcount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Pramoter Name</p>";
+                        isValid = false;
+                    }
+                    if (paddrcount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Pramoter Address</p>";
+                        isValid = false;
+                    }
+                    var duplicatelist1 = selectedpromoter.filter(i => selectedpromoter.filter(ii => ii === i).length > 1);
+                    if (duplicatelist1.length > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Pramoters</p>";
+                        isValid = false;
+                    }
+            }
+
+             if (natureofbusiness === "PrivateLtdCompany") {
+                    //share holders validation
+                    var hnamecount = 0, hpercentcount = 0, hnofsharecount = 0, hpricecount = 0, TotalShareCount = 0;
+                    var selectedhname = [];
+                    $("#tblShareHolder tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var hname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                        var hpercent = currentRow.find("td").eq(1).find("input[type='text']").val();
+                        var hnoofcount = currentRow.find("td").eq(2).find("input[type='text']").val();
+                        var hprice = currentRow.find("td").eq(3).find("input[type='text']").val();
+                        var htotal = currentRow.find("td").eq(4).find("input[type='text']").val();
+                        if (hname === "") { hnamecount = hnamecount + 1; }
+                        else {
+                            selectedhname.push(hname);
+                        }
+                        if (hpercent === "" || hpercent === 0) { hpercentcount = hpercentcount + 1; }
+                        if (hnoofcount === "" || hnoofcount === 0) { hnofsharecount = hnofsharecount + 1; }
+                        if (hprice === "" || hprice === 0) { hpricecount = hpricecount + 1; }
+                        if (htotal !== "") {
+                            TotalShareCount = parseFloat(TotalShareCount) + parseFloat(htotal);
+                        }
+
+                    });
+                    if (hnamecount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Share Holder Name</p>";
+                        isValid = false;
+                    }
+                    if (hpercentcount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter % of Shares</p>";
+                        isValid = false;
+                    }
+                    if (hnofsharecount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter No of Shares</p>";
+                        isValid = false;
+                    }
+                    if (hpricecount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Share Price</p>";
+                        isValid = false;
+                    }
+                    var duplicateholderlist = selectedhname.filter(i => selectedhname.filter(ii => ii === i).length > 1);
+                    if (duplicateholderlist.length > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Share Holder Name</p>";
+                        isValid = false;
+                    }
+
+                    if (TotalShareCount !== 0 && (PUCAmount !== "" || PUCAmount !== 0)) {
+                        if (parseFloat(TotalShareCount) > parseFloat(PUCAmount)) {
+                            errorMsg += "<p style='margin-top:-5px!important;'>Share Price Total Should not be Greater Than Paid Up Capital Amount</p>";
+                            isValid = false;
+                        }
+                    }
+
+                }
+                if (natureofbusiness === "PrivateLtdCompany" || natureofbusiness === "PublicLtdCompany") {
+                    //Directors validations
+                    var dnamecount = 0, daddresscount = 0, designationcount = 0, issupercount = 0, emailcount = 0, invalidemailcount = 0;
+                    var selecteddname = [];
+                    var selectedSuperUser = [];
+                    $("#tblDirector tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var dname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                        var daddress = currentRow.find("td").eq(1).find("textarea").val();
+                        var designation = currentRow.find("td").eq(2).find("input[type='text']").val();
+                        //var issuper = currentRow.find("td").eq(3).find("select option:selected").index();
+                        //var email = currentRow.find("td").eq(4).find("input[type='text']").val();
+                        if (dname === "") { dnamecount = dnamecount + 1; }
+                        else {
+                            selecteddname.push(dname);
+                        }
+                        if (daddress === "") { daddresscount = daddresscount + 1; }
+                        if (designation === "") { designationcount = designationcount + 1; }
+
+                    });
+                    if (dnamecount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Director Name</p>";
+                        isValid = false;
+                    }
+                    if (daddresscount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Director Address</p>";
+                        isValid = false;
+                    }
+                    if (designationcount > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Director Designation</p>";
+                        isValid = false;
+                    }
+
+
+                    var duplicateDirlist = selecteddname.filter(i => selecteddname.filter(ii => ii === i).length > 1);
+                    if (duplicateDirlist.length > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Director Names</p>";
+                        isValid = false;
+                    }
+                }
+
+        }
+
+            if (!isValid) {
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").append("<div>" + errorMsg + "</div>");
+                $("#divFirmInfoMsg").addClass("alert-danger");
+                $("#divFirmInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").addClass("hidden");
+            }
+
+            return isValid;
+        }
+        function OnRegionChkChange() {
+
+            if ($('#chkRegions').is(":checked") === true) {
+                $("#divRegionsGrid").removeClass('hidden');
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").addClass("hidden");
+                BindSingleRowToRegionTable();
+            }
+            else {
+                $("#divRegionsGrid").addClass('hidden');
+                $("#tblRegion tbody tr:not(:first)").remove();
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").addClass("hidden");
+                DeleteAllRegions();
+
+            }
+        }
+        function AddNewRowForRegion() {
+            isValid = true;
+            var errorMsg = "";
+            var regioncount = 0;
+            var selectedregion = [];
+            $("#tblRegion tbody tr").each(function () {
+                var currentRow = $(this);
+                var regionname = currentRow.find("td").eq(1).find("input[type='text']").val();
+
+                if (regionname === "") { regioncount = regioncount + 1; }
+                else {
+                    selectedregion.push(regionname);
+                }
+            });
+            if (regioncount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Region</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").append("<div>Enter Region</div>");
+                $("#divFirmInfoMsg").addClass("alert-danger");
+                $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var duplicatelist = selectedregion.filter(i => selectedregion.filter(ii => ii === i).length > 1);
+                if (duplicatelist.length > 0) {
+                    var finalerror2 = "<div style='align:center'><p>Duplicate Region</p>";
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").append("<div>Duplicate Region</div>");
+                    $("#divFirmInfoMsg").addClass("alert-danger");
+                    $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").addClass("hidden");
+                    var count = $("#tblRegion tbody tr").length;
+                    var rowno = count + 1;
+                    var newRow = $("<tr>");
+                    var cols = "";
+                    cols += '<td style="text-align:center">' + rowno + '</td>';
+                    cols += '<td style="text-align:center"><input type="text" class="form-control" value="" /></td>';
+                    cols += '<td style="text-align:center"><input type="button" class="ibtndeleteRegion btn btn-md btn-danger" value="Delete"></td>';
+                    newRow.append(cols);
+                    $("table.order-list.region").append(newRow);
+                }
+            }
+
+        }
+        function checkValueInArray(value, arr) {
+            var status = false;//Not Exist in array
+            for (var i = 0; i < arr.length; i++) {
+                var name = arr[i];
+                if (name == value) {
+                    status = true;//Exist  in array
+                    break;
+                }
+            }
+            return status;
+        }
+        function BindSingleRowToRegionTable() {
+            $("#divFirmInfoMsg").text("");
+            $("#divFirmInfoMsg").addClass("hidden");
+            var count = $("#tblRegion tbody tr").length;
+            if (count === 0) {
+                var rowno = count + 1;
+                var newRow = $("<tr>");
+                var cols = "";
+                cols += '<td style="text-align:center">' + rowno + '</td>';
+                cols += '<td style="text-align:center"><input type="text" class="form-control" value="" /></td>';
+                cols += '<td style="text-align:center"><input type="button" class="ibtndeleteRegion btn btn-md btn-danger" value="Delete"></td>';
+                newRow.append(cols);
+                $("table.order-list.region").append(newRow);
+            }
+        }
+        function DeleteAllRegions() {
+            $("#divRegionsGrid").addClass('hidden');
+            $("#tblRegion tbody tr:not(:first)").remove();
+            $("#divFirmInfoMsg").text("");
+            $("#divFirmInfoMsg").addClass("hidden");
+            $("#chkRegions").prop("checked", false);
+        }
+        function ReassignRownumbersForRegionTable() {
+            var counter = 1;
+
+            $("#tblRegion tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(counter);
+                counter++;
+            });
+
+        }
+
+        function IsNumeric(evt) {
+            var iKeyCode = (evt.which) ? evt.which : evt.keyCode;
+            if ((iKeyCode < 48 || iKeyCode > 57))
+                return false;
+        }
+
+        function ValidateAmount(txt, event) {
+            var charCode = (event.which) ? event.which : event.keyCode;
+            if (charCode == 46) {
+                if (txt.value.indexOf(".") < 0)
+                    return true;
+                else
+                    return false;
+            }
+            if (txt.value.indexOf(".") > 0) {
+                var txtlen = txt.value.length;
+                var dotpos = txt.value.indexOf(".");
+                if ((txtlen - dotpos) > 2)
+                    return false;
+            }
+
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+        function AddNewRowForPramoter() {
+            isValid = true;
+            var errorMsg = "";
+            var pcount = 0, paddrcount = 0;
+            var selectedpromoter = [];
+            $("#tblPramotor tbody tr").each(function () {
+                var currentRow = $(this);
+                var pname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                var paddress = currentRow.find("td").eq(1).find("textarea").val();
+
+                if (pname === "") { pcount = pcount + 1; }
+                else {
+                    selectedpromoter.push(pname);
+                }
+                if (paddress === "") { paddrcount = paddrcount + 1; }
+            });
+            if (pcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Pramoter Name</p>";
+                isValid = false;
+            }
+            if (paddrcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Pramoter Address</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").append("<div>" + errorMsg + "</div>");
+                $("#divFirmInfoMsg").addClass("alert-danger");
+                $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var duplicatelist = selectedpromoter.filter(i => selectedpromoter.filter(ii => ii === i).length > 1);
+                if (duplicatelist.length > 0) {
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").append("<div>Duplicate Pramoter</div>");
+                    $("#divFirmInfoMsg").addClass("alert-danger");
+                    $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").addClass("hidden");
+                    var count = $("#tblPramotor tbody tr").length;
+                    var newRow = $("<tr>");
+                    var cols = "";
+                    cols += '<td style="text-align:center"><input type="text" id="txtPramoterName" class="form-control"  onkeypress="return isValidSpecialCharacters(event)" /></td>';
+                    cols += '<td style="text-align:center"><textarea rows="2" class="form-control" id="txtPromoterAddress"  onkeypress="return isValidSpecialCharacters(event)" ></textarea></td>';
+                    cols += '<td style="text-align:center"><input type="button" class="ibtndeletePramoter btn btn-md btn-danger" value="Delete"></td>';
+                    newRow.append(cols);
+                    $("table.order-list.pramoter").append(newRow);
+                }
+            }
+
+        }
+
+        function AddNewRowForShareHolder() {
+
+            isValid = true;
+            var errorMsg = "";
+            var hnamecount = 0, hpercentcount = 0, hnofsharecount = 0, hpricecount = 0;
+            var selectedhname = [];
+            $("#tblShareHolder tbody tr").each(function () {
+                var currentRow = $(this);
+                var hname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                var hpercent = currentRow.find("td").eq(1).find("input[type='text']").val();
+                var hnoofcount = currentRow.find("td").eq(2).find("input[type='text']").val();
+                var hprice = currentRow.find("td").eq(3).find("input[type='text']").val();
+                if (hname === "") { hnamecount = hnamecount + 1; }
+                else {
+                    selectedhname.push(hname);
+                }
+                if (hpercent === "" || hpercent === 0) { hpercentcount = hpercentcount + 1; }
+                if (hnoofcount === "" || hnoofcount === 0) { hnofsharecount = hnofsharecount + 1; }
+                if (hprice === "" || hprice === 0) { hpricecount = hpricecount + 1; }
+            });
+            if (hnamecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Share Holder Name</p>";
+                isValid = false;
+            }
+            if (hpercentcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter % of Shares</p>";
+                isValid = false;
+            }
+            if (hnofsharecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter No of Shares</p>";
+                isValid = false;
+            }
+            if (hpricecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Share Price</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").append("<div>" + errorMsg + "</div>");
+                $("#divFirmInfoMsg").addClass("alert-danger");
+                $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var duplicatelist = selectedhname.filter(i => selectedhname.filter(ii => ii === i).length > 1);
+                if (duplicatelist.length > 0) {
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").append("<div>Duplicate Share Holder Name</div>");
+                    $("#divFirmInfoMsg").addClass("alert-danger");
+                    $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+
+                    var holdercount = $("#tblShareHolder tbody tr").length;
+                    if (holdercount <= 200) {
+                        $("#divFirmInfoMsg").text("");
+                        $("#divFirmInfoMsg").addClass("hidden");
+                        var count = $("#tblShareHolder tbody tr").length;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td><input type="text" id="txtSHolderName" class="form-control"  onkeypress="return isValidSpecialCharacters(event)" /></td>';
+                        cols += '<td><input type="text" id="txtSharePercentage" class="form-control spercent" onkeypress="return ValidateAmount(this,event);"/></td>';
+                        cols += '<td><input type="text" id="txtNoofShares" class="form-control shareholdernoofshares" onkeypress="return IsNumeric(event)" onkeyup="CountShareTotal()" /></td>';
+                        cols += '<td><input type="text" id="txtSharePrice" class="form-control sprice" onkeypress="return ValidateAmount(this,event);"  onkeyup="CountShareTotal()"/></td>';
+                        cols += '<td><input type="text" id="txtSTotalValue" class="form-control totalsprice" readonly="readonly"/></td>';
+
+                        cols += '<td style="text-align:center"><input type="button" class="ibtndeleteSholder btn btn-md btn-danger" value="Delete"></td>';
+                        newRow.append(cols);
+                        $("table.order-list.sholder").append(newRow);
+                    }
+                    else {
+                        $("#divFirmInfoMsg").text("");
+                        $("#divFirmInfoMsg").append("<div>Maximum No of ShareHolders is 200 Only</div>");
+                        $("#divFirmInfoMsg").addClass("alert-danger");
+                        $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                }
+            }
+        }
+        function CountShareTotal() {
+            $("#tblShareHolder tbody tr").each(function () {
+                var currentRow = $(this);
+                var txtnoofshare = currentRow.find(".shareholdernoofshares").val();
+                var txtprice = currentRow.find('.sprice').val();
+                var total = currentRow.find(".totalsprice");
+                if (txtprice !== "" && txtnoofshare !== "") {
+                    //var percent = parseFloat(txtpercent) / 100;
+                    var result = parseFloat(txtnoofshare) * parseFloat(txtprice);
+                    //var result = (parseFloat(txtpercent) / 100) * parseFloat(txtprice);
+                    total.val(parseFloat(result).toFixed(2));
+                }
+                else {
+                    total.val("");
+                }
+            });
+
+        }
+
+        function AddNewRowForDirector() {
+            isValid = true;
+            var errorMsg = "";
+            var dnamecount = 0, daddresscount = 0, designationcount = 0, issupercount = 0, emailcount = 0, invalidemailcount = 0;;
+            var selecteddname = [];
+            var selectedSuperUser = [];
+            $("#tblDirector tbody tr").each(function () {
+                var currentRow = $(this);
+                var dname = currentRow.find("td").eq(0).find("input[type='text']").val();
+                var daddress = currentRow.find("td").eq(1).find("textarea").val();
+                var designation = currentRow.find("td").eq(2).find("input[type='text']").val();
+                //var issuper = currentRow.find("td").eq(3).find("select option:selected").index();
+                //var email = currentRow.find("td").eq(4).find("input[type='text']").val();
+                if (dname === "") { dnamecount = dnamecount + 1; }
+                else {
+                    //var issupervalue = currentRow.find("td").eq(3).find("select option:selected").val();
+                    selecteddname.push(dname);
+                }
+                if (daddress === "") { daddresscount = daddresscount + 1; }
+                if (designation === "") { designationcount = designationcount + 1; }
+              
+            });
+            if (dnamecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Director Name</p>";
+                isValid = false;
+            }
+            if (daddresscount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Director Address</p>";
+                isValid = false;
+            }
+            if (designationcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Director Designation</p>";
+                isValid = false;
+            }
+            //if (issupercount > 0) {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Select if Director is Super or Not </p>";
+            //    isValid = false;
+            //}
+            //if (emailcount >0) {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Email</p>";
+            //    isValid = false;
+            //}
+            //else if (invalidemailcount>0) {
+            //        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Email</p>";
+            //        isValid = false;
+
+            //}
+            if (!isValid) {
+                $("#divFirmInfoMsg").text("");
+                $("#divFirmInfoMsg").append("<div>" + errorMsg + "</div>");
+                $("#divFirmInfoMsg").addClass("alert-danger");
+                $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var duplicateDirlist = selecteddname.filter(i => selecteddname.filter(ii => ii === i).length > 1);
+                if (duplicateDirlist.length > 0) {
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").append("<div>Duplicate Director Name</div>");
+                    $("#divFirmInfoMsg").addClass("alert-danger");
+                    $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divFirmInfoMsg").text("");
+                    $("#divFirmInfoMsg").addClass("hidden");
+                    AddDirectorrow();
+                    //var directorscount = $("#tblDirector tbody tr").length;
+                    //if (directorscount > 1) {
+                    //    if (selectedSuperUser.indexOf("Yes") >= 0) {   //check if any one super user is selected or not
+
+                    //        var multicount = checkMultipleInArray("Yes", selectedSuperUser);//check if multiple super users selected
+                    //        if (multicount > 1) {
+                    //            $("#divFirmInfoMsg").text("");
+                    //            $("#divFirmInfoMsg").append("<div>Only One Super User is Allowed In Directors</div>");
+                    //            $("#divFirmInfoMsg").addClass("alert-danger");
+                    //            $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    //        }
+                    //        else {
+
+                    //            if (directorscount <= 15) {
+                    //                AddDirectorrow();
+                    //            }
+                    //            else {
+                    //                $("#divFirmInfoMsg").text("");
+                    //                $("#divFirmInfoMsg").append("<div>Maximum No of Directors is 15 Only</div>");
+                    //                $("#divFirmInfoMsg").addClass("alert-danger");
+                    //                $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    //                return false;
+                    //            }
+
+                    //        }
+                    //    }
+                    //    else {
+                    //        $("#divFirmInfoMsg").text("");
+                    //        $("#divFirmInfoMsg").append("<div>Please Select Super User from Directors</div>");
+                    //        $("#divFirmInfoMsg").addClass("alert-danger");
+                    //        $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    //    }
+                    //}
+                    //else {
+                    //    //if tblDirector contains only one row check
+                    //    if (selectedSuperUser.indexOf("Yes") >= 0) {
+                    //            AddDirectorrow();
+                    //    }
+                    //    else {
+                    //        $("#divFirmInfoMsg").text("");
+                    //        $("#divFirmInfoMsg").append("<div>Please Select Super User from Directors</div>");
+                    //        $("#divFirmInfoMsg").addClass("alert-danger");
+                    //        $("#divFirmInfoMsg").removeClass("hidden alert-success");
+                    //        return false;
+                    //    }
+
+
+                    //}
+
+                }
+            }
+        }
+
+        function AddDirectorrow() {
+            $("#divFirmInfoMsg").text("");
+            $("#divFirmInfoMsg").addClass("hidden");
+            var newRow = $("<tr>");
+            var cols = "";
+            cols += '<td> <input type="text" id="txtDirName" class="form-control"  onkeypress="return isValidSpecialCharacters(event)"/></td>';
+            cols += '<td><textarea rows="2" class="form-control" id="txtDirAddress"  onkeypress="return isValidSpecialCharacters(event)"></textarea></td>';
+            cols += '<td><input type="text" id="txtDirDesignation" class="form-control"  onkeypress="return isValidSpecialCharacters(event)"/>';
+            //cols += '<td style="text-align:center"><select class="form-control dropdown-toggle DirSuperuser">';
+            //cols += ' <option selected="selected" value="0">-Select-</option>';
+            //cols += '<option value="Yes">Yes</option>';
+            //cols += '<option value="No">No</option></select></td>';
+            //cols +='<td><input type="text" id="txtDirEmail" class="form-control" /></td>';
+            cols += '<td style="text-align:center"><input type="button" class="ibtndeleteDirector btn btn-md btn-danger" value="Delete"></td>';
+            newRow.append(cols);
+            $("table.order-list.Director").append(newRow);
+
+        }
+
+        function checkMultipleInArray(value, arr) {
+            var status = false;//Not Exist in array
+            var count = 0;
+            for (var i = 0; i < arr.length; i++) {
+                var name = arr[i];
+                if (name === value) {
+                    count++;
+
+                }
+            }
+            return count;
+        }
+
+        function generatePassword() {
+            var length = 8,
+                charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+                retVal = "";
+            for (var i = 0, n = charset.length; i < length; ++i) {
+                retVal += charset.charAt(Math.floor(Math.random() * n));
+            }
+            return retVal;
+        }
+        function CountCapitalShareTotal() {
+
+            var txtnoofshare = $("#txtACnoofshares").val();
+            var txtprice = $("#txtACEachSharePrice").val();
+            var total = $("#txtACAmount");
+            if (txtprice !== "" && txtnoofshare !== "") {
+                var result = parseFloat(txtnoofshare) * parseFloat(txtprice);
+                total.val(parseFloat(result).toFixed(2));
+            }
+            else {
+                total.val("");
+            }
+        }
+        function CountIssuedShareTotal() {
+
+            var txtnoofshare = $("#txtICnoofshares").val();
+            var txtprice = $("#txtICEachSharePrice").val();
+            var total = $("#txtICAmount");
+            if (txtprice !== "" && txtnoofshare !== "") {
+                var result = parseFloat(txtnoofshare) * parseFloat(txtprice);
+                total.val(parseFloat(result).toFixed(2));
+            }
+            else {
+                total.val("");
+            }
+        }
+        function CountPaidUpShareTotal() {
+
+            var txtnoofshare = $("#txtPUCnoofshares").val();
+            var txtprice = $("#txtPUCEachSharePrice").val();
+            var total = $("#txtPUCAmount");
+            if (txtprice !== "" && txtnoofshare !== "") {
+                var result = parseFloat(txtnoofshare) * parseFloat(txtprice);
+                total.val(parseFloat(result).toFixed(2));
+            }
+            else {
+                total.val("");
+            }
+        }
+
+        function NatureOfBusinessChange() {
+            var natureIndex = $("#ddlNatureofBusiness option:selected").index();
+            var natureofbusiness = $("#ddlNatureofBusiness option:selected").val();
+            if (natureIndex != 0) {
+                $("#divAccordion").removeClass('hidden');
+                $("#divdepbtns").removeClass('hidden');
+                //alert(natureofbusiness);
+                if (natureofbusiness === "PrivateLtdCompany") {
+                    $("#AccCapital").removeClass('hidden');
+                    $("#AccPromoter").removeClass('hidden');
+                    $("#AccShareholder").removeClass('hidden');
+                    $("#AccDirectors").removeClass('hidden');
+                }
+                else if (natureofbusiness === "PartnershipFirm" || natureofbusiness === "ProprietorshipFirm" || natureofbusiness === "HUF") {
+                    $("#AccCapital").removeClass('hidden');
+                    $("#AccPromoter").addClass('hidden');
+                    $("#AccShareholder").addClass('hidden');
+                    $("#AccDirectors").addClass('hidden');
+                }
+                else if (natureofbusiness === "PublicLtdCompany") {
+                    $("#AccCapital").removeClass('hidden');
+                    $("#AccPromoter").removeClass('hidden');
+                    $("#AccShareholder").addClass('hidden');
+                    $("#AccDirectors").removeClass('hidden');}
+            }
+            else {
+                $("#divAccordion").addClass('hidden');
+                $("#divdepbtns").addClass('hidden');
+                $("#AccCapital").addClass('hidden');
+                $("#AccPromoter").addClass('hidden');
+                $("#AccShareholder").addClass('hidden');
+                $("#AccDirectors").addClass('hidden');
+            }
+            $("#divFirmInfoMsg").text("");
+            $("#divFirmInfoMsg").addClass("hidden");
+            ResetTables();
+        }
+        function ResetTables(){
+            $("#txtACnoofshares").val("");
+            $("#txtACEachSharePrice").val("");
+            $("#txtACAmount").val("");
+            $("#txtICnoofshares").val("");
+            $("#txtICEachSharePrice").val("");
+            $("#txtICAmount").val("");
+            $("#txtPUCnoofshares").val("");
+            $("#txtPUCEachSharePrice").val("");
+            $("#txtPUCAmount").val("");
+            $("#tblPramotor tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).find("input[type='text']").val("");
+                currentRow.find("td").eq(1).find("textarea").val("");    
+            });
+            $("#tblShareHolder tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).find("input[type='text']").val("");
+                currentRow.find("td").eq(1).find("input[type='text']").val("");
+                currentRow.find("td").eq(2).find("input[type='text']").val("");
+                currentRow.find("td").eq(3).find("input[type='text']").val("");
+                currentRow.find("td").eq(4).find("input[type='text']").val("");  
+            });
+            $("#tblDirector tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).find("input[type='text']").val("");
+                currentRow.find("td").eq(1).find("textarea").val("");
+                currentRow.find("td").eq(2).find("input[type='text']").val("");
+            });
+
+        }
+    </script>
+
+   
+</body>
+</html>

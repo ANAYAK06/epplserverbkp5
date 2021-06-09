@@ -1,0 +1,411 @@
+﻿@model EsselTestLocalApplication.Models.HR.PayRollGeneration
+@{
+    ViewBag.Title = "VerifyPayRoll";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+@*<h2>VerifyPayRoll</h2>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Verify PayRoll</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>View By</label>
+                                            @Html.DropDownListFor(model => model.GenerateByType, new SelectList(Model.GenerateTypelst, "Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlType" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <br />
+                                            <button class="btn btn1 btn-success" id="btnGenerate" onclick="GetData()">Show PayRoll</button>
+                                            <button class="btn btn1 btn-success" id="btnSResetAttendance" onclick="ResetGeneration()">Reset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divgrid">
+                                    <div class="row" id="divMainGrid">
+                                    </div>
+                                    <div class="col-md-12" id="divGPPaymentDetails">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Payment Details</h5>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12"><hr class="separationHr" /></div>
+                                        </div>
+                                        <div class="col-md-12">
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Name)
+                                                    @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtGPName" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.BankId)
+                                                    @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPBank", onchange = "GPPayModeChange()" })
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.ModeofPay)
+                                                    @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGPPayMode", onchange = "GPPayModeChange()" })
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Number)
+                                                    @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtGPPaymentNo" })
+                                                    <select class="form-control dropdown-toggle GpNo" id="ddlGPPaymentNo">
+                                                        <option selected="selected" value="Select">-Select-</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.TransactionDate)
+                                                    @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtGPPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group" id="divNET">
+                                                    @Html.Action("ShowTotalNetAmount", "HR")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+
+                                                <label>Status</label>
+                                                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppStaffstatus" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 ">
+                                            <div class="form-group">
+                                                <label>Notes:</label><br />
+                                                <textarea rows="3" cols="60" class="form-control" id="AppStaffNote"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row text-center">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitFinalData()">Submit</button>
+                                        <input type="hidden" value="" id="txtCurrentTransactionno" />
+                                        <input type="hidden" value="" id="txtCurrentDate" />
+                                        <input type="hidden" id="txtMOID" />
+                                        <input type="hidden" id="txtPaymentAccess" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <br />
+                                    <div class="text-center">
+                                        <div id="divPayRollInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalEmpPayRoll" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divgrid").addClass("hidden");
+        $("#txtGPPaymentNo").removeClass('hidden');
+        $("#ddlGPPaymentNo").addClass('hidden');
+        $("#txtGPPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", new Date());
+
+
+    });
+    function GetData() {
+        let typeindex = $("#ddlType option:selected").index();
+        let type = $("#ddlType option:selected").val();
+
+        if (typeindex === 0) {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").append("<div>Select Type</div>");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#btnGenerate").prop('disabled', true);
+            $("#ddlType").prop('disabled', true);
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+            //if (type=="CostCenter") {
+            $.ajax({
+                type: "POST",
+                url: "/HR/VerifyPayRollMainGrid",
+                data: '{ Type:"' + type + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#divMainGrid').html(data);
+                }
+            });
+            //}
+
+        }
+
+    }
+    function ResetGeneration() { location.reload(); }
+
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+    function GPPayModeChange() {
+
+        var bank = $("#ddlGPBank option:selected").text();
+        var Mode = $("#ddlGPPayMode option:selected").text();
+
+        var bankindex = $("#ddlGPBank option:selected").index();
+        var Modeindex = $("#ddlGPPayMode option:selected").index();
+
+        if (Modeindex != 0 && bankindex != 0) {
+            if (Modeindex == 1) {
+                $("#txtGPPaymentNo").addClass('hidden');
+                $("#ddlGPPaymentNo").removeClass('hidden');
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/GetChequeNos",
+                    data: '{bankname:"' + bank + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        var rowcount = 0;
+                        //alert("Cheques"+count);
+                        var ddlGPPaymentNo = $("#ddlGPPaymentNo");
+                        if (count > 0) {
+
+                            ddlGPPaymentNo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                ddlGPPaymentNo.append($("<option></option>").val(this['Cheque_Id']).html(this['Cheque_No']));
+                            });
+                            $("#divPayRollInfoMsg").text("");
+                            $("#divPayRollInfoMsg").addClass("hidden");
+                        } else { ddlGPPaymentNo.empty().append('<option selected="selected" value="0">-Please Select-</option>'); }
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+            else {
+                $("#txtGPPaymentNo").removeClass('hidden');
+                $("#ddlGPPaymentNo").addClass('hidden');
+                $("#divPayRollInfoMsg").text("");
+                $("#divPayRollInfoMsg").addClass("hidden");
+            }
+        }
+        else if (Modeindex == 0 && bankindex != 0) {
+            $("#txtGPPaymentNo").removeClass('hidden');
+            $("#ddlGPPaymentNo").addClass('hidden');
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+
+        }
+        else if (Modeindex != 0 && bankindex == 0) {
+            $("#txtGPPaymentNo").removeClass('hidden');
+            $("#ddlGPPaymentNo").addClass('hidden');
+
+            $("#divPayRollInfoMsg").text("Select Bank Name");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            $("#divPayRollInfoMsg").prop('selectedIndex', 0);
+        }
+        else {
+            $("#txtGPPaymentNo").removeClass('hidden');
+            $("#ddlGPPaymentNo").addClass('hidden');
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+
+        }
+    }
+    function SubmitFinalData() {
+
+        var errorMsg = "";
+        isValid = true;
+
+        var name = $("#txtGPName").val();
+        var bank = $("#ddlGPBank option:selected").index();
+        var paymode = $("#ddlGPPayMode option:selected").index();
+        var date = $("#txtGPPayDate").val();
+        var Remarks = $("#txtGPReamarks").val();
+        var amount = $("#txtGPFinalAmount").val();
+        let payaccess = $('#txtPaymentAccess').val();
+        if (payaccess == "Exist") {
+            if (name == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+                isValid = false;
+            }
+            if (bank == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank</p>";
+                isValid = false;
+            }
+            if (paymode == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Mode of Pay</p>";
+                isValid = false;
+            }
+            if (paymode > 1) {
+                var payno = $("#txtGPPaymentNo").val();
+                if (payno === "" || payno === null) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Payment No</p>";
+                    isValid = false;
+                }
+            }
+            if (paymode === 1) {
+                var payno1 = $("#ddlGPPaymentNo option:selected").index();
+                if (payno1 === 0 || payno1 === null) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Payment No</p>";
+                    isValid = false;
+                }
+            }
+            if (date === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Transaction Date</p>";
+                isValid = false;
+            }
+            //if (Remarks == "") {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            //    isValid = false;
+            //}
+        }
+
+        var appstatus = $("#AppStaffstatus option:selected").text();
+        retnote = $("#AppStaffNote").val();
+        msg = $("#divPayRollInfoMsg");
+
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+            var number = 0;
+            if (paymode === 1) { number = $("#ddlGPPaymentNo option:selected").text(); }
+            else { number = $("#txtGPPaymentNo").val(); }
+            var saveData = {
+                TransactionRefno: $("#txtCurrentTransactionno").val(),
+                PayRoleDate: $("#txtCurrentDate").val(),
+                Action: appstatus,
+                Note: retnote,
+                BankId: $("#ddlGPBank option:selected").val(),
+                ModeofPay: $("#ddlGPPayMode option:selected").val(),
+                TransactionDate: date,
+                Number: number
+            };
+
+
+            addFailMsg = "Error Occurred";
+            addSuccessMsg = "Saved Successfully.";
+            //debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/ApprovePayRoll',
+                data: { payRoll: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus === 'Submited') {
+                        $("#btnSubmit").prop('disabled', true);
+                        $("#divPayRollInfoMsg").text(addSuccessMsg);
+                        $("#divPayRollInfoMsg").removeClass("hidden alert-danger");
+                        $("#divPayRollInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnSubmit").prop('disabled', true);
+                        var ErrorMsg = Data.saveStatus;
+                        //let ErrorMsglist = ErrorMsg.toString().split('|');
+                        //console.log(ErrorMsglist);
+                        //$.each(ErrorMsglist, function (element, value) {
+                        //    var msg = value;
+                        //    console.log(msg);
+                        //    $("#divPayRollInfoMsg").append("<div>" + msg + "</div>");
+                        //});
+                        $("#divPayRollInfoMsg").append("<div>" + ErrorMsg + "</div>");
+                        $("#divPayRollInfoMsg").addClass("alert-danger");
+                        $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnSubmit").prop('disabled', true);
+                    $("#divPayRollInfoMsg").append("<div>" + addFailMsg + "</div>");
+                    $("#divPayRollInfoMsg").addClass("alert-danger");
+                    $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+</script>
+

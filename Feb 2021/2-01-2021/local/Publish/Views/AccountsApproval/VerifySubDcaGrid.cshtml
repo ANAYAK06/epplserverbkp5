@@ -1,0 +1,197 @@
+﻿@model List<EsselTestLocalApplication.Models.SubDCA>
+<div class="table-responsive">
+    <table id="tblApprovesubDcaGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">SubDCACodeID</th>
+                <th class="hidden">Account Head Code Id</th>
+                <th>Account Head Code</th>
+                <th>Sub Account Head Code</th>
+                <th>Sub Account Head Name</th>
+                <th class="hidden">IT Code Id</th>
+                <th>IT Code Name</th>
+                <th>Sub Account Head Status </th>
+                <th class="hidden">Status</th>
+                <th class="hidden">MOID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.SubDCACodeID)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.DCACodeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DCAName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubDCACode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubDCAName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ITCodeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ITCodeDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubDcaStatus)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.MOID)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+
+<script>
+       var openRows = new Array();
+    $(document).ready(function () {
+            var ApproveSDcaGrid = null;
+            InitializeApprDcaGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprsDcaCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprDcaGrid() {
+        ApproveSDcaGrid = $('#tblApprovesubDcaGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(9)', row).html();
+               
+                    if (oldstatus == 1) {
+                        $('td:eq(9)', row).html("Verification Pending");
+                    }
+                    else { $('td:eq(9)', row).html("Return");}
+                },
+                pageLength: 10
+            });
+        $('#tblApprovesubDcaGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveSDcaGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveSDcaGrid, tr);
+                    // Open this row
+                    row.child(formatHoldPay(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatHoldPay(d) {
+
+        var htmltext;
+        var subdcaid, dcaid, dcacode, sdcacode, sdcaname, itcode,itname,status,mid;
+        $.each(d, function (index, value) {
+                if (index == 1)
+                    subdcaid = value;
+                if (index == 2)
+                    dcaid = value;
+                if (index == 3)
+                    dcacode = value;
+                if (index == 4)
+                    sdcacode = value;
+                if (index == 5)
+                    sdcaname = value;
+                if (index == 6)
+                    itcode = value;
+                if (index == 7)
+                itname = value;
+            if (index == 8)
+                sdcastatus = value;
+                if (index == 9)
+                status = value;
+            if (index == 10)
+                mid = value;
+
+        });
+
+        var divid = "divapprsDca" + subdcaid;
+        var divid1 = $("#" + divid + "");
+        $("#currentsDcaid").val(subdcaid);
+
+        var subdcaDetails = {
+            SubDCACodeID: subdcaid,
+            DCACodeID: dcaid,
+            DCAName: dcacode,
+            SubDCACode: sdcacode,
+            SubDCAName: sdcaname,
+            ITCodeID: itcode,
+            ITCodeDescription: itname,
+            Status: status,
+            SubDcaStatus: sdcastatus,
+            MOID: mid
+        };
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifySubDcaView',
+                data: { sdcaDetails: subdcaDetails },
+                success: function (Data) {
+                    var divid2 = "divapprsDca" + subdcaid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                   
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+
+
+        return '<div id="divapprsDca' + subdcaid + '" ></div>';
+        }
+</script>
+
+

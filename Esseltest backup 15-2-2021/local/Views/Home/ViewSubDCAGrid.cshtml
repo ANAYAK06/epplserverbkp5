@@ -1,0 +1,111 @@
+﻿@model List<EsselTestLocalApplication.Models.SubDCA>
+@{
+    ViewBag.Title = "ViewSubDCAGrid";
+
+}
+<div>
+    <div class="table-responsive">
+        <table id="tblSubDCAList" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="hidden"></th>
+                    <th>DCA Name</th>
+                    <th>Sub DCA Code</th>
+                    <th>Sub DCA Name</th>
+                    <th class="hidden">IT Code</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.SubDCACodeID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DCAName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SubDCACode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SubDCAName)
+                        </td>
+                        <td  class="hidden">
+                            @Html.DisplayFor(modelItem => item.ITCodeDescription)
+                        </td>
+                        <td>
+                            @if (item.Status == "Approved" && (item.CloseStatus == "Rejected" || item.CloseStatus == null))
+                            {
+                                <select class="form-control dropdown-toggle" id="ddlSDCAActions" onchange="SubDCAActionschange(@item.SubDCACodeID, @item.DCACodeID, '@item.SubDCAName', '@item.SubDCACode','@item.DCAName',@item.ITCodeID,'@item.Status','@item.ITCodeDescription',this)">
+                                    <option selected="selected" value="Select">Select</option>
+                                    @*<option value="Edit">Edit</option>
+                                        <option value="Close">Delete</option>*@
+                                </select>
+                            }
+                            @*<a title="Edit" href="javascript:void(0)" data-toggle="modal" onclick="EditSubDCA(@item.SubDCACodeID, @item.DCACodeID, '@item.SubDCAName', @item.ITCodeID,'@item.DCAName');"> <span class="fa fa-pencil small-icon icon-btn-blue"></span> </a>*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="modal fade" id="closeSDCAConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+    </div>
+    <div id="divEditSubDCAPopup">
+    </div>
+</div>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var subdcaGrid = null;
+        InitializeSubDCAGrid();
+    });
+    function InitializeSubDCAGrid() {
+        var subdcaGrid = $('#tblSubDCAList').DataTable({
+          info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Sub DCAs Found"
+            },
+             "createdRow": function (row, data, index) {
+                var ddlAction = $('td:eq(5)', row).find("select");
+                ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                var Roleid = '@Session["Roleid"]';
+                var Mid = 'SubAccount Head';
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GetApprovalstatusSDCA",
+                    data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;
+                        if (count > 0) {
+                            $.each(response, function () {
+                                ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                            });
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                        //alert("from ccc tab1");
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                        //alert("from ccc tab2");
+                    }
+                });
+            },
+            pageLength: 10
+        });
+    }
+    </script>
+
+

@@ -1,0 +1,218 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignCCBudget
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ApproveCCBudget</title>
+</head>
+<body>
+    <div class="col-md-9" style="border:1px ! important;">
+
+        @if (Model.Status != "0")
+        {
+            <form onsubmit="return false">
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Cost Center Code:</lable>
+                            <input type="text" class="form-control" value=@Model.CostCenter readOnly="readOnly" id="cccode-@Model.Budgetid" />
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <lable>Cost Center Name:</lable>
+                            <input type="text" class="form-control" value='@Model.CC_Name' readOnly="readOnly"  />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Cost Center Type:</lable>
+                            <input type="text" class="form-control" value='@Model.CCType' readOnly="readOnly" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Budget Value:</lable>
+                            <input type="text" class="form-control" value='@Model.Amount' readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Created Date:</lable>
+                            <input type="text" class="form-control" readOnly="readOnly" id="txtapprBudgetcreateddate" value='@Model.ReturnCreatedate' />
+                        </div>
+                    </div>
+                    @if (Model.CCType == "Non-Performing" || Model.CCType == "Capital")
+                    {
+                        <div class="col-md-3" id="divCCYear">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Year)
+                                <input type="text" class="form-control" readOnly="readOnly"  value='@Model.Year'/>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => Model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprCCBstatus" })
+                            @*<label>Status</label>
+                                <select class="form-control dropdown-toggle" id="ApprCCBstatus-@Model.Budgetid">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Verify">Verify</option>
+                                    <option value="Approve">Approve</option>
+                                    <option value="Return">Return</option>
+                                    <option value="Reject">Reject</option>
+                                </select>*@
+                        </div>
+                    </div>
+                    <div class="col-md-8" id="divApprCCBRetNote-@Model.Budgetid">
+                        <div class="form-group">
+                            <lable>Note:</lable><br />
+                            <textarea rows="3" cols="60" id="ApprCCBRetNote-@Model.Budgetid"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <br /><button onClick="ApproveCCBudget('@Model.Budgetid','@Model.Year')">Submit</button>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApproveCCBudgetInfoMsg-@Model.Budgetid" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <form onsubmit="return false">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CCType)
+                            @Html.TextBoxFor(model => model.CCType, htmlAttributes: new { @class = "form-control", @id = "CCTypeddl", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="divCCSubType">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SubType)
+                            @Html.TextBoxFor(model => model.SubType, htmlAttributes: new { @class = "form-control", @id = "SubTypeddl", @readOnly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4" id="divCCCostCenter">
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.CostCenter)
+                            @Html.TextBoxFor(model => model.CostCenter, htmlAttributes: new { @class = "form-control", @id = "txtBudgetCostCenter", @readOnly = "true" })
+                        </div>
+                    </div>
+                    @if (Model.CCType == "Non-Performing" || Model.CCType == "Capital")
+                    {
+                    <div class="col-md-4" id="divCCYear">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Year)
+                            @Html.DropDownListFor(model => model.Year, new SelectList(Model.YearNameList, "CC_FinYear", "CC_FinYear"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Yearddl" })
+                        </div>
+                    </div>
+                    }
+                    <div class="col-md-4" id="divCCAmount">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Amount)
+                            @Html.TextBoxFor(model => model.Amount, htmlAttributes: new { @class = "form-control", @id = "txtAmount", onkeypress = "return ValidateAmount(this,event);" })
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-8" id="divCCRemarks">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Remarks)
+                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtCCReamarks", @class = "form-control", @type = "text", @rows = "2" })
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-7 text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnCCSubmit" onclick="UpdateCCBudget('@Model.CostCenter','@Model.CCType','@Model.Year')" value="Submit" />
+                        
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="row text-center">
+                    <br />
+                    <div id="divCCInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+
+            </form>
+
+        }
+    </div>
+
+</body>
+</html>
+<script>
+    $(document).ready(function () {
+        if (@Model.Status != "0") {
+            
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            // alert(Mid);
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprCCBstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+    });
+</script>

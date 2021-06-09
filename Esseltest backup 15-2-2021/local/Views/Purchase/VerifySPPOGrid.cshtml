@@ -1,0 +1,174 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.SPPO>
+<div class="table-responsive">
+    <table id="tblApproveSPPOGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">SPPOId</th>
+                <th>Service Provider No.</th>
+                <th>Cost Center</th>
+                <th>VendorName</th>
+                <th>TotalValue</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">VendorCode</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.SPPOId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SPPONo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VendorName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalValue)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.VendorCode)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveSPPOGrid = null;
+        InitializeApproveSPPOGrid();
+        var Sessionroleid = '@Session["Roleid"]';
+        $("#roleid").val(Sessionroleid);
+    });
+    function InitializeApproveSPPOGrid() {
+        ApproveSPPOGrid = $('#tblApproveSPPOGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Service Providers Found"
+            },
+            "createdRow": function (row, data, index) {
+
+                var oldstatus = $.trim($('td:eq(6)', row).html());
+                //alert(oldstatus);
+
+                if (oldstatus === '0') {
+                    $('td:eq(6)', row).html("Return");
+
+                }
+                else { $('td:eq(6)', row).html("Verification Pending"); }
+            },
+            pageLength: 10
+        });
+        $('#tblApproveSPPOGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveSPPOGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveSPPOGrid, tr);
+                // Open this row
+                row.child(formatApproveSPPO(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApproveSPPO(d) {
+            var id = 0;
+            var htmltext;
+        var spid, sppono, Status, Vcode,CC;
+            $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 1)
+                    spid = value;
+                if (index == 2)
+                    sppono = value;
+                if (index == 3)
+                    CC = value;
+                if (index == 6)
+                    Status = value;
+                if (index == 7)
+                    Vcode = value;
+
+        });
+        //debugger;
+        var divid = "divapprSPPO" + spid;
+        var divid1 = $("#" + divid + "");
+
+        if (Status !== "0") {
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/VerifySPPOView',
+                data: { ServicePONo: sppono, CCCode: CC, VendorCode: Vcode },
+                success: function (Data) {
+                    var divid2 = "divapprSPPO" + spid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/EditSPPO',
+                data: { ServicePONo: sppono, CCCode: CC, VendorCode: Vcode },
+                success: function (Data) {
+                    var divid2 = "divapprSPPO" + spid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+        }
+        return '<div id="divapprSPPO' + spid + '"></div>';
+    }
+</script>

@@ -1,0 +1,357 @@
+﻿@model EsselTestLocalApplication.Models.HR.AdvanceRules
+<div class="row">
+
+
+    <div class="container">
+        <div class="col-md-10">
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.CategoryName)
+                @Html.DropDownListFor(model => model.CategoryName, new SelectList(Model.AdvanceRuleCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAdvCategory" })
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EffectiveDate)
+                    @Html.TextBoxFor(model => model.EffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtAdvEffectDate", @readOnly = "true" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">LTA(Long Term Advance)   Eligibility</h5>
+        </div>
+        <div class="col-md-10"><hr class="separationHr" /></div>
+        <div class="col-md-10">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.LTADCA)
+                @Html.DropDownListFor(model => model.LTADCA, new SelectList(Model.DCACodes, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLTADCA", onchange = "LTADCAChange()" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.LTASubDCA)
+                @Html.DropDownListFor(model => model.LTASubDCA, new SelectList(Model.LTASubDCACodes, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLTASubDCA" })
+            </div>
+            <div class="col-md-6">
+                <div class="col-md-12">@Html.LabelFor(model => model.EmpServiceYears)</div>
+                    
+                    <div class="col-md-6">
+                        <select class="form-control dropdown-toggle" id="ddlLTEExpFrom">
+                            <option selected="selected" value="Select">Select</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        <div class="col-md-10 rowspace">
+
+            <div class="col-md-12">
+                @*<div class="col-md-5 text-left">@Html.LabelFor(model => model.EmpServiceYears)</div>
+                <div class="col-md-4 text-right col-lg-offset-1">
+                    <select class="form-control dropdown-toggle" id="ddlLTEExpFrom">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>*@
+            </div>
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" id="chkLTENotExceed">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Not Exceed(Monthly Salary+Bonus+Paid Leaves)</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" id="chkLTENotApplNoticePeriondEmp">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Not Applicable For Employee in notice period</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Salary Advance</h5>
+        </div>
+        <div class="col-md-10"><hr class="separationHr" /></div>
+        <div class="col-md-10">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.SADCA)
+                @Html.DropDownListFor(model => model.SADCA, new SelectList(Model.DCACodes, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSADca", onchange = "SADCAChange()" })
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.SASubDCA)
+                @Html.DropDownListFor(model => model.SASubDCA, new SelectList(Model.SASubDCACodes, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSASubDCA" })
+            </div>
+        </div>
+        <div class="col-md-10 rowspace">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" id="chkSalAdvNotExceed">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Not Exceed(Monthly Salary+Bonus+Paid Leaves)</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" id="chkSalAdvNotApplNoticePeriondEmp">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Not Applicable For Employee in notice period</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10 rowspace">
+            <div class="row rowspace">
+                <div class="col-md-12 text-right">
+                    <br />
+                    <button class="btn btn1 btn-success" id="btnLTESalAdvanceSubmit" onclick="SubmitLTESalAdvanceData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnLTESalAdvanceReset" onclick="ResetLTESalAdvanceData()">Reset</button>
+                </div>
+            </div>
+            <div class="row rowspace">
+                <div class="text-center">
+                    <br />
+                    <div id="divLTESalAdvanceInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divAdvGrid" class="row">
+    @Html.Action("GetAllAdvanceRules", "HR")
+</div>
+<script>
+    $(document).ready(function () {
+        $("#txtAdvEffectDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+1",
+        });
+      
+    });
+    function SubmitLTESalAdvanceData() {
+       // alert();
+        var errorMsg = "";
+        isValid = true;
+        var categoryindex = $("#ddlAdvCategory option:selected").index();
+        var effectovedate = $("#txtAdvEffectDate").val();
+        var expyearsindex = $("#ddlLTEExpFrom option:selected").index();
+
+        var ltadcaindex = $("#ddlLTADCA option:selected").index();
+        var ltasubdcaindex = $("#ddlLTASubDCA option:selected").index();
+        var sadcaindex = $("#ddlSADca option:selected").index();
+        var sasubdcaindex = $("#ddlSASubDCA option:selected").index();
+       
+        var ltadca = $("#ddlLTADCA option:selected").val();
+        var ltasubdca = $("#ddlLTASubDCA option:selected").val();
+        var sadca = $("#ddlSADca option:selected").val();
+        var sasubdca = $("#ddlSASubDCA option:selected").val();
+
+        if (categoryindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Employee Category</p>";
+            isValid = false;
+        }
+        if (effectovedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+            isValid = false;
+        }  
+        if (expyearsindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select No Of Service Years</p>";
+            isValid = false;
+        }
+        if (ltadcaindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select LTA Account Head</p>";
+            isValid = false;
+        }
+        if (ltasubdcaindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select LTA SubAccount Head</p>";
+            isValid = false;
+        }
+        if (sadcaindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select SA Account Head</p>";
+            isValid = false;
+        }
+        if (sasubdcaindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select SA SubAccount Head</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divLTESalAdvanceInfoMsg").text("");
+            $("#divLTESalAdvanceInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divLTESalAdvanceInfoMsg").addClass("alert-danger");
+            $("#divLTESalAdvanceInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divLTESalAdvanceInfoMsg").text("");
+            $("#divLTESalAdvanceInfoMsg").addClass("hidden");
+
+            let ltaAmountExceed = 'No', ltaNP = 'No', saAmountExceed = 'No', saNP = 'No';
+            if ($('#chkLTENotExceed').is(':checked') == true) { ltaAmountExceed = 'Yes'; }
+            if ($('#chkLTENotApplNoticePeriondEmp').is(':checked') == true) { ltaNP = 'Yes'; }
+            if ($('#chkSalAdvNotExceed').is(':checked') == true) { saAmountExceed = 'Yes'; }
+            if ($('#chkSalAdvNotApplNoticePeriondEmp').is(':checked') == true) { saNP = 'Yes'; }
+            //let catid = 0;
+            //if (categoryindex == 1) {
+            //    catid = 0;
+            //}
+            //else {
+              let  catid = $("#ddlAdvCategory option:selected").val();
+            //}
+            let advData = {
+                CategoryId: catid,
+                EmpServiceYears: $("#ddlLTEExpFrom option:selected").val(),
+                EffectiveDate: $("#txtAdvEffectDate").val(),
+                LTAAmountLimitExceed: ltaAmountExceed,
+                LTAApplicableForNP: ltaNP,
+                SAAmountLimitExceed: saAmountExceed,
+                SAApplicableForNP: saNP,
+                LTADCA: ltadca,
+                LTASubDCA: ltasubdca,
+                SADCA: sadca,
+                SASubDCA: sasubdca,
+            };
+           // //debugger;
+            addFailMsg = "Error Occurred While Adding."; 
+            $("#btnLTESalAdvanceSubmit").prop("disabled", true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveHRAdvanceRule',
+                data: { AdvData: advData },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                       // location.reload();
+                        $('#liAdvanceRules').trigger('click');
+                    }                    
+                    else {
+                        $("#divLTESalAdvanceInfoMsg").text(addFailMsg);
+                        $("#divLTESalAdvanceInfoMsg").addClass("alert-danger");
+                        $("#divLTESalAdvanceInfoMsg").removeClass("hidden alert-success");
+                        $("#btnLTESalAdvanceSubmit").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divLTESalAdvanceInfoMsg").text(addFailMsg);
+                    $("#divLTESalAdvanceInfoMsg").addClass("alert-danger");
+                    $("#divLTESalAdvanceInfoMsg").removeClass("hidden alert-success");
+                    $("#btnLTESalAdvanceSubmit").prop("disabled", false);
+                }
+            });
+        }
+    }
+    function RebindCategories() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/GetEmpCategoriesForAdvanceRule",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success: function (response) {
+                var ddl = $("#ddlAdvCategory");
+                ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                $.each(response, function () {
+                    ddl.append($("<option></option>").val(this['CategoryId']).html(this['CategoryName']));
+                });
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+    function ResetLTESalAdvanceData() {
+        $('#liAdvanceRules').trigger('click');
+    }
+    function LTADCAChange() {
+        // //debugger;
+        let dcaindex = $("#ddlLTADCA option:selected").index();
+        let dca = $("#ddlLTADCA option:selected").val();
+        var sdcaddl = $("#ddlLTASubDCA");
+        if (dcaindex == 0) {
+            sdcaddl.empty().append('<option selected="selected" value="-Please Select-">-Please Select-</option>');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetSubDCAbyDCA",
+                data: "{DCACode:'" + dca + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(data, function () {
+                        sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }}
+    function SADCAChange() {
+        // //debugger;
+        let dcaindex = $("#ddlSADca option:selected").index();
+        let dca = $("#ddlSADca option:selected").val();
+        var sdcaddl = $("#ddlSASubDCA");
+        if (dcaindex == 0) {
+            sdcaddl.empty().append('<option selected="selected" value="-Please Select-">-Please Select-</option>');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetSubDCAbyDCA",
+                data: "{DCACode:'" + dca + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(data, function () {
+                        sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }}
+   
+</script>
+

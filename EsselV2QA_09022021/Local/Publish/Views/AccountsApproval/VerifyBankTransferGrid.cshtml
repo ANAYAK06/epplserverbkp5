@@ -1,0 +1,156 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.BankTransferDetails>
+<div class="table-responsive w-100">
+    <table id="tblApproveBankTransferGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="">Refno</th>
+                <th>Date</th>
+                <th>From Bank</th>
+                <th>To Bank</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="">
+                        @Html.DisplayFor(modelItem => item.Refno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FromBank)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ToBank)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Approvalstatus)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {  
+            var ApproveBankTransferGrid = null;
+        InitializeApprBankTransferGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprBanktransferCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+            $("#txtApprBanktransferRole").val(SessionRole);
+       
+    function InitializeApprBankTransferGrid() {
+        ApproveBankTransferGrid = $('#tblApproveBankTransferGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+              "createdRow": function (row) {
+                var oldstatus = $('td:eq(6)', row).html();
+                if (oldstatus == 0) {
+                    $('td:eq(6)', row).html("Return");
+                }
+                else { $('td:eq(6)', row).html("Verification Pending"); }
+            },
+                pageLength: 10
+            });
+        $('#tblApproveBankTransferGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveBankTransferGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApproveBankTransferGrid, tr)
+                    // Open this row
+                    row.child(formatApprBankTransfer(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+        }
+    });
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprBankTransfer(d) {
+        var htmltext;
+        var BankRefno, transstatus;
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 1)
+                BankRefno = value;   
+            if (index == 6)
+                transstatus = value;
+        });       
+        var divid = "divapprbanktransfer" + BankRefno;
+        var divid1 = $("#" + divid + "");
+        $("#currentBankTransferid").val(BankRefno);
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/UpdateBankTransferView',
+                data: { TranRefno: BankRefno },
+                success: function (Data) {
+                    var divid2 = "divapprbanktransfer" + BankRefno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                 
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                }
+            });}
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyBankTransferView',
+                data: { TranRefno: BankRefno },
+                success: function (Data) {
+                    var divid2 = "divapprbanktransfer" + BankRefno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+               
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+        }
+        return '<div id="divapprbanktransfer' + BankRefno + '"></div>';
+        }
+</script>

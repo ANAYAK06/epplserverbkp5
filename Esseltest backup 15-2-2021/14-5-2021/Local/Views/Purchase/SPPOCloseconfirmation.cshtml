@@ -1,0 +1,95 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPO
+<div class="modal-dialog modal-confirm">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="icon-box">
+                <i class="fa fa-check"></i>
+            </div>
+            <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="confirmmsg">
+                <p>Do you really want to Close SPPO </p><label id="lblPONo">@Model.SPPONo</label>
+                <p>This process cannot be undone.</p>
+            </div>
+            <div id="divConfirmInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div id="confirmbtn">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                <button type="button" id="btnspclose" class="btn btn-danger" onclick="CloseSPPO('@Model.VendorCode','@Model.SPPONo','@Model.CCCode')">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function CloseSPPO(vcode, pono, cc) {
+       // alert(vcode + "/" + pono + "/" + cc);
+        var appstatus = 'Insert';
+        var SpData = {
+            VendorCode: vcode,
+            CCCode: cc,           
+            Action: 'Insert',         
+            SPPONo: pono
+        };
+        //debugger;
+        addFailMsg = "Error Occurred While Serivice Provider Closing";
+        var finalmsg;
+        if (appstatus === 'Verify') {
+            finalmsg = 'Verified Successfully';
+        }
+        else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+        else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+        else if (appstatus === 'Insert') { finalmsg = 'Closed Successfully'; }
+        $("#btnspclose").prop('disabled', true);
+
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/CloseSPPO",
+            data: JSON.stringify({ clSPPO: SpData }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+
+            success: function (response) {
+                if (response.saveStatus === "Submited") {
+                    //$('#ClosesppoMsgModal').modal('show');
+                    var msg = "Service Provider " + finalmsg + "";
+                    //$("#clSPPOMsg").html(msg);
+                    $("#divConfirmInfoMsg").text(msg);
+                    $("#divConfirmInfoMsg").removeClass("hidden alert-danger");
+                    $("#divConfirmInfoMsg").addClass("alert-success");
+                   
+                
+                
+                }
+                else {
+                    var msg1 = response.saveStatus ;
+                    $("#divConfirmInfoMsg").text(msg1);
+                    $("#divConfirmInfoMsg").removeClass("hidden alert-danger");
+                    $("#divConfirmInfoMsg").addClass("alert-success");
+                    $("#btnspclose").prop('disabled', false);
+                    //var msg1 = "<div>" + response.saveStatus + "</div>";
+                    //$("#clSPPOMsg").html(msg);
+                    //$('#ClosesppoMsgModal').modal('show');
+                }
+                $("#confirmms1").addClass("hidden");
+                $("#confirmmsg").addClass("hidden");
+                $("#confirmbtn").addClass("hidden");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //var msg = "<div>" + addFailMsg + " </div>";
+                //$("#clSPPOMsg").html(msg);
+                //$('#ClosesppoMsgModal').modal('show');
+                $("#divConfirmInfoMsg").text(addFailMsg);
+                $("#divConfirmInfoMsg").removeClass("hidden alert-danger");
+                $("#divConfirmInfoMsg").addClass("alert-success");
+                $("#btnspclose").prop('disabled', false);
+                $("#confirmms1").addClass("hidden");
+                $("#confirmmsg").addClass("hidden");
+                $("#confirmbtn").addClass("hidden");
+            }
+        });
+    }
+</script>

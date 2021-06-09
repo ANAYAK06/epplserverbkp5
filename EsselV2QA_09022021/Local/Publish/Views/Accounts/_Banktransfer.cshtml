@@ -1,0 +1,105 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.BankTransfer
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Bank To Bank Transfer</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+                                                <hr style="margin-top:0px;margin-bottom:2px" />
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.From)
+                                                        @Html.DropDownListFor(model => model.From, new SelectList(Model.TranBankFromList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TranFrom", onchange = "DepositPayModeChange()" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Mode_of_Pay)
+                                                        @Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.TranPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TansferPayMode", onchange = "DepositPayModeChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.No)
+                                                        @Html.TextBoxFor(model => model.No, htmlAttributes: new { @class = "form-control", @id = "txtTansferNo" })
+                                                        @Html.DropDownListFor(model => model.Chequeid, new SelectList(Model.WdChequesList, "Cheque_Id", "Cheque_No"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Transferchequenos" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.To)
+                                                        @Html.DropDownListFor(model => model.To, new SelectList(Model.TranBankToList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_TranTo" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Date)
+                                                        @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtTransferDate1", @class = "form-control", @readonly = "true" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Remarks)
+                                                        @Html.TextAreaFor(model => model.Remarks, new { @id = "txttransferRemarks", @class = "form-control", @rows = "3" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Amount)
+                                                        @Html.TextBoxFor(model => model.Amount, new { @id = "txtTransferAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-right">
+                                                    <input type="text" value="0" id="txtbanktransferRoleId" style="display:none" />
+                                                    <button class="btn btn1 btn-success" id="btnTransferSubmit" onclick="btnSubmitBankTransferData()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnTransferReset" onclick="btnResettransferData()">Reset</button>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-center">
+                                                    <div id="divBankTransferInfoMsg" class="alert alert-danger hidden">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+       var RoleID = '@Session["Roleid"]';
+        $("#txtbanktransferRoleId").val(RoleID);
+    });
+
+</script>

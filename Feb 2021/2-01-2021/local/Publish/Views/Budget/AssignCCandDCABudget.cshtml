@@ -1,0 +1,381 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignCCandDCABudget
+@{
+    /**/
+
+    ViewBag.Title = "AssignCCandDCABudget";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/Budget")
+<script src="~/Scripts/DataTables/media/js/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/EsselStyles/AccountsStyles.css" rel="stylesheet" />
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Assign Budget</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <input type="text" value="0" id="txtAssignCCBudgetCreatedby" style="display:none" />
+                                <div class="col-md-12">
+                                    <div id="divAssignCCandDCA"></div>
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        @foreach (var item in Model.BudgetWFStatuslist)
+                                        {
+                                            if (item.MID == 134 && item.WorkflowExist == true)
+                                            {
+                                            <li onClick="ClearAssignCC()"><a data-toggle="tab" href="#CCBudget">Cost Center Budget</a></li>
+                                            }
+                                            if (item.MID == 140 && item.WorkflowExist == true)
+                                            {
+                                            <li onClick="ClearAssignDCA()"><a data-toggle="tab" href="#DCABudget">Account Head Budget</a></li>
+                                            }
+                                        }
+                                        </ul>
+                                    <div class="tab-content">
+                                        @foreach (var item in Model.BudgetWFStatuslist)
+                                        {
+                                            if (item.MID == 134 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" id="CCBudget" class="tab-pane fade">
+                                                    <div class="row">
+                                                        @*@foreach (var item1 in Model.BudgetWFStatuslist)
+                                                        {
+                                                            if (item.MID == 136 && item.WorkflowExist == true)
+                                                            {*@
+                                                            <button class="btn btn1 btn-success" id="btnAssignCC">CC Budget Assignment</button>
+                                                            @*}
+                                                        }*@
+                                                        </div>
+                                                    <div id="divCCDetails">
+                                                        @*@Html.Action("ViewCCDetailsGrid", "Budget")*@
+                                                        @Html.Action("AmendCCBudget", "Budget")
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (item.MID == 140 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" id="DCABudget" class="tab-pane fade">
+                                                    <div class="row">
+                                                        @foreach (var item1 in Model.BudgetWFStatuslist)
+                                                        {
+                                                            if (item.MID == 140 && item.WorkflowExist == true)
+                                                            {
+                                                                <button class="btn btn1 btn-success" id="btnAssignDCA">DCA Budget Assignment</button>
+                                                            }
+                                                            break;
+                                                        }
+                                                    </div>
+                                                    @Html.Action("AmendDCABudget", "Budget")
+
+                                                </div>
+                                                }
+                                        }
+                                        </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal -->
+                    <div id="CCModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Assign Cost Center Budget</h4>
+                                </div>
+                                <div class="modal-body">
+                                    @Html.Action("AssignCCBudget", "Budget")
+                                </div>
+                                @*<div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>*@
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="DCAModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Assign DCA Budget</h4>
+                                </div>
+                                <div class="modal-body">
+                                    @Html.Action("AssignDCABudget", "Budget")
+                                </div>
+                                @*<div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>*@
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="DCAAmendModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Amend DCA Budget</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Amend Type:</label>
+                            @*<label id="lblDCAAmendtype"></label>*@
+                            <select class="form-control dropdown-toggle" id="ddlDCAAmendType" onchange="DCAAmendTypeChange()">
+                                <option selected="selected" value="Select">-Select-</option>
+                                <option value="Add">Add</option>
+                                <option value="Substract">Substract</option>
+                                @*<option value="New">New</option>*@
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="divDCAAmendDetails">
+                    <div id="divNewDCABudgetAssignInAmend">
+                        @*<div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>DCA Code:</label>
+                                    <select class="form-control dropdown-toggle WdNo" id="ddlUnAmendedDCA" onchange="UnAmendedDCAChange()">
+                                        <option selected="selected" value="Select">-Select-</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="NewAmendDCADetails">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CC Name:</label>
+                                    <label id="lblNewDCCAmendName"></label>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>CC Budget Value:</label>
+                                    <label id="lblNewDCCAmendBudget"></label>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>CC  Balance:</label>
+                                    <label id="lblNewDCCAmendBalance"></label>
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="margin-top:10px">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Amount:</label>
+                                        <input type="text" id="NewDCABudgetAmount" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="NewAmendDCAVerification()" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="text-right">
+                                    <button class="btn btn1 btn-success" id="btnNewAmendDCASubmit" onclick="SubmitNewAmendDCAData()">Submit</button>
+
+                                    <input type="text" id="txtNewDCCBudgetid" style="display:none" />
+                                    <input type="text" id="txtNewDCCBudgetold" style="display:none" />
+                                    <input type="text" id="txtNewDCCBalanceOld" style="display:none" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="text-center">
+                                    <div id="divNewAmendDCAInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+                    <div id="divOldDCABudgetAssignInAmend">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Cost Center:</label>
+                                <label id="lblDCCAmendCCCode"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Cost Center:</label>
+                                <label id="lblDCCAmendCCodeandName"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>CC Budget Value:</label>
+                                <label id="lblDCCAmendBudget"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>CC  Balance:</label>
+                                <label id="lblDCCAmendBalance"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>DCA Name:</label>
+                                <label id="lblDCANameAmend"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>DCA Name:</label>
+                                <label id="lblDCANameAmendcodeandname"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>DCA Budget Value:</label>
+                                <label id="lblDCABudgetAmend"></label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>DCA Budget Balance:</label>
+                                <label id="lblDCAAmendBudgetBalance"></label>
+                            </div>
+
+
+                            <div class="col-md-4" style="margin-top:10px">
+                                <div class="form-group">
+                                    <label>Amount:</label>
+                                    <input type="text" id="AmendDCABudgetAmount" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="AmendDCAVerification()" />
+                                </div>
+
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                @*CC*@
+                                <input type="text" id="txtDCCBudgetid" style="display:none" />
+                                <input type="text" id="txtDCCBudgetold" style="display:none" />
+                                <input type="text" id="txtDCCBalanceOld" style="display:none" />
+                                @*DCA*@
+                                <input type="text" id="txtDCABudgetid" style="display:none" />
+                                <input type="text" id="txtDCABudgetold" style="display:none" />
+                                <input type="text" id="txtDCABalanceold" style="display:none" />
+
+                                <input type="text" id="txtDCABudgetfyear"   style="display:none"/>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="text-right">
+                                        <button class="btn btn1 btn-success" id="btnAmendDCASubmit" onclick="SubmitAmendDCAData()">Submit</button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="text-center">
+                                    <div id="divAmendDCAInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            
+        </div>
+
+    </div>
+</div>
+
+
+<div id="NewDCAAmendModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Amend DCA Budget</h4>
+            </div>
+            <div class="modal-body">              
+                <div class="row">
+                    <div class="col-lg-1"></div>
+                    <div class="col-lg-10">
+                        <div id="divNewDCABudgetAssignInAmend">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>DCA Code:</label>
+                                        <select class="form-control dropdown-toggle WdNo" id="ddlUnAmendedDCA" onchange="UnAmendedDCAChange()">
+                                            <option selected="selected" value="Select">-Select-</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="NewAmendDCADetails">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>CC Name:</label>
+                                        <label id="lblNewDCCAmendName"></label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>CC Budget Value:</label>
+                                        <label id="lblNewDCCAmendBudget"></label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>CC  Balance:</label>
+                                        <label id="lblNewDCCAmendBalance"></label>
+                                    </div>
+                                </div>
+
+
+                                <div class="row" style="margin-top:10px">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Amount:</label>
+                                            <input type="text" id="NewDCABudgetAmount" class="form-control" onkeypress="return ValidateAmount(this,event);" , onKeyup="NewAmendDCAVerification()" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="text-right">
+                                        <button class="btn btn1 btn-success" id="btnNewAmendDCASubmit" onclick="SubmitNewAmendDCAData()">Submit</button>
+
+                                        <input type="text" id="txtNewDCCBudgetid" style="display:none" />
+                                        <input type="text" id="txtNewDCCBudgetold" style="display:none" />
+                                        <input type="text" id="txtNewDCCBalanceOld" style="display:none" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <div id="divNewAmendDCAInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+        $(document).ready(function () {
+            var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAssignCCBudgetCreatedby").val(Sessioncreated);
+            $("#divAmendDetails").addClass("hidden");
+            $('.nav-tabs li:eq(0) a').tab('show');
+    });
+</script>
+
+
+
+
+
+

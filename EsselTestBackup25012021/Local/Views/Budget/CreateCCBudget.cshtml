@@ -1,0 +1,67 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignCCandDCABudget
+@{
+    ViewBag.Title = "CreateCCBudget";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*<h2>CreateCCBudget</h2>*@
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/Budget")
+<script src="~/Scripts/DataTables/media/js/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/EsselStyles/AccountsStyles.css" rel="stylesheet" />
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Cost Center Budget</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button class="btn btn1 btn-success" id="btnAssignCC">CC Budget Assignment</button>
+                                        <input type="text" value="0" id="txtAssignCCBudgetCreatedby" style="display:none" />
+                                    </div>
+                                    <div id="divCCDetails">
+                                        @Html.Action("AmendCCBudget", "Budget")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="CCModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Assign Cost Center Budget</h4>
+            </div>
+            <div class="modal-body">
+                @Html.Action("AssignCCBudget", "Budget")
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>*@
+        </div>
+
+    </div>
+</div>
+<script>
+        $(document).ready(function () {
+            var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAssignCCBudgetCreatedby").val(Sessioncreated);
+           
+    });
+</script>
+

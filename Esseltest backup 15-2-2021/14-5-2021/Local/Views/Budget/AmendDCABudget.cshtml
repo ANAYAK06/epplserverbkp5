@@ -1,0 +1,452 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AmendDCABudget
+    @{ 
+    ViewBag.Title = "AmendDCABudget";
+    //Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="row" id="divBudgetAssignedDCAGrid">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Cost Center Type</label>
+                    @Html.DropDownListFor(model => model.cc_Type, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendDCABudgetCCTypes", onchange = "AmendDCABudgetCCTypesChange()" })
+                </div>
+            </div>
+            <div class="col-md-3" id="divAmendDCAYear">
+                <div class="form-group">
+                    <label>Year</label>
+                    @Html.DropDownListFor(model => model.FYYear, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendDCAYear", onchange = "AmendDCABudgetYearChange()" })
+                </div>
+            </div>
+            <div class="col-md-3" id="divAmendDCASubType">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubType)
+                    @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendDCASubType", onchange = "AmendDCABudgetSubTypeChange()" })
+                </div>
+            </div>
+            <div id="divAmendBudgetCC">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCCode)
+                        <select class="form-control dropdown-toggle" id="ddlAmendBudgetCC" onchange="DCAmendCcCodeChange()">
+                            <option selected="selected" value="Select">-Select-</option>
+                        </select>
+                        @*onchange="DCAmendCcCodeChange()"*@
+                        <input type="text" value="0" id="txtOldCCBudgetForAmendDCA" style="display:none" />
+                        <input type="text" value="0" id="txtOldCCBalanceForAmendDCA" style="display:none" />
+                        <input type="text" value="0" id="txtCalCCBudgetForAmendDCA" style="display:none" />
+                        <input type="text" value="0" id="txtCalCCBudgetForAmendDCA" style="display:none" />
+                        <input type="text" value="0" id="txtBudgetIDForAmendDCA" style="display:none" />
+                        <input type="text" value="0" id="txtDCAAmendCCName" style="display:none" />
+                        <input type="text" value="0" id="txtTempOldCCBudgetForAmendDCA" style="display:none" />
+                        <input type="text" value="0" id="txtTempOldCCBalanceForAmendDCA" style="display:none" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <br />
+                    <input type="submit" value="View" class="btn btn1 btn-success" id="btnAmendDCADetials" onclick="ShowAmendDCAGrid()" />
+                    <button class="btn btn1 btn-success" id="btnMultipleAmendReset" onclick="ResetMultipleAmendData()">Reset</button>
+                </div>
+            </div>
+        </div>
+        <div id="divDCADetails">
+
+        </div>
+        </br>
+        <div class="row" id="divNewDCABudgetfromAmend">
+            <input type="submit" value="New DCA Amend" class="btn btn1 btn-success" id="btnAddnewAmendDCA" onclick="ShowNewAmendDCAModel()" />
+            </br>
+            </br>
+            <table style=" width:100%" align="center">
+                <tr style="color:black">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <span>Total Budget Value: </span>
+                        <span id="budgetvalue"></span>
+                    </td>
+                    <td colspan="2">
+                        <span>Balance Budget Value: </span>
+                        <span id="balbudgetvalue"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="row" id="divAmendDetails">
+            <div class="strike">
+                <span>Amend DCA</span>
+            </div>
+            <div class="tabledynamic">
+                <table id="tbDcaAmendDetails" class="table order-list dcaAmend" style="width:100%">
+                    <thead>
+                        <tr>
+                            <td style="text-align:center;font-weight:bold;color:#fff !important">No</td>
+                            <td style="text-align:center;font-weight:bold;color:#fff !important">Check</td>
+                            <td style="text-align:center;font-weight:bold;color:#fff !important">Account Head Code</td>
+                            <td style="text-align:left;font-weight:bold;word-wrap: break-word; word-break: break-all; white-space: normal;color:#fff !important">Account Head Name</td>
+                            <td style="text-align:center;font-weight:bold;color:#fff !important">Amount</td>
+                            <td style="text-align:center;font-weight:bold;color:#fff !important">Action</td>
+                            <td style="text-align:center;font-weight:bold;color:#fff !important"></td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="text-right">
+                    <button class="btn btn1 btn-success" id="btnMultipleAmendDCASubmit" onclick="SubmitMultipleAmendDCAData()">Submit</button>
+
+                    <input type="hidden" id="txtamendcctype" />
+                    <input type="hidden" id="txtdone" />
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-md-12">
+            <div class="text-center">
+                <div id="divMultipleAmendDCAIfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divAmendDCAYear").addClass('hidden');
+        $("#divAmendDCASubType").addClass('hidden');
+        $("#divAmenddcagridbtn").addClass('hidden');
+        $("#divAmendBudgetCC").addClass('hidden');
+        $("#divDCADetails").addClass('hidden'); 
+        $("#divNewDCABudgetfromAmend").addClass('hidden');
+        $("#NewDCAAmendModal").on("hidden.bs.modal", function () {
+            RebindBudgetDCAGrid();
+        });
+    });
+    function DCAmendCcCodeChange() {       
+        $("#divDCABudgetDetails").addClass("hidden");
+    }
+    function AmendDCABudgetSubTypeChange() {
+        var cctypeid = $("#ddlAmendDCABudgetCCTypes option:selected").val();
+        var subtypeindex = $("#ddlAmendDCASubType option:selected").index();
+        var SubType = $("#ddlAmendDCASubType option:selected").text();
+        var fyear = '';
+        $("#divDCABudgetDetails").addClass("hidden");
+        if (subtypeindex !== 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Budget/GetBudgetAssignedCCByCCType",
+                data: '{CCtypeId:"' + cctypeid + '",SubType:"' + SubType + '",FnYear:"' + fyear + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var CCddl = $("#ddlAmendBudgetCC");
+                    CCddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        CCddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+
+                    $("#divAmendBudgetCC").removeClass('hidden');
+
+
+                    // $("#divNewDCABudgetfromAmend").removeClass('hidden');
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $("#ddlAmendDCAYear").addClass('hidden');
+            $("#divAmenddcagridbtn").addClass('hidden');
+            $("#divAmendBudgetCC").addClass('hidden');
+            $("#divDCADetails").addClass('hidden');
+            $("#divNewDCABudgetfromAmend").addClass('hidden');
+        }
+
+    }
+    function AmendDCABudgetYearChange() {
+        //debugger;
+        var cctypeid = $("#ddlAmendDCABudgetCCTypes option:selected").val();
+        var fyearindex = $("#ddlAmendDCAYear option:selected").index();
+        var fyear = $("#ddlAmendDCAYear option:selected").val();
+        var Subtype = '';
+        $("#divDCABudgetDetails").addClass("hidden");
+        if (fyearindex !== 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Budget/GetBudgetAssignedCCByCCType",
+                data: '{CCtypeId:"' + cctypeid + '",SubType:"' + Subtype + '",FnYear:"' + fyear + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var CCddl = $("#ddlAmendBudgetCC");
+                    CCddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        CCddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+                    $("#divAmendBudgetCC").removeClass('hidden');
+                    // $("#divDCABudgetDetails").addClass('hidden');
+                    //$("#divNewDCABudgetfromAmend").removeClass('hidden');
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $("#divNewDCABudgetfromAmend").addClass('hidden');
+            $("#divAmendDCASubType").addClass('hidden');
+            $("#divAmenddcagridbtn").addClass('hidden');
+            $("#divAmendBudgetCC").addClass('hidden');
+            $("#divDCADetails").addClass('hidden');
+
+        }
+
+    }
+    function AmendDCABudgetCCTypesChange() {
+        var cctype = $("#ddlAmendDCABudgetCCTypes option:selected").text();
+        var cctypeindex = $("#ddlAmendDCABudgetCCTypes option:selected").index();
+        $("#ddlAmendDCAYear").prop('selectedIndex', 0);
+        $("#ddlAmendDCASubType").prop('selectedIndex', 0);
+        $("#divNewDCABudgetfromAmend").addClass('hidden');
+        $("#divAmendDetails").addClass('hidden');
+        if (cctypeindex !== 0) {
+            if (cctype === 'Performing') {
+                $("#divAmendCCGrid").addClass('hidden');
+                $("#divAmendDCAYear").addClass('hidden');
+                $("#divAmendDCASubType").removeClass('hidden');
+                $("#divAmenddcagridbtn").removeClass('hidden');
+                $("#divAmendBudgetCC").addClass('hidden');
+                $("#divDCADetails").addClass('hidden');
+            }
+            else {
+
+                $("#divAmendCCGrid").addClass('hidden');
+                $("#divAmendDCAYear").removeClass('hidden');
+                $("#divAmendDCASubType").addClass('hidden');
+                $("#divAmenddcagridbtn").addClass('hidden');
+                $("#divAmendBudgetCC").addClass('hidden');
+                $("#divDCADetails").addClass('hidden');
+            }
+
+        }
+        else {
+            $("#divAmendCCGrid").addClass('hidden');
+            $("#divAmendDCAYear").addClass('hidden');
+            $("#divAmendDCASubType").addClass('hidden');
+            $("#divAmenddcagridbtn").addClass('hidden');
+            $("#divAmendBudgetCC").addClass('hidden');
+            $("#divDCADetails").addClass('hidden');
+           
+        }
+        //var cctypeid = $("#ddlAmendDCABudgetCCTypes option:selected").val();
+        // $.ajax({
+        //    type: "POST",
+        //    url: "/Budget/GetBudgetAssignedCCByCCType",
+        //    data: '{CCtypeId:"' + cctypeid + '"}',
+        //    contentType: "application/json; charset=utf-8",
+        //     dataType: "json",
+        //    success: function (response) {
+        //        var CCddl = $("#ddlAmendBudgetCC");
+        //        CCddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        //        $.each(response, function () {
+        //            CCddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+        //        });          
+        //        $("#divAmendBudgetCC").removeClass('hidden');
+        //        $("#divDCABudgetDetails").addClass('hidden');
+        //    },
+        //     failure: function (response) {
+        //    },
+        //     error: function (response) {
+        //    }
+        //});
+
+    }
+    function ShowAmendDCAGrid() {
+      //debugger;
+        var cc = $("#ddlAmendBudgetCC option:selected").val();
+        var ccIndex = $("#ddlAmendBudgetCC option:selected").index();
+        var cctypeid = $("#ddlAmendDCABudgetCCTypes option:selected").val();
+        var cctypeidindex = $("#ddlAmendDCABudgetCCTypes option:selected").index();
+        $("#divNewDCABudgetfromAmend").addClass("hidden");
+        if (ccIndex !== 0) {
+            if (cctypeidindex !== 0) {
+                if (cctypeid === "6") {
+                    var subtypeindex = $("#ddlAmendDCASubType option:selected").index();
+                    var Stype = $("#ddlAmendDCASubType option:selected").text();
+                    // alert(Stype);
+                    if (subtypeindex !== 0) {
+                        $.ajax({
+                            type: 'GET',
+                            dataType: 'html',
+                            url: '/Budget/ViewDCABudgetDetailsGrid',
+                            data: { CCCode: cc, Subtype: Stype, Year: '', CCTypeId: cctypeid },
+                            success: function (Data) {
+                                GetBudgetAsignedCCDetails(cc,'');
+                                $("#divDCADetails").html(Data);
+                                $("#divDCABudgetDetails").removeClass("hidden");
+                                $("#divDCADetails").removeClass("hidden");
+                                $("#txtamendcctype").val("");
+                                $("#txtdone").val('0');
+                                $("#divAmendDetails").addClass("hidden");
+                                $("#ddlAmendBudgetCC").prop('disabled', false);
+                                $("#ddlAmendDCABudgetCCTypes").prop('disabled', false);
+                                $("#ddlAmendDCASubType").prop('disabled', false);
+                                $("#divMultipleAmendDCAIfoMsg").text("");
+                                $("#divMultipleAmendDCAIfoMsg").addClass("hidden");
+                                BindAmendGrid();
+                                $("#divAmendBudgetCC").removeClass('hidden');
+                                $("#divDCADetails").removeClass('hidden');
+                                $("#divNewDCABudgetfromAmend").removeClass('hidden');                              
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            }
+                        });
+                    }
+                    else {
+                        $("#divMultipleAmendDCAIfoMsg").text("");
+                        $("#divMultipleAmendDCAIfoMsg").append("<div>Select Sub Type</div>");
+                        $("#divMultipleAmendDCAIfoMsg").addClass("alert-danger");
+                        $("#divMultipleAmendDCAIfoMsg").removeClass("hidden alert-success");
+
+                    }
+                }
+                else if (cctypeidindex !== 0 && fyearindex !== 0) {
+                    var fyearindex = $("#ddlAmendDCAYear option:selected").index();
+                    var fyear = $("#ddlAmendDCAYear option:selected").val();
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Budget/ViewDCABudgetDetailsGrid',
+                        data: { CCCode: cc, Subtype: '', Year: fyear, CCTypeId: cctypeid },
+                        success: function (Data) {
+                            
+                            GetBudgetAsignedCCDetails(cc, fyear);
+                            $("#divDCADetails").html(Data);
+                            $("#divDCABudgetDetails").removeClass("hidden");
+                            $("#divDCADetails").removeClass("hidden");
+                            $("#txtamendcctype").val("");
+                            $("#txtdone").val('0');
+                            $("#divAmendDetails").addClass("hidden");
+                            $("#ddlAmendBudgetCC").prop('disabled', false);
+                            $("#ddlAmendDCABudgetCCTypes").prop('disabled', false);
+                            $("#ddlAmendDCAYear").prop('disabled', false);
+
+                            $("#divMultipleAmendDCAIfoMsg").text("");
+                            $("#divMultipleAmendDCAIfoMsg").addClass("hidden");
+                            BindAmendGrid();
+                            $("#divAmendBudgetCC").removeClass('hidden');
+                            $("#divDCADetails").removeClass('hidden');
+                            $("#divNewDCABudgetfromAmend").removeClass('hidden');
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        }
+                    });
+
+                }
+                else {
+                    $("#divMultipleAmendDCAIfoMsg").text("");
+                    $("#divMultipleAmendDCAIfoMsg").append("<div>Select Financial Year</div>");
+                    $("#divMultipleAmendDCAIfoMsg").addClass("alert-danger");
+                    $("#divMultipleAmendDCAIfoMsg").removeClass("hidden alert-success");
+
+                }
+            }
+            else {
+                $("#divMultipleAmendDCAIfoMsg").text("");
+                $("#divMultipleAmendDCAIfoMsg").append("<div>Select Cost Center Type</div>");
+                $("#divMultipleAmendDCAIfoMsg").addClass("alert-danger");
+                $("#divMultipleAmendDCAIfoMsg").removeClass("hidden alert-success");
+
+            }
+        }
+        else {
+
+            $("#divMultipleAmendDCAIfoMsg").text("");
+            $("#divMultipleAmendDCAIfoMsg").append("<div>Select Cost Center</div>");
+            $("#divMultipleAmendDCAIfoMsg").addClass("alert-danger");
+            $("#divMultipleAmendDCAIfoMsg").removeClass("hidden alert-success");
+        }
+
+
+
+    }
+    function GetBudgetAsignedCCDetails(CCCode, Year) {
+        //debugger;
+        var ccindex = $("#ddlAmendBudgetCC option:selected").index();
+        //$("#tblDcaBudgetDetails tfoot tr").each(function () {
+        //    var footerRow = $(this);
+        //    footerRow.find("td").eq(0).html("");
+        //    footerRow.find("td").eq(1).html("");
+        //    footerRow.find("td").eq(2).html("");
+        //});
+        $("#budgetvalue").text('0');
+        $("#balbudgetvalue").text('0');
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Budget/GetBudgetAssignedCCByID',
+            data: { CCCode: CCCode, Year: Year },
+            success: function (Data) {
+                $.each(Data, function () {
+                    $("#txtDCCBudgetold").val(this['BudgetValue']);
+                    $("#txtDCCBalanceOld").val(this['BalanceBudget']);
+                    $("#txtDCCBudgetid").val(this['CCBudgetId']);
+                    //Pop up Budget detailsAmendDCABudget
+                    $("#lblDCCAmendCCCode").text(this['CC_Code']);
+                    $("#lblDCCAmendCCodeandName").text(this['CC_Code'] + ',' + this['CC_Name']);
+                    $("#lblDCCAmendBudget").text(this['BudgetValue']);
+                    $("#lblDCCAmendBalance").text(this['BalanceBudget']);
+                    $("#txtDCAAmendCCName").val(this['CC_Name']);
+                    $("#txtTempOldCCBudgetForAmendDCA").val(this['BudgetValue']);
+                    $("#txtTempOldCCBalanceForAmendDCA").val(this['BalanceBudget']);
+                    $("#txtBudgetIDForAmendDCA").val(this['CCBudgetId']);
+                    $("#lblCCfyear").text(this['FYyear']);
+                    //$("#lblamendCCfyear").val(this['FYyear']);
+                });
+                if (CCCode !== "") {
+                    $("#budgetvalue").text(Data[0].BudgetValue);
+                    $("#balbudgetvalue").text(Data[0].BalanceBudget);
+
+                }
+                else {
+                    $("#budgetvalue").text('0');
+                    $("#balbudgetvalue").text('0');
+                }
+                //$("#tblDcaBudgetDetails tfoot tr").each(function () {
+                //    var footerRow = $(this);
+                //    if (CCCode !== "") {
+                //        $("#budgetvalue").text(Data[0].BudgetValue);
+                //        $("#balbudgetvalue").text(Data[0].BalanceBudget);
+                //        //footerRow.find("td").eq(0).html("<label>" + CCCode + "," + Data[0].CC_Name + "</label>");
+                //        //footerRow.find("td").eq(1).html("Budget Assigned:<label>" + Data[0].BudgetValue + "</label>");
+                //        //footerRow.find("td").eq(2).html("Balance:<label>" + Data[0].BalanceBudget + " </label>");
+                //    }
+                //    else {
+                //        $("#budgetvalue").text('0');
+                //        $("#balbudgetvalue").text('0');                        
+                //    }
+                //});
+                //$('#tblDcaBudgetDetails tfoot tr:last').before('<tr><th>' + cc + '</th><th>' + $("#txtDCAAmendCCName").val() + '</th><th>Budget Assigned: ' + $("#txtTempOldCCBudgetForAmendDCA").val() + '</th><th>Balance: ' + $("#txtTempOldCCBalanceForAmendDCA").val() + '</th><th></th><th></th></tr>');
+                $("#tblDcaBudgetDetails tfoot tr").show();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divMultipleAmendDCAIfoMsg").text(addFailMsg);
+                $("#divMultipleAmendDCAIfoMsg").addClass("alert-danger");
+                $("#divMultipleAmendDCAIfoMsg").removeClass("hidden alert-success");
+            }
+        });
+
+
+    }
+</script>
+

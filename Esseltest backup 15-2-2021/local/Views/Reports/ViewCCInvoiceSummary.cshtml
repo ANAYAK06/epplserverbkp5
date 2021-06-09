@@ -1,0 +1,206 @@
+﻿@model EsselTestLocalApplication.Models.BudgetReportInvoiceData
+<div id="divDCABudgetDetails">
+    <div class="table-responsive">
+        <table id="tblInvStatus" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Invoice And Receipt Status Of CC</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.InvoiceStatusDetails)
+                {
+                <tr>
+                    <td class="details-control"></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Rowno)
+                    </td>
+                    
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+
+        </table>
+    </div>
+    <div class="table-responsive">
+        <table id="tblInvNetGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th>Percentage Of Invoice And Budget  Consumption</th>                    
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                @foreach (var item in Model.InvoiceAndBudgetConsumed)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Desc)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectbudgetCunsumption)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var InvStatusGrid = null;
+        var NetGrid = null;
+        InitializeCCInvoiceStatusGrid();
+        InitializeCCInvoiceNetGrid();
+    });
+
+
+    function InitializeCCInvoiceStatusGrid() {
+        InvStatusGrid = $('#tblInvStatus').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Data Found"
+            },
+           
+            "initComplete": function (settings, json) {
+                //GetBudgetAsignedCCDetailsForReport();
+
+            }
+        });
+        $('#tblInvStatus tbody').on('click', 'td.details-control', function () {
+          
+            var tr = $(this).closest('tr');
+            var row = InvStatusGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatInvStatusGrid(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+    }
+    function InitializeCCInvoiceNetGrid() {
+        NetGrid = $('#tblInvNetGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 10,
+            "initComplete": function (settings, json) {
+                //GetBudgetAsignedCCDetailsForReport();
+
+            }
+        });
+    }
+
+    function formatInvStatusGrid(d) {
+        var cccode, Rowno;       
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Rowno = value;
+            //if (index == 2)
+            //    dcacode = value;
+
+        });
+        //alert(Rowno);
+        var CCType = $("#ddlBdgRptCCType option:selected").text();
+        if (CCType === "Performing") {
+            cccode = $("#ddlBdgRptPerCCCode option:selected").val();
+         
+        }
+        else {
+            cccode = $("#ddlBdgRptNonPerCCCode option:selected").val();
+           
+        }
+        var divid = "divapprCCInvSummary" + cccode;
+        var divid1 = $("#" + divid + "");
+
+        if (Rowno == 1) {// only invoice details without deductions
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Reports/GetAllInvoicebyCCCode',
+                data: { CCCode: cccode, Rowno: Rowno },
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        var divid2 = "divapprCCInvSummary" + cccode;
+                        var divid3 = $("#" + divid2 + "");
+                        $(divid3).html(Data);
+                    }
+                    else {
+                        $(divid3).html("No Data Found")
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+        }
+        else {// invoice details with deductions
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Reports/GetAllInvoicebyCCCode',
+                data: { CCCode: cccode },
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        var divid2 = "divapprCCInvSummary" + cccode;
+                        var divid3 = $("#" + divid2 + "");
+                        $(divid3).html(Data);
+                    }
+                    else {
+                        $(divid3).html("No Data Found")
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        }
+        return '<div id="divapprCCInvSummary' + cccode + '" class="col-md-12"></div>';
+
+    }
+    </script>
+
+

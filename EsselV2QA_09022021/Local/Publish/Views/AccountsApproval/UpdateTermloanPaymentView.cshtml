@@ -1,0 +1,286 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.TermLoanPayment
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymentType)
+                        <input type="text" class="form-control" value="@Model.PaymentType" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4" id="divloannos">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.LoanNos)
+                        <input type="text" class="form-control" value="@Model.LoanNos" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4" id="divcodes">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Acodeandname)
+                        <input type="text" class="form-control" value="@Model.Acodeandname" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" id="divprinpl">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Balance Amount</label>
+                        <input type="text" class="form-control" readOnly="readOnly" value="@Model.BalPricipleamt" id="lblprinciple" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Principleamt)
+                        @Html.TextBoxFor(model => model.Principleamt, htmlAttributes: new { @class = "form-control", @id = "txtupdateprinciple", onkeypress = "return IsNumeric(event)", onKeyup = "Totalsumcountup()" })
+                        <input type="text" class="form-control" style="display:none" value="@Model.Principleamt" id="lblprincipleamount" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IntrestAmt)
+                        @Html.TextBoxFor(model => model.IntrestAmt, htmlAttributes: new { @class = "form-control", @id = "txtupdateintrest", onkeypress = "return IsNumeric(event)", onKeyup = "Totalsumcountup()" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.instno)
+                        <input type="text" class="form-control" value="@Model.instno" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" id="divremarks">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TLPRemarks)
+                        @Html.TextAreaFor(model => model.TLPRemarks, htmlAttributes: new { @class = "form-control", @id = "txttlupdateremarks", @Value = "" })
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" id="divbankdetails">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BankName)
+                        <input type="text" class="form-control" value="@Model.BankName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Modeofpay)
+                        <input type="text" class="form-control" value="@Model.Modeofpay" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Instrumentno)
+                        <input type="text" class="form-control" value="@Model.Instrumentno" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BDate)
+                        @Html.TextBoxFor(model => model.BDate, "{0:dd-MMM-yyyy}", new { @id = "txttlupdateDate", @class = "form-control", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BankRemarks)
+                        @Html.TextAreaFor(model => model.BankRemarks, new { @id = "txtTLbankupdateRemarks", @class = "form-control", @rows = "3" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TotalAmount)
+                        @Html.TextBoxFor(model => model.TotalAmount, new { @id = "txtTotalupdateAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @readonly = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" id="divbtns">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtupdtlRoleId" style="display:none" />
+                    <button class="btn btn1 btn-success" id="btnTLupdPaymentSubmit" onclick="btntlrnupdateSubmit('@Model.TNO')">Submit</button>  @*onclick="btnSubmitTLCDatavalid()"*@
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <div id="divTLUPPaymentInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#txttlupdateDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+
+        }).datepicker("setDate", new Date());
+        var date = '@Model.BDate';
+        $("#txttlupdateDate").val(date);
+        var principle = '@Model.Principleamt';
+        $("#txtupdateprinciple").val(principle);
+        var intrest = '@Model.IntrestAmt';
+        $("#txtupdateintrest").val(intrest);
+        var tlremarks = '@Model.TLPRemarks';
+        $("#txttlupdateremarks").val(tlremarks);
+          var tlbankremarks = '@Model.BankRemarks';
+        $("#txtTLbankupdateRemarks").val(tlbankremarks);
+         var total = '@Model.TotalAmount';
+        $("#txtTotalupdateAmount").val(total);
+        
+        
+    });
+    function Totalsumcountup() {  
+        var availprinciplelamt1 = $("#lblprinciple").val();
+        var availprinciplelamt2 = $("#lblprincipleamount").val();
+        var principlelamt = $("#txtupdateprinciple").val();
+        var intrestamt = $("#txtupdateintrest").val();
+        var sumprincipleamount = parseFloat(availprinciplelamt1) + parseFloat(availprinciplelamt2);
+        if (principlelamt > sumprincipleamount) {
+            alert("Invalid Principle Amount");
+            $("#txtupdateprinciple").val("0");
+            return false;
+        }
+        if (principlelamt != "" && intrestamt == "") {
+            $("#txtTotalupdateAmount").val(parseFloat(principlelamt));
+        }
+        else if (intrestamt != "" && principlelamt == "") {
+            $("#txtTotalupdateAmount").val(parseFloat(processing));
+        }
+        else if (principlelamt != "" && intrestamt != "") {
+            $("#txtTotalupdateAmount").val(parseFloat(principlelamt) + parseFloat(intrestamt));
+        }
+        else {
+            $("#txtTotalupdateAmount").val('0');
+        }
+    }
+    function btntlrnupdateSubmit(Rowid) {
+        
+        refno = "divTLUPPaymentInfoMsg-" + Rowid;
+        msg = $("#" + refno + "");
+        var Roleid = '@Session["Roleid"]';
+        var Crtedby = '@Session["Createdby"]';
+        var errorMsg = "";
+        isValid = true;      
+        var availprinciplelamt1 = $("#lblprinciple").val();
+        var availprinciplelamt2 = $("#lblprincipleamount").val();
+        var sumprincipleamount = parseFloat(availprinciplelamt1) + parseFloat(availprinciplelamt2);
+        var principleamt = $("#txtupdateprinciple").val();
+        var intrest = $("#txtupdateintrest").val();       
+        var tlremarks = $("#txttlupdateremarks").val();       
+        var bankdate = $("#txttlupdateDate").val();
+        var remarks = $("#txtTLbankupdateRemarks").val();
+        var TotalAmount = $("#txtTotalupdateAmount").val();      
+        if (principleamt == "" || principleamt == null || principleamt == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Principle amount</p>";
+            isValid = false;
+        }
+        if (parseFloat(principleamt) > parseFloat(sumprincipleamount)) {            
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Principle amount</p>";
+            isValid = false;
+        }
+
+        if (intrest == "" || intrest == null || intrest == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Intrest amount</p>";
+            isValid = false;
+        }       
+        if (tlremarks == "" || tlremarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Loan Remarks</p>";
+            isValid = false;
+        }       
+        if (remarks == "" || remarks == null) {
+            alert("TEST");
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Bank Remarks</p>";
+            isValid = false;
+        }
+        if (TotalAmount == "" || TotalAmount == null || TotalAmount == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Total Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divTLUPPaymentInfoMsg").text("");
+            $("#divTLUPPaymentInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divTLUPPaymentInfoMsg").addClass("alert-danger");
+            $("#divTLUPPaymentInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divTLUPPaymentInfoMsg").text("");
+            $("#divTLUPPaymentInfoMsg").addClass("hidden");
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var Roleid = '@Session["Roleid"]';
+            var Createdby = '@Session["Createdby"]';
+            var availprinciplelamt1 = $("#lblprinciple").val();
+            var availprinciplelamt2 = $("#lblprincipleamount").val();
+            var sumprincipleamount = parseFloat(availprinciplelamt2);
+            alert(sumprincipleamount);
+            var TLDetails = {
+                TNO: Rowid,
+                Principleamt: $("#txtupdateprinciple").val(),
+                IntrestAmt: $("#txtupdateintrest").val(),
+                TLPRemarks: $("#txttlupdateremarks").val(),
+                BankRemarks: $("#txtTLbankupdateRemarks").val(),
+                TotalAmount: $("#txtTotalupdateAmount").val(),  
+                BDate: $("#txttlupdateDate").val(), 
+                sumPricipleamt: sumprincipleamount,
+                RoleId: Roleid,
+                Createdby: Createdby
+            };
+            addFailMsg = "Error Occurred While Adding Record.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                //url: '/AccountsApproval/UpdateCentralDaybookData',
+                url: '/AccountsApproval/ReturnUpdateTermLoanpaymentData',
+                data: JSON.stringify({ apprdetails: TLDetails }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    if (msg == "Successfull") {
+                        $('#ApprovetlpMsgModal').modal('show');
+                        var msg = "<div>Term Loan Return Updated Successfully</div>";
+                        $("#ApprovetlpMsgModal").on("hide.bs.modal", function () {
+                            $("#divApprtlpGrid").load('/AccountsApproval/VerifyTermLoanPaymentGrid');
+                        });
+                        $("#ApprtlpMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + msg + "</div>";
+                        $("#ApprtlpMsg").html(msg);
+                        $('#ApprovetlpMsgModal').modal('show');
+                    }
+
+                },
+                failure: function (response) {
+
+                    // alert(response.responseText);
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprtlpMsg").html(msg);
+                    $('#ApprovetlpMsgModal').modal('show');
+                },
+                error: function (response) {
+
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprtlpMsg").html(msg);
+                    $('#ApprovetlpMsgModal').modal('show');
+                }
+            });
+        }
+
+    }
+</script>

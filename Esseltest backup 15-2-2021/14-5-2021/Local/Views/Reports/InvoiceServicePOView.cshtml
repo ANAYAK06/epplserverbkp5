@@ -1,0 +1,217 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPO
+<style>
+    .wrapcls2 {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 12px;
+        border-left: 1px solid white;
+        background: #202447;
+        color: #fff !important;
+    }
+
+    .tdalign2 {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 12px;
+        border-left: 1px solid white;
+        padding:0 0 0 0 !important;
+    }
+
+    .tdalign3 {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        /*text-align: left !important;*/
+        font-size: 12px;
+        border-left: 1px solid white;
+    }
+    .readonlytxt {
+        background-color: #fff !important;
+    }
+    .strike1 > span {
+        position: relative;
+        text-align: center;
+        /* margin-right: 80%; */
+        display: block;
+        font-size: 15px;
+        border-radius: 10px;
+        /* width: 80px; */
+        width: 26% !important;
+        /* height: 80px; */
+        right: -93px;
+        padding: 5px;
+        /* margin: 30px; */
+        font-weight: bold;
+        background: #fff;
+        border: 2px solid #666;
+    }
+
+  
+</style>
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div class="row">
+                <form onsubmit="return false">
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.VendorName)
+                                @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control readonlytxt", @readOnly = "true" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CCName)
+                                @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control readonlytxt", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DCAName)
+                                @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control readonlytxt", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubDCAName)
+                                @Html.TextBoxFor(model => model.SubDCAName, htmlAttributes: new { @class = "form-control readonlytxt", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SPPOStartDate)
+                                @Html.TextBoxFor(model => model.SPPOStartDate, htmlAttributes: new { @class = "form-control readonlytxt", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SPPOEndDate)
+                                @Html.TextBoxFor(model => model.SPPOEndDate, htmlAttributes: new { @class = "form-control readonlytxt", @readOnly = "true" })
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12">
+                        <div class=" change-tab" id="divitemDescGrid">
+                            <div class="strike">
+                                <span>Item Description</span>
+                            </div>
+                            <div class="tabledynamic">
+                                <br />
+                                <table id="itemDescApprTable" class="appritemDesc hover stripe nowrap example dataTable no-footer" style="width:100%" cellpadding="0"  cellspacing="0">
+                                    <thead>
+                                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+
+                                            <td class="wrapcls2">S.No</td>
+                                            <td class="wrapcls2">Item Description</td>
+
+                                            <td class="wrapcls2">Unit</td>
+                                            <td class="wrapcls2">Quantity</td>
+                                            <td class="wrapcls2">Our Rate</td>
+                                            <td class="wrapcls2">PRW Rate</td>
+                                            <td class="wrapcls2">Rate</td>
+                                            <td class="wrapcls2">Amount</td>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int count = 1; }
+                                        @foreach (var item in Model.ItemDescList)
+                                        {
+                                            <tr>
+
+                                                <td class="tdalign2"><label>@count</label></td>
+                                                <td class="tdalign2">
+                                                    <p style="text-align: left !important;">@item.Description</p> 
+                                                </td>
+
+                                                <td>
+                                                    @item.Unit
+
+                                                </td>
+                                                <td class="tdalign2">
+                                                    @item.Quantity
+
+                                                </td>
+                                                <td class="tdalign2">@item.ClientRate</td>
+                                                <td class="tdalign2">@item.PRWRate</td>
+                                                <td class="tdalign2">@item.Rate</td>
+                                                <td class="tdalign2">@item.Amount</td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+
+                                            <td></td>
+                                            <td class="text-center;" colspan="2"><label style='float:right'>Total Amount:</label></td>
+                                            <td>@Model.TotalValue</td>
+
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="change-tab" id="divApprTACGrid">
+                            <div class="strike1">
+                                <span>Terms & Conditions</span>
+                            </div>
+                            <div class="tabledynamic">
+                                <br />
+                                <table id="ApprTACTable" class="hover stripe nowrap example dataTable no-footer">
+                                    <thead>
+                                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+
+                                            <td class="wrapcls2">S.No</td>
+                                            <td class="wrapcls2">Terms & Conditions</td>
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int count1 = 1; }
+                                        @foreach (var item in Model.TermsList)
+                                        {
+                                            <tr>
+
+                                                <td>@count1</td>
+                                                <td class="tdalign3">
+                                                    <p style="text-align: left !important;">@item.Term</p>
+                                                </td>
+
+
+                                            </tr>
+                                            count1++;
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr></tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

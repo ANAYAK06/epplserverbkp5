@@ -1,0 +1,155 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.FamilyMember>
+@Styles.Render("~/bundles/Accounts/css")
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    System.Web.Script.Serialization.JavaScriptSerializer oSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var FamilyJson = "";
+    var EditFamilyJson = "";
+    var Action = Session["EmpAction"].ToString();
+    if (Action == "New")
+    {
+        FamilyJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.FamilyMember>)Session["FamilyMember"]).ToArray());
+    }
+    else
+    {
+        EditFamilyJson = serializer.Serialize(((List<EsselTestLocalApplication.Models.HR.FamilyMember>)Session["EditFamilyMember"]).ToArray());
+    }
+
+}
+
+<div class="col-md-12 change-tab">
+    <div class="strike">
+        <span>Family Details</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="FamilyTable" class="table order-list familytable dataTable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">S.No</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Name</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Date of Birth</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Age</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Gender</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Relationship</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Work</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;">Mobile No</td>
+                    <td style="text-align:center;color:#fff !important; background-color: #202447;"></td>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{int count = 1;
+                }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center;width:1%">@count</td>
+                        <td style="text-align:center;width:20%">
+                            @Html.DisplayFor(modelItem => item.FMName)
+                        </td>
+                        <td style="width:20%;text-align:center">
+                            @Html.DisplayFor(modelItem => item.FMDateofBirth)
+                        </td>
+
+                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMAge)</td>
+                        <td style="width:10%;text-align:center">
+                            @Html.DisplayFor(modelItem => item.FMGender)
+                        </td>
+                        <td style="width:10%;text-align:center">
+                            @Html.DisplayFor(modelItem => item.FMRelation)
+                        </td>
+                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMWork)</td>
+                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMMobileNo)</td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddnewempFamilyTabledelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count++;
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var fmGrid = null;
+        InitializeFamilyGrid();
+        var Action = '@Session["EmpAction"]';
+        if (Action!== "") {
+            if (Action=== "New") { $("#HiddenFamilyMemebersData").val(@Html.Raw(Json.Encode(@FamilyJson))); }
+            else if(Action === "Edit") {
+                $("#UpdateHiddenFamilyMemebersData").val(@Html.Raw(Json.Encode(@EditFamilyJson)));
+            }
+        }
+
+        $("table.order-list.familytable").on("click", ".ibtnAddnewempFamilyTabledelete", function (event) {
+            //$(this).closest("tr").remove();
+            var row = $(this).closest("tr");
+            var fmname = $.trim(row.find("td").eq(1).html());
+            var rowno = $.trim(row.find("td").eq(0).html());
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteFamilyMemberData',
+                data: { Name: fmname },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        var Action1 = '@Session["EmpAction"]';
+                        if (Action1 !== "") {
+                            if (Action1 === "New") {
+                                $("#divFamilyGridData").load('/HR/FamilyMembersGrid');
+                            }
+                            else {
+                                $("#divUpdateFamilyGridData").load('/HR/FamilyMembersGrid');
+                            }
+                        }
+
+
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+    });
+    function ReassignRowNoforFamilyMemberGrid() {
+        var rowno = 1;
+        $("#FamilyTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(rowno);
+            rowno++;
+        });
+    }
+
+    function InitializeFamilyGrid() {
+        fmGrid = $('#FamilyTable').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+
+    }
+</script>

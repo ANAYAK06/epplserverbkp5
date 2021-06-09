@@ -1,0 +1,434 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.TransferReciept
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div id="GridTransferRecieptotherData">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" value="@Model.Moid" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.Moid, new SelectList("Type", "Type"), "Select", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprItemreciptstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppritemtransferNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveItemtransferDetails('@Model.Mrrno')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divAppritemstransferInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="TRConfirmModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Do You Want To Close the MRR</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>            
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-info" onclick="ContinueSubmitRefData()">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="CancelSubmitRefData()">ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="TRVendorConfirmModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title"></h4></div>
+                @*<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>*@
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do You Really Want to Close</br> The Multi MRR:-</p><label id="lblNewitemcode"></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-danger" onclick="Continueno()">No</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal" onclick="Continueyes()">Yes</button>
+                    <input type="text" id="txtmrrstatus" style="display:none" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var Roleid = '@Session["Roleid"]';
+        var Mid = '@Model.Moid';
+        var Type = '@Model.Type';
+        var MrrType = '@Model.MrrType';
+        var mrr = '@Model.Mrrno';
+        var CCType = '@Model.CCType';
+        $("#lblNewitemcode").html(mrr);
+        if (Type != "From Vendor") {
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprItemreciptstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] == 'Return') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        });
+                        filldata();
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprItemreciptstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if ((this['Type'] == 'Return' || this['Type'] == 'Reject') && (CCType == 'Performing') && (Roleid != 108)) {
+                            }
+                            else if ((this['Type'] == 'Return') && (CCType == 'Performing') && (Roleid == 108)) {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        });
+                        filldata();
+                        //108 from project manager
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+
+    });
+    function filldata() {
+        var Mrrno = '@Model.Mrrno';
+        var Type = '@Model.Type';
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/TransferRecieptDataOtherGrid',
+            data: { Mrrno: Mrrno, Type: Type },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridTransferRecieptotherData").html(data);
+                }
+            },
+        });
+    }
+    function ApproveItemtransferDetails(Mrrno) {        
+        var Roleid = '@Session["Roleid"]';
+        var mrr = '@Model.Mrrno';
+        var Sessioncreated = '@Session["Createdby"]';
+        var AppritemtransferNotes = $("#AppritemtransferNotes").val();
+        var appstatus = $("#ApprItemreciptstatus").val();
+        msg = $("#divAppritemstransferInfoMsg");
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (AppritemtransferNotes == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Notes</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            debugger;
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").addClass("hidden");
+            var currentrowcount = $("#ItemITRODetailsDataTable tbody tr").length;
+            var chkcount = 0;
+            $("#ItemITRODetailsDataTable tbody tr").each(function () {
+                var currentRow = $(this);
+                currentrowcount = currentRow;
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                if (check == false) { chkcount = chkcount + 1; }
+            });
+            if (currentrowcount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Invalid Submission</p > ";
+                isValid = false;
+            }
+            if (chkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item Codes</p > ";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAppritemstransferInfoMsg").text("");
+                $("#divAppritemstransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+                $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                debugger;
+                //var Mrrstatus = "";
+                var Type = '@Model.Type';
+                var MrrType = '@Model.MrrType';
+                if (Type == "From Other Store") {
+                    var sumLostQty = 0;
+                    var sumDamagedQty = 0;
+                    var TotalSum = 0;
+                    $("#ItemITRODetailsDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var LostQty = isNaN(parseFloat(currentRow.find("td").eq(10).html())) ? 0 : parseFloat(currentRow.find("td").eq(10).html())
+                        var DamagedQty = isNaN(parseFloat(currentRow.find("td").eq(11).html())) ? 0 : parseFloat(currentRow.find("td").eq(11).html())
+                        sumLostQty = parseFloat(sumLostQty) + parseFloat(LostQty);
+                        sumDamagedQty = parseFloat(sumDamagedQty) + parseFloat(DamagedQty);
+                    });
+                    var TotalSum = sumLostQty + sumDamagedQty;
+                    if (appstatus == "Approve" && (TotalSum > 0)) {
+                        $('#TRConfirmModel').modal('show');
+                        return false;
+                    }
+                    else {
+                        verifyitemtransferothers();
+                    }
+                }
+                if (Type == "From Vendor") {
+                    var sumRaisedQty = 0;
+                    var sumRecievedQty = 0;                   
+                    var Checkqty = 0;
+                    $("#ItemITRODetailsDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var RaisedQty = isNaN(parseFloat(currentRow.find("td").eq(8).html())) ? 0 : parseFloat(currentRow.find("td").eq(8).html())
+                        var RecievedQty = isNaN(parseFloat(currentRow.find("td").eq(9).html())) ? 0 : parseFloat(currentRow.find("td").eq(9).html())
+                        var PrevRecievedQty = isNaN(parseFloat(currentRow.find("td").eq(10).html())) ? 0 : parseFloat(currentRow.find("td").eq(10).html())
+                        sumRaisedQty = parseFloat(sumRaisedQty) + parseFloat(RaisedQty);
+                        sumRecievedQty = parseFloat(sumRecievedQty) + (parseFloat(RecievedQty) + (parseFloat(PrevRecievedQty)));
+                    });
+                    //var Checkqty = sumRaisedQty + sumRaisedQty;
+                    if (appstatus == "Approve" && (MrrType =="Multi")) {
+                        $('#TRVendorConfirmModel').modal('show');
+                        return false;
+                    }
+                    else {                     
+                        verifyitemtransferVendorothers();
+                        //alert("done");
+                    }
+                  
+                }
+            }
+        }
+    }
+
+    function ContinueSubmitRefData() {        
+        $('#TRConfirmModel').modal('hide');        
+    }
+    function CancelSubmitRefData() {       
+        $('#TRConfirmModel').modal('hide');
+        verifyitemtransferothers();
+    }
+    function Continueno() {  
+        $("#txtmrrstatus").val("Open");
+        $('#TRVendorConfirmModel').modal('hide');
+        verifyitemtransferVendorothers();
+    }
+    function Continueyes() {       
+        $('#TRVendorConfirmModel').modal('hide');
+        $("#txtmrrstatus").val("Close");
+        verifyitemtransferVendorothers();
+    }
+    function verifyitemtransferVendorothers() {
+        debugger;
+        var MrrType = '@Model.MrrType';
+        var Sessioncreated = '@Session["Createdby"]';
+        var AppritemtransferNotes = $("#AppritemtransferNotes").val();
+        var appstatus = $("#ApprItemreciptstatus").val();
+        var Mrrno = '@Model.Mrrno';
+        $(msg).text("");
+        $(msg).addClass("hidden");
+        var ItemCodes = "";
+        var RecievedQtys = "";
+        var RaisedQtys = "";
+        var Basics = "";
+        var sumRaisedQty = 0;
+        var sumRecievedQty = 0;
+        var selectedledlist = [];
+        $("#ItemITRODetailsDataTable tbody tr").each(function () {
+            var currentRow = $(this);   
+            var Itemcode = currentRow.find("td").eq(1).html();
+            var Basic = isNaN(parseFloat(currentRow.find("td").eq(7).html())) ? 0 : parseFloat(currentRow.find("td").eq(7).html())
+            var RaisedQty = isNaN(parseFloat(currentRow.find("td").eq(8).html())) ? 0 : parseFloat(currentRow.find("td").eq(8).html())
+            var RecievedQty = isNaN(parseFloat(currentRow.find("td").eq(9).html())) ? 0 : parseFloat(currentRow.find("td").eq(9).html())
+            var PrevRecievedQty = isNaN(parseFloat(currentRow.find("td").eq(10).html())) ? 0 : parseFloat(currentRow.find("td").eq(10).html())
+            ItemCodes = ItemCodes + Itemcode + ",";
+            Basics = Basics + Basic + ",";
+            RaisedQtys = RaisedQtys + RaisedQty + ",";
+            RecievedQtys = RecievedQtys + (parseFloat(RecievedQty) + parseFloat(PrevRecievedQty)) + ",";
+            sumRaisedQty = parseFloat(sumRaisedQty) + parseFloat(RaisedQty);
+            //sumRecievedQty = parseFloat(sumRecievedQty) + parseFloat(RecievedQty);  
+            sumRecievedQty = parseFloat(sumRecievedQty) + (parseFloat(RecievedQty) + (parseFloat(PrevRecievedQty)));
+            if (ItemCodes != "") {
+                selectedledlist.push(currentRow.find("td").eq(1).html());
+            }
+        });
+        addFailMsg = "Error Occurred While Verification";
+        var finalmsg;
+        if (appstatus === 'Verify') {
+            finalmsg = 'Verified Successfully';
+        }
+        else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+        else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+        else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/verifyitemtransferVendorothers",
+            data: '{Mrrno:"' + Mrrno + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprtroCreatedby").val() + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",SumRaisedQty:"' + sumRaisedQty + '",SumRecievedQty:"' + sumRecievedQty + '",ItemCodes:"' + ItemCodes + '",RecievedQtys:"' + RecievedQtys + '",RaisedQtys:"' + RaisedQtys + '",Basics:"' + Basics + '",MrrType:"' + MrrType + '",MrrStatus:"' + $("#txtmrrstatus").val() + '"}',
+            contentType: "application/json; charset=utf-8",
+            processData: false,
+            dataType: "json",
+            success: function (response) {
+                var msg = response.saveStatus;
+                if (response.saveStatus == "Submitted") {
+                    $('#ApprovetroMsgModal').modal('show');
+                    msg = "<div>Mrr No " + Mrrno + " " + finalmsg + "</div>";
+                    $("#ApprovetroMsgModal").on("hide.bs.modal", function () {
+                        $("#divApprtroGrid").load('/Purchase/TransferReciptOthersGrid');
+                    });
+                    $("#ApprtroMsg").html(msg);
+                }
+                else {
+                    msg = "<div>" + response.saveStatus + "</div>";
+                    $("#ApprtroMsg").html(msg);
+                    $('#ApprovetroMsgModal').modal('show');
+                }
+            },
+            failure: function (response) {
+                var msg = "<div>" + addFailMsg + "</div>";
+                $("#ApprtroMsg").html(msg);
+                $('#ApprovetroMsgModal').modal('show');
+            },
+            error: function (response) {
+                var msg = "<div>" + addFailMsg + "</div>";
+                $("#ApprtroMsg").html(msg);
+                $('#ApprovetroMsgModal').modal('show');
+            }
+        });
+    }
+    function verifyitemtransferothers() {
+        var Sessioncreated = '@Session["Createdby"]';
+        var AppritemtransferNotes = $("#AppritemtransferNotes").val();
+        var appstatus = $("#ApprItemreciptstatus").val();
+        var Mrrno = '@Model.Mrrno';
+        $(msg).text("");
+        $(msg).addClass("hidden");
+        var ItemCodes = "";
+        var sumLostQty = 0;
+        var sumDamagedQty = 0;
+        var selectedledlist = [];
+        $("#ItemITRODetailsDataTable tbody tr").each(function () {
+            var currentRow = $(this);   
+            var Itemcode = currentRow.find("td").eq(2).html();     
+            var LostQty = isNaN(parseFloat(currentRow.find("td").eq(10).html())) ? 0 : parseFloat(currentRow.find("td").eq(10).html())
+            var DamagedQty = isNaN(parseFloat(currentRow.find("td").eq(11).html())) ? 0 : parseFloat(currentRow.find("td").eq(11).html())
+            ItemCodes = ItemCodes + Itemcode + ",";
+            sumLostQty = parseFloat(sumLostQty) + parseFloat(LostQty);
+            sumDamagedQty = parseFloat(sumDamagedQty) + parseFloat(DamagedQty);           
+            if (ItemCodes != "") {
+                selectedledlist.push(currentRow.find("td").eq(2).html());
+            }
+        });
+        addFailMsg = "Error Occurred While Verification";
+        var finalmsg;
+        if (appstatus === 'Verify') {
+            finalmsg = 'Verified Successfully';
+        }
+        else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+        else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+        else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/VerifyTransferRecieptother",
+            data: '{Mrrno:"' + Mrrno + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprtroCreatedby").val() + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",SumLostQty:"' + sumLostQty + '",SumDamagedQty:"' + sumDamagedQty + '"}',
+            contentType: "application/json; charset=utf-8",
+            processData: false,
+            dataType: "json",
+            success: function (response) {
+                var msg = response.saveStatus;
+                if (response.saveStatus == "Submitted") {
+                    $('#ApprovetroMsgModal').modal('show');
+                    msg = "<div>Mrr No " + Mrrno + " " + finalmsg + "</div>";
+                    $("#ApprovetroMsgModal").on("hide.bs.modal", function () {
+                        $("#divApprtroGrid").load('/Purchase/TransferReciptOthersGrid');
+                    });
+                    $("#ApprtroMsg").html(msg);
+                }
+                else {
+                    msg = "<div>" + response.saveStatus + "</div>";
+                    $("#ApprtroMsg").html(msg);
+                    $('#ApprovetroMsgModal').modal('show');
+                }
+            },
+            failure: function (response) {
+                var msg = "<div>" + addFailMsg + "</div>";
+                $("#ApprtroMsg").html(msg);
+                $('#ApprovetroMsgModal').modal('show');
+            },
+            error: function (response) {
+                var msg = "<div>" + addFailMsg + "</div>";
+                $("#ApprtroMsg").html(msg);
+                $('#ApprovetroMsgModal').modal('show');
+            }
+        });
+    }
+</script>

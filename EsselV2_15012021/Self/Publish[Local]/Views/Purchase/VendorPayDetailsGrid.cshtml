@@ -1,0 +1,500 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+<div class="col-md-12">
+    <ul class="nav nav-tabs" id="tabVendorInvpaydetails" role="tablist">
+        @if (Model.payIntialData.BankAccess == true)
+        {
+            <li><a data-toggle="tab" href="#Bank">Bank</a></li>
+        }
+        @if (Model.payIntialData.CashAccess == true)
+        {
+            <li><a data-toggle="tab" href="#Cash">Cash</a></li>
+        }
+
+        </ul>
+    <div class="tab-content">
+        @if (Model.payIntialData.BankAccess == true)
+        {
+            <div id="Bank" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankId)
+                                @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvBankPayBank", onchange = "VendorinvPayModeChange()" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ModeofPay)
+                                @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlInvBankPayMode", onchange = "VendorinvPayModeChange()" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Number)
+                                @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtInvBankPaymentNo" })
+                                <select class="form-control dropdown-toggle" id="ddlInvPaymentNo">
+                                    <option selected="selected" value="Select">-Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionDate)
+                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtInvBankPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtInvBankPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionAmount)
+                                @Html.TextBoxFor(model => model.TransactionAmount, new
+                           {
+                               @id = "txtInvBankPayFinalAmount",
+                               @class = "form-control",
+                               @type = "text",
+                               onkeypress = "return ValidateAmount(this,event);",
+                               onkeyup = "CheckPayAmount()"
+                           })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-right">
+                        @*<button class="btn btn1 btn-success" id="btnInvBankPaySubmit" onclick="SubmitVendorInvoiceBankPayData()">Submit</button>*@
+                        @if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Invoice")
+                        {
+                            <button class="btn btn1 btn-success" id="btnSPPOInvBankPaySubmit" onclick="SubmitVendorSPPOInvoiceBankPayData()">Submit</button>
+                        }
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnSPPOInvBankAdvPaySubmit" onclick="SubmitVendorSPPOAdvanceBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Retention")
+                        { <button class="btn btn1 btn-success" id="btnSPPOInvBankRetPaySubmit" onclick="SubmitVendorSPPORetentionBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnSPPOInvBankHoldPaySubmit" onclick="SubmitVendorSPPOHoldBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Invoice")
+                        { <button class="btn btn1 btn-success" id="btnSupplerInvBankPaySubmit" onclick="SubmitVendorSupplierInvoiceBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnSupplerAdvBankPaySubmit" onclick="SubmitVendorSupplierAdvanceBankPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplerHoldBankPaySubmit" onclick="SubmitVendorSupplierHoldBankPayData()">Submit</button>}
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.payIntialData.CashAccess == true)
+        {
+            <div id="Cash" class="tab-pane fade">
+                <div class="row">
+                    @*<div class="col-md-12">                     
+                        <div class="col-md-4">
+                            <div class="form-group">
+                               
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            <input type="checkbox" class="eagle-check-input" name="" value="Yes" id="chkPaidtootherCC" onclick="PaidtootherCCCheck()">
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description">Pay To Other CostCenter</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="divOtherCC">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CCCode)
+                                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.payIntialData.UserCClist, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVendorPayOtherCC", onchange = "VendorPayCCChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                    </div>*@
+                    <div class="col-md-12">                        
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionDate)
+                                @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtInvCashPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Remarks)
+                                @Html.TextAreaFor(model => model.Remarks, new { @id = "txtInvCashPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionAmount)
+                                @Html.TextBoxFor(model => model.TransactionAmount, new
+                           {
+                               @id = "txtInvCashPayFinalAmount",
+                               @class = "form-control",
+                               @type = "text",
+                               onkeypress = "return ValidateAmount(this,event);",
+                               onkeyup = "CheckPayAmount()"
+                           })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12  text-right">
+                        @if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Invoice")
+                        {
+                            <button class="btn btn1 btn-success" id="btnInvSPPOCashPaySubmit" onclick="SubmitVendorSPPOInvoiceCashPayData()">Submit</button>
+                        }
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnInvSPPOCashAdvPaySubmit" onclick="SubmitVendorSPPOAdvanceCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Retention")
+                        { <button class="btn btn1 btn-success" id="btnInvSPPOCashRetPaySubmit" onclick="SubmitVendorSPPORetentionCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Service Provider" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnInvSPPOCashHoldPaySubmit" onclick="SubmitVendorSPPOHoldCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Invoice")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplierCashPaySubmit" onclick="SubmitVendorSupplierInvoiceCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Advance")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplierAdvCashPaySubmit" onclick="SubmitVendorSupplierAdvanceCashPayData()">Submit</button>}
+                        else if (Model.VendorType == "Supplier" && Model.Paytype == "Vendor Hold")
+                        { <button class="btn btn1 btn-success" id="btnInvSupplierHoldCashPaySubmit" onclick="SubmitVendorSupplierHoldCashPayData()">Submit</button>}
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        let Paytype1 = '@Model.TransactionType';
+        if (Paytype1 == "Cash") {
+            $("#divOtherCC").addClass("hidden");
+        }
+      
+
+        $('.nav-tabs li:eq(0) a').tab('show');
+        $("#ddlInvPaymentNo").addClass("hidden");
+        $("#txtInvBankPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                InvoicePaymentDateValidation('Bank', selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtInvCashPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                InvoicePaymentDateValidation('Cash', selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr("href")
+            //alert(target);
+            $("#txtActiveTab").val(target);
+            CountPayTotal();
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+        });
+    });
+    //Final Amount validation if amount exceeding****************************************************************************************
+    function CheckPayAmount() {
+        let Paytype = '@Model.Paytype';
+        let VendorType = '@Model.VendorType';
+        let finalAmount = 0;
+        let invtotalamount = 0;
+        var ActiveTab = $("#txtActiveTab").val();
+        if (ActiveTab === "#Bank") {         
+            finalAmount = $("#txtInvBankPayFinalAmount").val();
+        }
+        else {
+            finalAmount = $("#txtInvCashPayFinalAmount").val();
+        }
+       
+        if (VendorType == "Service Provider" && Paytype == "Vendor Invoice") {
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Advance") {
+            invtotalamount = $("#txtAdvanceBalance").val();
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Retention") {
+            $("#tblRetentionPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Hold") {
+            $("#tblHoldPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Invoice") {
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Advance") {
+            invtotalamount = $("#txtAdvanceBalance").val();
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Hold") {
+
+            $("#tblHoldPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        if (parseFloat(finalAmount) > parseFloat(invtotalamount)) {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append("<div>You are excessing the Invoice Amount</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+        }
+
+    }
+     //count Total****************************************************************************************************************************************
+    function CountPayTotal() {      
+       
+        let Paytype = '@Model.Paytype';
+        let VendorType = '@Model.VendorType';
+        let invtotalamount = 0;      
+        
+        if (VendorType == "Service Provider" && Paytype == "Vendor Invoice") {
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }       
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Retention") {
+            $("#tblRetentionPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Hold") {
+            $("#tblHoldPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Invoice") {
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Hold") {
+
+            $("#tblHoldPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var rowamount = currentRow.find("td").eq(10).html();
+                if (checkbox == true) {
+                    invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+                }
+            });
+        }
+        var ActiveTab = $("#txtActiveTab").val();
+        if (ActiveTab === "#Bank") { 
+            $("#txtInvBankPayFinalAmount").val(parseFloat(invtotalamount).toFixed(2));
+        }
+        else {
+            $("#txtInvCashPayFinalAmount").val(parseFloat(invtotalamount).toFixed(2));
+        }     
+        $("#txtgridtotalamount").val(parseFloat(invtotalamount).toFixed(2));
+    }
+
+    //Date validation****************************************************************************************************************************************
+    function InvoicePaymentDateValidation(MoneyPaytype, selectedDate) {      
+        let Paytype = '@Model.Paytype';
+        let VendorType = '@Model.VendorType';
+        let paydate = selectedDate;
+        let invalidedatecount = 0;
+      
+        if (VendorType == "Service Provider" && Paytype == "Vendor Invoice") {
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var invdate = currentRow.find("td").eq(4).html();
+                if (checkbox == true) {
+                    if (new Date(paydate) < new Date(invdate)) {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Advance") {
+            Maxinvdate = '@Model.MaxInvoiceDate';
+            if (new Date(paydate) < new Date(Maxinvdate)) {
+                invalidedatecount = invalidedatecount + 1;
+            }
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Retention") {
+            $("#tblRetentionPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var invdate = currentRow.find("td").eq(3).html();
+                if (checkbox == true) {
+                    if (new Date(paydate) < new Date(invdate)) {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                   
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Hold") {
+            $("#tblHoldPayGrid tbody tr").each(function () {
+
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var invdate = currentRow.find("td").eq(3).html();
+                if (checkbox == true) {
+                    if (new Date(paydate) < new Date(invdate)) {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Invoice") {
+            $("#tblInvPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(2).find("input[type='checkbox']").is(":checked");
+                var invdate = currentRow.find("td").eq(4).html();
+                if (checkbox == true) {
+                    if (new Date(paydate) < new Date(invdate)) {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        else if (VendorType == "Service Provider" && Paytype == "Vendor Advance") {
+            Maxinvdate = '@Model.MaxInvoiceDate';
+            if (new Date(paydate) < new Date(Maxinvdate)) {
+                invalidedatecount = invalidedatecount + 1;
+            }
+        }
+        else if (VendorType == "Supplier" && Paytype == "Vendor Hold") {
+            $("#tblHoldPayGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                var invdate = currentRow.find("td").eq(3).html();
+                if (checkbox == true) {
+                    if (new Date(paydate) < new Date(invdate)) {
+                        invalidedatecount = invalidedatecount + 1;
+                    }
+                }
+            });
+        }
+        if (invalidedatecount>0) {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").append("<div>Payment Date must be greater than Invoice Date</div>");
+            $("#divSppoPayInfoMsg").addClass("alert-danger");
+            $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+            $("#divSppoPayInfoMsg").datepicker("setDate", 'dateToday');
+                }
+                else {
+            $("#divSppoPayInfoMsg").text("");
+            $("#divSppoPayInfoMsg").addClass("hidden");
+         }
+        
+               
+
+        
+    }
+    function PaidtootherCCCheck() {
+        if ($('#chkPaidtootherCC').is(":checked") === true) {
+            $("#divOtherCC").removeClass('hidden');
+            var currentCC = $("#ddlVendorPayCC option:selected").val();
+            debugger;
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetVendorPaymentOtherCC",
+                data: '{CurrentCC:"' + currentCC+'"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    ccddl = $("#ddlVendorPayOtherCC");
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        ccddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            ccddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                        });                       
+                    }
+                    else {
+                        $("#divSppoPayInfoMsg").text("");
+                        $("#divSppoPayInfoMsg").append("<div>Cost Center Does Not Exist</div>");
+                        $("#divSppoPayInfoMsg").addClass("alert-danger");
+                        $("#divSppoPayInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $("#divOtherCC").addClass('hidden');
+        }
+    }
+</script>

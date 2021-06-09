@@ -1,0 +1,119 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.TechnicalQualification
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add Technical Qualification</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TechnicalSkill)
+                            @Html.TextBoxFor(model => model.TechnicalSkill, htmlAttributes: new { @class = "form-control", @id = "txtTechnicalSkill", onkeypress = "return isValidSpecialCharacters(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ExperienceYears)
+                            @Html.TextBoxFor(model => model.ExperienceYears, htmlAttributes: new { @class = "form-control", @id = "txtExperienceYears", onkeypress = "return ValidateAmount(this,event);" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-right">
+                    <button class="btn btn1 btn-success" id="btnewTQSubmit" onclick="SubmitNewTechQualData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnewnewTQReset" onclick="ClearNewTechnicalQualificationModel()">Reset</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddNewtQInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function SubmitNewTechQualData() {
+        isValid = true;
+        var errorMsg = "";
+        let techskill = $("#txtTechnicalSkill").val();
+        let experience = $("#txtExperienceYears").val();
+        var selectedskills = [];
+        var selectedclassnames = [];
+        // console.log(currentRow);
+        if (techskill === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Technical Skills</p>";
+            isValid = false;
+        }
+        else { selectedskills.push(techskill); }
+        if (experience === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Technical Skills Experience</p>";
+            isValid = false;
+        }       
+        
+        var duplicatelist = selectedskills.filter(i => selectedskills.filter(ii => ii === i).length > 1);
+        if (duplicatelist.length > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Techinical Skill Entered</p>";
+            isValid = false;
+        }
+        
+
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewtQInfoMsg").text("");
+            $("#divAddNewtQInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAddNewtQInfoMsg").addClass("alert-danger");
+            $("#divAddNewtQInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewtQInfoMsg").text("");
+            $("#divAddNewtQInfoMsg").addClass("hidden");
+
+            var qualData = {
+                TechnicalSkill: techskill,
+                ExperienceYears: experience,
+              
+
+            }
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertTechnicalQualificationData',
+                data: { tqData: qualData },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        $("#divAddNewtQInfoMsg").text("Added Successfully");
+                        $("#divAddNewtQInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddNewtQInfoMsg").addClass("alert-success");
+
+                    }
+                    else {
+                        $("#divAddNewtQInfoMsg").text("Qualification Already Exist");
+                        $("#divAddNewtQInfoMsg").addClass("alert-danger");
+                        $("#divAddNewtQInfoMsg").removeClass("hidden alert-success");
+                    }
+                    $("#btnewTQSubmit").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewtQInfoMsg").text(addFailMsg);
+                    $("#divAddNewtQInfoMsg").addClass("alert-danger");
+                    $("#divAddNewtQInfoMsg").removeClass("hidden alert-success");
+                    $("#btnewTQSubmit").prop('disabled', true);
+                }
+            });
+        }
+    }
+</script>

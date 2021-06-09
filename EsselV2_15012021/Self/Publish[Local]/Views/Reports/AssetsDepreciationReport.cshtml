@@ -1,0 +1,146 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.AssetsDepreciation
+@{
+    ViewBag.Title = "AssetsDepreciationReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Reports")
+@Styles.Render("~/bundles/Accounts/css")
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">AssetsDepreciationReport</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlADRptCC", onchange = "ADRptCCChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Year)
+                                            @Html.DropDownListFor(model => model.Year, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlADRptYear", onchange = "ADRptYearChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewADRpt" onclick="ShowADReport()" />
+                                                </div>
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetADRpt" onclick="ResetADReport()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divADRptGrid">
+                                    <div id="divDataGrid"  class="row">
+
+                                    </div>
+                                   
+                                </div>
+                                <div class="row text-center">
+                                    <div id="divADRptInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script  type="text/javascript">
+    $(document).ready(function () {
+        $("#divADRptGrid").addClass("hidden");
+        $("#divDataGrid").addClass("hidden");
+    });
+    function ResetADReport() {
+        location.reload();
+    }
+    function ADRptCCChange() {
+        let ccindex = $("#ddlADRptCC option:selected").index();
+        if (ccindex === 0) { location.reload(); }
+        else {
+            $("#divADRptGrid").addClass("hidden");
+            $("#divDataGrid").addClass("hidden");
+        }
+    }
+    function ADRptYearChange() {
+        $("#divADRptGrid").addClass("hidden");
+        $("#divDataGrid").addClass("hidden");
+    }
+    function ShowADReport() {
+        let yearindex = $("#ddlADRptYear option:selected").index();
+        let year = $("#ddlADRptYear option:selected").val();
+        let CCindex = $("#ddlADRptCC option:selected").index();
+        let CC = $("#ddlADRptCC option:selected").val();
+        var isValid = true;
+        var errorMsg = "";
+        if (CCindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (yearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Year</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divADRptInfoMsg").text("");
+            $("#divADRptInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divADRptInfoMsg").addClass("alert-danger");
+            $("#divADRptInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divADRptInfoMsg").text("");
+            $("#divADRptInfoMsg").addClass("hidden");
+
+            var type = "1";
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Reports/AssetsDepreciationReportGrid',
+                data: { CCCode: CC, Type: type, Fyear: year },
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    if (count1 > 0) {
+                        $("#divADRptGrid").removeClass('hidden');
+                        $("#divDataGrid").html(Data);
+                        $("#divDataGrid").removeClass('hidden');
+                    }
+                    //else {
+                    //    $("#divEmptyGrid").html('No Data Found');
+                    //    $("#divEmptyGrid").removeClass('hidden');
+                    //    $("#divReconcilationRptGrid").removeClass('hidden');
+                    //    $("#divAssetsGrid").addClass("hidden");
+                    //    $("#divSemiAssetsGrid").addClass("hidden");
+                    //    $("#divConsumablesBoughtOutGrid").addClass("hidden");
+                    //    $("#divAllTypeGrid").addClass("hidden");
+                    //}
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                    alert("error");
+                }
+            });
+        }
+    }
+   
+</script>
+
+

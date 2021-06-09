@@ -1,0 +1,176 @@
+﻿@model  EsselTestLocalApplication.Models.Accounts.CreateTaxes
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>GST Number:</label>
+                        <input type="text" class="form-control" value="@Model.TaxNo" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Tax Name:</label>
+                        <input type="text" class="form-control" value="@Model.TaxName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Gst For:</label>
+                        <input type="text" class="form-control" value="@Model.TaxFor" readOnly="readOnly" />
+                    </div>
+                </div>
+                @*<div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sub Account Head:</label>
+                            <input type="text" class="form-control" value="@Model.SubDCA" readOnly="readOnly" />
+                        </div>
+                    </div>*@
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>State Name:</label>
+                        <input type="text" class="form-control" value="@Model.State" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Applicable From:</label>
+                        <input type="text" class="form-control" value="@Model.AppFrom" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppGststatus" })
+                        @*<select class="form-control dropdown-toggle" id="AppGststatus">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Verify">Verify</option>
+                                <option value="Approve">Approve</option>
+                                <option value="Return">Return</option>
+                                <option value="Reject">Reject</option>
+                            </select>*@
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppGstNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveGst('@Model.TaxId')">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprgstInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>GST Number</label>
+                    <input type="text" id="txtUpgstaxTaxNo" readonly="readonly" class="form-control" value="@Model.TaxNo" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Applicable From</label>
+                    @Html.TextBoxFor(model => model.AppFrom, "{0:dd-MMM-yyyy}", new { @id = "txtUpgstaxTaxAppFrm", @class = "form-control", type = "text", @readonly = "readonly" })
+                    @*<input type="text" id="txtUpgstaxTaxAppFrm" readonly="readonly" class="form-control" value="@Model.ApplicableFrom" />*@
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Account Head</label>
+                    <input type="text" id="txtUpgstaxTaxDca" readonly="readonly" class="form-control" value="@Model.TaxFor" />
+                </div>
+            </div>
+            @*<div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sub Account Head</label>
+                        <input type="text" id="txtUpgsTaxsdca" readonly="readonly" class="form-control" value="@Model.SubDCA" />
+                    </div>
+                </div>*@
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="txtUpgstaxTaxState" readonly="readonly" class="form-control" value="@Model.State" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Tax Name</label>
+                    <input type="text" id="txtUpgsTaxName" class="form-control" value="@Model.TaxName" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Remarks</label>
+                    <textarea type="text" id="txtUpgsTaxRemarks" class="form-control">@Model.Remarks</textarea>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <button class="btn btn1 btn-success" id="btnUpGsttax" onclick="UpdateApprGstTaxes(@Model.TaxId)">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                <br />
+                <div id="divUpGstTaxInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+
+
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ('@Model.Status' != "0") {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppGststatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+      });
+</script>

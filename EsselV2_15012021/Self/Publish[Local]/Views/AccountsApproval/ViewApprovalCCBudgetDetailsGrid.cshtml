@@ -1,0 +1,205 @@
+﻿@model List< EsselTestLocalApplication.Models.Budget.AssignCCBudget>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewApprovalCCDetailsGrid</title>
+    <script>
+        var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveCCBudgetGrid = null;
+            InitializeApproveCCBudgetGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppccBudgetCreatedby").val(Sessioncreated);
+              var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);         
+        });
+        function InitializeApproveCCBudgetGrid() {
+            ApproveCCBudgetGrid = $('#tblApprCCBudgetDetails').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,  
+                language: {
+                    "emptyTable": "No Budgets Found"
+                },
+                "createdRow": function (row, data, index) {
+                    var bldate = $('td:eq(7)', row).html();
+                    var trimStr = $.trim(bldate);
+                    var typeArr = trimStr.split(' ');
+                    var d3 = typeArr[0];
+                    var t1 = "'" + d3 + "'";
+                    var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+                    $('td:eq(7)', row).html(bldate1);
+                    var oldstatus = $('td:eq(11)', row).html();                   
+                    if (oldstatus == 1) {
+                        $('td:eq(11)', row).html("Verification Pending");
+                    }
+                    else { $('td:eq(11)', row).html("Return"); }
+                },
+                pageLength: 10
+            });
+            $('#tblApprCCBudgetDetails tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = ApproveCCBudgetGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveCCBudgetGrid, tr);
+                    // Open this row
+                    row.child(formatApprccBudget(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+           
+            });
+        }
+        function closeOpenedRows(table, selectedRow) {
+            $.each(openRows, function (index, openRow) {
+                // not the selected row!
+                if ($.data(selectedRow) !== $.data(openRow)) {
+                    var rowToCollapse = table.row(openRow);
+                    rowToCollapse.child.hide();
+                    openRow.removeClass('shown');
+                    // replace icon to expand
+                    //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                    // remove from list
+                    var index = $.inArray(selectedRow, openRows);
+                    openRows.splice(index, 1);
+                }
+            });
+        }
+        function formatApprccBudget(d) {
+
+           
+            var id = 0;
+            var htmltext;
+            var budgetid, cccode, fyyear, Type, sType, BudgetDate, AssignedValue,bRemarks,bStatus;
+
+            
+            $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 1)
+                    budgetid = value; 
+                if (index == 3)
+                    cccode = value;  
+                if (index == 5)
+                    Type = value; 
+                if (index == 6)
+                    sType = value; 
+                if (index == 9)
+                    fyyear = value;                
+                if (index == 7)
+                    BudgetDate = value; 
+                             
+                if (index == 8)
+                    AssignedValue = value; 
+                if (index == 10)
+                    bRemarks = value;
+                if (index == 11)
+                    bStatus = value;
+            });
+           
+            var divid = "divapprccb" + budgetid;
+            var divid1 = $("#" + divid + "");
+            $("#currentccBudgetid").val(budgetid);
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/ViewApproveCCBudget',
+                data: { Budgetid: budgetid },
+                success: function (Data) {               
+                    var divid2 = "divapprccb" + budgetid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+            return '<div id="divapprccb' + budgetid + '"></div>';
+        }
+    </script>
+</head>
+<body>
+    <div class="table-responsive">
+        <table id="tblApprCCBudgetDetails" style="width:100%" class="hover stripe nowrap example">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="hidden">Budget Id</th>
+                    <th  class="hidden">CC Id</th>
+                    <th>CC Code</th>
+                    <th>CC Name</th>
+                    <th>CC Type</th>
+                    <th>Sub Type</th>
+                    <th>Budget Created Date</th>
+                    <th>Assigned Budget Value</th>
+                    <th  class="hidden">Year</th>
+                    <th  class="hidden">Remarks</th>
+                    <th class="hidden">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td class="details-control"></td>
+                    <td  class="hidden">
+                        @Html.DisplayFor(modelItem => item.Budgetid)
+                    </td>
+                    <td  class="hidden">
+                        @Html.DisplayFor(modelItem => item.CC_Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CostCenter)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CC_Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCType)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.SubType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BudgetCreationDate)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+
+                    <td style="text-align:center"  class="hidden">
+                        @Html.DisplayFor(modelItem => item.Year)
+                    </td>
+                    <td style="text-align:center"  class="hidden">
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    
+</body>
+</html>

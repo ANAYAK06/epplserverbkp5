@@ -1,0 +1,146 @@
+﻿
+@model EsselTestLocalApplication.Models.AddClient
+<form onsubmit="return false">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Client_Code)
+                @Html.TextBoxFor(model => model.Client_Code, htmlAttributes: new { @class = "form-control", @id = "txtUpClientcode", readOnly = "readOnly" })
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Client_Name)
+                @Html.TextBoxFor(model => model.Client_Name, htmlAttributes: new { @class = "form-control", @id = "txtUpClient", readOnly = "readOnly" })
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TINNo)
+                @Html.TextBoxFor(model => model.TINNo, htmlAttributes: new { @class = "form-control", @id = "txtUpTINNo" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PANNo)
+                @Html.TextBoxFor(model => model.PANNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPANNo" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TANNo)
+                @Html.TextBoxFor(model => model.TANNo, htmlAttributes: new { @class = "form-control", @id = "txtUpTANNo" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Contact_Person_Name)
+                @Html.TextBoxFor(model => model.Contact_Person_Name, htmlAttributes: new { @class = "form-control", @id = "txtUpContactPersonName" })
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Person_PhoneNo)
+                @Html.TextBoxFor(model => model.Person_PhoneNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPersonPhoneNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.NatureGroupName)
+                @Html.TextBoxFor(model => model.NatureGroupName, htmlAttributes: new { @class = "form-control", @id = "txtUpClientNature", readOnly = "readOnly" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Address)
+                @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtUpAddress", @rows = "3" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Group Name:</label>
+                <input type="text" class="form-control" readonly="readonly" id="txtUpclientgrpname" />
+            </div>
+        </div>
+
+        <div class="col-md-3" id="divupclientSubgrp">
+            <div class="form-group">
+                <label>Sub Group Name:</label>
+                <input type="text" class="form-control" readonly="readonly" id="txtUpclientsubgrpname" />
+            </div>
+        </div>
+        @*<div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.GST_Applicable)
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" name="upGstApplicable" value="Yes" id="chkUpGSTY" onclick="upgstCheckchange(this)">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Yes</span>
+                        </label>
+                    </li>
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" name="upGstApplicable" value="No" id="chkUpGSTN" onclick="upgstCheckchange(this)">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">No</span>
+                        </label>
+                    </li>
+                </ul>
+
+            </div>
+        </div>*@
+    </div>
+    @*<div class="row" id="divUpClientGst">
+        <div style="margin-left:2px">
+            <div class="strike">
+                <span>Update GST Details</span>
+            </div>
+            <div class="tabledynamic">
+                <table id="UpClientGstTable" class="table order-list UpClientGstGrid">
+                    <thead>
+                        <tr>
+                            <td class="col-md-2"></td>
+                            <td style="text-align:center">@Html.LabelFor(model => model.State)</td>
+                            <td style="text-align:center">@Html.LabelFor(model => model.GST_No)</td>
+                            <td style="text-align:center"><label>Check</label></td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="col-md-2"></td>
+                            <td class="text-center"></td>
+                            <td></td>
+                            <td>
+                                <input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Tax" onclick="UpdateClientBindNewRowForGST()" />
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>*@
+    <div class="row">
+        <div class="text-right">
+            <input type="text" value="0" id="txtUpclientid" style="display:none" />
+            <input type="submit" class="btn btn1 btn-success" id="btnSubmitUpClient" onclick="SubmitUpdateClientData()" value="Submit" />
+            @*<input type="button" class="btn btn1 btn-success" id="btnResetUpClient" onclick="ClearUpdateClient()" value="Reset" />*@
+            <input type="hidden" id="txtdelgstid" />
+            <input type="hidden" id="txtclientSubGroupid" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-center">
+            <div id="divUpClientInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+    
+</form>
+

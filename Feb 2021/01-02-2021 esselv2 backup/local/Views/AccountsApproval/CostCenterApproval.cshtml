@@ -1,0 +1,473 @@
+﻿@model EsselTestLocalApplication.Models.AddCostCenter
+@{
+    /**/
+
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <script>
+        $(document).ready(function () {
+            //var cid = $("#currentccid").val();
+            //refdateid = "Apprefdate-" + cid;
+            //findateid = "Appfindate-" + cid;
+            //refdate = $("#" + refdateid + "").val();
+            //findate = $("#" + findateid + "").val();
+            //var rdate = "'" + refdate + "'";
+            //var rdate1 = moment(rdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#" + refdateid + "").val(rdate1);
+            //var fdate = "'" + findate + "'";
+            //var fdate1 = moment(fdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#" + findateid + "").val(fdate1);
+            //alert(rdate1 + "-" + fdate1);
+            $("#currentccid").val("");
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                               if ('@Model.CC_Status' === "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                        });
+
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>Cost Center Code:</lable>
+                        <input type="text" class="form-control" value="@Model.CCCode" readOnly="readOnly" />
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <lable>Cost Center Name:</lable>
+                        <input type="text" class="form-control" value="@Model.CCName" readOnly="readOnly" />
+                    </div>
+                </div>
+                @*<div class="col-md-3">
+                        <div class="form-group">
+
+                        </div>
+                    </div>*@
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @*<lable>DayLimit:</lable>
+                            <input type="text" class="form-control" value="@Model.DayLimit" readOnly="readOnly" />*@
+                        <lable>Type:</lable>
+                        <input type="text" class="form-control" value="@Model.CCType"  readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>DayLimit:</lable>
+                        <input type="text" class="form-control" value="@Model.DayLimit" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>Address:</lable>
+                        <input type="text" class="form-control" value="@Model.SiteAddress" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                @if (Model.CCType == "Performing")
+                {<div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Sub Type:</lable>
+                            <input type="text" class="form-control" value="@Model.SubType" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>EPPL Final Offer No:</lable>
+                            <input type="text" class="form-control" value="@Model.EPPLFinalOfferNo" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Client Acceptance Reference No:</lable>
+                            <input type="text" class="form-control" value="@Model.ClientAcceptanceReferenceNo" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                }
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>Incharge Name:</lable>
+                        <input type="text" class="form-control" value="@Model.CCInchargeName" id="Appincname-@Model.CC_Id" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>Incharge PhoneNo:</lable>
+                        <input type="text" class="form-control" value="@Model.InchargePhNo" id="Appincno-@Model.CC_Id" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>Cost Center PhoneNo:</lable>
+                        <input type="text" class="form-control" value="@Model.PhoneNo" id="Appccno-@Model.CC_Id" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>State Name:</lable>
+                        <input type="text" class="form-control" value="@Model.State" id="state-@Model.CC_Id" readOnly="readOnly" />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <lable>Status:</lable>
+                        <input type="text" class="form-control" value="@Model.CC_Status" id="txtapprccstatus" readOnly="readOnly" />
+                    </div>
+                </div>
+                @if (Model.CCType == "Performing")
+                {<div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Final Offer Date:</lable>
+                            <input type="text" class="form-control appfindate" value="@Model.UpFinalOfferDate" id="Appfindate-@Model.CC_Id" readOnly="readOnly" />
+                        </div>
+                    </div>
+
+
+                }
+                @if (Model.CCType != "Performing" && Model.CCType != "Capital")
+                {<div class="col-md-3">
+                        <div class="form-group">
+                            <lable>CostCenter Branch Type:</lable>
+                            <input type="text" class="form-control appfindate" value="@Model.NPCCOfficeType" readOnly="readOnly" />
+                        </div>
+                    </div>
+
+
+                }
+            </div>
+
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                @if (Model.CCType == "Performing")
+                {
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Client Acceptance Date:</lable>
+                            <input type="text" class="form-control appclientAccdate" value="@Model.UpClientAcceptanceDate" id="Apprefdate-@Model.CC_Id" readOnly="readOnly" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Project Manager:</lable>
+                            <input type="text" class="form-control" value="@Model.ProjectMgr" id="ApprefPrjmgr-@Model.ProjectMgr" readOnly="readOnly" />
+                        </div>
+                    </div>}
+
+                @if (Model.Group != null)
+                {
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>GroupID:</lable>
+                            <input type="text" class="form-control" value="@Model.Group" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                @if (Model.CCType == "Performing")
+                {
+                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Client Incharge Name:</lable>
+                            <input type="text" class="form-control" value="@Model.ClientInchargeName" id="txtClientInchargeNameApr" />  @*readOnly="readOnly"*@
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Client Incharge PhNo:</lable>
+                            <input type="text" class="form-control" value="@Model.ClientInchargePhNo" id="txtclientInchargePhNoApr" /> @*readOnly="readOnly"*@
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Client Incharge Email:</lable>
+                            <input type="text" class="form-control" value="@Model.ClientInchargemailid" id="txtclientInchargemailidApr" /> @*readOnly="readOnly"*@
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                @if (Model.CCType == "Performing")
+                {
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Store Applicable:</lable>
+                            <input type="text" class="form-control" value="@Model.IsStoreApplicable" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+
+            </div>
+            @if (Model.CCType == "Non-Performing")
+            {
+                <div class="col-md-12">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>StoreType:</lable>
+                            <input type="text" class="form-control" value="@Model.StoreType" readOnly="readOnly" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appstatus" })
+
+                    </div>
+                </div>
+                <div class="col-md-8" id="divAppRetNote-@Model.CC_Id">
+                    <div class="form-group">
+                        <lable>Note:</lable><br />
+                        <textarea rows="3" cols="60" id="AppRetNote"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <br /><button onClick="ApproveCC(@Model.CC_Id,'@Model.CC_Status')">Submit</button>
+                        <input type="hidden" value="@Model.CCType" id="cctype-@Model.CC_Id" />
+                        <input type="hidden" value="@Model.CCCode" id="cccode-@Model.CC_Id" />
+
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApproveCCInfoMsg-@Model.CC_Id" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+<script>
+    function ApproveCC(id, CCStatus) {
+        debugger;
+        var ccid = "cname-" + id;
+        var ccname = $("#" + ccid + "").val();
+        cctypeid = "cctype-" + id;
+        refdateid = "Apprefdate-" + id;
+        findateid = "Appfindate-" + id;
+        inchargeid = "Appincname-" + id;
+        incnoid = "Appincno-" + id;
+        ccnoid = "Appccno-" + id;
+        cccodeid = "cccode-" + id;
+        appstatusid = "Appstatus-" + id;
+
+        retnote = $("#AppRetNote").val();
+        msgid = "divApproveCCInfoMsg-" + id;
+        cctype1 = $("#" + cctypeid + "").val();
+        refdate = $("#" + refdateid + "").val();
+        findate = $("#" + findateid + "").val();
+        incharge = $("#" + inchargeid + "").val();
+        incno = $("#" + incnoid + "").val();
+        ccno = $("#" + ccnoid + "").val();
+        code = $("#" + cccodeid + "").val();
+        msg = $("#" + msgid + "");
+
+        var appstatus = $("#Appstatus option:selected").text();
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (cctype1 == "Performing") {
+            var ClientInchargeName = $("#txtClientInchargeNameApr").val();
+            var ClientInchargePhNo = $("#txtclientInchargePhNoApr").val();
+            var ClientInchargemailid = $("#txtclientInchargemailidApr").val();
+            if (ClientInchargeName == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Incharge Name</p>";
+                isValid = false;
+            }
+            if (ClientInchargePhNo == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client Incharge  PhoneNumber</p>";
+                isValid = false;
+            }
+            else if (ClientInchargePhNo.length != 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Client Incharge Phone No</p>";
+                isValid = false;
+            }
+            if (ClientInchargemailid == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Client E-Mail</p>";
+                isValid = false;
+            }
+            if (ClientInchargemailid != "") {
+                var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+                if (!expr.test(ClientInchargemailid)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Client Email</p>";
+                    isValid = false;
+                }
+            }
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+
+            //alert(refdate + "," + findate + "," + incharge + "," + incno + "," + ccno + "," + ccname + "," + id + "," + cctype1 + "," + code +","+appstatus);   
+            var currentdate = new Date();
+
+            var appCC = {};
+            if (cctype1 == "Performing") {
+                appCC = {
+                    CC_Id: id,
+                    CCCode: code,
+                    Createdby: $("#txtAppccCreatedby").val(),
+                    Action: appstatus,
+                    RemarksNote: retnote,
+                    Roleid: $("#roleid").val(),
+                    CC_Status: CCStatus,
+                    ClientInchargeName: $("#txtClientInchargeNameApr").val(),
+                    ClientInchargePhNo: $("#txtclientInchargePhNoApr").val(),
+                    ClientInchargemailid: $("#txtclientInchargemailidApr").val()
+                };
+            }
+            else {
+                appCC = {
+                    CC_Id: id,
+                    CCCode: code,
+                    Createdby: $("#txtAppccCreatedby").val(),
+                    Action: appstatus,
+                    RemarksNote: retnote,
+                    Roleid: $("#roleid").val(),
+                    CC_Status: CCStatus
+                };
+            }
+            addFailMsg = "Error Occurred While Adding Cost Center Verification";
+            addSuccessMsg = "Cost Center Verified Successfully.";
+
+            var finalmsg;
+            if (appstatus === 'Verify') { finalmsg = ' Verified Successfully'; }
+            else if (appstatus === 'Approve') { finalmsg = ' Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = ' Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = ' Rejected  Successfully'; }
+
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/SaveApproveCostCenter",
+                data: JSON.stringify({ approveCC: appCC }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+                success: function (response) {
+                    var typeArr = response.saveStatus.toString().split('+');
+                    var msg = typeArr[0];
+                    var msgcc = typeArr[1];
+                    if (msg === "Submitted") {
+                        $('#ApproveCCMsgModal').modal('show');
+                        msg = "<div>Cost Center:" + msgcc + finalmsg + "</div>";
+                        $("#AppCCMsg").html(msg);
+                    }
+                    else {
+                        $("#AppCCMsg").html(msg);
+                        $('#ApproveCCMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppCCMsg").html(msg);
+                    $('#ApproveCCMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>
+

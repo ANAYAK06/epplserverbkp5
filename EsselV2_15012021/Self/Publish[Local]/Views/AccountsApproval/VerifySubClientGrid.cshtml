@@ -1,0 +1,147 @@
+﻿@model List<EsselTestLocalApplication.Models.AddSubClient>
+<div class="table-responsive">
+    <table id="tblApproveSClientGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>SubClientCode</th>
+                <th>Client Code</th>
+                <th>Client Name</th>
+                <th>Branch</th>
+                <th class="hidden">Status</th>
+                <th>SubClient Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubClientCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Branch)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubClientStatus)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApprovesubclientGrid = null;
+            InitializeApprsubClientGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppSClientCreatedby").val(Sessioncreated);
+              var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprsubClientGrid() {
+        ApprovesubclientGrid = $('#tblApproveSClientGrid').DataTable({
+           info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,  
+            language: {
+                "emptyTable": "No Sub Clients Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(5)', row).html();
+                if (oldstatus == 1) {
+                    $('td:eq(5)', row).html("Verification Pending");
+                }
+                else { $('td:eq(5)', row).html("Return"); }
+            },
+            pageLength: 10
+        });
+    }
+        $('#tblApproveSClientGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApprovesubclientGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApprovesubclientGrid, tr);
+                // Open this row
+                row.child(formatApprSubClient(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+    });
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprSubClient(d) {
+
+        var htmltext;
+        var sclientcode,Status;
+
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    sclientcode = value;
+                if (index == 5)
+                    Status = value;
+            });
+
+        var divid = "divapprsubclient" + sclientcode;
+        var divid1 = $("#" + divid + "");
+        $("#currentSClientcode").val(sclientcode);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifySubClientView',
+                data: { subclientcode: sclientcode },
+                success: function (Data) {
+                    var divid2 = "divapprsubclient" + sclientcode;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                 
+                   // $(divid3).append('<input type="text" value="' + code+'" id="apprdcabudcc-' + code +'"/>');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                }
+            });
+        return '<div id="divapprsubclient' + sclientcode + '"></div>';
+        }
+</script>
+

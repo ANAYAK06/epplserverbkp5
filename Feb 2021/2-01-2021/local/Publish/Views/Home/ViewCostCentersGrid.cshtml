@@ -1,0 +1,347 @@
+﻿@model List<EsselTestLocalApplication.Models.AddCostCenter>
+<style>
+    td.details-control {
+        background: url('../../Content/EsselImages/details_open.png') no-repeat center center;
+        /*background-image: url('../../Content/EsselImages/details_close.png');*/
+        /*background-image: url('../../Content/EsselImages/details_open.png');*/
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../../Content/EsselImages/details_close.png') no-repeat center center;
+    }
+</style>
+<div class="table-responsive w-100">
+    <table id="tblCCDetailsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Cost Center Code</th>
+                <th> Name</th>
+                <th>Type</th>
+                <th>State</th>
+                <th class="hidden">VoucherLimit</th>
+                <th class="hidden">DayLimit</th>
+                <th class="hidden">PhoneNo</th>
+                <th class="hidden">InchName</th>
+                <th class="hidden">InchNo</th>
+                <th class="hidden">SiteAddress</th>
+                <th class="hidden">SubType</th>
+                <th class="hidden">EPPLFinalOfferNo</th>
+                <th class="hidden">FinalOfferDate</th>
+                <th class="hidden">ClientAcceptanceReferenceNo</th>
+                <th class="hidden">ClientAcceptanceDate</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CC_Id)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.State)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.VoucherLimit)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.DayLimit)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.PhoneNo)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CCInchargeName)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.InchargePhNo)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.SiteAddress)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.SubType)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.EPPLFinalOfferNo)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.FinalOfferDate)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.ClientAcceptanceReferenceNo)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.ClientAcceptanceDate)
+                    </td>
+                    @if (item.CCStatus == "Approved" && (item.CloseStatus == "Rejected" || item.CloseStatus == null))
+                    {
+                        <td>
+                            <select class="form-control dropdown-toggle" id="ddlCCActions" onchange="CCActionschange(@item.CC_Id,'@item.CCCode', '@item.CCType','@item.CCName',this)">
+                                <option selected="selected" value="-Select-">-Select-</option>
+                                @*<option value="Edit">Edit</option>
+                                    <option value="Close">Delete</option>*@
+                            </select>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<div id="deletecc" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Cost Center: </p><label id="lbldelCCCode"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeleteCostCenterInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="DeleteCC()">Delete</button>
+                    <input type="text" id="txtdeleteid" style="display:none" />
+                    <input type="text" id="txtdeleeCCCode" style="display:none" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="closeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<div class="modal fade" id="EditCCModal" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+@**@
+<script src="~/Scripts/moment.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var CostCentersGrid = null;
+        InitializeCostCenterDetialsGrid();
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCCCreatedby").val(Sessioncreated);
+        $("#EditCCModal").on("hidden.bs.modal", function () {
+            $("#divCCDtailsGrid").load('/Home/ViewCostCentersGrid');
+        });
+
+    });
+
+    function InitializeCostCenterDetialsGrid() {
+        CostCentersGrid = $('#tblCCDetailsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Cost Centers Found"
+            },
+            "createdRow": function (row, data, index) {
+
+                      var ddlAction = $('td:eq(17)', row).find("select");
+                var CCode = $('td:eq(2)', row).html();
+                var Code = CCode.trim();
+                    ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    var Roleid = '@Session["Roleid"]';
+                    var Mid = 'Cost Center';
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/GetApprovalstatusother",
+                        data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '",CCCode:"' + Code + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count = Object.keys(response).length;
+                            if (count > 0) {
+                                $.each(response, function () {
+                                    ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                                });
+                            }
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+
+            },
+            pageLength: 10
+        });
+
+        $('#tblCCDetailsGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = CostCentersGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+    }
+    function format(d) {
+
+        var id = 0;
+        var cctype;
+        var htmltext;
+        var inchargename, incno, ccno, day, vouchar, finno, findate, refno, refdate, subtype, siteaddress;
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 1)
+                id = value;
+            if (index == 4)
+                cctype = value;
+            if (index == 6)
+                vouchar = value;
+            if (index == 7)
+                day = value;
+            if (index == 8)
+                ccno = value;
+            if (index == 9)
+                inchargename = value;
+            if (index == 10)
+                incno = value;
+            if (index == 11)
+                siteaddress = value;
+            if (index == 12)
+                subtype = value;
+            if (index == 13)
+                finno = value;
+            if (index == 14)
+                findate = value;
+            if (index == 15)
+                refno = value;
+            if (index == 16)
+                refdate = value;
+        });
+        if (cctype == "Performing") {
+            //alert(findate);
+            var d = findate.split(' ')[0];
+            var t = "'" + d + "'";
+            var findate1 = moment(t, "DDMMYYYY").format('MMM DD YYYY');
+            //alert(findate1);
+            var d1 = refdate.split(' ')[0];
+            var t1 = "'" + d1 + "'";
+            var refdate1 = moment(t1, "DDMMYYYY").format('MMM DD YYYY');
+
+            return '<div><table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;width:100%">' +
+                '<tr><td>Incharge Name:<b>' + inchargename + '</b></td>' +
+                '<td>Incharge PhoneNo:<b>' + incno + '</b></td>' +
+                '<td>Cost Center PhoneNo:<b>' + ccno + '</b></td></tr>' +
+                '<tr><td>DayLimit:<b>' + day + '</b></td>' +
+                '<td>Voucher Limit:<b>' + vouchar + '</b></td>' +
+                '<td>Address:<b>' + siteaddress + '</b></td></tr>' +
+                '<tr><td>SubType:<b>' + subtype + '</b></td>' +
+                '<td>FinalOfferDate:<b>' + findate1 + '</b></td>' +
+                '<td>EPPLFinalOfferNo:<b>' + finno + '</b></td></tr>' +
+                '<tr><td>ClientAcceptanceReferenceNo:<b>' + refno + '</b></td>' +
+                '<td>ClientAcceptanceDate:<b>' + refdate1 + '</b></td><td></td></tr>' +
+                '</table></div>';
+        }
+        else {
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                '<tr><td>Incharge Name:<b>' + inchargename + '</b></td>' +
+                '<td>Incharge PhoneNo:<b>' + incno + '</b></td>' +
+                '<td>Cost Center PhoneNo:<b>' + ccno + '</b></td>' +
+                '<td>DayLimit:<b>' + day + '</b></td></tr>' +
+                '<tr><td>Voucher Limit:<b>' + vouchar + '</b></td>' +
+                '<td>Address:<b>' + siteaddress + '</b></td><td></td><td></td></tr>' +
+                '</table>';
+
+        }
+    }
+    function CCActionschange(ccid, cccode, cctype, ccname, txt) {
+
+        var selectedaction = txt.value;
+        // alert(selectedaction);
+        if (selectedaction == "Edit") {
+            //$("#EditCCModal").modal('show');
+            $.ajax({
+                type: "POST",
+                url: "/Home/EditCostCenter",
+                data: '{CCid:"' + ccid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    var msg = "";
+                    if (count1 > 0) {                       
+                        $('#EditCCModal').html(response);
+                        $('#EditCCModal').modal();                        
+
+
+                        $("#divEditCostCenterInfoMsg").text("");
+                        $("#divEditCostCenterInfoMsg").addClass("hidden");
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+        else if (selectedaction === "Close") {
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/ViewCloseCostCenter",
+                data: '{CCId:"' + ccid + '",CCCode:"' + cccode + '",CCType:"' + cctype + '",CCName:"' + ccname + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#closeConfirmation').html(data);
+                    $('#closeConfirmation').modal();
+                    $("#divClsoeCCInfoMsg").text("");
+                    $("#divClsoeCCInfoMsg").addClass("hidden");
+                }
+            });
+        }
+    }
+
+
+</script>

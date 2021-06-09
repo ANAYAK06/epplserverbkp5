@@ -1,0 +1,282 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        @if (Model.TransactionType == "Bank")
+        {
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BankName)
+                    @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ModeofPay)
+                    @Html.TextBoxFor(model => model.ModeofPay, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Number)
+                    @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionDate)
+                    @Html.TextBoxFor(model => model.TransactionDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            @*<div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remarks)
+                @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @type = "text", @rows = "3", @readOnly = "true" })
+
+            </div>
+        </div>*@
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionAmount)
+                    @Html.TextBoxFor(model => model.TransactionAmount, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @if (Model.PaymentTypeName != "Vendor Advance")
+                    {
+                        @Html.LabelFor(model => model.VendorCode)
+                        <input type="text" value="@Model.VendorCode" class="form-control" readOnly="readonly" />
+
+                    }
+                    else
+                    {
+
+                        @Html.LabelFor(model => model.InvoiceNo)
+                        <input type="text" value="@Model.InvoiceNo" class="form-control" readOnly="readonly" />
+                    }
+                </div>
+        </div>
+        </div>
+
+        }
+        else
+        {
+
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCCode)
+                    @Html.TextBoxFor(model => model.CCCode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            @if (Model.OtherCCCode != null)
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.OtherCCCode)
+                        @Html.TextBoxFor(model => model.OtherCCCode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                    </div>
+                </div>
+            }
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DCACode)
+                    @Html.TextBoxFor(model => model.DCACode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SDCACode)
+                    @Html.TextBoxFor(model => model.SDCACode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionDate)
+                    @Html.TextBoxFor(model => model.TransactionDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            @*<div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.InvoiceNo)
+                @Html.TextBoxFor(model => model.InvoiceNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+            </div>
+        </div>*@
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PoNo)
+                    @Html.TextBoxFor(model => model.PoNo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorName)
+                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NetAmount)
+                    @Html.TextBoxFor(model => model.NetAmount, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionAmount)
+                    @Html.TextBoxFor(model => model.TransactionAmount, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Balance)
+                    @Html.TextBoxFor(model => model.Balance, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @if (Model.PaymentTypeName != "Vendor Advance")
+                    {
+                        @Html.LabelFor(model => model.VendorCode)
+                        <input type="text" value="@Model.VendorCode" class="form-control" readOnly="readonly" />
+
+                    }
+                    else
+                    {
+
+                        @Html.LabelFor(model => model.InvoiceNo)
+                        <input type="text" value="@Model.InvoiceNo" class="form-control" readOnly="readonly" />
+                    }
+                </div>
+
+                </div>
+          
+            @*<div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextBoxFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>*@
+        </div>
+        }
+        @if (Model.PaymentTypeName == "Vendor Invoice")
+        {
+            <div class="col-md-12">
+                <br />
+                <table style="width:100%;border:1px solid gray">
+                    <thead>
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            <th style="text-align:center;color:#fff">InvoiceNo</th>
+                            <th style="text-align:center;color:#fff">CCCode</th>
+                            <th style="text-align:center;color:#fff">DCACode</th>
+                            <th style="text-align:center;color:#fff">SubDCACode</th>
+                            <th style="text-align:center;color:#fff">IT Code</th>
+                            <th style="text-align:center;color:#fff">Amount</th>
+                            <th style="text-align:center;color:#fff">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.lstPayInvoiceData)
+                        {
+                            <tr>
+                                <td style="text-align:center">@item.InvoiceNo</td>
+                                <td style="text-align:center">@item.CCCode</td>
+                                <td style="text-align:center">@item.DCACode</td>
+                                <td style="text-align:center">@item.SubDcaCode</td>
+                                <td style="text-align:center">@item.ITCode</td>
+                                <td style="text-align:center">@item.Amount</td>
+                                <td style="text-align:center">@item.Type</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+            </div>
+        }
+        <div class="col-md-12">
+            <table style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <th style="text-align:center;color:#fff">Approved Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.RemarksList)
+                    {
+                        <tr>
+                            <td style="text-align:center">@item.Remarks</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <br />
+        </div>
+
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appvendorpaystatus" })
+
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppVendorPayNote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveVendorPayment('@Model.TransactionRefNo','@Model.VendorCode','@Model.PaymentTypeName','@Model.TransactionType')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprVendorPayInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //var transtype = '@Model.TransactionType';       
+
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appvendorpaystatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {   
+                            if (this['Type']!=="Return") {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            }
+                        });                       
+                    }                    
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+    });
+</script>

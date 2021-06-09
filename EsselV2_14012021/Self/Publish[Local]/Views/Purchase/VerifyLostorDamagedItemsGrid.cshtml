@@ -1,0 +1,163 @@
+﻿
+
+@model List<EsselTestLocalApplication.Models.Purchase.LostDamagedData>
+
+<div class="table-responsive">
+    <table id="tblApproveitemsDetailsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Refno</th>
+                <th>Cost Center</th>
+                <th>Date</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Refno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveItemGrid = null;
+        InitializeApproveItemGrid();
+        var Sessionroleid = '@Session["Roleid"]';
+        $("#roleid").val(Sessionroleid);
+    });
+    function InitializeApproveItemGrid() {
+        ApproveItemGrid = $('#tblApproveitemsDetailsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Items Found"
+            },
+            "createdRow": function (row, data, index) {
+
+                var oldstatus = $.trim($('td:eq(5)', row).html());
+                //alert(oldstatus);
+
+                if (oldstatus === '0') {
+                    $('td:eq(5)', row).html("Return");
+
+                }
+                else { $('td:eq(5)', row).html("Verification Pending"); }
+            },
+            pageLength: 10
+        });
+        $('#tblApproveitemsDetailsGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveItemGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveItemGrid, tr);
+                // Open this row
+                row.child(formatApproveItemGrid(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApproveItemGrid(d) {
+            var id = 0;
+            var htmltext;
+        var id,Rno,Status;
+            $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 1)
+                    id = value;
+                if (index == 2)
+                    Rno = value;
+                if (index == 5)
+                    Status = value;
+
+        });
+       
+        var divid = "divapprItem" + id ;
+        var divid1 = $("#" + divid + "");
+        if (Status !== "0") {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/VerifyLostorDamagedItemsView',
+                data: { Refno: Rno },
+                success: function (Data) {
+                    var divid2 = "divapprItem" + id ;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        }
+        //else {
+        //    $.ajax({
+        //        type: 'GET',
+        //        dataType: 'html',
+        //        url: '/Purchase/EditVendor',
+        //        data: { VendorCode: Vendorcode },
+        //        success: function (Data) {
+        //            var divid2 = "divapprVendor" + Vid;
+        //            var divid3 = $("#" + divid2 + "");
+        //            $(divid3).html(Data);
+        //        },
+        //        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //        }
+        //    });
+        //}
+        return '<div id="divapprItem' + id + '"></div>';
+    }
+</script>

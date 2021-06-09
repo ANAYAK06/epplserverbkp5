@@ -1,0 +1,119 @@
+﻿@model EsselTestLocalApplication.Models.HR.LongTermAdvance
+
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">PreClose LTA Loan</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ClosingDate)
+                                @Html.TextBoxFor(model => model.ClosingDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtCloseDate", @value = "", @readOnly = true })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Remarks</label>
+                            @Html.TextAreaFor(model => model.ClosingRemarks, new { @id = "txtRemarks", @class = "form-control", @type = "text", @rows = "2" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-right">                          
+                            <input type="submit" class="btn btn1 btn-success" id="btnSubmitPreclose" onclick="SubmitPreClose('@Model.TransactionRefNo')" value="Submit" />
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divcloseInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#txtCloseDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            minDate: 'dateToday',
+            yearRange: "-100:+0",
+            onClose: function (selectedDate) {
+            }
+        });
+    });
+    function SubmitPreClose(TransNo) {
+        var errorMsg = "";
+        isValid = true;
+        var date = $("#txtCloseDate").val();      
+        var remarks = $("#txtRemarks").val();
+        //debugger;
+        
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Closing Date</p>";
+            isValid = false;
+        }
+
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divcloseInfoMsg").text("");
+            $("#divcloseInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divcloseInfoMsg").addClass("alert-danger");
+            $("#divcloseInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divcloseInfoMsg").text("");
+            $("#divcloseInfoMsg").addClass("hidden");
+
+            let savedata = {
+                TransactionRefNo: TransNo,
+                ClosingDate: date,
+                ClosingRemarks: remarks
+            };
+            //debugger;
+            addFailMsg = "Error Occurred While Adding.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveLTAPreClose',
+                data: { advance: savedata },
+                success: function (Data) {
+                    if (Data.saveStatus === "Submited") {
+                        // $("#btnSubmitPreclose").prop('disabled', true);
+                        $("#divcloseInfoMsg").text("Saved Successfully");
+                        $("#divcloseInfoMsg").removeClass("hidden alert-danger");
+                        $("#divcloseInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#divcloseInfoMsg").text(Data.saveStatus);
+                        $("#divcloseInfoMsg").addClass("alert-danger");
+                        $("#divcloseInfoMsg").removeClass("hidden alert-success");
+                    }
+                    //$("#btnSubmitPreclose").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //$("#btnSubmitPreclose").prop('disabled', true);
+                    $("#divcloseInfoMsg").text(addFailMsg);
+                    $("#divcloseInfoMsg").addClass("alert-danger");
+                    $("#divcloseInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+</script>

@@ -1,0 +1,204 @@
+﻿@model EsselTestLocalApplication.Models.NewUsers
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Employee Role Assign</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Firstname)
+                            @Html.TextBoxFor(model => model.Firstname, new { @id = "txtRAfirstname", @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Middlename)
+                            @Html.TextBoxFor(model => model.Middlename, new { @id = "txtRAmiddlename", @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Lastname)
+                            @Html.TextBoxFor(model => model.Lastname, new { @id = "txtRAlastname", @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Username)
+                            @Html.TextBoxFor(model => model.Username, new { @id = "txtRAUsername", @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Appointed)
+                            @Html.TextBoxFor(model => model.Appointed, new { @id = "txtRAAppointed", @class = "form-control", @readonly = "true" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2">
+                        @Html.LabelFor(model => model.UserRole)
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.DropDownListFor(model => model.UserRole, new SelectList(Model.UserRoleList, "UserRoleID", "UserRoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNUserRole", onchange = "ddlNUserRoleChange()" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="divCCCodes">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-2">
+                        @Html.LabelFor(model => model.CCCode)
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.ListBoxFor(model => model.CCCode, new SelectList(Model.UserCCList, "CC_Code", "CC_Name"), new { @class = "listbox form-control", @id = "ddlMultiCCCode" })
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnSaveEmpRole" onclick="SaveEmployeeRoleAssign('@Model.Username','@Model.workemail')" value="Update" />
+                        <input type="hidden" value="0" id="txtSelectedrole" />
+                        <input type="hidden" value="0" id="txtCCExist" />
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <br />
+                        <div id="divEmpRoleAssignInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divCCCodes").addClass('hidden');
+    });
+
+    function SaveEmployeeRoleAssign(Username,email) {
+        debugger;
+        isValid = true;
+        var errorMsg = "";
+        var role = $("#ddlNUserRole option:selected").index();        
+        var Roleid = $("#ddlNUserRole  option:selected").val();
+        if (role === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Role</p>";
+            isValid = false;
+        }
+        else {
+            var count = parseInt($("#txtCCExist").val());
+            if (count > 0) {
+                var options = $('#ddlMultiCCCode > option:selected');
+                if (options.length == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                    isValid = false;
+                }
+            }
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divEmpRoleAssignInfoMsg").text("");
+            $("#divEmpRoleAssignInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divEmpRoleAssignInfoMsg").addClass("alert-danger");
+            $("#divEmpRoleAssignInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divEmpRoleAssignInfoMsg").text("");
+            $("#divEmpRoleAssignInfoMsg").addClass("hidden");
+
+            var pwd = generateUserPassword();
+            var encodedpwd = window.btoa(pwd);
+
+            var saveNewUser = {};
+            if (count > 0) {
+                var SelectedCC = $('#ddlMultiCCCode option:selected').toArray().map(item => item.value).join() + ',';
+                saveNewUser = {
+                    Userid: 0,
+                    Username: Username,
+                    Password: encodedpwd,
+                    RoleID: $("#ddlNUserRole option:selected").val(),                  
+                    Action: 'Add',
+                    CCCode: SelectedCC,
+                    OriginalPassword: pwd,
+                    workemail: email
+                };
+
+            }
+            else {
+                saveNewUser = {
+                    Userid: 0,
+                    Username: Username,
+                    Password: encodedpwd,
+                    RoleID: $("#ddlNUserRole option:selected").val(),                  
+                    Action: 'Add',
+                    OriginalPassword: pwd,
+                    workemail: email
+                };
+
+            }
+            debugger;
+            addFailMsg = "Error Occurred While Adding User";
+            addSuccessMsg = "User Detials Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveEmpRoleAssign",
+                data: JSON.stringify({ usr: saveNewUser }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submitted") {
+                        $("#btnSaveEmpRole").prop('disabled', true);
+                        $("#divEmpRoleAssignInfoMsg").text(addSuccessMsg);
+                        $("#divEmpRoleAssignInfoMsg").removeClass("hidden alert-danger");
+                        $("#divEmpRoleAssignInfoMsg").addClass("alert-success");
+                    }
+                    else if (response.saveStatus == "Exist") {
+                        $("#btnSaveEmpRole").prop('disabled', true);
+                        $("#divEmpRoleAssignInfoMsg").text("User Already Exist");
+                        $("#divEmpRoleAssignInfoMsg").removeClass("hidden alert-danger");
+                        $("#divEmpRoleAssignInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnSaveEmpRole").prop('disabled', true);
+                        $("#divEmpRoleAssignInfoMsg").text(addFailMsg);
+                        $("#divEmpRoleAssignInfoMsg").addClass("alert-danger");
+                        $("#divEmpRoleAssignInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                    $("#btnSaveEmpRole").prop('disabled', true);
+                    $("#divEmpRoleAssignInfoMsg").text(addFailMsg);
+                    $("#divEmpRoleAssignInfoMsg").addClass("alert-danger");
+                    $("#divEmpRoleAssignInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+</script>

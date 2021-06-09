@@ -1,0 +1,79 @@
+﻿@*@model EsselTestLocalApplication.Models.SampleDynamicModel*@
+@using System.Data
+@model DataTable
+@{
+    ViewBag.Title = "SampleDynamicView";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<h2>SampleDynamicView</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            @foreach (System.Data.DataColumn col in Model.Columns) { 
+            <th>@col.Caption</th>
+            } 
+        </tr>
+    </thead>
+    <tbody>
+       @foreach(System.Data.DataRow row in Model.Rows) { 
+        <tr>
+            @foreach (var cell in row.ItemArray) {
+            <td>@cell.ToString() </td>
+            } 
+        </tr>
+        } 
+    </tbody>
+</table>
+
+
+
+@*@foreach (var item in Model.DynamicListData)
+    {*@
+
+@*<div>*@
+    @*//this gets you both the item (myItem.value) and its index (myItem.i)*@
+    @*@foreach (var myItem in Model.DynamicListData.Select((value, i) => new { i, value }))
+        {
+            <div>The index is @myItem.i and a value is @myItem.value</div>
+
+            foreach (var myItem1 in myItem.value.Select((value1, j) => new { j, value1 }))
+            {
+
+
+            }
+            }
+
+        </div>*@
+
+    @*@foreach (var myItem in Model.DynamicListData)
+        {
+
+            foreach (var myItem1 in Model.DynamicListData.IndexOf(myItem))
+            {
+                <span>@myItem1</span>
+            }
+            <span>@Model.DynamicListData.IndexOf(myItem)</span>
+            <span>@Model.DynamicListData.Count</span>
+            <span>@Model.DynamicListData.</span>
+        }*@
+
+    @*@for (int i = 0; i < Model.DynamicListData.Count; i++)
+    {
+        int local = i;
+        for (int j = 0; j < Model.DynamicListData[local].Count; j++)
+        {
+            int inner = j;
+
+            <span>@Model.DynamicListData[local][j].Value;</span>
+        }
+
+        //cols.Add(grid.Column(Model.First().Data[i].Name, Model.First().Data[i].Label,
+        //format: item => Html.Raw("<text>" + item.Data[local].Value + "</text>")
+        //));
+    }*@
+
+
+
+    @*//}*@
+

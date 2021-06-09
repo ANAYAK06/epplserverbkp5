@@ -1,0 +1,94 @@
+﻿@model List<EsselTestLocalApplication.Models.ClosingDetailsForAll>
+@{
+    ViewBag.Title = "CloseDetailsForAll";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Closing Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="table-responsive">
+                                    <table id="tblclosingcodesGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                                        <thead>
+                                            <tr>
+                                                <th class="hidden">ClosingFor</th>
+                                                <th>ClosingType</th>
+                                                <th>Name</th>
+                                                <th>ClosingDate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+
+                                                    <td class="hidden">
+                                                        @Html.DisplayFor(modelItem => item.ClosingFor)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ClosingType)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.ClosingDate)
+                                                    </td>
+
+
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                        <tfoot>
+                                            <tr></tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        var ClosingcodeGrid = null;
+        InitializeClosingcodeGrid();
+
+    });
+    function InitializeClosingcodeGrid() {
+        ClosingcodeGrid = $('#tblclosingcodesGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+
+    }
+</script>
+
+

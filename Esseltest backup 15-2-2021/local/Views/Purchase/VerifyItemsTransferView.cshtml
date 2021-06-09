@@ -1,0 +1,334 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ItemsTransfer
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div id="GridItemtransferData">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appritesmtransferstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppritemtransferNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveItemtransferDetails('@Model.Rowid')">Submit</button>
+                    <input type="text" value="@Model.IndentPresentLevel" id="txtIndentPresentLevel" style="display:none" />
+                    <input type="text" value="@Model.IndentDefineLevel" id="txtIndentDefineLevel" style="display:none" />
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divAppritemstransferInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        var Refno = '@Model.Refno';
+        var Presentlevel = '@Model.IndentPresentLevel';
+        var DefineLevel = '@Model.IndentDefineLevel';
+        var CType = '@Model.CCType';        
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#Appritesmtransferstatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        if (Presentlevel > DefineLevel) {
+                            if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        }
+                        else if (Presentlevel == DefineLevel && CType == "Performing") {
+                            if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        }
+                        else if (Presentlevel == DefineLevel && CType != "Performing") {                            
+                            ddlaprovalstatus.append($("<option></option>").val("Verify").html("Verify"));
+                        }
+                        else { 
+                        ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        }
+                    });
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/ViewItemTransferDetailsGridView',
+            data: { Refno: Refno, PresentLevel: Presentlevel, DefineLevel: DefineLevel },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GridItemtransferData").html(data);
+                }
+            },
+        });
+    });
+    function ApproveItemtransferDetails(Rowid) {     
+        var Presentlevel = '@Model.IndentPresentLevel';
+        var DefineLevel = '@Model.IndentDefineLevel';      
+        var Roleid = '@Session["Roleid"]'; 
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppritemstransCreatedby").val(Sessioncreated);
+        appstatusid = "Appritesmtransferstatus-" + Rowid;
+        var appstatus = $("#Appritesmtransferstatus").val();
+        var ReturnText = $("#AppritemtransferNotes").val();
+        var retnoteid = "AppritemtransferNotes-" + Rowid;
+        retnote = $("#" + retnoteid + "").val();     
+        msg = $("#divAppritemstransferInfoMsg");
+        isValid = true;
+        var errorMsg = "";      
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (ReturnText == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }        
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {           
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").addClass("hidden");
+            if (Presentlevel < DefineLevel) {  
+                var chkcount = 0; currentrowcount = 0;
+                var currentrowcount = $("#ItemTransferDetailsDataTable tbody tr").length;
+                $("#ItemTransferDetailsDataTable tbody tr").each(function () {
+                    var currentRow = $(this);                   
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');                   
+                    if (check == false) { chkcount = chkcount + 1; }                   
+                });
+                if (currentrowcount == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Invalid Submission</p > ";
+                    isValid = false;
+                }
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Transfer Items</p > ";
+                    isValid = false;
+                }             
+            }
+            else if (Presentlevel >= DefineLevel) {               
+                var chkcount1 = 0; currentrowcount1 = 0, depcount = 0, depvaluecount = 0;
+                var itemcode = "";
+                var dep = "";
+                var currentrowcount1 = $("#ItemTransferDetailsDataTable tbody tr").length;
+                $("#ItemTransferDetailsDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                    dep = currentRow.find("td").eq(11).find("select option:selected").index();
+                    var depvalue = currentRow.find("td").eq(10).html();
+                    itemcode = currentRow.find("td").eq(1).html().trim();
+                    if (check == false) { chkcount1 = chkcount1 + 1; }
+                    if (dep == 0) { depcount = depcount + 1; }
+                    if (depvalue == "" || depvalue == 0) { depvaluecount = depvaluecount + 1; }
+                });
+                if (currentrowcount1 == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Invalid Submission</p > ";
+                    isValid = false;
+                }
+                if (chkcount1 > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Transfer Items</p > ";
+                    isValid = false;
+                }
+                if (itemcode.substring(0, 1) != 1 && dep == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Select Depriciation Value</p > ";
+                    isValid = false;
+                }
+                if (itemcode.substring(0, 1) == 1 && dep != 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Depreciation Value is not applicable for Asset Items</p > ";
+                    isValid = false;
+                }
+            }                
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAppritemstransferInfoMsg").text("");
+                $("#divAppritemstransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+                $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {               
+                if (Presentlevel < DefineLevel) {                    
+                    var Refno = '@Model.Refno';
+                    $("#divItemsTransferInfoMsg").text("");
+                    $("#divItemsTransferInfoMsg").addClass("hidden");
+                    addFailMsg = "Error Occurred While Verification";
+                    var finalmsg;
+                    if (appstatus === 'Verify') {
+                        finalmsg = 'Verified Successfully';
+                    }
+                    else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                    else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                    else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/ApproveItemsTransferBelowDefineLevel",
+                        data: '{Refno:"' + Refno + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtAppritemstransCreatedby").val() + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",Rowid:"' + Rowid + '",Presentlevel:"' + Presentlevel + '",Definelevel:"' + DefineLevel + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        processData: false,
+                        dataType: "json",
+                        success: function (response) {
+                            var msg = response.saveStatus;
+                            if (response.saveStatus == "Submitted") {
+                                var msg = '';
+                                $('#ApproveitemstransMsgModal').modal('show');
+                                msg = "<div>Transfer No  " + Refno + '  '+finalmsg + "  </div>";
+                                $("#ApproveitemstransMsgModal").on("hide.bs.modal", function () {
+                                    $("#divAppritemstransGrid").load('/Purchase/VerifyItemsTransferGrid');
+                                });
+                                $("#AppritemstransMsg").html(msg);
+                            }
+                            else {
+                                msg = "<div>" + response.saveStatus + "</div>";
+                                $("#AppritemstransMsg").html(msg);
+                                $('#ApproveitemstransMsgModal').modal('show');
+                            }
+                        },
+                        failure: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#AppritemstransMsg").html(msg);
+                            $('#ApproveitemstransMsgModal').modal('show');
+                        },
+                        error: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#AppritemstransMsg").html(msg);
+                            $('#ApproveitemstransMsgModal').modal('show');
+                        }
+                    });
+                }
+                else if (Presentlevel >= DefineLevel) {
+                    debugger;
+                    var Refno = '@Model.Refno';
+                    var Indentno = '@Model.IndentNo'; 
+                    $("#divItemsTransferInfoMsg").text("");
+                    $("#divItemsTransferInfoMsg").addClass("hidden");
+                    var Rowids = "", dep1 = "", DepAmounts = 0, Amount = 0, EffAmount = 0,SumBeforeDep=0,SumAfterDep=0;
+                    $("#ItemtransferDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var Inedntid = currentRow.find("td").eq(13).html();
+                        if (Inedntid !== 0) {
+                            selectedledlist.push(currentRow.find("td").eq(13).html());
+                        }
+                    });
+                    $("#ItemTransferDetailsDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var Rowid = currentRow.find("td").eq(13).html();
+                        var depvalue = currentRow.find("td").eq(10).html();
+                        var Afterdepvalue = currentRow.find("td").eq(12).html();
+                        var dep = currentRow.find("td").eq(11).find("select option:selected").val();
+                        var itemcode = currentRow.find("td").eq(1).html().trim();
+                        var substringcode = itemcode.substring(1, 1);
+                        if (substringcode != 1) {
+                            if (dep != 100) {
+                                Rowids += Rowid;
+                                Rowids += ",";
+                                dep1 += dep;
+                                dep1 += ",";
+                                DepAmounts = DepAmounts + parseFloat(parseFloat(depvalue) - (((parseFloat(depvalue)) * (parseFloat(dep))) / 100));
+                                DepAmounts += ",";
+                                Amount = Amount + parseFloat(parseFloat(depvalue) - (((parseFloat(depvalue)) * (parseFloat(dep))) / 100));
+                                EffAmount = EffAmount + (((parseFloat(depvalue)) * (parseFloat(dep))) / 100);
+                                SumBeforeDep = parseFloat(SumBeforeDep) + parseFloat(depvalue);
+                                SumAfterDep = parseFloat(SumAfterDep) + parseFloat(Afterdepvalue);
+                            }
+                            else {
+                                Rowids += Rowid;
+                                Rowids += ",";
+                                DepAmounts = DepAmounts + 0 + ",";
+                                Amount = parseFloat(Amount) + parseFloat(depvalue);
+                                dep1 = dep1 + "Full Value" + ",";
+                            }
+                        }
+                    
+                    });
+                    addFailMsg = "Error Occurred While Verification";
+                    var finalmsg;
+                    if (appstatus === 'Verify') {
+                        finalmsg = 'Verified Successfully';
+                    }
+                    else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                    else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                    else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/ApproveItemsTransferBelowDefineLevel",
+                        data: '{Refno:"' + Refno + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtAppritemstransCreatedby").val() + '",Remarks:"' + $("#AppritemtransferNotes").val() + '",Rowid:"' + Rowids + '",Presentlevel:"' + Presentlevel + '",Definelevel:"' + DefineLevel + '",DepAmounts:"' + DepAmounts + '",EffAmount:"' + EffAmount + '",Depcsk:"' + dep1 + '",Amount:"' + Amount + '",Indentno:"' + Indentno + '",SumBeforeDep:"' + SumBeforeDep + '",SumAfterDep:"' + SumAfterDep + '"}', 
+                        contentType: "application/json; charset=utf-8",
+                        processData: false,
+                        dataType: "json",
+                        success: function (response) {
+                            var msg = response.saveStatus;
+                            if (response.saveStatus == "Submitted") {
+                                var msg = '';
+                                $('#ApproveitemstransMsgModal').modal('show');
+                                msg = "<div>Transfer No  " + Refno + '  '+finalmsg + "  </div>";
+                                $("#ApproveitemstransMsgModal").on("hide.bs.modal", function () {
+                                    $("#divAppritemstransGrid").load('/Purchase/VerifyItemsTransferGrid');
+                                });
+                                $("#AppritemstransMsg").html(msg);
+                            }
+                            else {
+                                msg = "<div>" + response.saveStatus + "</div>";
+                                $("#AppritemstransMsg").html(msg);
+                                $('#ApproveitemstransMsgModal').modal('show');
+                            }
+                        },
+                        failure: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#AppritemstransMsg").html(msg);
+                            $('#ApproveitemstransMsgModal').modal('show');
+                        },
+                        error: function (response) {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#AppritemstransMsg").html(msg);
+                            $('#ApproveitemstransMsgModal').modal('show');
+                        }
+                    });
+                }               
+            }
+        }
+    }
+</script>

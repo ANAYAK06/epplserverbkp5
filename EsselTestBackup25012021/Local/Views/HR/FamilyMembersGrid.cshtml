@@ -1,0 +1,105 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.FamilyMember>
+@if (Model.Count > 0)
+{
+    <div class="col-md-12 change-tab">
+        <div class="strike">
+            <span>Family Details</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <table id="FamilyTable" class="table order-list familytable">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;color:#fff !important">S.No</td>
+                        <td style="text-align:center;color:#fff !important">Name</td>
+                        <td style="text-align:center;color:#fff !important">Date of Birth</td>
+                        <td style="text-align:center;color:#fff !important">Age</td>
+                        <td style="text-align:center;color:#fff !important">Gender</td>
+                        <td style="text-align:center;color:#fff !important">Relationship</td>
+                        <td style="text-align:center;color:#fff !important">Work</td>
+                        <td style="text-align:center;color:#fff !important">Mobile No</td>
+                        <td style="text-align:center;color:#fff !important"></td>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @{int count = 1;
+                    }
+
+
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td style="text-align:center;width:1%">@count</td>
+                        <td style="text-align:center;width:20%">
+                            @Html.DisplayFor(modelItem => item.FMName)
+                        </td>
+                        <td style="width:20%;text-align:center">
+                            @Html.DisplayFor(modelItem => item.FMDateofBirth)
+                        </td>
+
+                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMAge)</td>
+                        <td style="width:10%;text-align:center">
+                            @Html.DisplayFor(modelItem => item.FMGender)
+                        </td>
+                        <td style="width:10%;text-align:center">
+                            @Html.DisplayFor(modelItem => item.FMRelation)
+                        </td>
+                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMWork)</td>
+                        <td style="width:10%;text-align:center">@Html.DisplayFor(modelItem => item.FMMobileNo)</td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddnewempFamilyTabledelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count++;
+                    }
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("table.order-list.familytable").on("click", ".ibtnAddnewempFamilyTabledelete", function (event) {
+                //$(this).closest("tr").remove();
+                var row = $(this).closest("tr");
+                var fmname = $.trim(row.find("td").eq(1).html());
+                var rowno = $.trim(row.find("td").eq(0).html());
+                addFailMsg = "Error Occurred While Deleting.";
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/DeleteFamilyMemberData',
+                    data: { Name: fmname },
+                    success: function (Data) {
+                        //alert("Hi");
+                        if (Data.saveStatus === "Deleted") {
+                            row.remove();
+                            if (rowno == 1 || rowno === "1") {
+                                $("#divFamilyGridData").load('/HR/FamilyMembersGrid');
+                            }
+                            else { ReassignRowNoforFamilyMemberGrid(); }
+                         
+                        }
+                        else {
+                            $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            });
+        });
+        function ReassignRowNoforFamilyMemberGrid() {
+            var rowno = 1;
+            $("#FamilyTable tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html(rowno);
+                rowno++;
+            });
+        }
+    </script>
+}

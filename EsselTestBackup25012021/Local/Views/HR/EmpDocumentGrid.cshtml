@@ -1,0 +1,168 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.EmpDocument>
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="col-md-12 change-tab">
+    <div class="strike1">
+        <span>Documents</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="DocumentTable" class="table order-list doctable dataTable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important">S.No</td>
+                    <td style="text-align:center;color:#fff !important">Name</td>
+                    @*<td style="text-align:center;color:#fff !important">Preview</td>*@                  
+                    <td style="text-align:center;color:#fff !important"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count3 = 1; }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center">@count3</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DocName)
+                        </td>
+                        @*<td style="text-align:center">
+                            <img src="@item.Path" width="150" height="150" />
+                        </td>*@
+                        
+                        <td style="text-align:center">
+
+                            <input type="button" class="ibtnshowPreview btn btn-md btn-danger" value="Preview" onclick="ShowPreview(@serializer.Serialize(item))">
+                            <input type="button" class="ibtnAdddocdelete btn btn-md btn-danger" value="Delete">
+                        </td>
+
+                    </tr>
+                    count3++;
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="PreviewModel" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<script>
+    $(document).ready(function () {
+
+        var docGrid = null;
+        InitializeDocGrid();
+        $("table.order-list.doctable").on("click", ".ibtnAdddocdelete", function (event) {
+            var row = $(this).closest("tr");
+            var name = $.trim(row.find("td").eq(1).html());
+            var rowno = $.trim(row.find("td").eq(0).html());
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteEmpDocumentData',
+                data: { DocName: name },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        row.remove();
+                        if (rowno == 1 || rowno === "1") {
+                            $("#divDocuments").load('/HR/EmpDocumentGrid');
+                        }
+                        else { ReassignRowNoforDocGrid(); }
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+        //$("table.order-list.doctable").on("click", ".ibtnshowPreview", function (event) {
+        //    var row = $(this).closest("tr");
+        //    var path = $.trim(row.find("td").eq(2).html());
+        //    var rowno = $.trim(row.find("td").eq(0).html());
+        //    var Doc = {
+        //        DocName:,
+        //        DocBinaryData:,
+        //        Path:
+        //                    }
+        //    $.ajax({
+        //        type: "POST",
+        //        url: "/HR/DocumentPreview",
+        //        data: { edData:},
+        //        contentType: "application/json; charset=utf-8",
+        //        dataType: 'html',
+        //        success: function (data) {
+        //            $('#ChildMemberModel').html(data);
+        //            $('#ChildMemberModel').modal();
+        //        }
+        //    });
+        //    //$('#PreviewModel').modal('show');
+        //    //$('#Previewimg').attr('src', path);
+        //});
+    });
+    function ReassignRowNoforDocGrid() {
+        var rowno = 1;
+        $("#DocumentTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(rowno);
+            rowno++;
+        });
+
+    }
+    function InitializeDocGrid() {
+        docGrid = $('#DocumentTable').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Documents Found"
+            },
+            "createdRow": function (row, data, index) {
+                //debugger;
+                //var base64code = $.trim($('td:eq(3)', row).html);
+                ////var baseStr64 = base64code;
+                ////console.log(baseStr64);
+                ////$('td:eq(2)', row).find(".docimg").attr('src', "data:image/jpg;base64, " + baseStr64);
+
+                //var src = "data:image/jpeg;base64,";
+                //src += base64code;
+                //var newImage = document.createElement('img');
+                //newImage.src = src;
+                //newImage.width = newImage.height = "80";
+                //$('td:eq(2)', row).innerHTML = newImage.outerHTML;//where to insert your image
+            },
+            pageLength: 10
+        });
+
+    }
+    function ShowPreview(Modeldata) {
+        debugger;
+        $.ajax({
+                type: "POST",
+                url: "/HR/DocumentPreview",
+            //data: '{edData:"' + Modeldata + '"}',
+            data: JSON.stringify({ edData: Modeldata }),
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#PreviewModel').html(data);
+                    $('#PreviewModel').modal();
+                }
+            });
+    }
+</script>

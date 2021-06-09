@@ -1,0 +1,227 @@
+﻿@model EsselTestLocalApplication.Models.BudgetReportDetails
+<div align="right">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="BudgetReportExportexcel();" />
+    @*<img src="~/Content/EsselImages/pdf1.png" onclick="Exportpdf();" />*@
+    @*<img src="~/Content/EsselImages/word.png" onclick="Exportword();" />*@
+</div>
+
+<div id="divDCABudgetDetails" class="row">
+    <div class="table-responsive col-lg-12">
+        <table id="tblDcaBudgetReportGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    @foreach (var item in Model.CCBudget)
+                    {
+                        <th colspan="3">@item.CC_Name</th>
+                        <th colspan="2">Budget Amount:@item.BudgetValue</th>
+                        <th colspan="2">Budget Balance:@item.BalanceBudget</th>
+                    }
+                </tr>
+                <tr>
+                    <th></th>
+                    <th class="hidden">DCABudget Id</th>
+                    <th>Account Head Code</th>
+                    <th>Account Head Name</th>
+                    <th>Assigned Budget</th>
+                    <th>ConsumedBudget</th>
+                    <th>Account Head Balance</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.DCABudget)
+                {
+                    <tr>
+                        <td class="details-control"></td>
+                        <td class="hidden">
+                            @Html.DisplayFor(modelItem => item.DCABudgetId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DCACode)
+                        </td>
+                        <td style="word-wrap: break-word; word-break: break-all; white-space: normal;">
+                            @Html.DisplayFor(modelItem => item.DCAName)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DCABudgetValue)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ConsumedBudget)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DCABudgetBalance)
+                        </td>
+                        <td></td>
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style="text-align:left !important"><b>@Html.DisplayFor(modelItem => modelItem.TotalDcaBudget)</b></td>
+                    <td><b>@Html.DisplayFor(modelItem => modelItem.TotalDcaConsumedBudget)</b></td>
+                    <td><b>@Html.DisplayFor(modelItem => modelItem.DcaTotalBudgetBalance)</b></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+</div>
+<input type="hidden" value="@Model.TotalDcaBudget" id="txtTotalDCABudget" />
+<input type="hidden" value="@Model.TotalDcaConsumedBudget" id="txtTotalConsumedDCABudget" />
+
+
+@foreach (var item in Model.CCBudget)
+{
+    <input type="hidden" value="@item.CC_Name" id="txtBRCCName" />
+    <input type="hidden" value="@item.BudgetValue" id="txtBRCCBudget" />
+    <input type="hidden" value="@item.BalanceBudget" id="txtBRCCBalance" />
+
+}
+<input type="hidden" value="@Model.CCCode" id="txtBRCCCode" />
+<input type="hidden" value="@Model.year" id="txtBRCCYear" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dcaGrid = null;
+        InitializeDCABudgetReportGrid();
+    });
+    function InitializeDCABudgetReportGrid() {
+        dcaGrid = $('#tblDcaBudgetReportGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            language: {
+                "emptyTable": "No DCAs Found"
+            },
+            pageLength: 100,
+            "initComplete": function (settings, json) {
+                //GetBudgetAsignedCCDetailsForReport();
+
+            }
+        });
+        $('#tblDcaBudgetReportGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = dcaGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatDCABudgetReport(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+
+    }
+    function formatDCABudgetReport(d) {
+        var cccode, dcabudgetid, dcacode, year, year1, subtype, subyear;
+
+        $.each(d, function (index, value) {
+            if (index == 1)
+                dcabudgetid = value;
+            if (index == 2)
+                dcacode = value;
+
+        });
+        var CCType = $("#ddlBdgRptCCType option:selected").text();
+        if (CCType === "Performing") {
+            cccode = $("#ddlBdgRptPerCCCode option:selected").val();
+            year = '';
+            year1 = '';
+        }
+        else {
+            cccode = $("#ddlBdgRptNonPerCCCode option:selected").val();
+            subyear = $("#ddlBdgRptYear option:selected").val();
+            year = subyear.substring(0, 4);
+            year1 = (parseInt(year) + 1);
+            //year1 = '';
+        }
+        var divid = "divapprDcabgtSummary" + dcacode;
+        var divid1 = $("#" + divid + "");
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/Reports/GetDCABudgetDetailedSummary',
+            data: { CCType: CCType, CCCode: cccode, DCACode: dcacode, Year: year, Year1: year1 },
+
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    var divid2 = "divapprDcabgtSummary" + dcacode;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                }
+                else {
+                    $(divid3).html("No Data Found")
+
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+        return '<div id="divapprDcabgtSummary' + dcacode + '" class="col-md-12"></div>';
+
+    }
+
+    function BudgetReportExportexcel() {
+
+        debugger;
+        var ccname = $("#txtBRCCName").val();
+        var CCode = $("#txtBRCCCode").val();
+        var CCyear = $("#txtBRCCYear").val();
+        var Type = $("#ddlBdgRptCCType option:selected").text();
+        var ccname = $("#txtBRCCName").val();
+        var ccBudget = $("#txtBRCCBudget").val();
+        var ccBalance = $("#txtBRCCBalance").val();
+        var TotalDCABalance = '@Model.DcaTotalBudgetBalance';
+        var TotalDCABudget = '@Model.TotalDcaBudget';
+        var TotalConsumedBudget = '@Model.TotalDcaConsumedBudget';
+       
+        if (Type === "Performing") {
+            
+            year = '';
+            year1 = '';
+        }
+        else {           
+            subyear = $("#ddlBdgRptYear option:selected").val();
+            year = subyear.substring(0, 4);
+            year1 = (parseInt(year) + 1);
+            //year1 = '';
+        }
+       
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/BudgetRptExportexcel',
+            data: { CCCode: CCode, Fyear: CCyear, CCType: Type, Fyear1: year, Fyear2: year1, CCName: ccname, CCBudget: ccBudget, CCbalance: ccBalance, DCATBudget: TotalDCABudget, DCACBudget: TotalConsumedBudget, DCATBalance: TotalDCABalance},
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                var ccname = ""; var CCBudgetvalue = ""; var CCBalanceBudget = "";
+
+
+                link.download = "" + CCode + " Budget Report For  Year:" + CCyear+"  Report.xlsx";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+    }
+</script>

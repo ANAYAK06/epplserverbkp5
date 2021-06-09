@@ -1,0 +1,13 @@
+﻿@model EsselTestLocalApplication.Models.BusinessApprovalHierarchy
+
+<div>
+    @Html.DropDownListFor(model => model.RoleList, new SelectList(Model.RoleList, "RoleID", "RoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHirRole" })
+    @*@Html.ListBoxFor(m => m.RoleList, new SelectList(Model.RoleList, "RoleID", "RoleCode"), htmlAttributes: new { @class = "listbox", @id = "lstrole", @multiple = "multiple" })*@
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('.listbox').multiselect({
+        //    includeSelectAllOption: true
+        //});  
+    });
+</script>

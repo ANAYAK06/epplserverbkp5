@@ -1,0 +1,76 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignDCABudget
+<form onsubmit="return false">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CCCode)
+                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.budgerCClist, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCc", onchange = "DcaBudgetCcChange()" })
+            </div>
+        </div>
+        <div class="col-md-4" id="divDCAYear">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FYyear)
+                @Html.DropDownListFor(model => model.FYyear, new SelectList(Model.budgetYear, "CC_FinYear", "CC_FinYear"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlDCAYear" })
+            </div>
+        </div>
+        <div class="col-md-4" id="divDCABudgetRemarks">
+            <div class="form-group">
+                <label>Remarks</label>
+                <textarea class="form-control" id="txtDCABudgetRemarks" rows="1"></textarea>
+            </div>
+        </div>
+        <div class="row" style="display:none">
+            <input type="text" value="0" id="txtCCtype" />
+            <input type="text" value="0" id="txtCCBudget" />
+            <input type="text" value="0" id="txtDCABudgetSubTotal" />
+        </div>
+
+    </div>
+    <div class="row" id="divDCAGrid">
+        <div class="strike">
+            <span>Assign DCA</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <table id="DCABudgetTable" class="table order-list dcabudget" style="width:100%;">
+                <thead style="width:100%;font:22px solid #fff !important">
+                    <tr>
+                        <td style="text-align:center;font:22px solid #fff !important"><label>No</label></td>
+                        <td style="text-align:center;font:22px solid #fff"><label>DCACode</label></td>
+                        <td style="text-align:center;font:22px solid #fff"><label>DCA Amount</label></td>
+                        <td style="text-align:center;font-weight:bold;font:22px solid #fff">Check</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center"></td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center"></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-right">
+            <input type="submit" class="btn btn1 btn-success" id="btnDCASubmit" onclick="DCASubmitData()" value="Submit" />
+            <input type="button" class="btn btn1 btn-success" id="btnAssignDCAReset" onclick="ClearAssignDCA()" value="Reset" />
+            <input type="hidden" id="txtcctypename" />
+            
+        </div>
+    </div>
+    <div class="row text-center">
+        <br />
+        <div id="divDCAInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+    
+</form>

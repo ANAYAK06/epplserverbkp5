@@ -1,0 +1,136 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.CashVoucher>
+<div class="table-responsive w-100">
+    <table id="tblItemsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">View</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Voucher Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Voucher Paid Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Voucher Code</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Paid CC</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Paid Against CC</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Amount</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px" class="hidden"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VoucherDate)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VoucherPaidDate)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VoucherCode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.FromCC)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ToCC)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px" class="hidden">
+                        @Html.DisplayFor(modelItem => item.Rid)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+              
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<div class="modal fade" id="Cashvoucherprint" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveBankGrid = null;
+        InitializeApprBankGrid();
+    });
+    function InitializeApprBankGrid() {
+        ApproveBankGrid = $('#tblItemsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: true,
+            searching: true,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+           
+        });
+        $('#tblItemsGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveBankGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveBankGrid, tr);
+                // Open this row
+                row.child(formatApprBankAccounts(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprBankAccounts(d) {
+        var htmltext;
+        var Vid, VoucherCode;
+        $.each(d, function (index, value) {
+            if (index == 8)
+                Vid = value;
+            if (index == 3)
+                VoucherCode = value;
+        });
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/ViewCashVoucherPrint",
+            data: '{Vid:"' + VoucherCode + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#Cashvoucherprint').html(data);
+                $('#Cashvoucherprint').modal();
+            }
+        });
+        
+    }
+</script>

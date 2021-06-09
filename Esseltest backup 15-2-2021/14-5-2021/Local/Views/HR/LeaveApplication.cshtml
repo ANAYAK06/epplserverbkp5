@@ -1,0 +1,308 @@
+﻿@model EsselTestLocalApplication.Models.HR.LeaveApplication
+@{
+    ViewBag.Title = "LeaveApplication";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Leave Application</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.LeaveType)
+                                                                @Html.DropDownListFor(model => model.LeaveType, new SelectList(Model.EmpLeaveTypeList, "LeaveId", "LeaveName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_leaveType", onchange = "Leavetypechange()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @*@Html.LabelFor(model => model.TransferType)
+                                                                    @Html.DropDownListFor(model => model.TransferType, new SelectList(Model.TransactionMode, "PaymentModeid", "PaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_CDBPaymentType", onchange = "paymenttypechange()" })*@
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Balanceleaves)
+                                                                @Html.TextBoxFor(model => model.Balanceleaves, htmlAttributes: new { @class = "form-control", @value = "0", @id = "txtbalanceleaves", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="datedetails">
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.FromDate)
+                                                                    @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromdate", @class = "form-control date-picker", type = "text", @readonly = true, onchange = "return dayscount()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.ToDate)
+                                                                    @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttodate", @class = "form-control date-picker", type = "text", @readonly = true, onchange = "return dayscount()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Noofleaves)
+                                                                    @Html.TextBoxFor(model => model.Noofleaves, htmlAttributes: new { @class = "form-control", @id = "txtnoofleaves", @readonly = true })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Remarks)
+                                                                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txtleaveRemarks", @class = "form-control", @rows = "3" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row ">
+                                                            <div class="col-md-12">
+                                                                <div class="text-right">
+                                                                    <input type="text" id="txtleaveapplicabletype" style="display:none" />
+                                                                    <button class="btn btn1 btn-success" id="btnLeaveSubmit" onclick="btnSubmitLeaveData()">Submit</button>
+                                                                    <button class="btn btn1 btn-success" id="btnReset" onclick="Clearreset()">Reset</button>
+                                                                    @*  <input type="text" id="txtcbdCreatedby" style="display:none" />*@
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row text-center">
+                                                            <div id="divleaveInfoMsg" class="alert alert-danger hidden">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#datedetails").addClass("hidden");
+    });
+    function Clearreset() {
+        location.reload();
+    }
+    function Leavetypechange() {        
+        //debugger;
+        //Clearreset();
+        var Leavetypeval = $("#ddl_leaveType option:selected").val(); 
+        $("#txtbalanceleaves").val("");
+        $("#txttodate").val("");
+        $("#txtnoofleaves").val("");
+        $("#txtleaveRemarks").val("");  
+        if (Leavetypeval != "0") {
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetLeaveCount",
+                data: '{LeaveType:"' + Leavetypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        $.each(response, function () {
+                            if (this['Balanceleaves'] != null) {
+                                $("#txtbalanceleaves").val(this['Balanceleaves']);
+                                $("#txtleaveapplicabletype").val(this['CarryForward']);
+                                $("#datedetails").removeClass("hidden");
+                                $("#txtfromdate").datepicker({
+                                    dateFormat: 'dd-M-yy',
+                                    changeMonth: true,
+                                    changeYear: true,
+                                    showOn: "button",
+                                    minDate: 'dateToday',
+                                    maxDate: 180,
+                                    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                                    onClose: function (selectedDate) {
+                                        //SetToDate(selectedDate,CarryFwd);
+                                        $("#txttodate").datepicker("option", "minDate", selectedDate);
+                                    }
+                                }).datepicker("setDate", new Date());
+                                
+                                if (this['CarryForward'] == "Yes" || this['CarryForward'] != null) {                                    
+                                    $("#txttodate").datepicker({
+                                        dateFormat: 'dd-M-yy',
+                                        changeMonth: true,                                       
+                                        showOn: "button",
+                                        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                                        maxDate: 180,
+                                    });
+                                    $("#txttodate").datepicker("option", "changeYear", true);
+                                }
+                                else {                                   
+                                    $("#txttodate").datepicker({
+                                        dateFormat: 'dd-M-yy',
+                                        changeMonth: true,                                       
+                                        showOn: "button",
+                                        buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                                        maxDate: 180,
+                                    });
+                                    $("#txttodate").datepicker("option", "changeYear", false);
+                                }
+                            }
+                            else {
+                                $("#txtbalanceleaves").val("0");
+                                $("#txtleaveapplicabletype").val("0");
+                                $("#datedetails").addClass("hidden");
+                            }
+                        });
+                    }
+
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        else {
+            $("#datedetails").addClass("hidden");
+            $("#txtbalanceleaves").val("0");
+            $("#txtleaveapplicabletype").val("0");           
+            $("#txttodate").val("");
+            $("#txtnoofleaves").val("");
+            $("#txtleaveRemarks").val("");  
+        }
+
+    }
+    function dayscount() {       
+        var date1 = $("#txtfromdate").val();
+        var date2 = $("#txttodate").val();
+        if (date1 != "" && date2 != "") {
+            var startDate = Date.parse(date1);
+            var endDate = Date.parse(date2);
+            var timeDiff = endDate - startDate;
+            var daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            var days = daysDiff + parseInt(1);
+            $("#txtnoofleaves").val(days);
+        }
+        else { $("#txtnoofleaves").val("") }
+    }
+    function btnSubmitLeaveData() {      
+        var errorMsg = "";
+        isValid = true;
+        var leaveType = $("#ddl_leaveType option:selected").val();
+        var balanceleaves = $("#txtbalanceleaves").val();      
+        var fromdate = $("#txtfromdate").val();
+        var todate = $("#txttodate").val();
+        var noofdays = $("#txtnoofleaves").val();
+        var Remarks = $("#txtleaveRemarks").val();  
+        var nextyear = $("#txtleaveapplicabletype").val(); 
+        if (leaveType == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Leave Type</p>";
+            isValid = false;
+        }
+        if (fromdate == "" || fromdate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (todate == "" || todate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }
+        if (parseInt(balanceleaves) == 0 || parseInt(balanceleaves) == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Leave Selection</p>";
+            isValid = false;
+        }
+        if (parseInt(noofdays) == 0 || parseInt(noofdays) == "" || parseInt(noofdays) < 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Date Selection</p>";
+            isValid = false;
+        }
+        if (parseInt(noofdays) > parseInt(balanceleaves)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Date Selection</p>";
+            isValid = false;
+        }        
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remarks</p>";
+            isValid = false;
+        }       
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divleaveInfoMsg").text("");
+            $("#divleaveInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divleaveInfoMsg").addClass("alert-danger");
+            $("#divleaveInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divleaveInfoMsg").text("");
+            $("#divleaveInfoMsg").addClass("hidden");
+            Savedata();
+        }
+
+    }
+    function Savedata() {
+        var Roleid = '@Session["Roleid"]';
+        var Createdby = '@Session["Createdby"]';
+        var Details = {
+            Employeeid: Createdby,
+            LeaveTypeid: $("#ddl_leaveType option:selected").val(),
+            FromDate: $("#txtfromdate").val(),
+            ToDate: $("#txttodate").val(),
+            Remarks: $("#txtleaveRemarks").val(), 
+            NoofDays: $("#txtnoofleaves").val(),
+            Createdby: Createdby
+        };
+        addFailMsg = "Error Occurred While Submitting.";
+        $("#btnLeaveSubmit").prop("disabled", true); 
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/HR/SaveLeaveDetails',
+            data: { newDetails: Details },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divleaveInfoMsg").text(Data.saveStatus);
+                    $("#divleaveInfoMsg").removeClass("hidden alert-danger");
+                    $("#divleaveInfoMsg").addClass("alert-success");
+                                 
+                }
+                else {
+                    $("#divleaveInfoMsg").text(Data.saveStatus);
+                    $("#divleaveInfoMsg").addClass("alert-danger");
+                    $("#divleaveInfoMsg").removeClass("hidden alert-success");
+                    $("#btnLeaveSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divleaveInfoMsg").text(addFailMsg);
+                $("#divleaveInfoMsg").addClass("alert-danger");
+                $("#divleaveInfoMsg").removeClass("hidden alert-success");
+                $("#btnLeaveSubmit").prop("disabled", false);
+            }
+        });
+    }
+</script>

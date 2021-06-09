@@ -1,0 +1,113 @@
+﻿@model EsselTestLocalApplication.Models.AddEditDCA
+@{
+    ViewBag.Title = "AddTaxDCA";
+    Layout = null;
+}
+@*@Scripts.Render("~/Scripts/bootstrap-multiselect.js")
+    @Scripts.Render("~/Scripts/bootstrap.min.js")
+    @Styles.Render("~/Content/bootstrap-multiselect/bootstrap-multiselect.css")*@
+
+<div class="row col-lg-10">
+
+    <div class="form-horizontal">
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3">
+                @Html.LabelFor(model => model.TypeOfTax, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.DropDownListFor(model => model.TypeOfTax, new SelectList(Model.TypeOfTaxList, "TypeOfTaxID", "TypeOfTaxDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AddTaxDCATypeOfTaxID" })
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3"> @Html.LabelFor(model => model.NatureOfTax, htmlAttributes: new { @class = "control-label" })</div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.DropDownListFor(model => model.NatureOfTax, new SelectList(Model.NatureOfTaxList, "NatureOfTaxID", "NatureOfTaxDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AddTaxDCANatureOfTaxID" })
+                </div>
+                </div>
+            </div>
+
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3">   @Html.LabelFor(model => model.DCACode, htmlAttributes: new { @class = "control-label" })</div>
+            <div class="col-lg-4">
+                <div class="form-group">
+
+                    @if (Model.DCACodeID == 0)
+                    {
+                        @Html.TextBoxFor(model => model.DCACode, htmlAttributes: new { @class = "form-control", @id = "txtAddTaxDCACode" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.DCACode, htmlAttributes: new { @class = "form-control", @id = "txtAddTaxDCACode", @readOnly = "true" })
+                    }
+
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3">
+                @Html.LabelFor(model => model.DCAName, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+
+
+                    @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @id = "txtAddTaxDCAName" })
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-3">
+                @Html.LabelFor(model => model.CCTypeIDsgeneral, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-lg-4">
+
+                <div class="form-group">
+
+
+
+                    @Html.ListBoxFor(model => model.CCTypeIDsgeneral, new SelectList(Model.CCtypeList, "CCTypeID", "CCTypeDescription"), new { @class = "listbox form-control", @id = "addTaxDCACCTypeMLID" })
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-right">
+            <div class="form-group">
+                <div>
+                    <input type="submit" value="Submit" class="btn btn-default firmbtns-hover" onclick="AddEditTaxDCA()" id="adddca" /> &nbsp;&nbsp;
+                    @if (Model.DCACodeID == 0)
+                    {
+                        <input type="reset" value="Reset" class="btn btn-default firmbtns-hover" id="btnResettaxdca" style="padding-left:10px;" onclick="ResetAddTaxDCA()" />
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<label class="hidden">
+    hdnTaxDCAID: @Html.Hidden("hdnTaxDCAID", 0)
+</label>
+<div class="col-md-12 text-center">
+    <div id="divAddTaxDCAInfoMsg" class="alert alert-danger hidden">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.listbox').multiselect();
+    });
+</script>
+
+

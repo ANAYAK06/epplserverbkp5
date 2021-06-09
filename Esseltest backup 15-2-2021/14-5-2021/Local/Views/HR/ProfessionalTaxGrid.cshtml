@@ -1,0 +1,153 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.ProfessionalTaxRules>
+@if (Model.Count > 0)
+{
+
+    <div class="table-responsive">
+        <table id="tblPTGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    @*<th class="tdtextcls hidden">Id</th>*@
+                    <th class="tdtextcls  hidden">CategoryId</th>
+                    <th class="tdtextcls">Effective Date</th>
+                    <th class="tdtextcls">Emp Category</th>
+                    <th class="tdtextcls">ApplicaleToWhome(Salary >/=)</th>
+                    <th class="tdtextcls">Percentage In Salary</th>
+                    <th class="tdtextcls">State</th>
+                    <th class="tdtextcls">Account Head</th>
+                    <th class="tdtextcls">SubAccount Head</th>
+                    <th class="tdtextcls hidden">Stateid</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    @*<td class="hidden">
+            @Html.DisplayFor(modelItem => item.ProfessionalTaxId)
+        </td>*@
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CategoryId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EffectiveDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CategoryName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ApplicaleToWhome)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PercentageInSalary)
+                    </td>
+
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.State)
+                        @*@if (item.PTSelectedstateDetails.Count > 0)
+            {
+                <ol>
+                    @foreach (var cc in item.PTSelectedstateDetails)
+                    {
+                        <li>@Html.DisplayFor(CC => cc.State_Name)</li>
+                    }
+                </ol>
+            }
+            else
+            {
+                <label>All</label>
+
+            }*@
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.DCAName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SubDCAName)</td>
+                    <td class="hidden">@Html.DisplayFor(modelItem => item.StateId)</td>
+                    <td>
+                        <input type="button" class="deletePTRule btn btn-md btn-danger" value="Delete">
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+    $(document).ready(function () {
+        var ptGrid = null;
+        InitializePTGrid();
+        $("#tblPTGrid").on("click", ".deletePTRule", function (event) {
+            //alert('deleted');
+            var row = $(this).closest("tr");
+            //var Id = $.trim(row.find("td").eq(0).html());
+            var CatId = $.trim(row.find("td").eq(0).html());
+            var Stateid = $.trim(row.find("td").eq(8).html());
+            var data = {               
+                CategoryId: CatId,
+                StateId: Stateid
+            };
+
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteProfessionalTax',
+                data: { objHRRules: data },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                      //  row.remove();
+                        //location.reload();
+                        $('#liTax').trigger('click');
+                    }
+                    else {
+                        $("#divNoticePeriodInfoMsg").text(addFailMsg);
+                        $("#divNoticePeriodInfoMsg").addClass("alert-danger");
+                        $("#divNoticePeriodInfoMsg").removeClass("hidden alert-success");
+                    }
+                    //var shcount = $("#tblNPGrid tbody tr").length;
+                    //if (shcount > 0) {
+                    //    $("#divAdvGrid").removeClass('hidden');
+                    //}
+                    //else { $("#divAdvGrid").addClass('hidden'); }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divLTESalAdvanceInfoMsg").text(addFailMsg);
+                    $("#divLTESalAdvanceInfoMsg").addClass("alert-danger");
+                    $("#divLTESalAdvanceInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+    });
+        function InitializePTGrid() {
+        ptGrid = $('#tblPTGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Leaves Found"
+            },
+            "createdRow": function (row, data, index) {
+                //var oldcarryfwd = $.trim($('td:eq(1)', row).html());
+                ////alert(oldstatus);
+                ////debugger;
+                //if (oldcarryfwd === false) {
+                //    $('td:eq(1)', row).html("No");
+
+                //}
+                //else { $('td:eq(1)', row).html("Yes"); }
+            },
+            pageLength: 10
+        });
+    }
+    </script>
+
+}

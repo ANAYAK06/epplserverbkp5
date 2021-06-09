@@ -1,0 +1,224 @@
+﻿
+@model List<EsselTestLocalApplication.Models.CCOverheadDepreciation>
+@{
+    /**/
+
+    WebGrid webGrid = new WebGrid(source: Model, canPage: true, canSort: false);
+}
+<style type="text/css">
+    body {
+        font-family: Arial;
+        font-size: 10pt;
+    }
+
+    .Grid {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        width:100%;
+    }
+
+        .Grid th {
+            background-color: #F7F7F7;
+            font-weight: bold;
+            text-align:center
+        }
+
+        .Grid th, .Grid td {
+            padding: 5px;
+            width: 150px;
+            border: 1px solid #ccc;
+            text-align: center
+        }
+
+        .Grid, .Grid table td {
+            border: 0px solid #ccc;
+        }
+
+            .Grid th a, .Grid th a:visited {
+                color: #333;
+            }
+    a.btn {
+        border-radius: .25rem;
+        border: 1px solid gray;
+        padding: .5rem 1rem;
+        color: #fff;
+        background-color: #5cb85c;
+    }
+     a.btn:hover {
+            border-radius: .25rem;
+            color: #fff;
+        }
+    .hidden-column {
+        display: none;
+    }
+</style>
+<div class="col-md-12">
+    <br/>
+    @webGrid.GetHtml(
+           htmlAttributes: new { @id = "WebGrid", @class = "Grid" },
+           columns: webGrid.Columns(
+                    webGrid.Column( format: @<span class="label" style="color:#000;display:none">@item.Id</span>, style: "hidden-column", canSort: true),
+                                    webGrid.Column(header: "CostCenter", format: @<span class="label" style="color:#000;">@item.CostCenter</span>, style: "CostCenter"),
+                                                    webGrid.Column(header: "CCName", format: @<span class="label" style="color:#000">@item.CCName</span>, style: "CCName", canSort: true),
+                                                                webGrid.Column(header: "ReportType", format: @<span class="label" style="color:#000">@item.ReportType</span>, style: "ReportType"),
+                                                                                    webGrid.Column(header: "AccruedInterest/OverHead Percentage", format: @<span>
+                                                                                        <span class="label" style="color:#000">@item.InterestRate</span>
+                                                                                        <input class="text form-control" type="text" value="@item.InterestRate" style="display:none" />
+                                                                                    </span>, style: "InterestRate"),
+                                                                                                    webGrid.Column(header: "Amount", format: @<span>
+                                                                                                        <span class="label" style="color:#000">@item.Amount</span>
+                                                                                                        <input class="text form-control" type="text" value="@item.Amount" style="display:none" />
+                                                                                                    </span>, style: "Amount"),
+
+                                                                                                                 webGrid.Column(format:@<span class="link">
+                                                                                                                    <a class="Edit btn" href="javascript:;">Edit</a>
+                                                                                                                    <a class="Update btn" href="javascript:;" style="display:none">Update</a>
+                                                                                                                    <a class="Cancel btn" href="javascript:;" style="display:none">Cancel</a>
+                                                                                                                </span>)
+                                                                                                                                                                                          )
+                                                                                                                                                                           )
+    
+    </div>
+
+<script>
+    $(document).ready(function () {
+       
+          });
+        //$($('#WebGrid tr:first th')[1]).addClass('hidden-sm');
+        (function () {
+            $('#WebGrid tbody tr:first').find('td.hidden-column').each(function (i, td) {
+                var indexOfHiddenColumn = $(td).index();
+                $('#WebGrid thead th').eq(indexOfHiddenColumn).addClass('hidden-column');
+            });
+        }());
+       
+        $("body").on("click", "#WebGrid TBODY .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    $(this).find(".text").show();
+                    $(this).find(".label").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            $(this).hide();
+        });
+
+        //Update event handler.
+        $("body").on("click", "#WebGrid TBODY .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    var span = $(this).find(".label");
+                    var input = $(this).find(".text");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").hide();
+            row.find(".Cancel").hide();
+            row.find(".Update").show();
+            isValid = true;
+            var errorMsg = "";
+
+            let interest = row.find(".InterestRate").find(".label").html();
+            let amount = row.find(".Amount").find(".label").html();
+
+            if (interest === "" || interest === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Interest Rate</p>";
+                isValid = false;
+            }
+            if (amount === "" || amount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Value</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divCCAccurateInfoMsg").text("");
+                $("#divCCAccurateInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                //$("td", row).each(function () {
+                //    if ($(this).find(".text").length > 0) {
+                //        $(this).find(".text").show();
+                //        $(this).find(".label").hide();
+                //    }
+                //});
+                //row.find(".Update").show();
+                //row.find(".Cancel").show();
+                //row.find(".Edit").hide();
+               
+            }
+            else {
+                $("#divCCAccurateInfoMsg").text("");
+                $("#divCCAccurateInfoMsg").addClass("hidden");
+                var saveData = {};
+                saveData.Id = row.find(".Id").find(".label").html();
+                saveData.CostCenter = row.find(".CostCenter").find(".label").html();
+                saveData.InterestRate = row.find(".InterestRate").find(".label").html();
+                saveData.Value = row.find(".Amount").find(".label").html();
+                saveData.Action = 'Update';
+                saveData.ReportType = row.find(".ReportType").find(".label").html();
+
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/Home/SaveCCAccurateValues',
+                    data: JSON.stringify({ CCOD: saveData }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (Data) {
+                        if (Data.saveStatus == "Submited") {
+                            //$("#btnaddnewit").prop('disabled', true);
+                            //$("#divAddItCodeInfoMsg").text(addSuccessMsg);
+                            //$("#divAddItCodeInfoMsg").removeClass("hidden alert-danger");
+                            //$("#divAddItCodeInfoMsg").addClass("alert-success");
+
+                            $("#divCCAccurateInfoMsg").text("");
+                            $("#divCCAccurateInfoMsg").addClass("hidden");
+                            // ClearFields();
+                            RebindBindGridAfterupdate();
+                        }
+                        else {
+                            $("#divCCAccurateInfoMsg").text(Data.saveStatus);
+                            $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                            $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divCCAccurateInfoMsg").text(addFailMsg);
+                        $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                        $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Home/UpdateCustomer",
+                //    data: '{customer:' + JSON.stringify(customer) + '}',
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (Data) {
+                //        alert(Data.saveStatus);
+                //    },
+                //});
+            }
+        });
+
+        //Cancel event handler.
+        $("body").on("click", "#WebGrid TBODY .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    var span = $(this).find(".label");
+                    var input = $(this).find(".text");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+    </script>

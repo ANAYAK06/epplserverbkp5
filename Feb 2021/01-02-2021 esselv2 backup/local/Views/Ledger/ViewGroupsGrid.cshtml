@@ -1,0 +1,137 @@
+﻿
+@model List<EsselTestLocalApplication.Models.MasterGroup>
+
+<div class="table-responsive">
+    <table id="tblMasterGroupGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                @*<th></th>*@
+                <th class="hidden">ID</th>
+                <th class="hidden">Group Id</th>
+                <th>Group Name</th>
+                <th>GrossProfitCalc</th>
+                <th>Nature Of Group</th>
+                @*<th>Income Expenditure</th>*@
+                <th>Group Type</th>
+                @*<th>Actions</th>*@
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                @*<td class="details-control"></td>*@
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.GroupId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GroupName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GrossProfitCalc)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NatureGroupName)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.IncomeExpenditure)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grouptype)
+                </td>
+                @*<td>
+                    <select class="form-control dropdown-toggle" id="ddlmgrpgridaction" onchange="mastergrpActionChange(@item.Id,'@item.GroupId','@item.GroupName','@item.NatureGroupName', this)">
+                        <option selected="selected" value="-Select-">Select</option>
+                        <option value="E">Edit</option>
+                        <option value="D">Delete</option>
+                    </select>
+
+                </td>*@
+
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script src="~/Scripts/moment.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var masterGroupGrid = null;
+        InitializeMasterGroupGrid();
+
+    });
+    function InitializeMasterGroupGrid() {
+        masterGroupGrid = $('#tblMasterGroupGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Groups Found"
+            },
+            "createdRow": function (row, data, index) {
+               
+                var profitcal =$.trim($('td:eq(3)', row).html());
+                if (profitcal === "Y") { $('td:eq(3)', row).html("Yes") }
+                else if (profitcal === "N") {
+                    $('td:eq(3)', row).html("No");
+                }
+            },
+            pageLength: 10
+        });
+
+        //$('#tblMasterGroupGrid tbody').on('click', 'td.details-control', function () {
+        //    var tr = $(this).closest('tr');
+        //    var row = masterGroupGrid.row(tr);
+
+        //    if (row.child.isShown()) {
+        //        // This row is already open - close it
+        //        row.child.hide();
+        //        tr.removeClass('shown');
+        //    }
+        //    else {
+        //        // Open this row
+        //        row.child(formatmastergroup(row.data())).show();
+        //        tr.addClass('shown');
+        //    }
+        //});
+    }
+    function formatmastergroup(d) {
+
+
+        //var GroupDesc, Grouptype, grossprofit;
+        //$.each(d, function (index, value) {
+        //    // Get value in alert
+
+        //    if (index == 5)
+        //        GroupDesc = value;
+        //    if (index == 6)
+        //        Grouptype = value;
+        //    if (index == 7)
+        //        grossprofit = value;
+        //});
+
+        //    return '<table cellpadding="5" cellspacing="0" border="1px" style="padding-left:50px;">' +
+        //        '<tr><td>Group Desc:<b>' + inchargename + '</b></td></tr>' +
+        //        '<tr><td>Group Type:<b>' + incno + '</b></td></tr>' +
+        //        '<tr><td>Gross Profit Calculation:<b>' + ccno + '</b></td></tr>' +
+        //        '</table>';
+
+
+    }
+
+
+</script>

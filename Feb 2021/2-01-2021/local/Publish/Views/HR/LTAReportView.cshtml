@@ -1,0 +1,107 @@
+﻿@model EsselTestLocalApplication.Models.HR.LongTermAdvance
+<div class="col-md-12 verifydiv">
+    <br />
+    <div class="row">
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.EmployeName)
+            @Html.TextBoxFor(model => model.EmployeName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.LTAAmount)
+            @Html.TextBoxFor(model => model.LTAAmount, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.NoOfInstallments)
+            @Html.TextBoxFor(model => model.NoOfInstallments, htmlAttributes: new { @class = "form-control", @readOnly = true })
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.PaymentRequestDate)
+            @Html.TextBoxFor(model => model.PaymentRequestDate, htmlAttributes: new { @class = "form-control", @readOnly = true })
+        </div>
+       
+
+    </div>
+    <div class="row">
+        <br />
+        <div class="col-md-3">
+            <label>Purpose</label>
+            @Html.TextAreaFor(model => model.EmpRemarks, new { @id = "txtEmpRemarks", @class = "form-control", @type = "text", @rows = "2", @readOnly = true })
+        </div>
+        <div class="col-md-3">
+            <label>Manager Remarks</label>
+            @Html.TextAreaFor(model => model.ReportingMgrRemarks, new { @id = "txtEmpRemarks", @class = "form-control", @type = "text", @rows = "2", @readOnly = true })
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DisbursementDate)
+                @Html.TextBoxFor(model => model.DisbursementDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtDisbursementDate", @value = "", @readOnly = true })
+            </div>
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.CCName)
+            @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+        </div>
+    </div>
+
+    <div class="row">
+        <br />
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.DCAName)
+            @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.SubDCAName)
+            @Html.TextBoxFor(model => model.SubDCAName, htmlAttributes: new { @class = "form-control", @readOnly = true })
+        </div>
+
+
+
+    </div>
+    @if (Model.EmployeeLTAMonthlylst != null)
+    {
+
+    }
+        <div class="col-md-12">
+            <br />
+            <div class="row"><hr style="color:#000;height:2px" /></div>
+            <table style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                       
+                        <th style="text-align:center;color:#fff">Salary Date</th>
+                        <th style="text-align:center;color:#fff">Credit</th>
+                        <th style="text-align:center;color:#fff">Debit </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.EmployeeLTAMonthlylst.Count>0)
+                    {
+                        foreach (var item in Model.EmployeeLTAMonthlylst)
+                        {
+                            <tr>
+                                <th style="text-align:center">@item.SalaryPayDate</th>
+                                <th style="text-align:center">@item.Credit</th>
+                                <th style="text-align:center">@item.Dabit </th>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <th style="text-align:center" colspan="3">No Data Found</th>                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <br />
+        </div>
+        <div class="col-md-12 text-left">
+            <br />
+            <span>Loan Status: <b>@Model.ReportFinalStatus</b></span>
+            <br />
+            <br />
+        </div>
+ </div>

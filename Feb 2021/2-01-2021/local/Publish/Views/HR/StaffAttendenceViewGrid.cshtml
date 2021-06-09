@@ -1,0 +1,54 @@
+﻿
+@using System.Data
+@model DataTable
+<style>
+    .wrapcls {
+        /*white-space: pre-wrap !important;
+            word-wrap: break-word !important;*/
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+</style>
+
+@if (Model.Rows.Count > 0)
+{
+    <div class="table-responsive row">
+
+        <table class="hover stripe nowrap example dataTable no-footer" id="tblIndividualLedgerDetails">
+            <thead>
+                <tr>
+                    @foreach (System.Data.DataColumn col in Model.Columns)
+                    {
+                        <th class="wrapcls">@col.Caption</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.Rows)
+                {
+                    <tr>
+                        @*<td><span style="max-width:10px !important;">0 </span></td>*@
+                        @foreach (var cell in row.ItemArray)
+                        {
+
+                            <td class="wrapcls"><span style="max-width:10px !important;">@cell.ToString() </span></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @*}
+            else
+            {
+
+                <div class="text-center"><span>No Data Found</span></div>
+            }*@
+    </div>
+
+}
+else
+{
+    <div class="text-center"><span>No Data Found</span></div>
+}

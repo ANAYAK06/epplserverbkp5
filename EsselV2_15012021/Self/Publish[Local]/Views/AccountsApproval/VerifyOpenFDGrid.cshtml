@@ -1,0 +1,160 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Accounts.FDPayments>
+<div class="table-responsive">
+    <table id="tblApproveopenfdGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">BankTransactionRefNo</th>
+                <th>FD Number</th>
+                <th>Begin Date</th>
+                <th>End Date</th>
+                <th>Amount</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.BankTransactionRefNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FDRNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReturnFromDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReturnToDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FDRAmount)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveOfdGrid = null;
+            InitializeApprOpenfdGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppofdCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);          
+        });
+    function InitializeApprOpenfdGrid() {
+        ApproveOfdGrid = $('#tblApproveopenfdGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+                //var bdate = $('td:eq(3)', row).html();
+                //var trimStr = $.trim(bdate);
+                //var typeArr = trimStr.split(' ');
+                //var b1 = typeArr[0];
+                //var tb2 = "'" + b1 + "'";              
+                //var bdate1 = moment(tb2, "DDMMYYYY").format('DD-MMM-YYYY');
+                //$('td:eq(3)', row).html(bdate1);
+                //var oldstatus = $('td:eq(6)', row).html();
+                //var edate = $('td:eq(4)', row).html();
+                //var trimStr1 = $.trim(edate);
+                //var typeArr1 = trimStr1.split(' ');
+                //var e1 = typeArr1[0];
+                //var e2 = "'" + e1 + "'";
+                //var edate1 = moment(e2, "DDMMYYYY").format('DD-MMM-YYYY');
+                //$('td:eq(4)', row).html(edate1);
+               
+                //var bdate1 = moment(tb2, "DDMMYYYY").format('DD-MMM-YYYY');
+                var oldstatus = $('td:eq(6)', row).html();
+                    if (oldstatus == 1) {
+                        $('td:eq(6)', row).html("Verification Pending");
+                    }
+                    else { $('td:eq(6)', row).html("Return");}
+                },
+                pageLength: 10
+            });
+        $('#tblApproveopenfdGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveOfdGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveOfdGrid, tr);
+                    // Open this row
+                    row.child(formatHoldPay(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatHoldPay(d) {
+        var htmltext;
+        var transstatus, refno;
+            $.each(d, function (index, value) {
+                if (index == 6)
+                    transstatus = value;
+                if (index == 1)
+                    refno = value;
+            });
+        var divid = "divapprOpenfd" + refno;
+        var divid1 = $("#" + divid + "");
+        $("#currentGenTransno").val(refno);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyOpenFDView',
+                data: { TransactionRefno: refno },
+                success: function (Data) {
+                    var divid2 = "divapprOpenfd" + refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+              
+                }
+            });
+        return '<div id="divapprOpenfd' + refno + '" class="col-md-12"></div>';
+        }
+</script>

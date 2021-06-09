@@ -1,0 +1,148 @@
+﻿@model List<EsselTestLocalApplication.Models.SubGroup>
+<div class="table-responsive">
+    <table id="tblApproveCGGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Sub Group Id</th>
+                <th>Child Group Name</th>
+                <th>Master Group Name</th>
+                <th>Parent Sub Group</th>
+                <th>Nature of Group</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MasterGroupName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ParentSubGroup)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NatureGroupName)
+                    </td>
+                    <td  class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+        var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveCGrid = null;
+            InitializeApprCGGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprCGCreatedby").val(Sessioncreated);
+             var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprCGGrid() {
+        ApproveCGrid = $('#tblApproveCGGrid').DataTable({
+                    info: false,
+                    destroy: false,
+                    paging: false,
+                    lengthChange: false,
+                    searching: false,
+                    ordering: false,
+                    pagingType: false, 
+                language: {
+                    "emptyTable": "No Child Groups Found"
+                },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(6)', row).html();
+                if (oldstatus == 0) {
+                    $('td:eq(6)', row).html("Return");
+                }
+                else {
+                    $('td:eq(6)', row).html("Verification Pending");
+                    
+                }
+                },
+                pageLength: 10
+            });
+        $('#tblApproveCGGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveCGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveCGrid, tr);
+                // Open this row
+                row.child(formatApprchildGroup(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprchildGroup(d) {
+        var htmltext;
+        var Subgroupid;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    Subgroupid = value;
+            });
+        var divid = "divapprchildg" + Subgroupid;
+        var divid1 = $("#" + divid + "");
+
+        $("#currentcgroupid").val(Subgroupid);
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyChildGroupView',
+                data: { Id: Subgroupid },
+                success: function (Data) {
+                    var divid2 = "divapprchildg" + Subgroupid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                 
+                }
+            });
+        return '<div id="divapprchildg' + Subgroupid + '" class="col-md-12"></div>';
+
+
+        }
+</script>
+

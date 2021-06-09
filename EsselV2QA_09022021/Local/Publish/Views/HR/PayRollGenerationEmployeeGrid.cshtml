@@ -1,0 +1,142 @@
+﻿@model EsselTestLocalApplication.Models.HR.GenaratedPayRollData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: left;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+
+    .txtcls {
+        font-weight: normal;
+        white-space: normal;
+        font-size: 11px;
+        text-align: left;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.TypeEmpDeatilsData.Count > 0)
+    {
+        <div class="table-responsive">
+            <table id="tblPREmpGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                <thead>
+                    <tr>
+                        <th class="tdcls details-control2"></th>
+                        <th class="tdcls hidden">Rowno</th>
+                        <th class="tdcls hidden">EmployeeId</th>
+                        <th class="tdcls">EmpRefno</th>
+                        <th class="tdcls">FirstName</th>
+                        <th class="tdcls">PayRollFortheDate</th>
+                        <th class="tdcls hidden">RuleStatus</th>
+                        @*<th class="tdcls">NetAmount</th>*@
+                        <th class="tdcls hidden">TransactionRefNo</th>
+                        <th class="tdcls hidden">CostCenter</th>
+                        @if (Model.Type == "EmployeeCategory")
+                        {
+                            <th class="tdcls">CostCenter</th>
+                        }
+                        else if (Model.Type == "CostCenter")
+                        {
+                            <th class="tdcls">Category</th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @*style="color:#202447"*@
+                    @foreach (var item1 in Model.TypeEmpDeatilsData)
+                    {
+
+                        <tr>
+                            <td class="txtcls details-control2"><a href="#" style="color:darkblue">Edit</a></td>
+                            <td class="txtcls hidden">@item1.Rowno</td>
+                            <td class="txtcls hidden">@item1.EmployeeId</td>
+                            <td class="txtcls">@item1.EmpRefno</td>
+                            <td class="txtcls">@item1.EmpName</td>
+
+                            <td class="txtcls">@item1.PayRollFortheDate</td>
+                            <td class="txtcls hidden">@item1.RuleStatus</td>
+                            @*<td class="txtcls">@item1.NetAmount</td>*@
+                            <td class="txtcls hidden">@item1.TransactionRefNo</td>
+                            <td class="txtcls hidden">@item1.JoiningCostCenter</td>
+                            @if (Model.Type == "EmployeeCategory")
+                            {
+                                <td class="txtcls">@Html.DisplayFor(modelItem => item1.CCName)</td>
+                            }
+                            else if (Model.Type == "CostCenter")
+                            {
+                                <td class="txtcls">@Html.DisplayFor(modelItem => item1.Category)</td>
+                            }
+                            @Html.DisplayFor(modelItem => item1.FirstName)
+
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    }
+</div>
+<script>
+
+    $(document).ready(function () {
+        var EmpGrid = null;
+        InitializePayRollEmpGrid();
+
+        function InitializePayRollEmpGrid() {
+            EmpGrid = $('#tblPREmpGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Data Found"
+                },
+                "createdRow": function (row, data, index) {
+
+                },
+                pageLength: 10
+            });
+            var type = $("#ddlType option:selected").val();;
+
+
+            $('#tblPREmpGrid tbody').on('click', 'td.details-control2', function () {
+                var tr = $(this).closest('tr');
+                var row = EmpGrid.row(tr);    
+                ShowCCEmpPayRollPopUp(row.data());
+            });
+        }
+    });
+
+    function ShowCCEmpPayRollPopUp(data) {
+        debugger;
+        //alert('PopUp');
+        var empid = '';
+        $.each(data, function (index, value) {
+            if (index == 3)
+                empid = value;
+        });
+        $.ajax({
+            type: "GET",
+            url: "/HR/PayRollGenerationEmpPopUp",
+            data: { EmpRefno: empid },
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                debugger;
+                $('#ModalEmpPayRoll').html(data);
+                $('#ModalEmpPayRoll').modal();
+            }
+        });
+    }
+</script>
+

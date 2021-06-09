@@ -1,0 +1,251 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignDCABudget
+@Scripts.Render("~/bundles/Budget")
+<form onsubmit="return false">
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => Model.CCCode)
+                @Html.TextBoxFor(model => Model.CCCode, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "txtapprdbCC",@readOnly="true" })
+
+            </div>
+        </div>
+        @if (Model.CCType != "Performing")
+        {
+            <div class="col-md-4" id="divDCAYear">
+                <div class="form-group">
+                    @Html.LabelFor(model => Model.FYyear)
+                    @Html.TextBoxFor(model => Model.FYyear, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "txtapprdbyear", @readOnly = "true" })
+                </div>
+            </div>
+        }
+        <div class="col-md-4" id="divApprDCABudgetRemarks">
+            <div class="form-group">
+                <label>Remarks</label>
+                <textarea class="form-control" id="txtapprdbremarks" rows="1">@Model.Remarks</textarea>
+            </div>
+        </div>
+        <div class="row" style="display:none">
+            <input type="text" value="@Model.CCTypeId" id="txtApprCCtype" />
+            <input type="text" value="@Model.CCBudget" id="txtapprCCBudget" />
+            <input type="text" value="@Model.CCBudgetBalance" id="txtapprCCBudgetBalance" />
+            <input type="text" value="@Model.CCBudgetId" id="txtApprCCBudgetId" />
+            <input type="text" value="0" id="txtApprDCABudgetSubTotal" />
+            <input type="text" value="0" id="txtApprDCABudgetOld" />
+            <input type="text"  id="txtApprDCABudgetUpCurrentCCBal" value="@Model.CCBudgetBalance"/>
+        </div>
+
+
+    </div>
+    <div class="row" id="divDCAGrid1">
+        @*<div class="strike">
+            <span>Assign DCA</span>
+        </div>*@
+        <div class="tabledynamic1">
+            <br />
+            <table id="ApprDCABudgetTable" class="table order-list dcabudget" style="width:80%;border:1px solid gray;border-bottom:1px solid gray">
+                <thead>
+                    <tr>
+                        <td style="text-align:center" class="hidden"><label>No</label></td>
+                        <td style="text-align:center" class="hidden"><label>DCACode</label></td>
+                        <td style="text-align:center"><label>DCACode</label></td>
+                        <td style="text-align:center"><label>DCA Amount</label></td>
+                        <td style="text-align:center;font-weight:bold">Check</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center"></td>
+                        <td  class="hidden"></td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:center"></td>
+                        <td  class="hidden"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-left">
+            <input type="text" value="0" id="txtUpdateDCABudgetRoleId" style="display:none" />
+            <input type="submit" class="btn btn1 btn-success" id="btnupdatedca" onclick="UpdateDCABudgetData('@Model.CCCode',@Model.CCTypeId,'@Model.CCType')" value="Update" />
+            
+        </div>
+    </div>
+    <div class="row text-center">
+        <br />
+        <div id="divapprDCAInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+
+</form>
+<script>
+    $(document).ready(function () {
+        var RoleID = '@Session["Roleid"]';
+        $("#txtUpdateDCABudgetRoleId").val(RoleID);
+        @*var type = '@Model.CCType';
+        if (type != "Performing") {
+            var year = '@Model.FYyear';
+            $("#ddlDCAYear").find("option:contains('" + year + "')").each(function () {
+                if ($(this).text() == mode) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+        }*@
+
+        $("#ApprDCABudgetTable thead tr:gt(0)").each(function () {
+            var ccbalance = '@Model.CCBudgetBalance';
+            var heraderRow = $(this);
+            heraderRow.find("td").eq(2).html("CostCenter Budget:<b>" + ccbalance + "</b>");
+        });
+        $.ajax({
+            type: "POST",
+            url: "/Budget/GetBudgetDCADetails",
+            data: '{CcTypeID:"' + $("#txtApprCCtype").val() + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count1 = Object.keys(response).length;
+                // alert(count1);
+                if (count1 > 0) {
+                    var tdrowno=0
+                    $.each(response, function () {
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center" class="hidden">' + tdrowno + '</td>';
+                        cols += '<td style="text-align:center" class="hidden">' + this['DCACode'] + '</td>';
+                        cols += '<td style="text-align:center">' + this['DCACode']+','+ this['DCAName']+'</td>';
+                        cols += '<td style="text-align:center"><input class="form-control" data-val="true" id="txtBudgetDCAAmount" name="txtApprBudgetDCAAmount" type="text" onkeypress = "return ValidateAmount(this,event);" , onKeyup = "ApprDCABudgetChange()"/></td>';
+                        cols += '<td style="text-align:center"><input type="checkbox" name="chkDeduction"></td>';
+                        cols += '<td style="text-align:center" class="hidden"></td></tr>';
+                        newRow.append(cols);
+                        $("table.order-list.dcabudget").append(newRow);
+                        tdrowno = tdrowno + 1;
+                    });
+                    var AssignedDCAs = @Html.Raw(Json.Encode(Model.DCABudgetDetails));
+                    var count1 = AssignedDCAs.length;
+                    if (count1 > 0) {
+                            var dcatotal = 0;
+                            for (var i = 0; i < count1; i++) {
+
+                                var DcaBudget = AssignedDCAs[i];
+                                var currentdca = DcaBudget.DCACode;
+                                var currentamount = DcaBudget.DCABudgetValue;
+                                var currentid = DcaBudget.DCABudgetId;
+                                $("#ApprDCABudgetTable tbody tr").each(function () {
+
+                                    var currentRow = $(this);
+                                    var rowno = currentRow.find("td").eq(0).html();
+                                    var tbdca=currentRow.find("td").eq(1).html();
+
+                                    if (tbdca == currentdca) {
+                                        currentRow.find("td").eq(3).find("input[type='text']").val(currentamount);
+                                        //currentRow.find("td").eq(1).html(currentdca);
+                                        currentRow.find("td").eq(5).html(currentid);
+                                        currentRow.find("td").eq(4).find('input[type="checkbox"]').prop("checked", true);
+                                        dcatotal = parseFloat(dcatotal) + parseFloat(currentamount);
+                                    }
+                                 });
+                        }
+                        $("#ApprDCABudgetTable tfoot tr").each(function () {
+                            footerRow = $(this);
+                            footerRow.find("td").eq(2).html("Sub Total:<b>" + parseFloat(dcatotal).toFixed(2) + "</b>");
+                            $("#txtApprDCABudgetSubTotal").val(parseFloat(dcatotal).toFixed(2));
+                            $("#txtApprDCABudgetOld").val(parseFloat(dcatotal).toFixed(2));
+                        });
+                    }
+                }
+                else {
+
+                    $("#divapprDCAInfoMsg").append("<div>No DCA Found</div>");
+                    $("#divapprDCAInfoMsg").addClass("alert-danger");
+                    $("#divapprDCAInfoMsg").removeClass("hidden alert-success");
+                }
+               
+            },
+            failure: function (response) {
+               
+            },
+            error: function (response) {
+            
+            }
+        });
+    });
+    function ApprDCABudgetChange() {  
+        
+        var CCAmount = $("#txtapprCCBudget").val();
+        var rowtotal = 0;
+        var allrows = 0;
+      
+            $("#ApprDCABudgetTable tbody tr").each(function () {
+                var currentRow = $(this);
+                rowtotal = currentRow.find("td").eq(3).find("input[type='text']").val();
+                var checkbox = currentRow.find("td").eq(4).find("input[type='checkbox']").is(":checked");
+                if (rowtotal != "" ) {
+                    allrows = parseFloat(allrows) + parseFloat(rowtotal);
+                    $("#txtApprDCABudgetSubTotal").val(allrows);
+                }
+                else {
+                    allrows = parseFloat(allrows) + parseFloat(0);
+                    $("#txtApprDCABudgetSubTotal").val(allrows);
+                }
+            });
+                //alert($("#txtApprDCABudgetSubTotal").val());
+                $("#ApprDCABudgetTable tfoot tr").each(function () {
+                    //alert(allrows);
+                    if (allrows != 0 || allrows != "NaN") {
+                        var footerRow = $(this);
+                        footerRow.find("td").eq(2).html("Sub Total:<b>" + parseFloat($("#txtApprDCABudgetSubTotal").val()).toFixed(2) + "</b>");
+                    }
+                    else {
+                        footerRow.find("td").eq(2).html("Sub Total:<b>0</b>");
+                    }
+                });
+
+                $("#ApprDCABudgetTable thead tr:gt(0)").each(function () {
+                    var heraderRow = $(this);
+                    var remaining = parseFloat(CCAmount) - parseFloat($("#txtApprDCABudgetSubTotal").val());
+                    //alert(remaining);
+                    if (parseFloat(remaining) > 0) {
+                        heraderRow.find("td").eq(2).html("CostCenter Budget:<b>" + remaining.toFixed(2) + "</b>");
+                        $("#divapprDCAInfoMsg").text("");
+                        $("#divapprDCAInfoMsg").addClass("hidden");
+                        
+                    }
+                    else {
+                        if (parseFloat(remaining) == 0) {
+                            heraderRow.find("td").eq(2).html("CostCenter Budget:<b>" + 0 + "</b>");
+                            ////  currentRow.find("td").eq(2).find("input[type='text']").val("");
+                            //$("#divapprDCAInfoMsg").text("");
+                            //$("#divapprDCAInfoMsg").append("<div>DCA Budget is greater than CC Budget</div>");
+                            //$("#divapprDCAInfoMsg").addClass("alert-danger");
+                            //$("#divapprDCAInfoMsg").removeClass("hidden alert-success");
+                        }
+                        else {
+                            heraderRow.find("td").eq(2).html("CostCenter Budget:<b>" + remaining.toFixed(2)  + "</b>");
+                            //  currentRow.find("td").eq(2).find("input[type='text']").val("");
+                            $("#divapprDCAInfoMsg").text("");
+                            $("#divapprDCAInfoMsg").append("<div>DCA Budget is greater than CC Budget</div>");
+                            $("#divapprDCAInfoMsg").addClass("alert-danger");
+                            $("#divapprDCAInfoMsg").removeClass("hidden alert-success");
+
+                        }
+                    }
+                    $("#txtApprDCABudgetUpCurrentCCBal").val(remaining.toFixed(2));
+
+                });
+            
+       // }
+
+    }
+
+
+
+</script>
+

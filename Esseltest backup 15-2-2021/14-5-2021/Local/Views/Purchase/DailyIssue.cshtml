@@ -1,0 +1,514 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.DailyIssue
+@{
+    ViewBag.Title = "DailyIssue";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Daily Issue</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.FromCC)
+                                                                @Html.DropDownListFor(model => model.FromCC, new SelectList(Model.DailyFromCCList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFromCC", onchange = "GetgridDetails();" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.ItemCategoryCode)
+                                                                @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.DailyItemCategoryList, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_issueItemCategory", onchange = "Clearcat()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.SelectionType)
+                                                                @Html.DropDownListFor(model => model.SelectionType, new SelectList(Model.DailyItemSelectionTypeList, "Selectionid", "SelectionValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_issueitemSelectiontype", onchange = "Clearsel()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.SearchItem)
+                                                                @Html.EditorFor(model => model.SearchItem, new { htmlAttributes = new { @class = "form-control", @id = "txtItemSearch", @onkeyup = "onchangeevent();" ,
+                                                               @onKeyDown = "preventBackspace();" ,@onpaste = "return false;" ,
+                                                               style = "text-transform:uppercase" } })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <div class="form-group">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4" style="text-align:right">
+                                                            <div class="form-group">
+                                                                <input type="submit" value="Add" class="btn btn1 btn-success" id="btnaddnewitems" onclick="SubmitCategoryItem()" />
+                                                                <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="divgriddata">
+                                                        <div id="GridSKData">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Date)
+                                                                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtitemsissueDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Remarks)
+                                                                    @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtitemsissueDescription", @rows = "3" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="text-right" style="vertical-align:bottom">
+                                                                    <button class="btn btn1 btn-success" id="btnItemtransferSubmit" onclick="btnSubmitItemissueData()">Submit</button>
+                                                                    <input type="text" value="0" id="txtItemIssueCreatedby" style="display:none" />
+                                                                    <input type="text" id="txtCCType" style="display:none" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div>
+                                                        <div class="col-md-12">
+                                                            <div class="text-center">
+                                                                <div id="divItemsTransferInfoMsg" class="alert alert-danger hidden">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+     $(document).ready(function () {
+        var Sessioncreated = '@Session["Createdby"]';
+         $("#txtItemIssueCreatedby").val(Sessioncreated);
+         $("#divgriddata").addClass("hidden");
+         $("#GridSKData").addClass("hidden");
+         $("#txtitemsissueDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+    });
+    function btnSubmitItemissueData() {
+        isValid = true;
+        var errorMsg = "";
+        var ccode = $("#ddlFromCC option:selected").index();
+        var date = $("#txtitemsissueDate").val();
+        var remarks = $("#txtitemsissueDescription").val();
+        if (ccode === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (date == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        if (remarks == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divItemsTransferInfoMsg").text("");
+            $("#divItemsTransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divItemsTransferInfoMsg").addClass("alert-danger");
+            $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divItemsTransferInfoMsg").text("");
+            $("#divItemsTransferInfoMsg").addClass("hidden");
+            var qtycount = 0, chkcount = 0;
+            var currentrowcount = $("#ItemissueDataTable tbody tr").length;
+            $("#ItemissueDataTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                var Qty = currentRow.find("td").eq(9).find("input[type='text']").val();
+                if (check == false) { chkcount = chkcount + 1; }
+                if (Qty == "" || Qty == 0) { qtycount = qtycount + 1; }
+            });
+            if (currentrowcount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Add Daily Issue Items</p > ";
+                isValid = false;
+            }
+            if (chkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Daily Issue Items </p > ";
+                isValid = false;
+            }
+            if (qtycount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Quantity</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divItemsTransferInfoMsg").text("");
+                $("#divItemsTransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divItemsTransferInfoMsg").addClass("alert-danger");
+                $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var selectedledlist = [];
+                $("#ItemissueDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var Issueid = currentRow.find("td").eq(11).html();
+                    if (Issueid !== 0) {
+                        selectedledlist.push(currentRow.find("td").eq(11).html());
+                    }
+                });
+                var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                if (duplicatelist.length > 0) {
+                    var finalerror2 = "<div style='align:center'><p>Duplicate Daily Issue ItemCodes</p>";
+                    $("#divItemsTransferInfoMsg").text("");
+                    $("#divItemsTransferInfoMsg").append(finalerror2 + "</div>");
+                    $("#divItemsTransferInfoMsg").addClass("alert-danger");
+                    $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divItemsTransferInfoMsg").text("");
+                    $("#divItemsTransferInfoMsg").addClass("hidden");
+                    SaveDailyIssueItems()
+                }
+            }
+
+        }
+    }
+    function SaveDailyIssueItems() {     
+        var Fromcc = $("#ddlFromCC option:selected").val();
+        var Rowids = "", Quantitys = "", ItemCodes = "";   
+        $("#ItemissueDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var Rowid = currentRow.find("td").eq(11).html();
+            var Quantity = currentRow.find("td").eq(9).find("input[type='text']").val();
+            var Itemcode = currentRow.find("td").eq(1).html().trim();
+            Rowids += Rowid;
+            Rowids += ",";
+            Quantitys += Quantity;
+            Quantitys += ",";
+            ItemCodes += Itemcode;
+            ItemCodes += ",";
+        });
+        var ItemDailyIssuedetails = {
+            Rid: Rowids,
+            Qty: Quantitys,            
+            FromCC: Fromcc,
+            ItemCode: ItemCodes,
+            Date: $("#txtitemsissueDate").val(),
+            Remarks: $("#txtitemsissueDescription").val()
+          
+        };
+        $("#btnItemtransferSubmit").prop("disabled", true);
+        addFailMsg = "Error Occurred While Items Issue.";
+        addSuccessMsg = "Daily Items Items Successfully Done.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveDailyIssueItems',
+            data: { Ind: ItemDailyIssuedetails },
+            success: function (Data) {
+                var string = Data.saveStatus;
+                var nameArr1 = string.split(',');
+                var status = nameArr1[0];
+                var ICode = nameArr1[1];
+                if (status == "Submited") {
+                    
+                    $("#divItemsTransferInfoMsg").text('The Transaction Id Is :-  ' + ICode + '   Generated Successfully');
+                    $("#divItemsTransferInfoMsg").removeClass("hidden alert-danger");
+                    $("#divItemsTransferInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnItemtransferSubmit").prop("disabled", false);
+                    $("#divItemsTransferInfoMsg").text(Data.saveStatus);
+                    $("#divItemsTransferInfoMsg").addClass("alert-danger");
+                    $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnItemtransferSubmit").prop("disabled", false);
+                $("#divIndentInfoMsg").text(addFailMsg);
+                $("#divIndentInfoMsg").addClass("alert-danger");
+                $("#divIndentInfoMsg").removeClass("hidden alert-success");
+
+            }
+        });
+    }
+    function SubmitClearItem() {
+        $("#txtItemSearch").val("");
+        $("#btnaddnewitems").prop('disabled', false);
+    }
+    function Clearcat() {
+        $("#txtItemSearch").val("");
+        $("#ddl_issueitemSelectiontype").prop('selectedIndex', 0);
+    }
+    function Clearsel() {
+        var typecat = $("#ddl_issueItemCategory option:selected").index();
+        if (typecat != 0) {
+            $("#txtItemSearch").val("");
+        }
+        else {
+            alert("Select Search By Category");
+            $("#txtItemSearch").val("");
+            return false;
+        }
+    }
+    function onchangeevent() {
+        var typecat = $("#ddl_issueItemCategory option:selected").index();
+        var typesel = $("#ddl_issueitemSelectiontype option:selected").index();
+        var FromCC = $("#ddlFromCC option:selected").index();
+        if (FromCC != 0) {
+            if (typecat != 0) {
+                if (typesel != 0) {
+                    var typeval = $("#ddl_issueitemSelectiontype option:selected").val();
+                    var typecatval = $("#ddl_issueItemCategory option:selected").val();
+                    var fromccodeval = $("#ddlFromCC option:selected").val();
+                    if ($("#txtItemSearch").val() != "") {
+                        $("#txtItemSearch").autocomplete({
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: '/Purchase/AutoCompleteItemTransfer',
+                                    data: '{prefix:"' + request.term + '", Type:"' + typeval + '", Cat:"' + typecatval + '", CC:"' + fromccodeval + '"}',
+                                    dataType: "json",
+                                    type: "POST",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data) {
+                                        response($.map(data, function (item) {
+                                            return { label: item.SearchItem, value: item.SearchItem };
+                                        }))
+                                    },
+                                    error: function (data) {
+                                        alert(data.responseText);
+                                    },
+                                    failure: function (data) {
+                                        alert(data.responseText);
+                                    }
+                                });
+                            },
+                        });
+                    }
+                    else {
+                        $("#ddl_issueitemSelectiontype").prop('selectedIndex', 0);
+                    }
+                }
+                else {
+                    alert("Select Search By Type");
+                    $("#txtItemSearch").val("");
+                    return false;
+                }
+            }
+            else {
+
+                alert("Select Search By Category");
+                $("#txttransferItemSearch").val("");
+                return false;
+            }
+        }
+        else {
+            alert("Select Transfer Cost Center");
+            $("#txttransferItemSearch").val("");
+            return false;
+        }
+    }
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+    function SubmitCategoryItem() {
+        isValid = true;
+        var errorMsg = "";
+        var typecat = $("#ddl_issueItemCategory option:selected").index();
+        var typesel = $("#ddl_issueitemSelectiontype option:selected").index();
+        var ccode = $("#ddlFromCC option:selected").index();
+        var Itemtext = $("#txtItemSearch").val();
+        if (typecat === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Category</p>";
+            isValid = false;
+        }
+        if (typesel === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Type</p>";
+            isValid = false;
+        }
+        if (Itemtext === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Search Data</p>";
+            isValid = false;
+        }
+        if (ccode === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divItemsTransferInfoMsg").text("");
+            $("#divItemsTransferInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divItemsTransferInfoMsg").addClass("alert-danger");
+            $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var ccodeval = $("#ddlFromCC option:selected").val();
+            var itemcode = $("#txtItemSearch").val();
+            var nameArr1 = itemcode.split(',');
+            var catidonly = nameArr1[0].trim();
+            $("#divItemsTransferInfoMsg").text("");
+            $("#divItemsTransferInfoMsg").addClass("hidden");
+            var Items = {
+                ItemCode: catidonly,
+                FromCC: ccodeval
+            };
+            addFailMsg = "Error Occurred While Adding Items";
+            addSuccessMsg = "Items Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveIssueItems",
+                data: JSON.stringify({ Item: Items }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        alert(addSuccessMsg);
+                        $("#txtItemSearch").val("");
+                        $.ajax({
+                            type: 'GET',
+                            dataType: 'html',
+                            url: '/Purchase/ItemsDailyIssueSK',
+                            data: { cccode: ccodeval },
+                            success: function (data) {
+                                var count = Object.keys(data).length;
+                                if (count > 0) {
+                                    $("#GridSKData").html(data);
+                                    var currentrowcount2 = $("#ItemissueDataTable tbody tr").length;
+                                    if (currentrowcount2 > 0) {
+                                        $("#GridSKData").removeClass('hidden');
+                                        $("#divgriddata").removeClass("hidden");
+                                    }
+                                    else {
+                                        $("#GridSKData").addClass('hidden');
+                                        $("#divgriddata").addClass("hidden");
+                                    }
+                                }
+                                else {
+                                    $("#GridSKData").addClass('hidden');
+                                    $("#divgriddata").addClass("hidden");
+                                }
+                            },
+                            error: function (data) {
+                            },
+                            failure: function (data) {
+                            }
+                        });
+                    }
+                    else {
+                        alert(response.saveStatus);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewitems").prop('disabled', false);
+                    $("#divItemsTransferInfoMsg").text(addFailMsg);
+                    $("#divItemsTransferInfoMsg").addClass("alert-danger");
+                    $("#divItemsTransferInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function GetgridDetails() {
+        //debugger;
+        $("#GridSKData").addClass('hidden');
+        $("#divgriddata").addClass("hidden");
+        $("#ddl_issueItemCategory").prop('selectedIndex', 0);
+        $("#ddl_issueitemSelectiontype").prop('selectedIndex', 0);
+        $("#txtItemSearch").val("");
+        var ccode = $("#ddlFromCC option:selected").index();
+        if (ccode != 0) {
+            var ccodeval = $("#ddlFromCC option:selected").val();
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Purchase/ItemsDailyIssueSK',
+                data: { cccode: ccodeval },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridSKData").html(data);
+                        var currentrowcount2 = $("#ItemissueDataTable tbody tr").length;
+                        if (currentrowcount2 > 0) {
+                            $("#GridSKData").removeClass('hidden');
+                            $("#divgriddata").removeClass("hidden");
+                        }
+                        else {
+                            $("#GridSKData").addClass('hidden');
+                            $("#divgriddata").addClass("hidden");
+                        }
+                    }
+                    else {
+                        $("#GridSKData").addClass('hidden');
+                        $("#divgriddata").addClass("hidden");
+                    }
+                },
+                error: function (data) {
+                },
+                failure: function (data) {
+                }
+            });
+
+        }
+        else {
+            $("#divgriddata").addClass("hidden");
+            $("#GridSKData").addClass('hidden');
+        }
+    }
+</script>

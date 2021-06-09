@@ -1,0 +1,1741 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPOInvoice
+@{
+    /**/
+
+    ViewBag.Title = "SPPOInvoice";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: center;
+        /*color: #fff !important;*/
+        /*background-color: #004d99 !important;*/
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Service Provider Invoice Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorCode)
+                                                    @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.VendorsList, "VendorCode", "VendorName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSpInvVendor", onchange = "NewSPPOInvVendorChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.SPPONo)
+                                                    @Html.DropDownListFor(model => model.SPPONo, new SelectList(Model.POList, "SPPONo", "SPPONoDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSpInvPONo", onchange = "NewSPPOInvPOChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <hr />
+                                        </div>
+                                        <div class="row" id="divPOData">
+                                            <div class="col-md-4">
+                                                <div class="col-md-5 text-right" style="margin-top:5px">@Html.LabelFor(model => model.CCCode)</div>
+                                                <div class="col-md-5 text-left" style="margin-left:-10px!important">@Html.TextBoxFor(model => model.CCCode, new { @id = "txtNSpInvCCCode", @class = "form-control", type = "text", @readonly = true })</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="col-md-6 text-right" style="margin-top:5px">  @Html.LabelFor(model => model.DCACode)</div>
+                                                <div class="col-md-6 text-left" style="margin-left:-10px!important">  @Html.TextBoxFor(model => model.DCACode, new { @id = "txtNSpInvDCACode", @class = "form-control", type = "text", @readonly = true })</div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="col-md-6 text-right" style="margin-top:5px">  @Html.LabelFor(model => model.SubDCACode)</div>
+                                                <div class="col-md-6 text-left" style="margin-left:-10px!important">  @Html.TextBoxFor(model => model.SubDCACode, new { @id = "txtNSpInvSubDcaCode", @class = "form-control", type = "text", @readonly = true })</div>
+                                            </div>
+                                        </div>
+                                        <div id="divPOInvDetails">
+                                            <div class="row">
+                                                <hr />
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SPPOInvoiceNo)
+                                                        @Html.TextBoxFor(model => model.SPPOInvoiceNo, new { @id = "txtNSpInvNo", @class = "form-control", type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SPPOInvoiceDate)
+                                                        @Html.TextBoxFor(model => model.SPPOInvoiceDate, "{0:dd/MM/yyyy}", new { @id = "txtNSpInvDate", @class = "form-control  date-picker", type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SPPOInvoiceMakingDate)
+                                                        @Html.TextBoxFor(model => model.SPPOInvoiceMakingDate, "{0:dd/MM/yyyy}", new { @id = "txtNSpInvMakingDate", @class = "form-control  date-picker", type = "text" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SPPOBasicValue)
+                                                        @Html.TextBoxFor(model => model.SPPOBasicValue, new { @id = "txtNSpInvBalance", @class = "form-control", type = "text", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountPOInvoiceTotal()" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.GSTType)<br />
+                                                        <input id="rGSTTypeY" name="GSTType" value="Creditable" type="radio" style="font-weight:bold;">Creditable
+                                                        <input id="rGSTTypeN" name="GSTType" value="Non-Creditable" type="radio">Non-Creditable
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CompanyGST)
+                                                        @Html.DropDownListFor(model => model.CompanyGST, new SelectList(Model.CompanyGSTlist, "TaxNoID", "TaxNoName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPOCompanyGST", onchange = "POCompanyGSTChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.VendorGST)
+                                                        @Html.DropDownListFor(model => model.VendorGST, new SelectList(Model.vendorTaxlist, "TaxNoID", "TaxNoName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPOVendorGST", onchange = "POVendorGSTChange()" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="divSPInvTaxGrid">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <input type="submit" class="btn btn1 btn-primary" id="btnAddTaxes" onclick="AddTaxesForSPPOInvoice()" value="Add Taxes" />
+                                                            <input type="submit" class="btn btn1 btn-primary" id="btnRemoveTaxes" onclick="RemoveTaxesForSPPOInvoice()" value="Remove All Taxes" />
+                                                            <input type="hidden" id="gststatecheck" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row change-tab" id="TaxGrid">
+                                                    <div class="strike">
+                                                        <span>Taxes</span>
+                                                    </div>
+                                                    <div class="tabledynamic" id="divSameStateGrid">
+                                                        <br />
+                                                        <div class="row text-center">
+
+                                                            <div class="col-md-2" id="divcgstdca">
+                                                                <div class="form-group">
+                                                                    <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                                                    <input type="text" class="form-control sppotaxCGSTsdcaamount" value="" id="txtTaxDCA1" style="font-size:12px" disabled/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3" id="divigstdca">
+                                                                <div class="form-group">
+                                                                    <label>Account Head</label>
+                                                                    <input type="text" class="form-control sppotaxCGSTsdcaamount" value="" id="txtTaxDCA2" disabled/>
+                                                                </div>
+                                                            </div>
+
+                                                            <div id="divcgst">
+                                                                <div class="col-md-2">
+                                                                    <div class="form-group">
+                                                                        <label style="font-size:12px;font-weight:bold;text-align:center">CGST Sub Account Head</label>
+                                                                        <input type="text" class="form-control sppotaxCGSTsdca" value="" id="txtTaxCGSTSDCA" style="font-size:12px" disabled/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <div class="form-group">
+                                                                        <label style="font-size:12px;font-weight:bold;text-align:center">CGST Amount</label>
+                                                                        <input type="text" class="form-control sppotaxCGSTsdcaamount" value="" id="txtTaxCGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <div class="form-group">
+                                                                        <label style="font-size:12px;font-weight:bold;text-align:center">SGST Sub Account Head</label>
+                                                                        <input type="text" class="form-control sppotaxSGSTsdca" value="" id="txtTaxSGSTSDCA" style="font-size:12px" disabled/>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-2">
+                                                                    <div class="form-group">
+                                                                        <label style="font-size:12px;font-weight:bold;text-align:center">SGST Amount</label>
+                                                                        <input type="text" class="form-control sppotaxSGSTsdcaamount" value="" id="txtTaxSGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div id="divigst">
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group">
+                                                                        <label>IGST Sub Account Head</label>
+                                                                        <input type="text" class="form-control sppotaxIGSTsdca" value="" id="txtTaxIGSTSDCA" disabled/>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group">
+                                                                        <label>IGST Amount</label>
+                                                                        <input type="text" class="form-control sppotaxIGSTsdcaamount" value="" id="txtTaxIGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2" id="divcgstotal">
+                                                                <div class="form-group">
+                                                                    <label style="font-size:12px;font-weight:bold;text-align:center">Total Tax</label>
+                                                                    <input type="text" class="form-control sppotaxamountTotal" value="" id="txtTaxTotalGSTSDCAamt" disabled style="font-size:12px" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3" id="divigstotal">
+                                                                <div class="form-group">
+                                                                    <label>Total Tax</label>
+                                                                    <input type="text" class="form-control sppotaxamountTotal" value="" id="txtTaxTotalGSTSDCAamt1" disabled />
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>         
+                                           
+                                            <div class="row" style="margin-top:15px">
+                                                <hr />
+                                            </div>
+                                            <div id="divSPInvOtherChargeGrid">
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-2 text-right" style="margin-top:5px"><label>Other Charges</label></div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <ul class="list-inline">
+                                                                <li class="eagle-checkbox">
+                                                                    <label class="eagle-check custom-checkbox">
+                                                                        <input type="checkbox" class="eagle-check-input" name="SPPOInvOtherCharges" value="Yes" id="chkSPPOInvOtherchargeY" onclick="SPPOInvOtherChargeValidation(this)">
+                                                                        <span class="eagle-check-indicator"></span>
+                                                                        <span class="eagle-check-description">Yes</span>
+                                                                    </label>
+                                                                </li>
+                                                                <li class="eagle-checkbox">
+                                                                    <label class="eagle-check custom-checkbox">
+                                                                        <input type="checkbox" class="eagle-check-input" name="SPPOInvOtherCharges" value="No" id="chkSPPOInvOtherchargeN" onclick="SPPOInvOtherChargeValidation(this)" checked>
+                                                                        <span class="eagle-check-indicator"></span>
+                                                                        <span class="eagle-check-description">No</span>
+                                                                    </label>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1"></div>
+                                                </div>
+                                                <div class="row change-tab" id="OtherGrid">
+                                                    <div class="strike">
+                                                        <span>Other Charges</span>
+                                                    </div>
+                                                    <div class="tabledynamic">
+                                                        <br />
+                                                        <table id="SPInvOtherChargeTable" class="table order-list SPInvOtherChargeTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">No</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Check</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">AccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">SubAccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Amount</label></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td class="text-center"><label>SubTotal</label></td>
+                                                                    <td></td>
+                                                                    <td><input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Charge" onclick="BindNewRowtoSPPOOtherChargeGrid();" /></td>
+
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:15px">
+                                                <hr />
+                                            </div>
+                                            <div id="divSPInvDeductionGrid">
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <ul class="list-inline">
+                                                                <li class="eagle-checkbox">
+                                                                    <label class="eagle-check custom-checkbox">
+                                                                        <input type="checkbox" class="eagle-check-input" name="SPPOInvDeduction" value="Yes" id="chkSPPOInvDeductionY" onclick="SPPOInvDeductionValidation(this)">
+                                                                        <span class="eagle-check-indicator"></span>
+                                                                        <span class="eagle-check-description">Yes</span>
+                                                                    </label>
+                                                                </li>
+                                                                <li class="eagle-checkbox">
+                                                                    <label class="eagle-check custom-checkbox">
+                                                                        <input type="checkbox" class="eagle-check-input" name="SPPOInvDeduction" value="No" id="chkSPPOInvDeductionN" onclick="SPPOInvDeductionValidation(this)" checked>
+                                                                        <span class="eagle-check-indicator"></span>
+                                                                        <span class="eagle-check-description">No</span>
+                                                                    </label>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1"></div>
+                                                </div>
+                                                <div class="row change-tab text-right" id="DeductionGrid">
+                                                    <div class="strike">
+                                                        <span>Deductions</span>
+                                                    </div>
+                                                    <div class="tabledynamic">
+                                                        <br />
+                                                        <table id="SPInvDeductionTable" class="table order-list SPInvDeductionTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">No</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Check</label></td>
+
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">AccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">SubAccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Amount</label></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td class="text-center"><label>SubTotal</label></td>
+                                                                    <td></td>
+                                                                    <td><input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Deduction" onclick="BindNewRowtoSPPODeductionGrid();" /></td>
+
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <hr />
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Advance)
+                                                        @Html.TextBoxFor(model => model.Advance, new { @id = "txtNSpAdvance", @class = "form-control", type = "text", onkeyup = "CountPOInvoiceTotal()", onkeypress = "return ValidateAmount(this,event);" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Retention)
+                                                        @Html.TextBoxFor(model => model.Retention, new { @id = "txtNSpInvRetention", @class = "form-control", type = "text", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountPOInvoiceTotal()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Hold)
+                                                        @Html.TextBoxFor(model => model.Hold, new { @id = "txtNSpInvHold", @class = "form-control", type = "text", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountPOInvoiceTotal()" })
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row">
+                                             @*<div class="col-md-4" id="divinvoicetotal">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.InvoiceValue)
+                                                    @Html.TextBoxFor(model => model.InvoiceValue, new { @id = "txtNSpInvValue", @class = "form-control", type = "text", @readonly = true })
+                                                </div>
+                                            </div>*@
+
+                                                <div class="col-md-8">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Description)
+                                                        @Html.TextAreaFor(model => model.Description, htmlAttributes: new { @class = "form-control", @id = "txtNSpInvDescription", @rows = "2" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.NetAmount)
+                                                        @Html.TextBoxFor(model => model.NetAmount, new { @id = "txtNSpInvNetAmount", @class = "form-control", type = "text", @readonly = true })
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row" style="margin-top:10px">
+                                            <div class="text-right" style="margin-right:12px">
+                                                <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewSPPOAmend" onclick="SubmitNewSPPOInvoiceData()" value="Submit" />
+                                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetSPPOInvoice()" id="btnResetNewSPPOAmend" />
+                                                <input type="hidden" id="txtPOStartdate" />
+                                                <input type="hidden" id="txtPlus" />
+                                                <input type="hidden" id="txtMinus" />
+
+                                            </div>
+                                        </div>
+                                        <div class="row text-center" style="margin-top:10px">
+                                            <div id="divNewSppoInvInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divPOData").addClass("hidden");
+        $("#divPOInvDetails").addClass("hidden");
+        $("#TaxGrid").addClass("hidden");
+        $("#btnRemoveTaxes").addClass("hidden");
+        $("#btnAddTaxes").removeClass("hidden");
+        $("#OtherGrid").addClass('hidden');
+        $("#DeductionGrid").addClass('hidden');
+        $("#divSPInvOtherChargeGrid").addClass('hidden');
+        $("#btnSubmitNewSPPOAmend").addClass('hidden');
+
+       // $("#divinvoicetotal").addClass('hidden');
+        $("#txtNSpInvDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtNSpInvMakingDate").datepicker("option", "minDate", selectedDate);
+                $("#txtNSpInvDate").datepicker("option", "disabled", true);
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtNSpInvMakingDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+            }
+        }).datepicker("setDate", new Date());
+
+        $("table.order-list.SPInvTaxTable").on("change", ".sppotaxtype", function (event) {
+            var currentRow = $(this).closest("tr");
+            var typeindex = currentRow.find(".sppotaxtype option:selected").index();
+            var dcaddl = currentRow.find(".sppotaxdca");
+            var sdcaddl = currentRow.find(".sppotaxsdca");
+            var taxname = currentRow.find(".sppotaxname");
+            var taxamount = currentRow.find(".sppotaxamount");
+            var ponumber = $("#ddlNSpInvPONo option:selected").index();
+            if (ponumber == 0) {
+
+                $("#divNewSppoInvInfoMsg").append("<div>Select PO Number</div>");
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").addClass("hidden");
+
+
+                if (typeindex === 0) {
+                    dcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxname.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxamount.val(0);
+                }
+                else {
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxname.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxamount.val(0);
+
+                    var selecteddcalist = [];
+
+                    //$("#SPInvTaxTable tbody tr").each(function () {
+                    //    var currentRow = $(this);
+                    //    var taxdca = currentRow.find("td").eq(3).find("select option:selected").index();
+                    //    var taxsdca = currentRow.find("td").eq(4).find("select option:selected").index();
+                    //    //if (taxdca !== 0) {
+                    //    //    selecteddcalist.push(currentRow.find("td").eq(3).find("select option:selected").val());
+                    //    //}
+                    //    if (otherdcaindex !== 0 && othersdcaindex !== 0) {
+                    //        var taxdca1 = currentRow.find("td").eq(3).find("select option:selected").val();
+                    //        var taxsdca1 = currentRow.find("td").eq(4).find("select option:selected").val();
+                    //        selecteddcalist.push(taxdca1 + "," + taxsdca1);
+                    //    }
+                    //});
+                    $("#divNewSppoInvInfoMsg").text("");
+                    $("#divNewSppoInvInfoMsg").addClass("hidden");
+                    var type = currentRow.find(".sppotaxtype option:selected").val();
+                    var invdate = $("#txtNSpInvDate").val();
+                    var cc = $("#txtNSpInvCCCode").val();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetSPPOInvTaxDCA",
+                        data: "{CCCode:'" + cc + "' ,TaxType: '" + type + "',Invdate: '" + invdate + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            dcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(response, function () {
+                                //var status = checkValueInArray(this['DCACode'], selecteddcalist);
+                                //if (status === false) {
+
+                                dcaddl.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                //}
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+            }
+
+        });
+        $("table.order-list.SPInvTaxTable").on("change", ".sppotaxdca", function (event) {
+            var currentRow = $(this).closest("tr");
+            var typeindex = currentRow.find(".sppotaxtype");
+            var dcaddlIndex = currentRow.find(".sppotaxdca option:selected").index();
+            var sdcaddl = currentRow.find(".sppotaxsdca");
+            var taxname = currentRow.find(".sppotaxname");
+            var taxamount = currentRow.find(".sppotaxamount");
+            var ponumber = $("#ddlNSpInvPONo option:selected").index();
+            if (ponumber == 0) {
+                $("#divNewSppoInvInfoMsg").append("<div>Select PO Number</div>");
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").addClass("hidden");
+                if (dcaddlIndex === 0) {
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxname.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxamount.val(0);
+                }
+                else {
+
+                    $("#divNewSppoInvInfoMsg").text("");
+                    $("#divNewSppoInvInfoMsg").addClass("hidden");
+                    var taxdca = currentRow.find(".sppotaxdca option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetSubDCAbyDCA",
+                        data: "{DCACode:'" + taxdca + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(data, function () {
+                                sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+            }
+            CountPOInvoiceTotal();
+        });
+
+        $("table.order-list.SPInvTaxTable").on("change", ".sppotaxsdca", function (event) {
+            var currentRow = $(this).closest("tr");
+            var taxtype = currentRow.find(".sppotaxtype option:selected").val();
+            var dcaddlIndex = currentRow.find(".sppotaxdca");
+            var sdcaddlIndex = currentRow.find(".sppotaxsdca option:selected").index();
+            var taxname = currentRow.find(".sppotaxname");
+            var taxamount = currentRow.find(".sppotaxamount");
+            var ponumber = $("#ddlNSpInvPONo option:selected").index();
+            if (ponumber == 0) {
+                $("#divNewSppoInvInfoMsg").append("<div>Select PO Number</div>");
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").addClass("hidden");
+                if (sdcaddlIndex === 0) {
+                    taxname.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxamount.val(0);
+                }
+                else {
+                    taxname.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    taxamount.val(0);
+                    $("#divNewSppoInvInfoMsg").text("");
+                    $("#divNewSppoInvInfoMsg").addClass("hidden");
+                    var taxdca = currentRow.find(".sppotaxdca option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetClientInvTaxNos",
+                        data: "{DCACode:'" + taxdca + "',Taxtype:'" + taxtype + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            taxname.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(data, function () {
+                                taxname.append($("<option></option>").val(this['TaxNoID']).html(this['TaxNoName']));
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+
+            }
+            CountPOInvoiceTotal();
+        });
+        $("table.order-list.SPInvTaxTable").on("click", ".ibtnsppoTaxdelete", function (event) {
+            var tablerowcount = $("#SPInvTaxTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoSPPOInvTax();
+
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    //BindEmptyRowToSPPOTaxesGrid();
+                    $("#SPInvTaxTable tbody tr").remove();
+                    $("#TaxGrid").addClass("hidden");
+                    $("#btnRemoveTaxes").addClass("hidden");
+                    $("#btnAddTaxes").removeClass("hidden");
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoSPPOInvTax();
+                }
+            }
+            CountPOInvoiceTotal();
+        });
+
+        $("table.order-list.SPInvOtherChargeTable").on("change", ".sppoOtherChargedca", function (event) {
+            var currentRow = $(this).closest("tr");
+
+            var dcaddlIndex = currentRow.find(".sppoOtherChargedca option:selected").index();
+            var sdcaddl = currentRow.find(".sppoOtherChargesdca");
+
+            var otherchargeamount = currentRow.find(".sppoOtherChargeamount");
+            var ponumber = $("#ddlNSpInvPONo option:selected").index();
+            if (ponumber == 0) {
+                $("#divNewSppoInvInfoMsg").append("<div>Select PO Number</div>");
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").addClass("hidden");
+                if (dcaddlIndex === 0) {
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    otherchargeamount.val(0);
+                }
+                else {
+
+                    $("#divNewSppoInvInfoMsg").text("");
+                    $("#divNewSppoInvInfoMsg").addClass("hidden");
+                    var dca = currentRow.find(".sppoOtherChargedca option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetSubDCAbyDCA",
+                        data: "{DCACode:'" + dca + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(data, function () {
+                                sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+            }
+            CountPOInvoiceTotal();
+        });
+        $("table.order-list.SPInvOtherChargeTable").on("click", ".ibtnsppoInvOtherChargedelete", function (event) {
+            var tablerowcount = $("#SPInvOtherChargeTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoSPPOInvOtherCharge();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    $("#OtherGrid").addClass('hidden');
+                    $("#chkSPPOInvOtherchargeY").prop("checked", false);
+                    $("#chkSPPOInvOtherchargeN").prop("checked", true);
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoSPPOInvOtherCharge();
+                }
+            }
+            CountPOInvoiceTotal();
+        });
+
+        $("table.order-list.SPInvDeductionTable").on("change", ".sppoDeddca", function (event) {
+            var currentRow = $(this).closest("tr");
+
+            var dcaddlIndex = currentRow.find(".sppoDeddca option:selected").index();
+            var sdcaddl = currentRow.find(".sppoDedsdca");
+
+            var otherchargeamount = currentRow.find(".sppoDedamount");
+            var ponumber = $("#ddlNSpInvPONo option:selected").index();
+            if (ponumber == 0) {
+                $("#divNewSppoInvInfoMsg").append("<div>Select PO Number</div>");
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").addClass("hidden");
+                if (dcaddlIndex === 0) {
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    otherchargeamount.val(0);
+                }
+                else {
+
+                    $("#divNewSppoInvInfoMsg").text("");
+                    $("#divNewSppoInvInfoMsg").addClass("hidden");
+                    var dca = currentRow.find(".sppoDeddca option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetSubDCAbyDCA",
+                        data: "{DCACode:'" + dca + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(data, function () {
+                                sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+            }
+            CountPOInvoiceTotal();
+        });
+        $("table.order-list.SPInvDeductionTable").on("click", ".ibtnsppoInvDeddelete", function (event) {
+            var tablerowcount = $("#SPInvDeductionTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoSPPOInvDeduction();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    $("#DeductionGrid").addClass('hidden');
+                    $("#chkSPPOInvDeductionY").prop("checked", false);
+                    $("#chkSPPOInvDeductionN").prop("checked", true);
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoSPPOInvDeduction();
+                }
+            }
+            CountPOInvoiceTotal();
+        });
+
+        $("input:radio[name='GSTType']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var taxtype = _val;
+            var cgstddl = $("#ddlPOCompanyGST");
+            clearforGST();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetCompanyGSTNos",
+                data: '{Taxtype:"' + taxtype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        cgstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            cgstddl.append($("<option></option>").val(this['TaxNoID']).html(this['TaxNoName']));
+                        });                        
+
+                        $("#divNewSppoInvInfoMsg").text("");
+                        $("#divNewSppoInvInfoMsg").addClass("hidden");
+                       
+                    }
+                    else {
+                        $("#divNewSppoInvInfoMsg").text("");
+                        $("#divNewSppoInvInfoMsg").append("<div>GSTs Not Exist</div>");
+                        $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                        $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+                        cgstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        });
+    });
+    function clearforGST() {
+        RemoveTaxesForSPPOInvoice();
+    }
+    function CountPOInvoiceTotal() {
+        var basicValue = $("#txtNSpInvBalance").val();
+        var TaxSubTotal = 0;
+        var ChangesTotal = 0;
+        var Retention = $("#txtNSpInvRetention").val();
+        var Hold = $("#txtNSpInvHold").val();
+        var Advance = $("#txtNSpAdvance").val();
+        var Deduction = 0;
+        var Plus = 0;
+        var Minus = 0;
+        var invtotal = 0;
+
+        if (basicValue != "") {
+             Plus = parseFloat(Plus) + parseFloat(basicValue);
+             invtotal = parseFloat(invtotal) + parseFloat(basicValue);
+        }
+        if (TaxSubTotal > 0) {
+            Plus = parseFloat(Plus) + parseFloat(TaxSubTotal);
+        }
+        if (ChangesTotal > 0) {
+            Plus = parseFloat(Plus) + parseFloat(ChangesTotal);
+        }
+        if (Retention != "") { Minus = parseFloat(Minus) + parseFloat(Retention); }
+        if (Hold != "") { Minus = parseFloat(Minus) + parseFloat(Hold); }
+        //if (Advance != "") { Minus = parseFloat(Minus) + parseFloat(Advance); }
+        if (Advance == "") {
+            Advance = parseFloat(0);
+            Minus = parseFloat(Minus) + parseFloat(Advance);
+        }
+        else { Minus = parseFloat(Minus) + parseFloat(Advance);}
+        //var Taxcount = $("#SPInvTaxTable tbody tr").length;
+        //if (Taxcount > 0) {
+        
+            var Taxsubtotal = 0;
+            var Taxrowtotal = 0;
+            
+            var statecheck = $("#gststatecheck").val();
+            var gsttotal = 0;
+
+        if (statecheck === "true") {
+            let cgst = $("#txtTaxCGSTSDCAamt").val();
+            let sgst = $("#txtTaxSGSTSDCAamt").val();
+            if (cgst === "") { cgst = 0; }
+            if (sgst === "") { sgst = 0; }
+                        gsttotal = parseFloat(cgst) + parseFloat(sgst);
+                    if (!isNaN(gsttotal)) {
+                        $("#txtTaxTotalGSTSDCAamt").val(gsttotal);
+                        Taxsubtotal = parseFloat(Taxsubtotal) + parseFloat(gsttotal);
+                    }
+            if (!isNaN(Taxsubtotal)) {
+                        Plus = parseFloat(Plus) + parseFloat(Taxsubtotal);
+                    }
+            }
+        else if (statecheck === "false") {
+
+            let igst = $("#txtTaxIGSTSDCAamt").val();
+            if (igst === "") { igst = 0; }
+            gsttotal = parseFloat(igst);
+
+            if (!isNaN(gsttotal)) {
+                $("#txtTaxTotalGSTSDCAamt1").val(gsttotal);
+                Taxsubtotal = parseFloat(Taxsubtotal) + parseFloat(gsttotal);
+            }
+            if (!isNaN(Taxsubtotal)) {
+                Plus = parseFloat(Plus) + parseFloat(Taxsubtotal);
+            }
+
+            
+            }
+            
+
+           
+        if ($('#chkSPPOInvOtherchargeY').is(":checked")) {
+            var otherchargesubtotal = 0;
+            var otherchargerowtotal = 0;
+            $("#SPInvOtherChargeTable tbody tr").each(function () {
+                var currentRow = $(this);
+                otherchargerowtotal = currentRow.find("td").eq(4).find("input[type='text']").val();
+                if (otherchargerowtotal != "") {
+                    otherchargesubtotal = parseFloat(otherchargesubtotal) + parseFloat(otherchargerowtotal);
+                }
+
+            });
+            $("#SPInvOtherChargeTable tfoot tr").each(function () {
+                var footerRow = $(this);
+                foottotal = footerRow.find("td").eq(4).find("input[type='text']").val();
+                if (!isNaN(otherchargesubtotal)) {
+                    footerRow.find("td").eq(4).html("<b>" + otherchargesubtotal + "</b>");
+                }
+                else {
+                    footerRow.find("td").eq(4).html("");
+                }
+                if (!isNaN(otherchargesubtotal)) {
+                    Plus = parseFloat(Plus) + parseFloat(otherchargesubtotal);
+                }
+            });
+        }
+        if ($('#chkSPPOInvDeductionY').is(":checked")) {
+            var Deductionsubtotal = 0;
+            var Deductionerowtotal = 0;
+
+            $("#SPInvDeductionTable tbody tr").each(function () {
+                var currentRow = $(this);
+                Deductionerowtotal = currentRow.find("td").eq(4).find("input[type='text']").val();
+                if (Deductionerowtotal != "") {
+                    Deductionsubtotal = parseFloat(Deductionsubtotal) + parseFloat(Deductionerowtotal);
+                }
+
+            });
+            $("#SPInvDeductionTable tfoot tr").each(function () {
+                var footerRow = $(this);
+                foottotal = footerRow.find("td").eq(4).find("input[type='text']").val();
+                if (!isNaN(Deductionsubtotal)) {
+                    footerRow.find("td").eq(4).html("<b>" + Deductionsubtotal + "</b>");
+                }
+                else {
+                    footerRow.find("td").eq(4).html("");
+                }
+                if (!isNaN(Deductionsubtotal)) {
+                    Deduction = parseFloat(Deductionsubtotal);
+                }
+            });
+        }
+        if (Deduction > 0) { Minus = parseFloat(Minus) + parseFloat(Deduction); }
+        $("#txtMinus").val(Minus);     
+        var Net = parseFloat(Plus) - parseFloat(Minus);     
+        if (parseFloat(invtotal) < parseFloat(Advance)){
+            $("#divNewSppoInvInfoMsg").text("");
+            $("#divNewSppoInvInfoMsg").append("<div>Advance Amount Should Not Be Greater Than Invoice Value</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (parseFloat(basicValue) < parseFloat(Minus)){
+            $("#divNewSppoInvInfoMsg").text("");
+            $("#divNewSppoInvInfoMsg").append("<div>Sum of [Deduction+Retention+Hold+Advance] Should not be Greater than Basic Amount</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");           
+            //if (!isNaN(final)) {
+            //    $("#txtNSpInvValue").val(final.toFixed(2));
+            //}
+            //else {
+            //    $("#txtNSpInvValue").val(0);
+            //}
+            if (!isNaN(Net)) {
+                $("#txtNSpInvNetAmount").val(Net.toFixed(2));
+            }
+            else {
+                $("#txtNSpInvNetAmount").val(0);
+            }
+        }       
+        else {
+            $("#divNewSppoInvInfoMsg").text("");
+            $("#divNewSppoInvInfoMsg").addClass("hidden");
+            //var Net = parseFloat(Plus) - parseFloat(Minus);
+            // var final = parseFloat(Plus) - parseFloat(Deduction);
+           
+            //if (!isNaN(final)) {
+            //    $("#txtNSpInvValue").val(final.toFixed(2));
+            //}
+            //else {
+            //    $("#txtNSpInvValue").val(0);
+            //}
+            if (!isNaN(Net)){
+                $("#txtNSpInvNetAmount").val(Net.toFixed(2));
+            }
+            else {
+                $("#txtNSpInvNetAmount").val(0);
+            }
+        }
+    }
+    function SubmitNewSPPOInvoiceData() {
+        isValid = true;
+        var errorMsg = "";
+        var vendorIndex = $("#ddlNSpInvVendor option:selected").index();
+        var ponumberIndex = $("#ddlNSpInvPONo option:selected").index();
+        var invoiceno = $("#txtNSpInvNo").val();
+        var invoicedate = $("#txtNSpInvDate").val();
+        var invoiceMakingdate = $("#txtNSpInvMakingDate").val();
+        var Balance = $("#txtNSpInvBalance").val();
+        var Description = $("#txtNSpInvDescription").val();
+        var Retention = $("#txtNSpInvRetention").val();
+        var Hold = $("#txtNSpInvHold").val();
+        var Advance = $("#txtNSpAdvance").val();
+        var invtotal = $("#txtNSpInvBalance").val();
+        var gstno= $("#ddlPOCompanyGST option:selected").index();
+        var vendorgstno= $("#ddlPOVendorGST option:selected").index();
+        if (vendorIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor Name</p>";
+            isValid = false;
+        }
+        if (ponumberIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select PO Number</p>";
+            isValid = false;
+        }
+        if (invoiceno === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Invoice Number</p>";
+            isValid = false;
+        }
+        if (invoicedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Date</p>";
+            isValid = false;
+        }
+        if (invoiceMakingdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Making Date</p>";
+            isValid = false;
+        }
+        if (Balance === "" || Balance === "0" || Balance === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Balance</p>";
+            isValid = false;
+        }
+        if (Description === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Description</p>";
+            isValid = false;
+        }
+        if ($("#rGSTTypeY").is(':checked') === false && $("#rGSTTypeN").is(':checked') === false) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select GST Tax Type</p>";
+            isValid = false;
+        }
+        if (vendorgstno === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor GST</p>";
+            isValid = false;           
+        }
+        if (gstno === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select  GST</p>";
+            isValid = false;           
+        }
+       
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divNewSppoInvInfoMsg").text("");
+            $("#divNewSppoInvInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var statecheck = $("#gststatecheck").val();        
+         
+            if (statecheck === "true" ) {
+                var cgstamtcount = $("#txtTaxCGSTSDCAamt").val();
+                var sgstamtcount = $("#txtTaxSGSTSDCAamt").val();
+
+                //$("#SPInvTaxSameStateTable tbody tr").each(function () {
+                //    var currentRow = $(this);
+                //    let cgst = currentRow.find("td").eq(2).find("input[type='text']").val();
+                //    let sgst = currentRow.find("td").eq(4).find("input[type='text']").val();
+                //    if (cgst === "" || cgst === "0") { cgstamtcount = cgstamtcount + 1; }
+                //    if (sgst === "" || sgst === "0") { sgstamtcount = sgstamtcount + 1; }
+                //});
+                if (cgstamtcount === "" || cgstamtcount === "0" || cgstamtcount === 0 ) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter CGST Amount</p>";
+                    isValid = false;
+                }
+                if (sgstamtcount === "" || sgstamtcount === "0" || sgstamtcount === 0) {
+                      errorMsg += "<p style='margin-top:-5px!important;'>Enter SGST Amount</p>";
+                    isValid = false;
+                }
+            }
+            else if (statecheck === "false" ) {       
+                let igstamt = $("#txtTaxIGSTSDCAamt").val();
+                //$("#SPInvTaxDiffStateTable tbody tr").each(function () {
+                //    var currentRow = $(this);
+                //    let igst = currentRow.find("td").eq(2).find("input[type='text']").val();
+                //    if (igst === "" || igst === "0") { igstamtcount = igstamtcount + 1; }
+                //});
+                if (igstamt === "" || igstamt === "0" || igstamt === 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter IGST Amount</p>";
+                    isValid = false;
+                }
+            }
+          
+            if ($('#chkSPPOInvOtherchargeY').is(":checked")) {
+                var Otherselecteddcalist = [];
+                var otherdcacount = 0, othersdcacount = 0, othervaluecount = 0, otherchkcount = 0;
+                $("#SPInvOtherChargeTable tbody tr").each(function () {
+                    let currentRow = $(this);
+                    let othercheck = currentRow.find("td").eq(1).find('input[type="checkbox"]').is(':checked');
+
+                    let otherdca = currentRow.find("td").eq(2).find("select option:selected").index();
+                    let othersdca = currentRow.find("td").eq(3).find("select option:selected").index();
+
+                    let otheramount = currentRow.find("td").eq(4).find("input[type='text']").val();
+
+                    if (otherdca === 0) { otherdcacount = otherdcacount + 1; }
+                    else {
+                        if (otherdca !== 0 && othersdca !== 0) {
+                            var otherdca1 = currentRow.find("td").eq(2).find("select option:selected").val();
+                            var othersdca1 = currentRow.find("td").eq(3).find("select option:selected").val();
+                            Otherselecteddcalist.push(otherdca1 + "," + othersdca1);
+                        }
+                        //  Otherselecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                    }
+                    if (othersdca === 0) { othersdcacount = othersdcacount + 1; }
+                    if (otheramount === "" || otheramount === "0") { othervaluecount = othervaluecount + 1; }
+                    if (othercheck === false) { otherchkcount = otherchkcount + 1; }
+
+                });
+                if (otherdcacount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Other Charge Account Head</p>";
+                    isValid = false;
+                }
+                else {
+                    var duplicatelist1 = Otherselecteddcalist.filter(i => Otherselecteddcalist.filter(ii => ii === i).length > 1);
+                    if (duplicatelist1.length > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Accounts Heads for Other Charges</p>";
+                        isValid = false;
+                    }
+                }
+                if (othersdcacount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Other Charge Sub Account Head</p>";
+                    isValid = false;
+                }
+
+                if (othervaluecount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Other Charge Amount</p>";
+                    isValid = false;
+                }
+                if (otherchkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Check Other Charges </p>";
+                    isValid = false;
+                }
+            }
+            if ($('#chkSPPOInvDeductionY').is(":checked")) {
+                var Deductionselecteddcalist = [];
+                var Deddcacount = 0, Dedsdcacount = 0, Dedvaluecount = 0, Dedchkcount = 0, Dedamtcount = 0;
+                $("#SPInvDeductionTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var Dedcheck = currentRow.find("td").eq(1).find('input[type="checkbox"]').is(':checked');
+
+                    var Deddca = currentRow.find("td").eq(2).find("select option:selected").index();
+                    var Dedsdca = currentRow.find("td").eq(3).find("select option:selected").index();
+
+                    var Dedamount = currentRow.find("td").eq(4).find("input[type='text']").val();
+
+                    if (Deddca === 0) { Deddcacount = Deddcacount + 1; }
+                    else {
+                        if (Deddca !== 0 && Dedsdca !== 0) {
+                            var Deddca1 = currentRow.find("td").eq(2).find("select option:selected").val();
+                            var Dedsdca1 = currentRow.find("td").eq(3).find("select option:selected").val();
+                            Deductionselecteddcalist.push(Deddca1 + "," + Dedsdca1);
+                        }
+                        // Deductionselecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                    }
+
+                    if (Dedsdca === 0) { Dedsdcacount = Dedsdcacount + 1; }
+                    if (Dedamount === "" || Dedamount === "0") { Dedvaluecount = Dedvaluecount + 1; }
+                    else {
+                        Dedamtcount += Dedamount;
+
+                    }
+                    if (Dedcheck === false) { Dedchkcount = Dedchkcount + 1; }
+                });
+
+                if (Deddcacount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Deduction Account Head</p>";
+                    isValid = false;
+                } else {
+                    var duplicatelist2 = Deductionselecteddcalist.filter(i => Deductionselecteddcalist.filter(ii => ii === i).length > 1);
+                    if (duplicatelist2.length > 0) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Accounts Heads for Deduction</p>";
+                        isValid = false;
+                    }
+                }
+                if (Dedsdcacount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Deduction Sub Account Head</p>";
+                    isValid = false;
+                }
+
+                if (Dedvaluecount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Deduction Amount</p>";
+                    isValid = false;
+                }
+                if (Dedchkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Check Deduction </p>";
+                    isValid = false;
+                }
+                if (parseFloat(invtotal) < parseFloat(Dedamtcount)) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Deduction Amount Should not be greater than Invoice Amount</p>";
+                    isValid = false;
+                }
+
+            }
+            if (Retention === "") {
+                Retention = 0;
+            }
+            if (Hold === "") {
+                Hold = 0;
+            }
+            if (Advance==="") {
+                Advance = 0;
+            }
+            if (parseFloat(invtotal) < parseFloat(Advance)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Advance Amount should not be greater than Invoice amount</p>";
+                isValid = false;
+            }
+            if (parseFloat(Balance) < parseFloat($("#txtMinus").val())) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Sum of [Deduction+Retention+Hold] Should not be Greater than Basic Amount</p>";
+                isValid = false;
+            }
+            if (parseFloat($("#txtNSpInvValue").val()) <= 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amounts</p>";
+                isValid = false;
+            }
+            if (parseFloat($("#txtNSpInvNetAmount").val()) <= 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Amounts</p>";
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                var finalerror2 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").append(finalerror2 + errorMsg + "</div>");
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+
+                $("#divNewSppoInvInfoMsg").text("");
+                $("#divNewSppoInvInfoMsg").addClass("hidden");
+                var TaxTypes = "", Taxdcas = "", TaxAmounts = "";
+                var Otherdcas = "", OtherAmounts = "";
+                var result = "";
+                if ($("#rGSTTypeY").is(':checked') === true) {
+                    TaxTypes = "Creditable";
+                }
+                else { TaxTypes = "Non-Creditable"; }
+                var statecheck = $("#gststatecheck").val();
+                debugger;
+                if (statecheck === "true") {
+                    TaxAmounts = parseFloat($("#txtTaxCGSTSDCAamt").val()) + parseFloat($("#txtTaxSGSTSDCAamt").val());
+                    Taxdcas = $.trim($("#txtTaxDCA1").val());
+                  
+                    //$("#SPInvTaxSameStateTable tbody tr").each(function () {
+                    //    var currentRow = $(this);
+                    //    let cgst = currentRow.find("td").eq(2).find("input[type='text']").val();
+                    //    let sgst = currentRow.find("td").eq(4).find("input[type='text']").val();
+                    //    TaxAmounts = parseFloat(cgst) + parseFloat(sgst);
+                    //    Taxdcas = $.trim(currentRow.find("td").eq(0).html());
+                    //});
+                  
+
+                }
+                else if (statecheck === "false" ) {
+                    TaxAmounts = parseFloat($("#txtTaxIGSTSDCAamt").val());
+                    Taxdcas = $.trim($("#txtTaxDCA2").val());
+                        //$("#SPInvTaxDiffStateTable tbody tr").each(function () {
+                        //    var currentRow = $(this);
+                        //    let igst = currentRow.find("td").eq(2).find("input[type='text']").val();                          
+                        //    TaxAmounts = parseFloat(igst);
+                        //    Taxdcas = $.trim(currentRow.find("td").eq(0).html());
+                        //});                    
+                }
+
+
+                //if (Taxcount > 0) {
+                //    $("#SPInvTaxTable tbody tr").each(function () {
+                //        var currentRow = $(this);
+
+                //        var taxtype = currentRow.find("td").eq(2).find("select option:selected").val();
+                //        var taxdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                //        var taxamount = currentRow.find("td").eq(6).find("input[type='text']").val();
+                //        TaxTypes += taxtype + ',';
+                //        Taxdcas += taxdca + ',';
+                //        TaxAmounts += taxamount + ',';
+                //    });
+                //}
+                if ($('#chkSPPOInvOtherchargeY').is(":checked")) {
+                    $("#SPInvOtherChargeTable tbody tr").each(function () {
+                        let currentRow = $(this);
+                        let otherdca = currentRow.find("td").eq(2).find("select option:selected").val();
+                        let otheramount = currentRow.find("td").eq(4).find("input[type='text']").val();
+                        Otherdcas += otherdca + ',';
+                        OtherAmounts += otheramount + ',';
+                    });
+                }
+                var Invdata = {
+                    SPPOInvoiceDate: $("#txtNSpInvDate").val(),
+                    CCCode: $("#txtNSpInvCCCode").val(),
+                    Taxtypes: TaxTypes,
+                    Taxdcas: Taxdcas,
+                    Taxamounts: TaxAmounts,
+                    Otherchargedcas: Otherdcas,
+                    Otherchargeamounts: OtherAmounts
+                };
+                debugger;
+                var addFailMsg = "Error Occured While Submiting Details";
+
+                // alert("Submit");
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/Purchase/CheckSPPOInvoiceBudget',
+                    data: { sppoInvCheckData: Invdata },
+                    success: function (response) {
+                        result = response.saveStatus;
+                        if (result === "Sufficent") {
+                            $("#divNewSppoInvInfoMsg").text("");
+                            $("#divNewSppoInvInfoMsg").addClass("hidden");
+                            SaveSPPOInvoice();
+                        }
+                        else {
+
+                            $("#divNewSppoInvInfoMsg").text("");
+                            $("#divNewSppoInvInfoMsg").append("<div>" + response.saveStatus + "</div>");
+                            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+                            return false;
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                        $("#divNewSppoInvInfoMsg").text(addFailMsg);
+                        $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                        $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+
+            }
+        }
+
+    }
+    function SaveSPPOInvoice() {
+
+        var vendor = $("#ddlNSpInvVendor option:selected").val();
+        var ponumber = $("#ddlNSpInvPONo option:selected").val();
+        var invoiceno = $("#txtNSpInvNo").val();
+        var invoicedate = $("#txtNSpInvDate").val();
+        var invoiceMakingdate = $("#txtNSpInvMakingDate").val();
+        var Basic = $("#txtNSpInvBalance").val();
+        var Description = $("#txtNSpInvDescription").val();
+        var Retention = $("#txtNSpInvRetention").val();
+        var Hold = $("#txtNSpInvHold").val();
+        var InvoiceTotal = $("#txtNSpInvValue").val();
+        var NetAmount = $("#txtNSpInvNetAmount").val();
+        var AdvanceAmt = $("#txtNSpAdvance").val();
+      
+        if (Retention === "") {
+            Retention = 0;
+        }
+        if (Hold === "") {
+            Hold = 0;
+        }
+        if (AdvanceAmt === "") {
+            AdvanceAmt = 0;
+        }
+       
+        //var TaxTypes = "", Taxdcas = "", Taxsdcas = "", Taxnos = "", TaxAmounts = "";
+        var Otherdcas = "", OtherSdcas = "", OtherAmounts = "";
+        var Deddcas = "", DedSdcas = "", DedAmounts = "", Dedamtcount = 0;
+        //var Taxcount = $("#SPInvTaxTable tbody tr").length;
+        //if (Taxcount > 0) {
+        //    $("#SPInvTaxTable tbody tr").each(function () {
+        //        var currentRow = $(this);
+
+        //        var taxtype = currentRow.find("td").eq(2).find("select option:selected").val();
+        //        var taxdca = currentRow.find("td").eq(3).find("select option:selected").val();
+        //        var taxsdca = currentRow.find("td").eq(4).find("select option:selected").val();
+        //        var taxno = currentRow.find("td").eq(5).find("select option:selected").text();
+        //        var taxamount = currentRow.find("td").eq(6).find("input[type='text']").val();
+        //        TaxTypes += taxtype + ',';
+        //        Taxdcas += taxdca + ',';
+        //        Taxsdcas += taxsdca + ',';
+        //        Taxnos += taxno + ',';
+        //        TaxAmounts += taxamount + ',';
+        //    });
+        //}
+        var TaxTypes = "", Taxdcas = "", Taxcgstsdcas = "", TaxcgstsdcasAmt = 0, Taxsgstsdcas = "", TaxsgstsdcasAmt = 0, Taxigstsdcas = "";
+        var TaxigstsdcasAmt = 0, TaxAmounts = 0;
+        if ($("#rGSTTypeY").is(':checked') === true) {
+            TaxTypes = "Creditable";
+        }
+        else { TaxTypes = "Non-Creditable"; }
+        var statecheck = $("#gststatecheck").val();
+        debugger;
+        if (statecheck === "true" ) {           
+
+            TaxAmounts = parseFloat($("#txtTaxCGSTSDCAamt").val()) + parseFloat($("#txtTaxSGSTSDCAamt").val());
+            Taxdcas = $.trim($("#txtTaxDCA1").val());
+            Taxcgstsdcas = $.trim($("#txtTaxCGSTSDCA").val());
+            TaxcgstsdcasAmt = parseFloat($("#txtTaxCGSTSDCAamt").val());
+            Taxsgstsdcas = $.trim($("#txtTaxSGSTSDCA").val());
+            TaxsgstsdcasAmt = parseFloat($("#txtTaxSGSTSDCAamt").val());
+
+            //$("#SPInvTaxSameStateTable tbody tr").each(function () {
+            //    var currentRow = $(this);
+            //    let cgst = currentRow.find("td").eq(2).find("input[type='text']").val();
+            //    let sgst = currentRow.find("td").eq(4).find("input[type='text']").val();
+            //    TaxAmounts = parseFloat(cgst) + parseFloat(sgst);
+            //    Taxdcas = $.trim(currentRow.find("td").eq(0).html());
+            //    Taxcgstsdcas = $.trim(currentRow.find("td").eq(1).html());
+            //    TaxcgstsdcasAmt = parseFloat(cgst);
+            //    Taxsgstsdcas = $.trim(currentRow.find("td").eq(3).html());
+            //    TaxsgstsdcasAmt = parseFloat(sgst);
+            //});
+
+
+        }
+        else if (statecheck === "false" ) {
+
+            TaxAmounts = parseFloat($("#txtTaxIGSTSDCAamt").val());
+            Taxdcas = $.trim($("#txtTaxDCA2").val());
+            Taxigstsdcas = $.trim($("#txtTaxIGSTSDCA").val());
+            TaxigstsdcasAmt = parseFloat($("#txtTaxIGSTSDCAamt").val());
+                //$("#SPInvTaxDiffStateTable tbody tr").each(function () {
+                //    var currentRow = $(this);
+                //    let igst = currentRow.find("td").eq(2).find("input[type='text']").val();
+                //    TaxAmounts = parseFloat(igst);
+                //    Taxdcas = $.trim(currentRow.find("td").eq(0).html());
+                //    Taxigstsdcas = $.trim(currentRow.find("td").eq(1).html());
+                //    TaxigstsdcasAmt = parseFloat(igst);
+                //});
+        }
+
+        if ($('#chkSPPOInvOtherchargeY').is(":checked")) {
+            $("#SPInvOtherChargeTable tbody tr").each(function () {
+                let currentRow = $(this);
+                let otherdca = currentRow.find("td").eq(2).find("select option:selected").val();
+                let othersdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                let otheramount = currentRow.find("td").eq(4).find("input[type='text']").val();
+                Otherdcas += otherdca + ',';
+                OtherSdcas += othersdca + ',';
+                OtherAmounts += otheramount + ',';
+            });
+        }
+        if ($('#chkSPPOInvDeductionY').is(":checked")) {
+            $("#SPInvDeductionTable tbody tr").each(function () {
+                let currentRow = $(this);
+                let ddca = currentRow.find("td").eq(2).find("select option:selected").val();
+                let dsdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                let damount = currentRow.find("td").eq(4).find("input[type='text']").val();
+                Deddcas += ddca + ',';
+                DedSdcas += dsdca + ',';
+                DedAmounts += damount + ',';
+                Dedamtcount += damount;
+            });
+        }
+        //if (Dedamtcount > 0) {
+
+        //    AdvanceAmt = Dedamtcount;
+
+        //}
+        //else {
+        //    AdvanceAmt = 0;
+        //}
+        var sppoInvdata = {
+            CCCode: $("#txtNSpInvCCCode").val(),
+            VendorCode: vendor,
+            SPPOInvoiceDate: $("#txtNSpInvDate").val(),
+            SPPOInvoiceMakingDate: $("#txtNSpInvMakingDate").val(),
+            SPPOInvoiceNo: $("#txtNSpInvNo").val(),
+            SPPOBasicValue: $("#txtNSpInvBalance").val(),
+            DCACode: $("#txtNSpInvDCACode").val(),
+            SubDCACode: $("#txtNSpInvSubDcaCode").val(),
+            SPPONo: $("#ddlNSpInvPONo option:selected").val(),
+            Taxtypes: TaxTypes,
+            Taxdcas: Taxdcas,           
+            Taxamounts: TaxAmounts,
+            Otherchargedcas: Otherdcas,
+            Otherchargesdcas: OtherSdcas,
+            Otherchargeamounts: OtherAmounts,
+            Deductiondcas: Deddcas,
+            Deductionsdcas: DedSdcas,
+            Deductionamounts: DedAmounts,
+            InvoiceValue:0,
+            Description: $("#txtNSpInvDescription").val(),
+            Retention: $("#txtNSpInvRetention").val(),
+            Hold: $("#txtNSpInvHold").val(),
+            NetAmount: $("#txtNSpInvNetAmount").val(),
+            VendorGST: $("#ddlPOVendorGST option:selected").text(),
+            CompanyGST: $("#ddlPOCompanyGST option:selected").text(),
+            Cgstsdca: Taxcgstsdcas,
+            Cgstsdcaamt: TaxcgstsdcasAmt,
+            Sgstsdca: Taxsgstsdcas,
+            Sgstsdcaamt: TaxsgstsdcasAmt,
+            Igstsdca: Taxigstsdcas,
+            Igstsdcaamt: TaxigstsdcasAmt,
+            Statecheck: statecheck
+        };
+        debugger;
+        addFailMsg = "Error Occurred While Adding New SPPO Invoice";
+        addSuccessMsg = "SPPO Invoice Added Successfully.";
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveNewSPPOInvoice',
+            data: { InvData: sppoInvdata },
+            success: function (Data) {
+                if (Data.saveStatus === 'Submited') {
+                    $("#divNewSppoInvInfoMsg").text(addSuccessMsg);
+                    $("#divNewSppoInvInfoMsg").removeClass("hidden alert-danger");
+                    $("#divNewSppoInvInfoMsg").addClass("alert-success");
+                    //$("#btnSubmitNewVendor").prop("disabled", true);
+                }
+                else {
+                    $("#divNewSppoInvInfoMsg").text(Data.saveStatus);
+                    $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                    $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+                    //$("#btnSubmitNewVendor").prop("disabled", true);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divNewSppoInvInfoMsg").text(addFailMsg);
+                $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+    function RemoveTaxesForSPPOInvoice() {
+      
+        $("#TaxGrid").addClass("hidden");
+        $("#btnRemoveTaxes").addClass("hidden");
+        $("#btnAddTaxes").removeClass("hidden");
+        //$("#SPInvTaxTable tfoot tr").each(function () {
+        //    var statecheck = $("#gststatecheck").val();
+        //    var footerRow = $(this);         
+        //        if (statecheck === true) {
+        //            footerRow.find("td").eq(5).html("");
+        //        }
+        //        else { footerRow.find("td").eq(3).html(""); }
+        //        //footerRow.find("td").eq(6).html("");
+           
+           
+        //});
+        //$("#SPInvTaxTable tfoot tr").each(function () {
+        //    var footerRow = $(this);            
+        //    footerRow.find("td").eq(6).html("");
+        //});
+        $("#gststatecheck").val("");
+        $("#txtTaxDCA1").val("");
+        $("#txtTaxDCA2").val("");
+        $("#txtTaxCGSTSDCA").val("");
+        $("#txtTaxCGSTSDCAamt").val("");
+        $("#txtTaxSGSTSDCA").val("");
+        $("#txtTaxSGSTSDCAamt").val("");
+        $("#txtTaxIGSTSDCA").val("");
+        $("#txtTaxIGSTSDCAamt").val("");
+        $("#txtTaxTotalGSTSDCAamt").val("");
+        $("#txtTaxTotalGSTSDCAamt1").val("");
+        //$("#SPInvTaxSameStateTable tfoot tr").remove();
+        //$("#SPInvTaxDiffStateTable tfoot tr").remove();
+        $("#divSameStateGrid").addClass("hidden");
+        //$("#divDiffStateGrid").addClass("hidden");
+        CountPOInvoiceTotal();   
+
+        //clearforGST();
+        
+    }
+    function POCompanyGSTChange() { clearforGST(); }
+    function POVendorGSTChange() { clearforGST(); }
+    function AddTaxesForSPPOInvoice() {
+        $("#SPInvTaxTable tbody tr").remove();
+        // BindEmptyRowToSPPOTaxesGrid();
+
+        var ponumber = $("#ddlNSpInvPONo option:selected").index();
+        var invdate = $("#txtNSpInvDate").val();
+        var CC = $("#txtNSpInvCCCode").val();
+        var vgstindex = $("#ddlPOVendorGST option:selected").index();
+        var cgstindex = $("#ddlPOCompanyGST option:selected").index();
+        var Taxtype = '';
+        if ($("#rGSTTypeY").is(':checked') === true) {
+            Taxtype = "Creditable";
+        }
+        else { Taxtype = "Non-Creditable"; }
+        if (ponumber === 0) {
+
+            $("#divNewSppoInvInfoMsg").append("<div>Select PO Number</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if ($("#rGSTTypeY").is(':checked') == false && $("#rGSTTypeN").is(':checked') == false) {
+
+            $("#divNewSppoInvInfoMsg").append("<div>Select GST Type</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (vgstindex === 0) {
+            $("#divNewSppoInvInfoMsg").text("");
+            $("#divNewSppoInvInfoMsg").append("<div>Select Vendor GST</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+            $("#ddlPOCompanyGST").prop('selectedIndex', 0);
+        }
+        else if (cgstindex === 0) {
+            $("#divNewSppoInvInfoMsg").text("");
+            $("#divNewSppoInvInfoMsg").append("<div>Select GST</div>");
+            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+
+            //var invdata = {
+            //    CompanyGST :$("#ddlPOCompanyGST option:selected").text(),
+            //    VendorClientGSTNo: $("#ddlPOCompanyGST option:selected").text(),
+            //    InvoiceType:'Vendor',
+            //    Cccode:CC,
+            //    Taxtype:Taxtype,
+            //    PONO: $("#ddlNSpInvPONo option:selected").text(),
+            //    InvDate:invdate,
+            //    Configtyp:'Input GST'
+            //};
+
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetInvoiceGSTConfigDCASDCA",
+                data: '{CompanyGST:"' + $("#ddlPOCompanyGST option:selected").text() + '",VendorClientGSTNo:"' + $("#ddlPOVendorGST option:selected").text() + '",InvoiceType:"Vendor",Cccode:"' + CC + '",Taxtype:"' + Taxtype + '",PONO:"' + $("#ddlNSpInvPONo option:selected").text() + '",InvDate:"' + invdate + '",Configtyp: "Input GST",VendorOrClient: "Service Provider"}',
+
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        debugger;
+
+                        var configcount = response.ConfigCount;
+                        var statecheck = response.SameState;
+                        // alert(configcount);
+                        if (configcount === 4) {
+                            $("#gststatecheck").val(statecheck);
+                            $("#btnRemoveTaxes").removeClass("hidden");
+                            $("#btnAddTaxes").addClass("hidden");
+                            $("#TaxGrid").removeClass("hidden");
+                            //$("#txtTaxDCA1").val(response.DCAcode);
+                            $("#divSameStateGrid").removeClass("hidden"); 
+
+                            if (statecheck === true) {                               
+                              
+                                $("#divcgst").removeClass("hidden");
+                                $("#divigst").addClass("hidden");
+                                $("#divcgstotal").removeClass("hidden");
+                                $("#divigstotal").addClass("hidden");
+                                $("#divcgstdca").removeClass("hidden");
+                                $("#divigstdca").addClass("hidden");
+
+                                $("#txtTaxDCA1").val(response.DCAcode);
+                                $("#txtTaxCGSTSDCA").val(response.CGSTSubDCA);
+                                $("#txtTaxSGSTSDCA").val(response.SGSTSubDCA);
+                            }
+                            else {
+                               
+                                $("#divcgst").addClass("hidden");
+                                $("#divigst").removeClass("hidden");
+                                $("#divcgstotal").addClass("hidden");
+                                $("#divigstotal").removeClass("hidden");
+                                $("#divcgstdca").addClass("hidden");
+                                $("#divigstdca").removeClass("hidden");
+                                $("#txtTaxDCA2").val(response.DCAcode);
+                                $("#txtTaxIGSTSDCA").val(response.IGSTSubDCA);
+                                
+                            }
+                            ////rows
+                            //var cols = "";
+                            //var newRow = $("<tr>");
+                            //cols += '<td style="text-align:center;font-size:11px;color:#000 !important" class="tdcls">' + response.DCAcode + '</td></td>';
+                            //if (statecheck === true) {
+                            //    cols += '<td style="text-align:center;font-size:11px;;color:#000 !important" class="tdcls">' + response.CGSTSubDCA + '</td>';
+                            //    cols += '<td style="text-align:center"><input type="text" class="form-control sppotaxCGSTsdcaamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()"/></td>';
+                            //    cols += '<td style="text-align:center;font-size:11px;color:#000 !important" class="tdcls">' + response.SGSTSubDCA + '</td>';
+                            //    cols += '<td style="text-align:center"><input type="text" class="form-control sppotaxSGSTsdcaamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()"/></td>';
+                            //    //cols += '<td style="text-align:center" class="hidden"><input type="text" class="form-control sppotaxIGSTsdca" value="' + response.IGSTSubDCA +'" /></td>';
+                            //    //cols += '<td style="text-align:center" class="hidden"><input type="text" class="form-control sppotaxIGSTsdcaamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()"/></td>';
+                            //}
+                            //else {
+                            //    //cols += '<td style="text-align:center" class="hidden"><input type="text" class="form-control sppotaxCGSTsdca" value="' + response.CGSTSubDCA +'"  /></td>';
+                            //    //cols += '<td style="text-align:center" class="hidden"><input type="text" class="form-control sppotaxCGSTsdcaamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()"/></td></td>';
+                            //    //cols += '<td style="text-align:center" class="hidden"><input type="text" class="form-control sppotaxSGSTsdca" value="' + response.SGSTSubDCA +'"  /></td>';
+                            //    //cols += '<td style="text-align:center" class="hidden"><input type="text" class="form-control sppotaxSGSTsdcaamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()"/></td></td>';
+                            //    cols += '<td style="text-align:center;font-size:11px;color:#000 !important" class="tdcls">' + response.IGSTSubDCA + '</td>';
+                            //    cols += '<td style="text-align:center"><input type="text" class="form-control sppotaxIGSTsdcaamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()"/></td></td>';
+                            //}
+                            //cols += '<td style="text-align:center"><input type="text" class="form-control sppotaxamountTotal" value=""  disabled/></td>';
+                            //newRow.append(cols);
+                            //if (statecheck === true) {
+                            //    //$("table.order-list.SPInvTaxSameStateTable").append(newRow);
+                            //    $("#SPInvTaxSameStateTable tbody").append(newRow);
+                            //    $("#divSameStateGrid").removeClass("hidden");
+                            //    $("#divDiffStateGrid").addClass("hidden");
+                            //}
+                            //else {
+                            //    $("table.order-list.SPInvTaxDiffStateTable").append(newRow);
+                            //    $("#divSameStateGrid").addClass("hidden");
+                            //    $("#divDiffStateGrid").removeClass("hidden");
+                            //}
+
+                            //footer
+
+
+                        }
+                        else {
+
+                            $("#divNewSppoInvInfoMsg").text("");
+                            $("#divNewSppoInvInfoMsg").append("<div>Input GST Data Is Not Configured </div>");
+                            $("#divNewSppoInvInfoMsg").addClass("alert-danger");
+                            $("#divNewSppoInvInfoMsg").removeClass("hidden alert-success");
+                        }
+
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+
+        }
+
+    }
+</script>
+

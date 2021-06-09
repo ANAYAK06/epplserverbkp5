@@ -1,0 +1,211 @@
+﻿@model EsselTestLocalApplication.Models.ClientNewAndAmendPO
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Purchase Order Information</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    @*<div class="row">
+                                            <h5 style="text-align:center;font-weight:bold">Purchase Order Information</h5>
+                                        </div>*@
+                                    <form onsubmit="return false">
+                                        <div class="row" id="divCCCostCenter">
+                                            <div class="col-md-2"></div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CostCenter)
+                                                    @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.AllCostCenters, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "CostCenterddl" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2" id="divopencc">
+                                                <div class="form-group">
+                                                    </br>
+                                                    <button class="btn btn1 btn-success" id="btnopencc" onclick="btnCCviewData()">View CC Details</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2" id="divclosecc">
+                                                <div class="form-group">
+                                                    </br>
+                                                    <button class="btn btn1 btn-success" id="btnclosecc" onclick="btnCCcloseData()">Close CC Details</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="divViewCCDetails">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.clientid)
+                                                    @Html.DropDownListFor(model => model.clientid, new SelectList(Model.AllClients, "ClientCode", "ClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlclient", onchange = "ClientPOChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.subclientid)
+                                                    @Html.DropDownListFor(model => model.subclientid, new SelectList(Model.SubClientList, "SubClientCode", "SubClientCodename"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlsubclient" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.pono)
+                                                    @Html.TextBoxFor(model => model.pono, htmlAttributes: new { @class = "form-control", @id = "txtpono" })
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.postartdate)
+                                                    @Html.TextBoxFor(model => model.postartdate, "{0:dd-MMM-yyyy}", new { @id = "txtpostartdate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.pocompletiondate)
+                                                    @Html.TextBoxFor(model => model.pocompletiondate, "{0:dd-MMM-yyyy}", new { @id = "txtpocompletiondate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.povalue)
+                                                    @Html.TextBoxFor(model => model.povalue, htmlAttributes: new { @class = "form-control", @id = "txtpovalue", @Value = "", onkeypress = "return ValidateAmount(this,event)", onkeyup = "CalculateTotal()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.gst)
+                                                    @Html.TextBoxFor(model => model.gst, htmlAttributes: new { @class = "form-control", @id = "txtgst", @Value = "", onkeypress = "return ValidateAmount(this,event)", onkeyup = "CalculateTotal()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.total)
+                                                    @Html.TextBoxFor(model => model.total, htmlAttributes: new { @class = "form-control", @id = "txttotal", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="text-center">
+                                                    <h5 style="font-weight:bold">Payment Term</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.Madvance)
+                                                    @Html.DropDownListFor(model => model.Madvance, new SelectList(Model.Mobadvance, "movadvid", "movadvname"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlmobadv", onchange = "Checkmovadv()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.rabill)
+                                                    @Html.TextBoxFor(model => model.rabill, htmlAttributes: new { @class = "form-control", @id = "txtrabill", @Value = "" }) @*, onkeypress = "return ValidateAmount(this,event);"*@
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.rabilldues)
+                                                    @Html.TextBoxFor(model => model.rabilldues, htmlAttributes: new { @class = "form-control", @id = "txtrabilldues", @Value = "" }) @*, onkeypress = "return ValidateAmount(this,event);"*@
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3" id="divAdvSettle">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.advancesettelment)
+                                                    @Html.TextBoxFor(model => model.advancesettelment, htmlAttributes: new { @class = "form-control", @id = "txtadvsettelment", @Value = "" }) @*, onkeypress = "return ValidateAmount(this,event);"*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row ">
+                                            <div class="col-md-12">
+                                                <div class="text-right">
+                                                    <button class="btn btn1 btn-success" id="btnClientPOSubmit" onclick="btnSubmiNewPOData()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnClientPOReset" onclick="btnResetNewPOData()">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center">
+                                            <div id="divpoInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+         var Sessioncreated = '@Session["Createdby"]';
+        $("#txtPOCreatedby").val(Sessioncreated);
+        $('#txtpostartdate').css('background-color', 'transparent');
+        $('#txtpocompletiondate').css('background-color', 'transparent');
+        $("#txtpostartdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            minDate: '-3M',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtpocompletiondate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtpocompletiondate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: 'dateToday',
+            maxDate: "+3y",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        }).datepicker("setDate", new Date());
+    });
+    function btnResetNewPOData() {
+        $("#CostCenterddl").prop('selectedIndex', 0);
+        $("#ddlclient").prop('selectedIndex', 0);
+        $("#ddlsubclient").prop('selectedIndex', 0);
+        $("#txtpono").val("");
+        $("#txtpostartdate").datepicker({}).datepicker("setDate", new Date());
+        $("#txtpocompletiondate").datepicker({}).datepicker("setDate", new Date());
+
+        $("#txtpovalue").val("");
+        $("#txtgst").val("");
+        $("#txttotal").val("");
+        $("#ddlmobadv").prop('selectedIndex', 0);
+        $("#txtrabill").val("");
+        $("#txtrabilldues").val("");
+        $("#txtadvsettelment").val("");
+        $("#divpoInfoMsg").text("");
+        $("#divpoInfoMsg").addClass("hidden");
+        $("#btnClientPOSubmit").prop("disabled", false);
+    }
+</script>

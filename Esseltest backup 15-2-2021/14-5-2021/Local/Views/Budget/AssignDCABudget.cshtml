@@ -1,0 +1,431 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AssignDCABudget
+<form onsubmit="return false">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CCCode)
+                @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.budgerCClist, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCc", onchange = "DcaBudgetCcChange()" })
+            </div>
+        </div>
+        <div class="col-md-4" id="divDCAYear">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FYyear)
+                @Html.DropDownListFor(model => model.FYyear, new SelectList(Model.budgetYear, "CC_FinYear", "CC_FinYear"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlDCAYear" })
+            </div>
+        </div>
+        
+        <div class="row" style="display:none">
+            <input type="text" value="0" id="txtCCtype" />
+            <input type="text" value="0" id="txtCCBudget" />
+            <input type="text" value="0" id="txtDCABudgetSubTotal" />
+        </div>
+    </div>
+    <div class="row" id="divDCAGrid">
+        <div class="strike">
+            <span>Assign DCA</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <table id="DCABudgetTable" class="table order-list dcabudget" style="width:100%;">
+                <thead style="width:100%;font:22px solid #fff !important">
+                    <tr>
+                        <td style="text-align:center;font:22px solid #fff !important"><label style="color:white" >No</label></td>
+                        <td style="text-align:center;font:22px solid #fff"><label style="color:white">AccountHead Code And Name</label></td>
+                        <td style="text-align:center;font:22px solid #fff"><label style="color:white">DCA Amount</label></td>
+                        <td style="text-align:center;font:22px solid #fff"><label style="color:white">Verify</label></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;color: #eee;font-weight: 900;font:22px solid #FF0000 !important;"></td>
+                        <td style="text-align:center;color: #eee;font-weight: 900;font:22px solid #FF0000 !important;"></td>
+                        <td style="text-align:center;color: #eee;font-weight: 900;font:22px solid #FF0000 !important;"></td>
+                        <td style="text-align:center;color: #eee;font-weight: 900;font:22px solid #FF0000 !important;"></td>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:right;font-weight: bold;color: black;" colspan = "2"></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8" id="divDCABudgetRemarks">
+            <div class="form-group">
+                <label>Remarks</label>
+                <textarea class="form-control" id="txtDCABudgetRemarks" rows="1"></textarea>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <br />
+            <input type="submit" class="btn btn1 btn-success" id="btnDCASubmit" onclick="DCASubmitData()" value="Submit" />
+            <input type="button" class="btn btn1 btn-success" id="btnAssignDCAReset" onclick="ClearAssignDCA()" value="Reset" />
+            <input type="hidden" id="txtcctypename" />
+
+        </div>
+    </div>
+    <div class="row text-center">
+        <br />
+        <div id="divDCAInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>    
+</form>
+<script>
+    function DcaBudgetCcChange() {
+        //debugger;
+        var CCindex = $("#ddlCc option:selected").index();
+        var cctype;
+        if (CCindex == 0) {
+            $("#divDCAYear").addClass('hidden');
+            $("#divDCAGrid").addClass('hidden');
+            $("#btnDCASubmit").addClass('hidden');
+            $("#btnAssignDCAReset").addClass('hidden');
+            $("#divDCAInfoMsg").text("");
+            $("#divDCAInfoMsg").addClass("hidden");
+            $("#txtCCtype").val("");
+            $("#txtCCBudget").val("");
+            $("#txtDCABudgetSubTotal").val("");
+            $("#divDCABudgetRemarks").addClass('hidden');
+            $("#ddlCc").prop("disabled", false);
+            $("#btnDCASubmit").prop("disabled", true);
+        }
+        else {
+
+            //Get CC type and Budget amount
+            $("#btnDCASubmit").prop("disabled", false);
+            $.ajax({
+                type: "POST",
+                url: "/Budget/GetCCDetailsbyID",
+                data: '{CcCode:"' + $("#ddlCc option:selected").val() + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    $.each(response, function () {
+                        $("#txtCCtype").val(this['CostCenterTypeID']);
+                        $("#txtCCBudget").val(this['AssignedBudget']);
+                        $("#txtcctypename").val(this['CostCenterTypeName']);
+
+                    });
+                    $("#DCABudgetTable thead tr:gt(0)").each(function () {
+                        var heraderRow = $(this);
+                        //heraderRow.find("td").eq(2).html("CostCenter Budget:");
+                        heraderRow.find("td").eq(2).html("<b >Cost Center Budget:" + $("#txtCCBudget").val() + "</b>");
+
+                    });
+                    $("#DCABudgetTable tbody").find("tr").remove();
+                    //if cctype performing hide year
+                    if ($("#txtcctypename").val() === "Performing") {
+                        $("#divDCAYear").addClass('hidden');
+
+                    }
+                    else {
+                        $("#divDCAYear").removeClass('hidden');
+                    }
+                    //Get DCACode for Budget with CC type
+                    $.ajax({
+                        type: "POST",
+                        url: "/Budget/GetBudgetDCADetails",
+                        data: '{CcTypeID:"' + $("#txtCCtype").val() + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count1 = Object.keys(response).length;
+                            // alert(count1);
+                            if (count1 > 0) {
+                                var count = $("#DCABudgetTable tbody tr").length;
+
+                                $.each(response, function () {
+                                    var newRow = $("<tr>");
+                                    var cols = "";
+                                    count = count + 1;
+                                    cols += '<td style="text-align:center;font-weight: bold;color: black;">' + count + '</td>';
+                                    cols += '<td style="text-align:center;display:none">' + this['DCACode'] + '</td>';
+                                    cols += '<td style="text-align:left;font-weight: bold;color: black;">' + this['DCACode'] + ',' + this['DCAName'] + '</td>';
+                                    cols += '<td ><input style="text-align:right;font-weight: bold;color: black;" class="form-control" data-val="true" id="txtBudgetDCAAmount" name="txtBudgetDCAAmount" type="text" onkeypress = "return ValidateAmount(this,event);" , onKeyup = "DCABudgetChange()"/></td>';
+                                    cols += '<td style="text-align:center;font-weight: bold;color: black;"><input type="checkbox" name="chkDeduction"></td></tr>';
+                                    newRow.append(cols);
+                                    $("table.order-list.dcabudget").append(newRow);
+                                });
+                                //if (CCindex != 6) {
+                                //    $("#divDCAYear").removeClass('hidden');
+                                //}
+                                $("#divDCAGrid").removeClass('hidden');
+                                $("#btnDCASubmit").removeClass('hidden');
+                                $("#btnAssignDCAReset").removeClass('hidden');
+                                $("#divDCABudgetRemarks").removeClass('hidden');
+                                $("#DCABudgetTable tfoot tr").each(function () {
+                                    footerRow = $(this);
+                                    footerRow.find("td").eq(2).html("Sub Total:<b>0</b>");
+                                });
+                                $("#divDCAInfoMsg").text("");
+                                $("#divDCAInfoMsg").addClass("hidden");
+                                $("#ddlCc").prop("disabled", true);
+                            }
+                            else {
+
+                                $("#divDCAInfoMsg").append("<div>No DCA Found</div>");
+                                $("#divDCAInfoMsg").addClass("alert-danger");
+                                $("#divDCAInfoMsg").removeClass("hidden alert-success");
+                            }
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+
+    }
+    function DCASubmitData() {
+        //debugger;
+        var remarks = $("#txtDCABudgetRemarks").val();
+        
+        var tablerowcount = $("#DCABudgetTable tbody tr").length;
+        if (tablerowcount > 0) {
+            isValid = true;
+            var errorMsg = "";
+            if ($("#txtcctypename").val() === "Performing") {
+                $("#divDCAYear").addClass('hidden');
+            }
+            else {
+                var year = $("#ddlDCAYear option:selected").index();
+                if (year == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Select Financial Year</p>";
+                    isValid = false;
+                }
+            }
+            if (remarks === " ") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                isValid = false;
+            }
+            //var ccddl = $("#ddlCc option:selected").index();
+            //if (ccddl == 0) {
+            //        errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            //        isValid = false;
+            //}
+            //if (ccddl != 6) {
+            //    var year = $("#ddlDCAYear option:selected").index();
+            //    if (year == 0) {
+            //        errorMsg += "<p style='margin-top:-5px!important;'>Select Financial Year</p>";
+            //        isValid = false;
+            //    }
+            //}           
+
+            var amountcount = 0, remarkscount = 0, checkcount = 0, selectedcheck = 0, validcount = 0;
+            $("#DCABudgetTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var amount = currentRow.find("td").eq(3).find("input[type='text']").val();
+                // var remarks = currentRow.find("td").eq(3).find("textarea").val();
+                var checkbox = currentRow.find("td").eq(4).find("input[type='checkbox']").is(":checked");
+                if (checkbox === false) {
+                    checkcount = checkcount + 1;
+                }
+                if (checkbox === false && amount !== "") {
+
+                    validcount = validcount + 1;
+                }
+                else {
+
+                    selectedcheck = selectedcheck + 1;
+                }
+            });
+
+            if (checkcount === tablerowcount) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check DCA Code to Assign budget</p>";
+                isValid = false;
+            }
+            else if (validcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check DCA Code to Assign budget</p>";
+                isValid = false;
+            }
+            if (selectedcheck > 0) {
+
+                $("#DCABudgetTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var amount = currentRow.find("td").eq(3).find("input[type='text']").val();
+                    var checkbox = currentRow.find("td").eq(4).find("input[type='checkbox']").is(":checked");
+                    //alert(amount + "" + checkbox);
+                    if (checkbox == true) {
+                        if (amount == "") {
+                            amountcount = amountcount + 1;
+                        }
+
+                    }
+                });
+                if (amountcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Dca Budget</p>";
+                    isValid = false;
+                }
+            }
+            var DCABudget = $("#txtDCABudgetSubTotal").val();
+            var CCAmount = $("#txtCCBudget").val();
+            if (parseFloat(DCABudget) > parseFloat(CCAmount)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Dca Budget is greater than CC Budget</p>";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divDCAInfoMsg").text("");
+                $("#divDCAInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divDCAInfoMsg").addClass("alert-danger");
+                $("#divDCAInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divDCAInfoMsg").text("");
+                $("#divDCAInfoMsg").addClass("hidden");
+                //Insert DCA Budget in to db
+                //SaveDCABudget();
+                var totalRowCount = $("#DCABudgetTable tbody tr").length;
+                if (totalRowCount > 0) {
+                    var DcaCodes = '', amounts = '';
+                    $("#DCABudgetTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var dcacode = currentRow.find("td").eq(1).html();
+                        var dcaAmount = currentRow.find("td").eq(3).find("input[type='text']").val();
+                        var checkbox = currentRow.find("td").eq(4).find("input[type='checkbox']").is(":checked");
+                        if (checkbox == true) {
+                            if (dcaAmount != "" && dcaAmount != null) {
+                                DcaCodes += dcacode + ",";
+                                amounts += dcaAmount + ",";
+                                //GstStatids += state + ",";
+                                //GstNos += gstno + ",";
+                            }
+                        }
+                    });
+                    if ($("#txtcctypename").val() === "Performing") {
+                        var peryear = '';
+                        
+                        $.ajax({
+                            type: "POST",
+                            url: "/Budget/SaveDCABudget",
+                            data: '{DCACode:"' + DcaCodes + '",DcaAmounts:"' + amounts + '",CCCode:"' + $("#ddlCc option:selected").val() + '",FYyear:"' + peryear + '",Remarks:"' + $("#txtDCABudgetRemarks").val() + '",Action:"New",OldBudgetAmount:"0",CreatedBy:"' + $("#txtAssignCCBudgetCreatedby").val() + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                if (response.saveStatus == 'Submited') {
+                                    $("#divDCAInfoMsg").text(addSuccessMsg);
+                                    $("#divDCAInfoMsg").removeClass("hidden alert-danger");
+                                    $("#divDCAInfoMsg").addClass("alert-success"); 
+                                    $("#btnDCASubmit").prop("disabled", true);
+                                }
+                                else {
+                                    $("#divDCAInfoMsg").text(response.saveStatus);
+                                    $("#divDCAInfoMsg").addClass("alert-danger");
+                                    $("#divDCAInfoMsg").removeClass("hidden alert-success");
+                                    $("#btnDCASubmit").prop("disabled", false);
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                               // alert(xhr.responseText);
+                                $("#divDCAInfoMsg").text("Something Went Wrong");
+                                $("#divDCAInfoMsg").addClass("alert-danger");
+                                $("#divDCAInfoMsg").removeClass("hidden alert-success");
+                                $("#btnDCASubmit").prop("disabled", false);
+                                // alert(thrownError);
+                            }
+                        });
+                    }
+                    else {
+                        
+                        $.ajax({
+                            type: "POST",
+                            url: "/Budget/SaveDCABudget",
+                            data: '{DCACode:"' + DcaCodes + '",DcaAmounts:"' + amounts + '",CCCode:"' + $("#ddlCc option:selected").val() + '",FYyear:"' + $("#ddlDCAYear option:selected").val() + '",Remarks:"' + $("#txtDCABudgetRemarks").val() + '",Action:"New",OldBudgetAmount:"0",CreatedBy:"' + $("#txtAssignCCBudgetCreatedby").val() + '"}',
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                if (response.saveStatus == 'Submited') {
+                                    $("#divDCAInfoMsg").text(addSuccessMsg);
+                                    $("#divDCAInfoMsg").removeClass("hidden alert-danger");
+                                    $("#divDCAInfoMsg").addClass("alert-success");
+                                    $("#btnDCASubmit").prop("disabled", true);
+                                }
+                                else {
+                                    $("#divDCAInfoMsg").text(response.saveStatus);
+                                    $("#divDCAInfoMsg").addClass("alert-danger");
+                                    $("#divDCAInfoMsg").removeClass("hidden alert-success");
+                                    $("#btnDCASubmit").prop("disabled", false);
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                $("#divDCAInfoMsg").text("Something Went Wrong");
+                                $("#divDCAInfoMsg").addClass("alert-danger");
+                                $("#divDCAInfoMsg").removeClass("hidden alert-success");
+                                $("#btnDCASubmit").prop("disabled", false);
+                                //alert(xhr.responseText);
+                                // alert(thrownError);
+                            }
+                        });
+
+
+                    }
+                    //var DCAbudget = {
+                    //    CCCode: $("#ddlCc option:selected").text(),
+                    //    FYyear: $("#ddlDCAYear option:selected").val(),
+                    //    DCACode: DcaCodes,
+                    //    DcaAmounts: Dcaamounts,
+                    //    Remarks: $("#txtDCABudgetRemarks").val(),
+                    //    Action: 'New',                    
+                    //    CreatedBy: $("#txtAssignCCBudgetCreatedby").val()
+                    //};
+                    //var DcaBudgetDetails = {
+                    //    DCACode: DcaCodes,
+                    //    CCCode: $("#ddlCc option:selected").text(),
+                    //    DcaAmounts: amounts,
+                    //    FYyear: $("#ddlDCAYear option:selected").val(),
+                    //    Remarks: $("#txtDCABudgetRemarks").val(),
+                    //    Action:"New",
+                    //    OldBudgetAmount:0,
+                    //    CreatedBy: $("#txtAssignCCBudgetCreatedby").val()
+
+                    //};
+
+                    addFailMsg = "Error Occurred While Adding DCA Budget";
+                    addSuccessMsg = "DCA Budget Added Successfully.";
+
+                    //$.ajax({
+                    //    type: "POST",
+                    //    url: "/AccountsApproval/SaveDCABudget",
+                    //    data: JSON.stringify({ assignDCABudget: DcaBudgetDetails }),                 
+                    //    contentType: "application/json; charset=utf-8",
+                    //    dataType: "json",
+                    //    success: function (response) {
+                    //        if (response.saveStatus == 'Submited') {
+                    //            $("#divDCAInfoMsg").text(addSuccessMsg);
+                    //            $("#divDCAInfoMsg").removeClass("hidden alert-danger");
+                    //            $("#divDCAInfoMsg").addClass("alert-success");
+                    //        }
+                    //        else {
+                    //            $("#divDCAInfoMsg").text(response.saveStatus);
+                    //            $("#divDCAInfoMsg").addClass("alert-danger");
+                    //            $("#divDCAInfoMsg").removeClass("hidden alert-success");
+                    //        }
+                    //    },
+                    //    error: function (xhr, ajaxOptions, thrownError) {
+                    //        //alert(xhr.status);
+                    //        alert(xhr.responseText);
+                    //       // alert(thrownError);
+                    //    }
+                    //});
+
+
+                }
+            }
+
+        }
+    }
+</script>

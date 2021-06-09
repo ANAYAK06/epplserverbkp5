@@ -1,0 +1,430 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.VendorInvoiceReport
+
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+
+    .tdalign {
+        /*white-space: pre-wrap !important;*/
+        /*word-wrap: break-word !important;*/
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+   
+
+   
+
+    /*table.dataTable thead th, table.dataTable thead td {
+        padding: 0 0;
+        border-bottom: 1px solid #111;
+    }*/
+
+   
+</style>
+
+<div class="table-responsive row">
+    @if (Model.VendorType == "Service Provider")
+    {
+        if (Model.SPPOInvoiceList.Count > 0)
+        {
+            <table id="tblInvSppoGrid" style="width:100%;" class="hover stripe nowrap example dataTable no-footer">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="wrapcls hidden">Invoice Id</th>
+                        <th class="wrapcls">Invoice No</th>
+                        <th class="wrapcls">Cost Center</th>
+                        <th class="wrapcls">PO No</th>
+                        <th class="wrapcls">Invoice Date</th>
+                        <th class="wrapcls">InvMaking Date</th>
+                        <th class="wrapcls">Basic Value</th>
+                        <th class="wrapcls">Balance</th>
+                        <th class="wrapcls">DCA</th>
+                        <th class="wrapcls">SubDCA</th>
+                        <th class="wrapcls">IT Code</th>
+                        <th class="wrapcls">GST Type</th>
+                        <th class="wrapcls">Company GSTNo</th>
+                        <th class="wrapcls">Vendor GSTNo</th>
+
+                        <th class="hidden">Cost Center</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.SPPOInvoiceList)
+                    {
+                        <tr>
+                            <td class="details-control"></td>
+                            <td class="tdalign hidden" style="border:1px solid gray !important;">
+                                @Html.DisplayFor(modelItem => item.InvoiceId)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.InvoiceNo)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.CCCode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.PONo)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.InvoiceDate)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.InvMakingDate)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.BasicValue)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.Balance)
+                            </td>
+                            <td class="tdalign">
+                                @*<span style="word-break: break-all;">@item.DCACode</span>*@
+                                @Html.DisplayFor(modelItem => item.DCACode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.SubDCACode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.ITCode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.GSTType)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.CompanyGST)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.VendorGST)
+                            </td>
+
+                            <td class="tdalign hidden">
+                                @Html.DisplayFor(modelItem => item.CCCode)
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+        }
+        else
+        {
+            <div>No Data Found</div>
+        }
+    }
+    else
+    {
+        if (Model.SupplierInvoiceList.Count > 0)
+        {
+            <table id="tblInvSupplierGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="wrapcls hidden">InvoiceId</th>
+                        <th class="wrapcls">Invoice No</th>
+                        <th class="wrapcls">MRR No</th>
+                        <th class="wrapcls">Cost Center</th>
+                        <th class="wrapcls">PO No</th>
+                        <th class="wrapcls">Invoice Date</th>
+                        <th class="wrapcls">InvMaking Date</th>
+                        <th class="wrapcls">Basic</th>
+                        <th class="wrapcls">Balance</th>
+                        <th class="wrapcls">Net Amount</th>
+                        <th class="wrapcls">DCA</th>
+                        <th class="wrapcls">SubDCA</th>
+                        <th class="wrapcls">IT Code</th>
+                        <th class="wrapcls">GST Type</th>
+                        <th class="wrapcls">Company GSTNo</th>
+                        <th class="wrapcls">Vendor GSTNo</th>
+                        <th class="wrapcls hidden">Cost Center</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.SupplierInvoiceList)
+                    {
+                        <tr>
+                            <td class="details-control"></td>
+                            <td class="tdalign hidden">
+                                @Html.DisplayFor(modelItem => item.InvoiceId)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.InvoiceNo)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.MRRNo)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.CCCode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.PONo)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.InvoiceDate)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.InvMakingDate)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.BasicValue)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.Balance)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.NetAmount)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.DCACode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.SubDCACode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.ITCode)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.GSTType)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.CompanyGST)
+                            </td>
+                            <td class="tdalign">
+                                @Html.DisplayFor(modelItem => item.VendorGST)
+                            </td>
+
+                            <td class="tdalign hidden">
+                                @Html.DisplayFor(modelItem => item.CCCode)
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+
+                <tfoot>
+                    <tr></tr>
+                </tfoot>
+            </table>
+        }
+        else
+        { <div>No Data Found</div>}
+    }
+</div>
+<script>
+    var openRows = new Array();
+
+    
+    $(document).ready(function () {
+        let vendortype = '@Model.VendorType';
+        //debugger;
+        if (vendortype === 'Service Provider') {
+            var SPPOInvGrid = null;
+           InitializeSPPOInvGrid();
+
+        }
+        else {
+            var SupplierInvGrid = null;
+            InitializeSupplierInvGrid();
+
+        }
+
+
+    });
+
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function InitializeSPPOInvGrid() {
+        
+        SPPOInvGrid = $('#tblInvSppoGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Service Providers Found"
+            },
+            pageLength: 20,
+            "initComplete": function (settings, json) {
+
+
+            },
+            "dom": '<"toolbar">frtip'
+        });
+        $('#tblInvSppoGrid tbody').on('click', 'td.details-control', function () {
+            //debugger;
+            var tr = $(this).closest('tr');
+            var row = SPPOInvGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it                
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(SPPOInvGrid, tr);
+                // Open this row
+                row.child(formatSPPOInv(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+
+            }
+        });
+    }
+
+    function formatSPPOInv(d) {
+      //  alert('SPPO');
+
+        var id = 0;
+        var htmltext;
+        var vendorcode, vendortype, CC, pono, year, id, invoiceno, cgst, vgst;
+        vendorcode = $("#ddlVendor option:selected").val();
+        vendortype = $("#ddlVendorType option:selected").val();
+        year = $("#ddlYear option:selected").text();
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 1)
+                id = value;
+            if (index == 2)
+                invoiceno = value;           
+            if (index == 15)
+                CC = value;
+            if (index == 4)
+                pono = value;
+            if (index == 13)
+                cgst = value;
+            if (index == 14)
+                vgst = value;
+          
+        });
+        //debugger;
+        var divid = "divInv" + id;
+        var divid1 = $("#" + divid + "");
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/VendorInvoiceReportSPPOView',
+            data: { VendorCode: vendorcode, VendorType: vendortype, CCCode: CC, PONo: pono, Year: year, InvoiceNo: invoiceno, CompanyGST: cgst, VendorGST:vgst},
+            success: function (Data) {
+                var divid2 = "divInv" + id;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+
+        return '<div id="divInv' + id + '"></div>';
+
+    }
+    //supplier
+    function InitializeSupplierInvGrid() {
+        SupplierInvGrid = $('#tblInvSupplierGrid').DataTable({
+            destroy: true,
+            paging: true,
+            lengthChange: false,
+            searching: true,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Supplier Found"
+            },
+            pageLength: 20,
+            "initComplete": function (settings, json) {
+
+
+            },
+            "dom": '<"toolbar">frtip'
+        });
+        $('#tblInvSupplierGrid tbody').on('click', 'td.details-control', function () {
+            //debugger;
+            var tr = $(this).closest('tr');
+            var row = SupplierInvGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it                
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(SupplierInvGrid, tr);
+                // Open this row
+                row.child(formatSupplerInv(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+
+            }
+        });
+    }
+
+    function formatSupplerInv(d) {
+        var id = 0;
+        var htmltext;
+        var vendorcode, vendortype, CC, pono, year, id, invoiceno, cgst, vgst,mrr;
+        vendorcode = $("#ddlVendor option:selected").val();
+        vendortype = $("#ddlVendorType option:selected").val();
+        year = $("#ddlYear option:selected").text();
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 1)
+                id = value;
+            if (index == 2)
+                invoiceno = value;
+            if (index == 3)
+                mrr = value;            
+            if (index == 17)
+                CC = value;
+            if (index == 5)
+                pono = value;
+            if (index == 15)
+                cgst = value;
+            if (index == 16)
+                vgst = value;
+
+        });
+        ////debugger;
+        var divid = "divInv" + id;
+        var divid1 = $("#" + divid + "");
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/VendorInvoiceReportSupplierView',
+            data: { VendorCode: vendorcode, VendorType: vendortype, CCCode: CC, PONo: pono, Year: year, InvoiceNo: invoiceno, MRRNo: mrr,CompanyGST: cgst, VendorGST: vgst },
+            success: function (Data) {
+                var divid2 = "divInv" + id;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+
+        return '<div id="divInv' + id + '"></div>';}
+
+</script>

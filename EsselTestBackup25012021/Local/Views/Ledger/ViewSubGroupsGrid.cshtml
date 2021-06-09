@@ -1,0 +1,82 @@
+﻿@model List<EsselTestLocalApplication.Models.SubGroup>
+
+
+<div class="table-responsive">
+    <table id="tblSubGroupGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                @*<th></th>*@
+                <th class="hidden">ID</th>
+                <th>Sub Group Name</th>
+                <th>Group name</th>
+                <th>Nature Of Group</th>
+                <th>Sub Group Type</th>
+               @* <th>Actions</th>*@
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*<td class="details-control"></td>*@
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MasterGroupName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NatureGroupName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubGrouptype)
+                    </td>
+                    @*<td>
+                        <select class="form-control dropdown-toggle" id="ddlsubgrpgridaction" onchange="subgrpActionChange(@item.Id,'@item.GroupId','@item.Name', this)">
+                            <option selected="selected" value="-Select-">Select</option>
+                            <option value="E">Edit</option>
+                            <option value="D">Delete</option>
+                        </select>
+
+                    </td>*@
+
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var subGroupGrid = null;
+        InitializeSubGroupGrid();
+
+
+    });
+    function InitializeSubGroupGrid() {
+
+        subGroupGrid = $('#tblSubGroupGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Subo Groups Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+    }
+    </script>

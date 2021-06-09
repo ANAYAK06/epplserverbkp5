@@ -1,0 +1,157 @@
+﻿@model EsselTestLocalApplication.Models.ReportFilters
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-1">
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Select Report</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+
+                <select class="form-control dropdown-toggle" id="ddlReportName" onchange="CashVocherReportChange()">
+                    <option selected="selected" value="0">Select</option>
+                    <option value="CashVoucher">Cash Voucher</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <div id="divCashVoucherReportFilters">
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Paid Against</label>
+                    <select class="form-control dropdown-toggle" id="ddlCashVoucherPACC" onchange="CashVoucherPACCChange()">
+                        <option selected="selected" value="Select">Select</option>
+                    </select>
+                    @*@Html.LabelFor(model => model.PaindAgainstCCCode)*@
+                    @*@Html.DropDownListFor(model => model.PaindAgainstCCCode, new SelectList(Model.CashVocherPaidAgainstCClist, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCashVoucherPACC", onchange = "CashVoucherPACCChange()" })*@
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Paid To</label>
+                    <select class="form-control dropdown-toggle" id="ddlCVPaidToCC" >
+                        <option selected="selected" value="Select">Select</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label style="margin-left:5%">Report By</label>
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            @*<label></label>*@
+                        </li>
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="CashVocherbyType" value="byDCA" id="chkbyDCA" onclick="CashVocherbyTypeSelection(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">by DCA</span>
+                            </label>
+                        </li>
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input" name="CashVocherbyType" value="byIT" id="chkbyIT" onclick="CashVocherbyTypeSelection(this)">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description">by IT</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row" >
+          <div id="divbyDCA">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Account Head</label>
+                    <select class="form-control dropdown-toggle" id="ddlCVDCA" onchange="CashVocherDCAhange()">
+                        <option selected="selected" value="Select">Select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Sub Account Head</label>
+                    <select class="form-control dropdown-toggle" id="ddlCVSDCA" >
+                        <option selected="selected" value="Select">Select</option>
+                    </select>
+                </div>
+            </div>
+           
+        </div>
+                
+            <div class="col-md-3" id="divbyIT">
+                <div class="form-group">
+                    <label>IT Code</label>
+                    <select class="form-control dropdown-toggle" id="ddlCVIT" >
+                        <option selected="selected" value="0">Select</option>
+                    </select>
+                </div>
+            </div>           
+      
+            <div id="divCVRDate">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Day)
+                        @Html.DropDownListFor(model => model.Day, new SelectList(Model.CashVoucherDaysList, "DayNo", "DayValue"), "Select", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCVDay" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Month)
+                        @Html.DropDownListFor(model => model.Month, new SelectList(Model.CashVoucherMonthsList, "MonthValue", "MonthName"), "Select", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCVMonth" })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Year)
+                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.CashVoucherYearsList, "Year", "YearValue"), "Select", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCVYear" })
+
+
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <button class="btn btn1 btn-success" onclick="ShowCashVoucherReport()">Submit</button>
+                        <input type="text" id="txtCVRSesUser" style="display:none" />
+                        <input type="text" id="txtCVRRole" style="display:none" />
+                        <input type="text" id="txtCVRSesCC" style="display:none" />
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <br/>
+                        <div id="divReportFilterInfoMsg" class="alert alert-danger hidden" style="background-color:#808080;color:white;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </div>
+</div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+        //Cash Vocher Report Page Load
+        $("#divCashVoucherReportFilters").addClass('hidden');
+        var SesUser = '@Session["User"]';
+        var Role = '@Session["Role"]';
+        var SesCC = '@Session["SessionCostCenter"]';
+        $("#txtCVRSesUser").val(SesUser);
+        $("#txtCVRRole").val(Role);
+        $("#txtCVRSesCC").val(SesCC);
+    });
+</script>

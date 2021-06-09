@@ -1,0 +1,129 @@
+﻿@model EsselTestLocalApplication.Models.Users
+
+@{
+    ViewBag.Title = "ChangePassword";
+    //Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Login")
+<form onsubmit="return false">
+    <div id="Rolelogin">
+        <div class="log-body m-tb-40">
+            <div class="form-group myr-top">
+                <label>User Name</label>
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control custom", @placeholder = "User Name", @id = "txtRoleUsername",@readOnly=true })
+                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "error" })
+
+            </div>
+            <div class="form-group myr-top">
+                <label>Password</label>
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control custom", @placeholder = "Password", @id = "txtRolePwd" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "error" })
+            </div>
+            <div class="log-bottom-cotent">
+                <a href="#ModelForgotPwd" data-toggle="modal" class="pull-right" style="color: #000;
+        font-weight: 600;"><i class="fa fa-lock" style="margin-right:8px;"></i>Forgot Password</a>
+                @*<a href="#" class="pull-right" onclick="ShowForgotPwdModel()" style="color: #000;
+        font-weight: 600;"><i class="fa fa-lock" style="margin-right:8px;"></i>Forgot Password</a>*@
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="log-btn text-center">
+                <button type="submit" class="btn btn1 btn-success" onclick="SubmitRolelogin()">Login</button>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <br />
+                    <div id="divRoleLoginInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </form>
+    <script>
+        $(document).ready(function () {
+            $("#txtRolePwd").val("");
+            $("#divRoleLoginInfoMsg").text("");
+            $("#divRoleLoginInfoMsg").addClass("hidden");
+        });
+        function SubmitRolelogin() {          
+            var user = $("#txtRoleUsername").val();
+            var Pwd = $("#txtRolePwd").val();
+            isValid = true;
+            var errorMsg = "";
+           
+            if (user === "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter User Name</p>";
+                isValid = false;
+            }
+            else if (Pwd ==="") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Password</p>";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divRoleLoginInfoMsg").text("");
+                $("#divRoleLoginInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divRoleLoginInfoMsg").addClass("alert-danger");
+                $("#divRoleLoginInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divRoleLoginInfoMsg").text("");
+                $("#divRoleLoginInfoMsg").addClass("hidden");
+                var userinfo = {
+                    Username: user,
+                    Password: Pwd
+
+                };
+               
+                $.ajax({
+                    type: "POST",
+                    url: "/Login/SubmitRoleLogin",
+                    data: JSON.stringify({ user: userinfo }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        //alert(response.saveStatus);
+                        if (response.saveStatus === "FirstTime") {
+                           window.location.href = '@Url.Action("ChangePasswordForFirstTime", "Login")';
+                        }
+                        else if (response.saveStatus === "LandingPage") {
+                           window.location.href = '@Url.Action("LandingPage", "Login")';
+                        }
+                        else if (response.saveStatus === "BusinessInfo") {
+                            window.location.href = '@Url.Action("BasicBusinessInfo", "BusinessInfo")';
+                        }
+                        else {
+
+                            $("#divRoleLoginInfoMsg").text(response.saveStatus);
+                            $("#divRoleLoginInfoMsg").addClass("alert-danger");
+                            $("#divRoleLoginInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divChangePwdInfoMsg").text(addFailMsg);
+                        $("#divChangePwdInfoMsg").addClass("alert-danger");
+                        $("#divChangePwdInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            }
+        }
+        function ShowForgotPwdModel() {
+            $("#ModelForgotPwd").modal('show');
+            $("#txtFPUsername").val("");
+            $("#divFPInfoMsg").text("");
+            $("#divFPInfoMsg").addClass("hidden");
+        }
+    </script>
+
+
+
+
+
+
+
+

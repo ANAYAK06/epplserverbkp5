@@ -1,0 +1,562 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.VendorInvoiceReport
+@{
+    ViewBag.Title = "VendorInvoiceReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*<h2>VendorInvoiceReport</h2>*@
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Vendor Invoice Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.VendorType)
+                                            @Html.DropDownListFor(model => model.VendorType, new SelectList(Model.VendorTypeList, "Type", "Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVendorType", onchange = "VendorTypeChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.VendorCode)
+                                            @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.VendorList, "VendorCode", "VendorName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlVendor", onchange = "VendorChange()" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Year)
+                                            @Html.DropDownListFor(model => model.Year, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlYear", onchange = "LedgerRptYearChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CCCode)<br />
+                                            @Html.ListBoxFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), new { @class = "cclistbox form-control", @id = "ddlCC" })
+
+                                            @*@Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC", onchange = "CCChange()" })*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2" id="divfromdate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.FromDate)
+                                            @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" id="divTodate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ToDate)
+                                            @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttoDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5" id="divpo">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.PONumber)<br />
+                                            @Html.ListBoxFor(model => model.PONumber, new SelectList(Model.POList, "SPPONo", "SPPONoDesc"), new { @class = "polistbox form-control", @id = "ddlPO" })
+
+                                            @*@Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC", onchange = "CCChange()" })*@
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-3">
+                                        <br />
+                                        <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnView" onclick="ViewInvoiceData()" /> @**@
+                                        <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetRpt" onclick="ResetReport()" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divInvoiceData">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divInvoiceData").addClass('hidden');
+        $("#btnView").addClass('hidden');
+
+        $("#divfromdate").addClass('hidden');
+        $("#divTodate").addClass('hidden');
+        $("#divpo").addClass('hidden');
+
+
+        $("#txtfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                // $("#txttoDate").datepicker("option", "minDate", selectedDate);
+            },
+        }).datepicker("setDate", "");
+        $("#txttoDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+
+        }).datepicker("setDate", "");
+        //$('.cclistbox').multiselect();
+        //$('.polistbox').multiselect();
+
+        $('#ddlCC').multiselect({
+            onDropdownHide: function (event) {
+                //var text1 = $('#ddlCC option:selected').toArray().map(item => item.value).join();
+                //  alert('Dropdown closed.  ' + text1);
+
+                var ddlVendorTypeIndex = $("#ddlVendorType option:selected").index();
+                var ddlVendorType = $("#ddlVendorType option:selected").val();
+
+                var ddlVendorIndex = $("#ddlVendor option:selected").index();
+                var ddlVendor = $("#ddlVendor option:selected").val();
+                var ddlCCIndex = $('#ddlCC > option:selected');
+                var ddlCC = $('#ddlCC option:selected').toArray().map(item => item.value).join();
+
+                if (ddlVendorTypeIndex == 0) {
+                    $("#divInvoiceData").addClass('hidden');
+                    $("#btnView").addClass('hidden');
+                    // $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $("#divReportInfoMsg").text("");
+                    $("#divReportInfoMsg").append("<div>Select Vendor Type</div>");
+                    $("#divReportInfoMsg").addClass("alert-danger");
+                    $("#divReportInfoMsg").removeClass("hidden alert-success");
+                }
+                else if (ddlVendorIndex == 0) {
+                    $("#divInvoiceData").addClass('hidden');
+                    $("#btnView").addClass('hidden');
+
+                    $("#divReportInfoMsg").text("");
+                    $("#divReportInfoMsg").append("<div>Select Vendor</div>");
+                    $("#divReportInfoMsg").addClass("alert-danger");
+                    $("#divReportInfoMsg").removeClass("hidden alert-success");
+                }
+                else if (ddlCCIndex.length == 0) {
+                    $("#divReportInfoMsg").text("");
+                    $("#divReportInfoMsg").append("<div>Select Cost Center</div>");
+                    $("#divReportInfoMsg").addClass("alert-danger");
+                    $("#divReportInfoMsg").removeClass("hidden alert-success");
+
+                    $("#ddlPO option:selected").prop("selected", false);
+                    $("#ddlPO option").remove();
+                    $('#ddlPO').multiselect('rebuild');
+
+                    $("#divInvoiceData").addClass('hidden');
+                    $("#btnView").addClass('hidden');
+                }
+                else {
+                    //debugger;
+                    $("#divReportInfoMsg").text("");
+                    $("#divReportInfoMsg").addClass("hidden");
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Reports/GetPOForInvoiceReport",
+                        data: '{VendorCode:"' + ddlVendor + '",VendorType:"' + ddlVendorType + '",CCCodes:"' + ddlCC + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+
+                            $("#ddlPO option:selected").prop("selected", false);
+                            $("#ddlPO option").remove();
+                            $('#ddlPO').multiselect('rebuild');
+                            $.each(response, function () {
+                                $('#ddlPO').append('<option value="' + this['SPPONo'] + '">' + this['SPPONoDesc'] + '</option>').multiselect('rebuild');
+
+                            });
+                            $("#divInvoiceData").removeClass('hidden');
+                            $("#btnView").removeClass('hidden');
+
+
+                            $("#divpo").removeClass('hidden');
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+
+            }
+        });
+        $('#ddlPO').multiselect({
+            onDropdownHide: function (event) {
+                var ddlPOIndex = $('#ddlPO > option:selected');
+                if (ddlPOIndex.length == 0) {
+                    $("#divReportInfoMsg").text("");
+                    $("#divReportInfoMsg").append("<div>Select PO Number</div>");
+                    $("#divReportInfoMsg").addClass("alert-danger");
+                    $("#divReportInfoMsg").removeClass("hidden alert-success");
+                    $("#divInvoiceData").addClass('hidden');
+                    $("#btnView").addClass('hidden');
+                }
+                else {
+                    $("#divReportInfoMsg").text("");
+                    $("#divReportInfoMsg").addClass("hidden");
+                    $("#divInvoiceData").removeClass('hidden');
+                    $("#btnView").removeClass('hidden');
+                }
+            }
+        });
+    });
+
+    function VendorTypeChange() {
+        //debugger;
+
+        var ddlVendorTypeIndex = $("#ddlVendorType option:selected").index();
+        var ddlVendorType = $("#ddlVendorType option:selected").val();
+
+        if (ddlVendorTypeIndex == 0) {
+            $("#divInvoiceData").addClass('hidden');
+            $("#btnView").addClass('hidden');
+            $("#ddlCC option:selected").prop("selected", false);
+            $("#ddlCC option").remove();
+            $('#ddlCC').multiselect('rebuild');
+            //$("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlVendor").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+
+
+
+            $("#ddlPO option:selected").prop("selected", false);
+            $("#ddlPO option").remove();
+            $('#ddlPO').multiselect('rebuild');
+
+            $("#divfromdate").addClass('hidden');
+            $("#divTodate").addClass('hidden');
+            $("#divpo").addClass('hidden');
+
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Reports/GetVendorsbyType",
+                data: '{VendorType:"' + ddlVendorType + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var ddl = $("#ddlVendor");
+                    ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        ddl.append($("<option></option>").val(this['VendorCode']).html(this['VendorName']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+            $("#ddlPO option:selected").prop("selected", false);
+            $("#ddlPO option").remove();
+            $('#ddlPO').multiselect('rebuild');
+
+            $("#divpo").addClass('hidden');
+
+            $("#ddlCC option:selected").prop("selected", false);
+            $("#ddlCC option").remove();
+            $('#ddlCC').multiselect('rebuild');
+
+        }
+
+    }
+    function VendorChange() {
+
+        var ddlVendorTypeIndex = $("#ddlVendorType option:selected").index();
+        var ddlVendorType = $("#ddlVendorType option:selected").val();
+
+        var ddlVendorIndex = $("#ddlVendor option:selected").index();
+        var ddlVendor = $("#ddlVendor option:selected").val();
+
+        if (ddlVendorTypeIndex == 0) {
+            $("#divInvoiceData").addClass('hidden');
+            $("#btnView").addClass('hidden');
+            $("#ddlCC option:selected").prop("selected", false);
+            $("#ddlCC option").remove();
+            $('#ddlCC').multiselect('rebuild');
+
+            $("#ddlPO option:selected").prop("selected", false);
+            $("#ddlPO option").remove();
+            $('#ddlPO').multiselect('rebuild');
+            // $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>Select Vendor Type</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+
+            $("#divfromdate").addClass('hidden');
+            $("#divTodate").addClass('hidden');
+            $("#divpo").addClass('hidden');
+        }
+        else if (ddlVendorIndex == 0) {
+            $("#divInvoiceData").addClass('hidden');
+            $("#btnView").addClass('hidden');
+            $("#ddlCC option:selected").prop("selected", false);
+            $("#ddlCC option").remove();
+            $('#ddlCC').multiselect('rebuild');
+
+            $("#ddlPO option:selected").prop("selected", false);
+            $("#ddlPO option").remove();
+            $('#ddlPO').multiselect('rebuild');
+
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>Select Vendor</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+
+            $("#divfromdate").addClass('hidden');
+            $("#divTodate").addClass('hidden');
+            $("#divpo").addClass('hidden');
+        }
+        else {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+            $.ajax({
+                type: "POST",
+                url: "/Reports/GetCCByVendor",
+                data: '{VendorCode:"' + ddlVendor + '",VendorType:"' + ddlVendorType + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    //var ddl = $("#ddlCC");
+                    //ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $("#ddlCC option:selected").prop("selected", false);
+                    $("#ddlCC option").remove();
+                    $('#ddlCC').multiselect('rebuild');
+                    $.each(response, function () {
+                        $('#ddlCC').append('<option value="' + this['CC_Code'] + '">' + this['CC_Name'] + '</option>').multiselect('rebuild');
+                        //ddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+
+
+
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+            $("#ddlPO option:selected").prop("selected", false);
+            $("#ddlPO option").remove();
+            $('#ddlPO').multiselect('rebuild');
+
+            $("#divpo").addClass('hidden');
+
+            $("#ddlCC option:selected").prop("selected", false);
+            $("#ddlCC option").remove();
+            $('#ddlCC').multiselect('rebuild');
+        }
+    }
+    //function CCChange() {
+    //    var ddlVendorTypeIndex = $("#ddlVendorType option:selected").index();
+    //    var ddlVendorType = $("#ddlVendorType option:selected").val();
+
+    //    var ddlVendorIndex = $("#ddlVendor option:selected").index();
+    //    var ddlVendor = $("#ddlVendor option:selected").val();
+
+    //    //var ddlCCIndex = $("#ddlCC option:selected").index();
+    //    //var ddlCC = $("#ddlCC option:selected").val();
+
+    //     //var ddlCCIndex = $("#ddlCC option:selected").index();
+    //    //var ddlCC = $("#ddlCC option:selected").val();
+
+    //    var ddlCCIndex = $('#ddlCC > option:selected');
+    //    //if (ddlCCIndex.length == 0) {
+    //    //    errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+    //    //    isValid = false;
+    //    //}
+
+    //    if (ddlVendorTypeIndex == 0) {
+    //        $("#divInvoiceData").addClass('hidden');
+    //        $("#btnView").addClass('hidden');
+
+    //        $("#divReportInfoMsg").text("");
+    //        $("#divReportInfoMsg").append("<div>Select Vendor Type</div>");
+    //        $("#divReportInfoMsg").addClass("alert-danger");
+    //        $("#divReportInfoMsg").removeClass("hidden alert-success");
+    //    }
+    //    else if (ddlVendorIndex == 0) {
+    //        $("#divInvoiceData").addClass('hidden');
+    //        $("#btnView").addClass('hidden');
+    //        $("#divReportInfoMsg").text("");
+    //        $("#divReportInfoMsg").append("<div>Select Vendor</div>");
+    //        $("#divReportInfoMsg").addClass("alert-danger");
+    //        $("#divReportInfoMsg").removeClass("hidden alert-success");
+    //    }
+    //    else if (ddlCCIndex.length == 0) {
+    //        $("#divReportInfoMsg").text("");
+    //        $("#divReportInfoMsg").append("<div>Select Cost Center</div>");
+    //        $("#divReportInfoMsg").addClass("alert-danger");
+    //        $("#divReportInfoMsg").removeClass("hidden alert-success");
+    //    }
+    //    else {
+    //        $("#divInvoiceData").addClass('hidden');
+    //        $("#btnView").removeClass('hidden');
+    //    }
+
+    //}
+
+    function ResetReport() { location.reload(); }
+    function LedgerRptYearChange() {
+
+
+        var year = $("#ddlYear option:selected").text();
+        var yearArr = year.toString().split('-');
+        var fromyear = yearArr[0];
+        var toyear = parseInt(yearArr[0]) + 1;
+
+        $("#txtfromDate").datepicker("option", "minDate", new Date(fromyear, 3, 1));
+        $("#txtfromDate").datepicker("option", "maxDate", new Date(toyear, 2, 31));
+        $("#txttoDate").datepicker("option", "minDate", new Date(fromyear, 3, 1));
+        $("#txttoDate").datepicker("option", "maxDate", new Date(toyear, 2, 31));
+        $("#txtfromDate").datepicker('setDate', new Date(fromyear, 3, 1));
+        $("#txttoDate").datepicker('setDate', new Date(toyear, 2, 31));
+
+        $("#divfromdate").removeClass('hidden');
+        $("#divTodate").removeClass('hidden');
+
+    }
+
+    function ViewInvoiceData() {
+
+        var errorMsg = "";
+        isValid = true;
+
+        var ddlVendorTypeIndex = $("#ddlVendorType option:selected").index();
+        var ddlVendorType = $("#ddlVendorType option:selected").val();
+
+        var ddlVendorIndex = $("#ddlVendor option:selected").index();
+        var ddlVendor = $("#ddlVendor option:selected").val();
+
+        var ddlCCIndex = $('#ddlCC > option:selected');
+        var ddlCC = $('#ddlCC option:selected').toArray().map(item => item.value).join();
+        //var ddlCCIndex = $("#ddlCC option:selected").index();
+        //var ddlCC = $("#ddlCC option:selected").val();
+
+        var ddlPOIndex = $('#ddlPO > option:selected');
+        var ddlPO = $('#ddlPO option:selected').toArray().map(item => item.value).join();
+
+        var ddlYearindex = $("#ddlYear option:selected").index();
+        var year = $("#ddlYear option:selected").text();
+        var fromdate = $("#txtfromDate").val();
+        var todate = $("#txttoDate").val();
+
+        if (ddlVendorTypeIndex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor Type</p>";
+            isValid = false;
+        }
+        if (ddlVendorIndex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor</p>";
+            isValid = false;
+        }
+        if (ddlCCIndex.length == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (ddlPOIndex.length == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select PO No</p>";
+            isValid = false;
+        }
+        if (ddlYearindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Year</p>";
+            isValid = false;
+        }
+        if (fromdate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (todate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }
+        //else { alert('getdata');}
+
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+            //alert('getdata');
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Reports/VendorInvoiceReportGrid',
+                data: { VendorCode: ddlVendor, VendorType: ddlVendorType, CCCodes: ddlCC, PONos: ddlPO, Year: year, From: fromdate, To: todate },
+                success: function (Data) {
+                    //var count1 = Object.keys(Data).length;
+                    //var msg = "";
+                    //if (count1 > 0) {
+                    //debugger;
+                    $("#divInvoiceData").html(Data);
+                    $("#divInvoiceData").removeClass('hidden');
+                    Disableall();
+                    //}
+                    //else {
+                    //    $("#divInvoiceData").html('No Data Found');
+                    //    $("#divInvoiceData").removeClass('hidden');
+
+                    //}
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                    alert("error");
+                }
+            });
+        }
+    }
+
+    function Disableall() {
+        $("#ddlVendorType").prop("disabled", true);
+        $("#ddlVendor").prop("disabled", true);
+        //$("#ddlCC").prop("disabled", true);
+        //$("#ddlPO").prop("disabled", true);
+        $("#ddlYear").prop("disabled", true);
+        //$("#txtfromDate").prop("disabled", true);
+        //$("#txttoDate").prop("disabled", true);
+        $("#txtfromDate").datepicker("option", "disabled", true);
+        $("#txttoDate").datepicker("option", "disabled", true);
+        $("#ddlCC").multiselect("disable");
+        $("#ddlPO").multiselect("disable");
+        $("#btnView").prop("disabled", true);
+    }
+</script>
+

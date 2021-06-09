@@ -1,0 +1,389 @@
+﻿
+<!DOCTYPE html>
+@{
+                /**/
+
+                /**/
+
+                ViewBag.Title = "Essel Projects";
+}
+<html>
+<head>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+    <script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <link href="~/Content/Spinner/Spinner.css" rel="stylesheet" />
+    <script src="~/Scripts/Spinner/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/Spinner/main.min.js"></script>
+    <script src="~/Scripts/Spinner/Spinner.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/EsselStyles/responsive.css" rel="stylesheet" />
+    <style>
+        .blur {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            -webkit-filter: blur(4px);
+            -moz-filter: blur(4px);
+            -ms-filter: blur(4px);
+            -o-filter: blur(4px);
+            filter: blur(4px);
+        }
+    </style>
+
+</head>
+<body>
+    <header class="header-home">
+        <div class="logo">
+            <a href="index.html">
+                <img src="~/Content/EsselImages/logo.jpg" class="img-responsive">
+            </a>
+        </div>
+        <div class="header-top-area hidden-xs">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- header-top-left start -->
+                    <div class="col-lg-3 col-md-3 col-sm-">
+
+
+                    </div>
+                    <!-- header-top-left end -->
+                    <!-- header-top-right start -->
+                    <div class="col-lg-9 col-md-9 hidden-xs hidden-sm">
+                        <div class="header-top-right">
+                            <div class="top-menu">
+                                <ul>
+                                    <li>
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:none; padding:0px;
+        border:none; ">
+                                                <span class="noti glyphicon glyphicon-bell">
+                                                    <span class="count">0</span>
+                                                </span>
+                                            </button>
+                                            <div class="noti-content">
+                                                <ul class="dropdown-menu" id="notiContent" style=" left: -219px;
+    top: 35px; width:245px;">
+                                                    @*<li><a href="#">HTML</a></li>
+                                                        <li><a href="#">CSS</a></li>
+                                                        <li><a href="#">JavaScript</a></li>*@
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li><a href="#"><i class="fa fa-cog"></i> Settings</a></li>
+                                    <li><a href="#"><i class="fa fa-edit"></i> info</a></li>
+
+                                    <!--my account-->
+                                    <li>
+                                        <a href="#"><i class="fa fa-user"></i> My Account</a>
+                                        <ul>
+                                            <li><a href="#">My Profile</a></li>
+                                            <li><a href="#">Edit Profile</a></li>
+                                            <li><a href="#ModalRoleChangePwd" data-toggle="modal">Change Password</a></li>
+                                            <li><a href="/Login/RoleLogout">Logout<i class="fa fa-power-off"></i></a></li>
+                                            @*<a href="/Login/Logout" style="color:white;">Logout <span style="color:white;">  @Session["Role"]</span>*@
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-mid-area" id="divMenu">
+            @Html.Action("MasterMenuItems", "Home")
+        </div>
+    </header>
+    <section class="m-tb-40">
+        @RenderBody()
+    </section>
+    <footer>
+        <!-- footer-bottom-area start -->
+        <div class="footer-bottom-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="copyright">
+                            <p>Copyright © <a href="#">ESSEL  projects pvt ltd</a>. All Rights Reserved</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="copyright text-right">
+                            <p>Powered By <a href="#">SL Touch IT Solutions Pvt Ltd.</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- footer-bottom-area end -->
+    </footer>
+
+    <div id="ModalRoleChangePwd" class="modal fade" role="dialog" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Change Role Password</h4>
+                </div>
+                <div class="modal-body" style="overflow:hidden">
+                    @Html.Action("ChangePassword", "Login")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="menuTarget"></div>
+    @*<div id="myajax-container" class="row blur" style="list-style-image:image('progress.gif')"></div>*@
+    <div id="fade"></div>
+    <div id="modal">        
+        <img src="~/Content/EsselImages/37.gif"  id="loader"/>
+    </div>
+    <!-- jquery js -->
+    <script src="~/Scripts/vendor/jquery-1.12.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    @Styles.Render("~/bundles/datepicker/css")
+    @Scripts.Render("~/bundles/datepicker/js")
+    <script src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/moment.js"></script>
+    <script type="text/javascript">
+        var menu = document.querySelector("#menu");
+        var sidebar = document.querySelector("#side-menu");
+        var overlay = document.querySelector("#overlay");
+        //menu.addEventListener("click", function () {
+        //    this.classList.toggle("active");
+        //    sidebar.classList.toggle("active");
+        //    overlay.classList.toggle("active");
+        //    overlay.onclick = function () {
+        //        menu.classList.toggle("active");
+        //        sidebar.classList.toggle("active");
+        //        overlay.classList.toggle("active");
+        //    }
+        //});
+    </script>
+    @* Add Jquery Library *@
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <style type="text/css">
+        ul#notiContent {
+            max-height: 200px;
+            /* overflow: auto;*/
+            padding: 0px;
+            margin: 0px;
+            width: 270px;
+            overflow-y: scroll;
+        }
+
+        .noti-top-arrow {
+            border-color: transparent;
+            border-bottom-color: #F5DEB3;
+            border-style: dashed dashed solid;
+            border-width: 0 8.5px 8.5px;
+            position: absolute;
+            right: 32px;
+            top: -8px;
+            display: none;
+        }
+
+        span.noti {
+            color: #efae3f;
+            /* margin: 15px; */
+            /* position: fixed; */
+            /* right: 100px; */
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            padding-top: 8px;
+            top: 4px;
+            right: 7px;
+        }
+
+        span.count {
+            position: absolute;
+            top: -8px;
+            background: #ec4445;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            color: #fff;
+            font-weight: 500;
+            line-height: 22px;
+            font-size: 12px;
+            border-radius: 50px;
+            left: 7px;
+            box-shadow: 1px 2px 1px 0px #000;
+            animation: blinker 1s linear infinite;
+        }
+
+        #fade {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: #ababab;
+            z-index: 1001;
+            -moz-opacity: 0.8;
+            opacity: .70;
+            filter: alpha(opacity=80);
+        }
+
+        #modal {
+            display: none;
+            position: absolute;
+            top: 45%;
+            left: 45%;
+            width: 64px;
+            height: 64px;
+            padding: 10px 10px 0px;
+            border: 3px solid #ababab;
+            box-shadow: 1px 1px 10px #ababab;
+            border-radius: 20px;
+            background-color: white;
+            z-index: 1002;
+            text-align: center;
+            overflow: auto;
+        }
+    </style>
+    @* Add jquery code for Get Notification & setup signalr *@
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            //$("#divMenu").load('/Home/MasterMenuItems');
+            $.ajax({
+                type: 'GET',
+                url: '/home/GetNotificationContacts',
+                success: function (response) {
+                    //alert(response[0].TotalCount);
+                    localStorage.setItem("TotalCount", response[0].TotalCount);
+                    $('span.count').html(response[0].TotalCount);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            })
+        });
+        $(function () {
+            //Click on notification icon for show notificationsssss
+            $('span.noti').click(function (e) {
+                e.stopPropagation();
+                $('.noti-content').show();
+                var count = 0;
+                count = parseInt($('span.count').html()) || 0;
+                //only load notification if not already loaded
+                //if (count > 0) {
+                updateNotification();
+                //}
+                $('span.count', this).html(localStorage.getItem("TotalCount"));
+            })
+            // hide notifications
+            $('html').click(function () {
+                $('.noti-content').hide();
+            })
+            // update notification
+            function updateNotification() {
+
+                $('#notiContent').empty();
+                $('#notiContent').append($('<li style="color:#000 !important; font-weight:700; padding-left:10px;">Loading...</li>'));
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/home/GetNotificationContacts',
+                    success: function (response) {
+                        $('#notiContent').empty();
+                        if (response.length == 0) {
+                            $('#notiContent').append($('<li>No data available</li>'));
+                        }
+                        $.each(response, function (index, value) {
+                            if (value.MOCategory != null) {
+                                $('#notiContent').append($('<a href=' + value.Path + '><li>' + value.IndCount + ' (' + value.MOCategory + ')</li></a>'));
+                            }
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                })
+            }
+            // update notification count
+            function updateNotificationCount() {
+                var count = 0;
+                $.ajax({
+                    type: 'GET',
+                    url: '/home/GetNotificationContacts',
+                    success: function (response) {
+                        localStorage.setItem("TotalCount", response[0].TotalCount);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                })
+                count = parseInt(localStorage.getItem("TotalCount")) || 0;
+                $('span.count').html(count);
+            }
+            // signalr js code for start hub and send receive notification
+            var notificationHub = $.connection.notificationHub;
+            $.connection.hub.start().done(function () {
+                console.log('Notification hub started');
+            });
+
+            //signalr method for push server message to client
+            notificationHub.client.notify = function (message) {
+                console.log(message);
+                if (message && message.toLowerCase() == "added") {
+                    updateNotificationCount();
+                }
+            }
+
+        });
+            $(function () {
+               
+                $.ajaxSetup({
+                    beforeSend: function () {
+                        //$('#myajax-container').html('');
+                        //addSpinner($('#myajax-container'));
+                        openModal();
+                    },
+                    statusCode: {
+                        401: function () {
+                            window.location.href = "/Login/AuthenticateLogin";
+                        },
+                        200: function () {
+                            closeModal();
+                            //alert("Hi");
+                            //removeSpinner($('#myajax-container'), function () {
+                            //    $('#myajax-container').html('');
+                            //})
+                        }
+                    }
+                });
+            });
+
+        function openModal() {
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('fade').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('fade').style.display = 'none';
+        }
+    </script>
+
+    @Styles.Render("~/Content/bootstrap-multiselect/rawgit.bootstrap-multiselect.css")
+    @Scripts.Render("~/Scripts/Multiselectdropdown/rawgit.bootstrap-multiselect.js")
+    @Scripts.Render("~/bundles/TreeTableJS")
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,87 @@
+﻿
+.heading {
+    font-weight: bold;
+}
+
+.rowclass {
+    margin-top: 2px;
+}
+
+.strike {
+    /* display: block; */
+    text-align: center;
+    /* overflow: hidden; */
+    /* white-space: nowrap; */
+    /* width: 100%; */
+    position: relative;
+    top: 4px;
+    /* right: -116px; */
+    border-radius: 10px;
+}
+
+    .strike > span {
+        position: relative;
+        text-align: center;
+        /* margin-right: 80%; */
+        display: block;
+        font-size: 15px;
+        border-radius: 10px;
+        /*width: 80px;*/
+        width: 15% !important;
+        /* height: 80px; */
+        right: -93px;
+        padding: 5px;
+        /* margin: 30px; */
+        font-weight: bold;
+        background: #fff;
+        border: 2px solid #666;
+    }
+
+.tabledynamic .table > tfoot > tr > td {
+    border-top: 0px solid #666 !important;
+}
+
+.btn.btn-default {
+    background: #202447;
+    color: #fff;
+}
+.tabledynamic {
+    width: 100%;
+    border: 1px solid #666;
+    margin-top: -9px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+change-tab {
+    position: relative;
+    margin: 20px 0;
+}
+separationHr {
+    margin-top:0%;
+    margin-bottom:1%;
+    border: 1px solid #e7e8f5;
+}
+td.details-control {
+    background: url('../../Content/EsselImages/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+
+tr.shown td.details-control {
+    background: url('../../Content/EsselImages/details_close.png') no-repeat center center;
+}
+.tdlabelcls {
+    color: #fff !important;
+    margin-top: 10px
+}
+
+.tdcls {
+    text-align: center;
+    color: #fff !important;
+    padding: 0px !important;
+}
+
+.tbodytdcls {
+    text-align: center;
+    padding: 1px !important;
+}

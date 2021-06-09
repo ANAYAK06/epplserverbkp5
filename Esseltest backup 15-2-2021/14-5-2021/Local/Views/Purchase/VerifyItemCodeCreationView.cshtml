@@ -1,0 +1,251 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.ItemCodeCreation>
+@foreach (var item in Model)
+{
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <h5 style=" border-bottom: 2px solid brown;">
+                    <a style="color:brown"> Item Category</a>
+                </h5>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Item Code:</label>
+                        <input type="text" class="form-control" id="lblitemcode" value="@item.ItemCode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Item Name:</label>
+                        <input type="text" class="form-control" value="@item.Itemname" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Basic Price:</label>
+                        <input type="text" class="form-control" value="@item.Basicprice" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>Item Code Type:</label>
+                        <input type="text" class="form-control" value="@item.ItemCodeType" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label>Category Name:</label>
+                        <input type="text" class="form-control" value="@item.TransactionType" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>HSN Code:</label>
+                        <input type="text" class="form-control" value="@item.HSNCode" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>DCA Head:</label>
+                        <input type="text" class="form-control" value="@item.ItemcodeDca" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Sub DCA Head:</label>
+                        <input type="text" class="form-control" value="@item.ItemcodeSDca" readOnly="readOnly" />
+                    </div>
+                </div>
+              
+            </div>
+            <div class="col-md-12">
+                <h5 style=" border-bottom: 2px solid brown;">
+                    <a style="color:brown">Group Code</a>
+                </h5>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>MajorGroup Code/Name:</label>
+                        <input type="text" class="form-control" value="@item.Majorgroupcode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Sub-Group Code:</label>
+                        <input type="text" class="form-control" value="@item.Subgroupcode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Specification Code:</label>
+                        <input type="text" class="form-control" value="@item.Specificationcode" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h5 style=" border-bottom: 2px solid brown;">
+                        <a style="color:brown">Specification</a>
+                    </h5>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label>Specification:</label>
+                        <input type="text" class="form-control" value="@item.Specification" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Units:</label>
+                        <input type="text" class="form-control" value="@item.Units" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>          
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appricstatus" })
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppricNotes"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveitemcodeDetails('@item.Rowid')">Submit</button>                       
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divAppricInfoMsg-@item.Rowid" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    break;
+}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+           
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appricstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        });
+        function ApproveitemcodeDetails(Rowid) {
+            var itemcode = $("#lblitemcode").val(); 
+            appstatusid = "Appricstatus-" + Rowid;
+            var appstatus = $("#Appricstatus").val();
+            var ReturnText = $("#AppricNotes").val();
+            var retnoteid = "AppricNotes-" + Rowid;
+            retnote = $("#" + retnoteid + "").val();
+            Rid = "divAppricInfoMsg-" + Rowid;
+            msg = $("#" + Rid + "");
+            isValid = true;
+            var errorMsg = "";
+            if (appstatus == "Select" || appstatus == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                isValid = false;
+            }
+            if (ReturnText == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $(msg).text("");
+                $(msg).append(finalerror1 + errorMsg + "</div>");
+                $(msg).addClass("alert-danger");
+                $(msg).removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $(msg).text("");
+                $(msg).addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/ApproveItemCode",
+                    data: '{Rowid:"' + Rowid + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtAppricCreatedby").val() + '",Remarks:"' + $("#AppricNotes").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var msg = response.saveStatus;
+                        if (response.saveStatus == "Submitted") {
+                            var msg = '';
+                            $('#ApproveicMsgModal').modal('show');
+                            msg = "<div>Item Code " + itemcode + finalmsg + "</div>";
+                            $("#ApproveicMsgModal").on("hide.bs.modal", function () {
+                                $("#divAppricGrid").load('/Purchase/VerifyItemCodeCreationGrid');
+                            });
+                            $("#AppricMsg").html(msg);
+                        }
+                        else {
+                            msg = "<div>" + response.saveStatus + "</div>";
+                            $("#AppricMsg").html(msg);
+                            $('#ApproveicMsgModal').modal('show');
+                        }
+                    },
+                    failure: function (response) {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#AppricMsg").html(msg);
+                        $('#ApproveicMsgModal').modal('show');
+                    },
+                    error: function (response) {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#AppricMsg").html(msg);
+                        $('#ApproveicMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+    </script>

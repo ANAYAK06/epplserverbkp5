@@ -1,0 +1,211 @@
+﻿@model  EsselTestLocalApplication.Models.AddTermLoan
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Term Loan Agency Approval</title>
+</head>
+<body>
+    <div class="col-md-12 verifydiv">
+        <br />
+        @if (Model.Status != "0")
+        {
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Agency Code: </label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.AgencyId' />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Agency Name:</label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.AgencyName' />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Agency Address:</label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.AgencyAddress' />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Nature Of Group:</label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.NatureGroupName' />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Group Name:</label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.GroupName' />
+                            </div>
+                        </div>
+                        @if (Model.SubGroupId != "0")
+                        {
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label>Sub Group Name:</label>
+                                    <input type="text" class="form-control" readonly="readonly" value='@Model.SubGroupName' />
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Agency Status:</label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.AgencyStatus' />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                                <label>Status</label>
+                                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appstatus" })
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="divApprITRetNote">
+                            <div class="form-group">
+                                <lable>Note:</lable><br />
+                                <textarea rows="3" cols="50" id="ApprTLARetNote"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-left">
+                                <br />
+                                <input type="submit" id="btnApproveIT" onclick="ApproveTLA('@Model.AgencyId','@Model.AgencyStatus')" value="Submit" />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="row col-md-10 text-center">
+                            <br />
+                            <div id="divApproveTLInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <form onsubmit="return false">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Agency Code:</label>
+                                <input type="text" id="txtUpAgencyCode" class="form-control" readonly="readonly" value="@Model.AgencyId" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Agency Name:</label>
+                                <input type="text" id="txtUpagencyName" class="form-control" value="@Model.AgencyName" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Agency Address:</label>
+                                <input type="text" id="txtUpagencyNature" rows="3" class="form-control" value="@Model.AgencyAddress" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Nature Of Group</label>
+                                <input type="text" id="txtUpagencyNature" class="form-control" readonly="readonly" value="@Model.NatureGroupName" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Group Name:</label>
+                                <input type="text" class="form-control" readonly="readonly" value='@Model.GroupName' />
+                            </div>
+                        </div>
+                        @if (Model.SubGroupId != "0")
+                        {
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label>Sub Group Name:</label>
+                                    <input type="text" class="form-control" readonly="readonly" value='@Model.SubGroupName' />
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <input type="submit" id="btnUpdateagency" onclick="UpdateApprAgency('@Model.AgencyId')" value="Submifddt" /> @*UpdateApprIT*@
+                            <input type="hidden" value="@Model.GroupId" id="txtupGroupidtl" />
+                            <input type="hidden" value="@Model.SubGroupId" id="txtupSubGroupidtl" />
+                        </div>
+                    </div>
+                    <div class="row col-md-12 text-center">
+                        <br />
+                        <div id="divUpdateTLInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        }
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (@Model.Status != "0") {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if ('@Model.AgencyStatus' == "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                                
+                        });
+                        //ddlaprovalstatus.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+                    }
+
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+        else {
+
+
+        }
+    });
+</script>

@@ -1,0 +1,165 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.DepositDetails>
+<div class="table-responsive w-100">
+    <table id="tblApproveBankDepositGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Date</th>
+                <th>Cost Center</th>
+                <th>Bank Name</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TransferCostCenter)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bank)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TranStatus)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        //debugger;
+            var ApproveBankDepositGrid = null;
+            InitializeApprBankDepositGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprBankDepositCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+            $("#txtApprBankDepositRole").val(SessionRole);
+        });
+    function InitializeApprBankDepositGrid() {
+        ApproveBankDepositGrid = $('#tblApproveBankDepositGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+                var bldate = $('td:eq(1)', row).html();
+                var trimStr = $.trim(bldate);
+                var typeArr = trimStr.split(' ');
+                var d3 = typeArr[0];
+                var t1 = "'" + d3 + "'";
+                var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+                $('td:eq(1)', row).html(bldate1);
+                var oldstatus = $('td:eq(6)', row).html();
+                if (oldstatus == 0) {
+                    $('td:eq(6)', row).html("Return");
+                }
+                else { $('td:eq(6)', row).html("Verification Pending"); }
+            },
+            pageLength: 10
+        });
+        $('#tblApproveBankDepositGrid tbody').on('click', 'td.details-control', function () {            
+                var tr = $(this).closest('tr');
+            var row = ApproveBankDepositGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApproveBankDepositGrid, tr);
+                    // Open this row
+                    row.child(formatApprBankDeposit(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprBankDeposit(d) {     
+        var htmltext;
+        var BankTranid, transstatus;
+        $.each(d, function (index, value) {
+            if (index == 6)
+                transstatus = value;
+            if (index == 1)
+                BankTranid = value;
+        });
+        var divid = "divapprbankdeposit" + BankTranid;
+        var divid1 = $("#" + divid + "");
+        $("#currentBankDepositid").val(BankTranid);
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/UpdateBankDepositView',
+                data: { Id: BankTranid },              
+                success: function (Data) {
+                    var divid2 = "divapprbankdeposit" + BankTranid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyBankDepositView',
+                data: { Id: BankTranid },
+               
+                success: function (Data) {
+                    var divid2 = "divapprbankdeposit" + BankTranid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);                    
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        return '<div id="divapprbankdeposit' + BankTranid + '" class="col-md-12"></div>';
+    }
+</script>

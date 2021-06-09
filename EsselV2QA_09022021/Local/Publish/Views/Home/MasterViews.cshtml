@@ -1,0 +1,153 @@
+﻿@model List<EsselTestLocalApplication.Models.MasterWorkFlowStatus>
+@{
+    //ViewBag.Title = "MasterViews";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    @*<h4 style="text-align:left;font-weight:bold">Bank Payments</h4>*@
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div id="#MasterTab">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        @foreach (var item in Model)
+                                        {
+                                            if (item.MID == 106 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#CostCenter" data-toggle="tab">Cost Center</a></li>
+                                            }
+                                            if (item.MID == 110 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#ITCode" data-toggle="tab">IT Code</a></li>
+                                            }
+                                            if (item.MID == 108 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#DCA" data-toggle="tab">Account Head</a></li>
+                                            }
+                                            if (item.MID == 236 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#SubDCA" data-toggle="tab">Sub Account Head</a></li>
+                                            }
+                                            if (item.MID == 176 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#Client" data-toggle="tab">Client And SubClient</a></li>
+                                            }
+                                            if (item.MID == 116 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#BankAccount" data-toggle="tab">Bank Account</a></li>
+                                            }
+                                            if (item.MID == 240 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#TermLoanAgency" data-toggle="tab">TermLoan Agency</a></li>
+                                            }
+                                            if (item.MID == 260 && item.WorkflowExist == true)
+                                            {
+                                                <li role="presentation"><a href="#Vendor" data-toggle="tab">Vendor</a></li>
+                                            }
+                                        }
+
+
+                                    </ul>
+                                   
+                                    <div class="tab-content vertical-content">
+                                        @foreach (var item in Model)
+                                        {
+                                            if (item.MID == 106 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade in active" id="CostCenter">
+                                                    @Html.Action("CostCenter", "Home")
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            }
+                                            if (item.MID == 110 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="ITCode">
+                                                    @Html.Action("AddNewITCode", "Home")
+                                                    <br />
+                                                    <br />
+                                                </div>
+
+                                            }
+                                            if (item.MID == 108 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade in active" id="DCA">
+                                                    @Html.Action("DCA", "Home")
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            }
+                                            if (item.MID == 236 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="SubDCA">
+                                                    @Html.Action("SubDCA", "Home")
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            }
+                                            if (item.MID == 176 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="Client">
+                                                    @Html.Action("AddClient", "Home")
+                                                    <br />
+                                                    <br />
+                                                </div>
+                                            }
+                                            if (item.MID == 116 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="BankAccount">
+                                                    @Html.Action("AddBankDetails", "Home")
+                                                </div>
+                                            }
+                                            if (item.MID == 240 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="TermLoanAgency">
+                                                    @Html.Action("TermLoanAgency", "Home")
+                                                </div>
+                                            }
+                                            if (item.MID == 240 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="TermLoanAgency">
+                                                    @Html.Action("TermLoanAgency", "Home")
+                                                </div>
+                                            }
+                                            if (item.MID == 260 && item.WorkflowExist == true)
+                                            {
+                                                <div role="tabpanel" class="tab-pane fade" id="Vendor">
+                                                    @Html.Action("VendorCreation", "Purchase")
+                                                </div>
+                                            }
+                                        }
+
+                                    </div>
+                               
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+$('.nav-tabs li:eq(0) a').tab('show');
+                                       
+});
+</script>
+
+
+
+
+

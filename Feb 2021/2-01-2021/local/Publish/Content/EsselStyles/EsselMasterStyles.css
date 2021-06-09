@@ -1,0 +1,164 @@
+﻿/*starting Css For EsselMaster.cshtml*/
+body, html {
+    margin: 0;
+    padding;
+    height: 100%
+}
+.header-top-wrapper {
+    background-color: #0094ff;
+    display: block;
+    font-family: sans-serif;
+    height: 50px;
+    position: relative;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.nav-item .nav-link {
+    color: white;
+}
+
+.nav-item :hover {
+    color: #0094ff;
+    background: white;
+}
+
+.header-right-menu {
+    float: right;
+}
+
+.main-logo {
+    float: left;
+    height: 50px;
+    width: 100px;
+}
+
+.menu-padding {
+    padding-left: 85px;
+}
+
+.sidenav {
+    width: 180px;
+    position: fixed;
+    z-index: 1;
+    top: 20px;
+    background: white;
+    overflow-x: hidden;
+    padding-top: 50px;
+}
+
+.sidenav .nav .nav-item a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #0094ff;
+    display: block;
+}
+
+.sidenav .nav .nav-item a:hover {
+    color: white;
+    background: #0094ff;
+}
+
+.navhead .nav .nav-item a:hover {
+    color: #0094ff;
+    background: white;
+}
+
+.main-content {
+    margin-left: 195px;
+}
+
+.nav-top-height {
+    height: 50px;
+}
+/*Ending Css For EsselMaster.cshtml*/
+
+/*Starting Css For EsselHome.cshtml*/
+.mainmenu-square {
+    padding: 40px;
+    height: 240px;
+    width: 300px;
+    border: 1px solid;
+    border-color: lightgray;
+    text-align: center;
+    z-index:10;
+    box-shadow: rgb(250, 250, 250) 3px 3px inset;
+}
+
+.mainmenu-square:hover {
+    -moz-box-shadow: 0 0 10px #0094ff;
+    -webkit-box-shadow: 0 0 10px #0094ff;
+    box-shadow: 0 0 10px #0094ff;    
+}
+    
+
+.menuitemimg-label {
+    display: block;
+}
+
+/*Ending Css For EsselHome.cshtml*/
+
+/*Start Reusable General CSS*/
+.padding-10 {
+    padding: 10px;
+}
+
+.padding-15 {
+    padding: 15px;
+}
+
+.padding-20 {
+    padding: 20px;
+}
+
+.padding-8 {
+    padding: 8px;
+}
+/*End Reusable General CSS*/
+
+/*Start BusinessInfo CSS*/
+.BusinessInfo-header {
+    background-color: #0094ff;
+    display: block;
+    font-family: sans-serif;
+    height: 50px;
+    position: relative;
+    font-size: 14px;
+    font-weight: 400;
+    color:white;
+}
+
+.BusinessInfoSidenav {
+    width: 180px;
+    position: fixed;
+    z-index: 1;
+    top: 20px;
+    background: white;
+    overflow-x: hidden;
+    padding-top: 50px;
+}
+
+.BusinessInfoSidenav .nav .nav-item .active, .BusinessInfoSidenav .nav .nav-item .BusinessInfoMenuItems:hover {
+    color: white;
+    background: #0094ff;
+}
+
+.businessHierarchyBtn:hover, .businessRoleBtn:hover, .firmbtns-hover:hover {
+    color: white;
+    background: #0094ff;
+}
+
+.firm-footer {
+    bottom: 0px;
+    padding-bottom:0px;
+    text-align:center;
+    position:absolute;
+    width:100%
+}
+
+.listbox {
+    width: 280px;
+}
+
+/*End BusinessInfo CSS*/

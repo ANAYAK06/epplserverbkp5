@@ -1,0 +1,158 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.ELorPaidLeaveRule>
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblELORPaidLeavesGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th >ELPaidLeaveId</th>
+                    <th class="hidden">ID</th>
+                    <th>Effective Date</th>
+                    <th>Leave Type</th>
+                    <th>Carry Farword To Next Year</th>
+                    <th>Category</th>
+                    <th>States</th>
+                    <th>No of Leaves</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ELPaidLeaveId)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.LeaveTypeId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EffectiveDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LeaveType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CarryforwardToNextYear)
+                    </td>
+                    <td>
+                        @if (item.ELPaidCategoryId == 0)
+                        {
+                            <label>All</label>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.ELPaidCategory)
+                        }
+
+                    </td>
+                    <td>
+                        @if (item.StateId != 0)
+                        {
+                            @Html.DisplayFor(modelItem => item.ELPaidState)
+
+                        }
+                        else
+                        {
+                            <label>All</label>
+
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NoofLeaves)
+                    </td>
+                    <td>
+                        <input type="button" class="deleteleave btn btn-md btn-danger" value="Delete">
+                    </td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+    $(document).ready(function () {
+        var leavesGrid = null;
+        InitializeLeavesGrid();
+        $("#tblELORPaidLeavesGrid").on("click", ".deleteleave", function (event) {
+            //alert('deleted');
+            var row = $(this).closest("tr");
+            var leavetypeId = $.trim(row.find("td").eq(0).html());
+            //var categoryId = $.trim(row.find("td").eq(0).html());
+            //var state = $.trim(row.find("td").eq(0).html());
+            //$(this).closest("tr").remove();
+            var data = {
+                ELPaidId: 0,
+                LeaveTypeId: leavetypeId,
+
+            };
+
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteELorPaidLeavess',
+                data: { leaveData: data },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        row.remove();
+                        BindLeaveTypes();
+                        $('#chkLeaveCaryFwd').prop('checked', false);
+                        //var shcount = $("#tblSalaryHeadGrid tbody tr").length;
+                        //if (shcount > 0) {
+                        //    $("#divGridSalaryHead").removeClass('hidden');
+                        //}
+                        //else { $("#divGridSalaryHead").addClass('hidden'); }
+                    }
+                    else {
+                        $("#divOtherLeavesInfoMsg").text(addFailMsg);
+                        $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                        $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                    }
+                    var shcount = $("#tblELORPaidLeavesGrid tbody tr").length;
+                    if (shcount > 0) {
+                        $("#divgridleaves").removeClass('hidden');
+                    }
+                    else { $("#divgridleaves").addClass('hidden'); }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divOtherLeavesInfoMsg").text(addFailMsg);
+                    $("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                    $("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+    });
+        function InitializeLeavesGrid() {
+            leavesGrid = $('#tblELORPaidLeavesGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Leaves Found"
+            },
+                "createdRow": function (row, data, index) {
+
+                    //var oldcarryfwd = $.trim($('td:eq(1)', row).html());
+                    ////alert(oldstatus);
+                    ////debugger;
+                    //if (oldcarryfwd === false) {
+                    //    $('td:eq(1)', row).html("No");
+
+                    //}
+                    //else { $('td:eq(1)', row).html("Yes"); }
+
+            },
+            pageLength: 10
+        });
+    }
+    </script>
+}

@@ -1,0 +1,1084 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ItemCodeCreation
+
+@{
+    ViewBag.Title = "ItemCodeCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Item Code Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h5 style=" border-bottom: 2px solid brown;">
+                                                                <a style="color:brown"> Item Category</a>
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group" id="">
+                                                                @Html.LabelFor(model => model.ItemCodeType)
+                                                                @Html.DropDownListFor(model => model.ItemCodeType, new SelectList(Model.ItemCodeTypeList, "Typeval", "Typetext"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemType" })
+                                                            </div>
+                                                        </div>                                                       
+                                                    </div>
+                                                    <div class="row">                                                        
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TransactionType)
+                                                                <a href="javascript:void(0)" onclick="ShowItemCategoryModel()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add Item Category</a>
+                                                                @Html.DropDownListFor(model => model.TransactionType, new SelectList(Model.ItemCategoryList, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemCategory", onchange = "GetDcas()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.ItemcodeDca)
+                                                                @Html.DropDownListFor(model => model.ItemcodeDca, new SelectList(Model.ItemDcaList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Itemcodedcas", onchange = "GetSDcas()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.ItemcodeSDca)
+                                                                @Html.DropDownListFor(model => model.ItemcodeSDca, new SelectList(Model.ItemSdcaList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Itemcodesdcas" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.HSNCode)
+                                                                @Html.DropDownListFor(model => model.HSNCode, new SelectList(Model.HsnCodesList, "HSNID", "HSNCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_hsncodes", onchange = "GetHsnDesc()" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-10">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.HSNRemarks)
+                                                                @Html.TextBoxFor(model => model.HSNRemarks, htmlAttributes: new { @class = "form-control", @id = "txthsnremarks", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h5 style=" border-bottom: 2px solid brown;">
+                                                                <a style="color:brown">Group Code</a>
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Majorgroupcode)
+                                                                <a href="javascript:void(0)" onclick="ShowMajorgroupModal()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add Major Group Code</a>
+                                                                @Html.DropDownListFor(model => model.Majorgroupcode, new SelectList(Model.MajorgroupcodeList, "Majorgroupval", "Majorgrouptext"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Majorgroupcode", onchange = "GetSubgroupcode()" }) @*, *@
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group" id="divsubgroupdropdown">
+                                                                @Html.LabelFor(model => model.Subgroupcode)
+                                                                @Html.DropDownListFor(model => model.Subgroupcode, new SelectList(Model.SubgroupcodeList, "Subgroupval", "Subgrouptext"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Subgroupcode", onchange = "SetSubgroupcode()" }) @*, onchange = "GetDcas()"*@
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group" id="divsubgrouptext">
+                                                                @Html.LabelFor(model => model.Subgrouptxtcode)
+                                                                @Html.TextBoxFor(model => model.Subgrouptxtcode, htmlAttributes: new { @class = "form-control", @id = "txtsubgroupcode", onkeypress = "return IsNumericdecimal(this)", @maxlength = "3" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <h5 style=" border-bottom: 2px solid brown;">
+                                                                <a style="color:brown">Specification</a>
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Specificationcode)
+                                                                @Html.TextBoxFor(model => model.Specificationcode, htmlAttributes: new { @class = "form-control", @id = "txtspecificationcode" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-10">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Specification)
+                                                                @Html.TextBoxFor(model => model.Specification, htmlAttributes: new { @class = "form-control", @id = "txtspecification" })
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Units)
+                                                                <a href="javascript:void(0)" onclick="ShowUnitsModal()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add Units</a>
+                                                                @Html.DropDownListFor(model => model.Units, new SelectList(Model.UnitsList, "Unitsval", "Unitstext"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Units" }) @*, onchange = "GetSubgroupcode()"  *@
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="form-group" id="">
+                                                                @Html.LabelFor(model => model.Itemname)
+                                                                @Html.TextBoxFor(model => model.Itemname, htmlAttributes: new { @class = "form-control", @id = "txtitemname", style = "text-transform:uppercase" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Basicprice)
+                                                                @Html.TextBoxFor(model => model.Basicprice, htmlAttributes: new { @class = "form-control", @id = "txtbasicprice", onkeypress = "return IsNumericdecimal(this)" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="text-right" style="vertical-align:bottom">
+                                                                <button class="btn btn1 btn-success" id="btnItemcodeSubmit" onclick="btnSubmitItemcodeData()">Submit</button>
+                                                                <button class="btn btn1 btn-success" id="btnHSNReset" onclick="ClearItemcodereset()">Reset</button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row text-center">
+                                                        <div id="divItemcodeInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ShowItemCategoryModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Category</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ItemCategoryCode)
+                                @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.ItemCategoryCodeList, "Categorycodeid", "CategorycodeValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemCategoryId" })
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Item Category Name</label>
+                                <input type="text" id="txtItemCategoryName" style="text-transform:uppercase" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center" style="vertical-align:bottom">
+                                <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddnewitemcat" onclick="SubmitCategoryItem()" /> &nbsp;&nbsp;
+                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetCat()" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divAddCategoryInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ShowMajorGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New MajorGroup</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Major Group Code</label>
+                                <input type="text" id="txtmdmajorgroupcode" maxlength="2" style="text-transform:uppercase" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Major Group Name</label>
+                                <input type="text" id="txtmdmajorgroupName" style="text-transform:uppercase" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center" style="vertical-align:bottom">
+                                <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddnewmajorgroup" onclick="SubmitMojorgrouppop()" /> &nbsp;&nbsp;
+                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetMojorgrouppop()" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divAddMajorgroupInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ShowUnitsModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Units</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Units</label>
+                                <input type="text" id="txtaddunits" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center" style="vertical-align:bottom">
+                                <input type="submit" value="Submit" class="btn btn1 btn-success" id="btnaddunits" onclick="SubmitUnitspop()" /> &nbsp;&nbsp;
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divAddunitsInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="Viewitemcodemodeal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1">
+                    <h4 class="modal-title">Do You want to continue with item code:<label id="txtconfirmcode"></label></h4>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              
+            </div>
+            <div class="modal-body">
+                <div id="divitemcodemodealInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtn">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" onclick="SaveItemCodedata()">Yes</button>
+                    <input type="hidden" id="txtdeleteMasterid" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        //$("#Viewitemcodemodeal").on("hidden.bs.modal", function () {
+        //    location.reload();
+        //});
+        $("#divsubgroupdropdown").addClass("hidden");
+        $("#divsubgrouptext").addClass("hidden");
+    });
+    function ShowItemCategoryModel() {
+        $('#ShowItemCategoryModel').modal('show');
+        ResetCat();
+    }
+    function ShowMajorgroupModal() {
+        $('#ShowMajorGroupModal').modal('show');
+        //ResetCat();
+    }
+    function ShowUnitsModal() {
+        $('#ShowUnitsModal').modal('show');
+        //ResetCat();
+    }
+    function SubmitUnitspop() {
+        isValid = true;
+        var errorMsg = "";
+        var UnitName = $("#txtaddunits").val();
+        if (UnitName === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Units</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divAddunitsInfoMsg").text("");
+            $("#divAddunitsInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAddunitsInfoMsg").addClass("alert-danger");
+            $("#divAddunitsInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddunitsInfoMsg").text("");
+            $("#divAddunitsInfoMsg").addClass("hidden");
+            var NewUnit = {
+                Units: $("#txtaddunits").val()
+            };
+            addFailMsg = "Error Occurred While Adding Units";
+            addSuccessMsg = "Units Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveUnits",
+                data: JSON.stringify({ Cat: NewUnit }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $("#btnaddunits").prop('disabled', true);
+                        $("#divAddunitsInfoMsg").text(addSuccessMsg);
+                        $("#divAddunitsInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddunitsInfoMsg").addClass("alert-success");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/GetAllUnits",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlcat = $("#ddl_Units");
+                                ddlcat.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlcat.append($("<option></option>").val(this['Unitsval']).html(this['Unitstext']));
+                                });
+                            },
+                            failure: function (response) {
+                                alert(response.responseText);
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    }
+                    else {
+                        $("#btnaddunits").prop('disabled', false);
+                        $("#divAddunitsInfoMsg").text(response.saveStatus);
+                        $("#divAddunitsInfoMsg").addClass("alert-danger");
+                        $("#divAddunitsInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddunits").prop('disabled', false);
+                    $("#divAddunitsInfoMsg").text(addFailMsg);
+                    $("#divAddunitsInfoMsg").addClass("alert-danger");
+                    $("#divAddunitsInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function SubmitCategoryItem() {
+        isValid = true;
+        var errorMsg = "";
+        var Catid = $("#ddl_ItemCategoryId option:selected").index();
+        var CatName = $("#txtItemCategoryName").val();
+        if (Catid == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Item Category Code</p>";
+            isValid = false;
+        }
+        if (CatName === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Item Category Name</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divAddCategoryInfoMsg").text("");
+            $("#divAddCategoryInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAddCategoryInfoMsg").addClass("alert-danger");
+            $("#divAddCategoryInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddCategoryInfoMsg").text("");
+            $("#divAddCategoryInfoMsg").addClass("hidden");
+            var Newcode = {
+                ItemCategoryCode: $("#ddl_ItemCategoryId option:selected").val(),
+                ItemCategoryName: $("#txtItemCategoryName").val()
+            };
+            addFailMsg = "Error Occurred While Adding Category";
+            addSuccessMsg = "Category Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveItemCategory",
+                data: JSON.stringify({ Cat: Newcode }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $("#btnaddnewitemcat").prop('disabled', true);
+                        $("#divAddCategoryInfoMsg").text(addSuccessMsg);
+                        $("#divAddCategoryInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddCategoryInfoMsg").addClass("alert-success");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/GetAllItemCatogories",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlcat = $("#ddl_ItemCategory");
+                                ddlcat.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlcat.append($("<option></option>").val(this['Categoryid']).html(this['CategoryValue']));
+                                });
+                            },
+                            failure: function (response) {
+                                alert(response.responseText);
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    }
+                    else {
+                        $("#btnaddnewitemcat").prop('disabled', false);
+                        $("#divAddCategoryInfoMsg").text(response.saveStatus);
+                        $("#divAddCategoryInfoMsg").addClass("alert-danger");
+                        $("#divAddCategoryInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewitemcat").prop('disabled', false);
+                    $("#divAddCategoryInfoMsg").text(addFailMsg);
+                    $("#divAddCategoryInfoMsg").addClass("alert-danger");
+                    $("#divAddCategoryInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function ResetCat() {
+        $("#txtItemCategoryName").val("");
+        $("#ddl_ItemCategoryId").prop('selectedIndex', 0);
+        $("#btnaddnewitemcat").prop('disabled', false);
+        $("#divAddCategoryInfoMsg").text("");
+        $("#divAddCategoryInfoMsg").addClass("hidden");
+    }
+    function GetDcas() {    
+        $("#ddl_Majorgroupcode").prop('selectedIndex', 0);
+        $("#ddl_Subgroupcode").prop('selectedIndex', 0);
+        $("#txtsubgroupcode").val("");
+        $("#txtspecificationcode").val("");
+        $("#txtspecificationcode").addClass("hidden")
+        $("#divsubgrouptext").addClass("hidden");
+        $("#divsubgroupdropdown").addClass("hidden");
+        var ttypeINDEX = $("#ddl_ItemCategory option:selected").index();
+        var ttypeval = $("#ddl_ItemCategory option:selected").val();
+        var ttypetext = $("#ddl_ItemCategory option:selected").text();
+        var nameArr = ttypetext.split(',');
+        var catnameonly = nameArr[1];
+        if (ttypeINDEX != "0") {
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetDcas",
+                data: '{id:"' + ttypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        ddlDCA = $("#ddl_Itemcodedcas");
+                        ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        });
+                    });
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetHsn",
+                        data: '{id:"' + ttypeval + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $.each(response, function () {
+                                $("#txthsnremarks").val("");
+                                ddlhsn = $("#ddl_hsncodes");
+                                ddlhsn.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlhsn.append($("<option></option>").val(this['HSNID']).html(this['HSNCode']));
+                                });
+                            });
+                            $.ajax({
+                                type: "POST",
+                                url: "/Purchase/GetMajougroupcode",
+                                data: '{val:"' + ttypeval + '",txt:"' + catnameonly + '"}',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response) {
+                                    var count1 = Object.keys(response).length;
+                                    if (count1 > 0) {
+                                        $.each(response, function () {
+                                            ddlmajorgroup = $("#ddl_Majorgroupcode");
+                                            ddlmajorgroup.empty().append('<option selected="selected" value="Select">Select</option>');
+                                            $.each(response, function () {
+                                                ddlmajorgroup.append($("<option></option>").val(this['Majorgroupval']).html(this['Majorgrouptext']));
+                                            });
+                                        });
+                                    }
+                                    else {
+                                        ddlmajorgroup = $("#ddl_Majorgroupcode");
+                                        ddlmajorgroup.empty().append('<option selected="selected" value="Select">Select</option>');
+                                    }
+                                },
+                                failure: function (response) {
+                                },
+                                error: function (response) {
+                                }
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                },
+                failure: function (response) {
+                    alert("Please Configure DCAs");
+                },
+                error: function (response) {
+                    alert("Please Configure DCAs");
+                }
+            });
+
+        }
+        else {
+            ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+            ddlSDCA = $("#ddl_Itemcodesdcas");
+            ddlSDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+            $("#txthsnremarks").val("");
+            $("#ddl_hsncodes").prop('selectedIndex', 0);
+            $("#ddl_Majorgroupcode").prop('selectedIndex', 0);
+        }
+    }
+    function GetSDcas() {
+        var ttypeINDEX = $("#ddl_Itemcodedcas option:selected").index();
+        var ttypeval = $("#ddl_Itemcodedcas option:selected").val();
+        if (ttypeINDEX != "0") {
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetSDcas",
+                data: '{id:"' + ttypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        ddlSDCA = $("#ddl_Itemcodesdcas");
+                        ddlSDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlSDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        });
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            ddlSDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+        }
+    }
+    function GetHsnDesc() {
+        var ttypeINDEX = $("#ddl_hsncodes option:selected").index();
+        var ttypeval = $("#ddl_hsncodes option:selected").val();
+        if (ttypeINDEX != "0") {
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/HsnDesc",
+                data: '{id:"' + ttypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txthsnremarks").val(this['HSNRemarks']);
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $("#txthsnremarks").val("");
+        }
+    }
+    function SubmitMojorgrouppop() {
+        isValid = true;
+        var errorMsg = "";
+        var GroupCode = $("#txtmdmajorgroupcode").val();
+        var GroupCodecurrentLength = $("#txtmdmajorgroupcode").val().length;
+        var GroupName = $("#txtmdmajorgroupName").val();
+        var Catid = $("#ddl_ItemCategory option:selected").index();
+        if (Catid == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category Code/Name</p>";
+            isValid = false;
+        }
+        if (GroupCode === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Major Group Code</p>";
+            isValid = false;
+        }
+        if (GroupCode != "") {
+            if (GroupCodecurrentLength != 2) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Invalid Major Group Code</p>";
+                isValid = false;
+            }
+        }
+        if (GroupName === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Major Group Name</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divAddMajorgroupInfoMsg").text("");
+            $("#divAddMajorgroupInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAddMajorgroupInfoMsg").addClass("alert-danger");
+            $("#divAddMajorgroupInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddMajorgroupInfoMsg").text("");
+            $("#divAddMajorgroupInfoMsg").addClass("hidden");
+            var itemcatname = $("#ddl_ItemCategory option:selected").text();
+            var nameArr = itemcatname.split(',');
+            var catnameonly = nameArr[1];
+            var NewMG = {
+                ItemCategoryCode: $("#ddl_ItemCategory option:selected").val(),
+                ItemCategoryName: catnameonly,
+                Majorgroupcode: $("#txtmdmajorgroupcode").val(),
+                Majorgroupname: $("#txtmdmajorgroupName").val(),
+            };
+            addFailMsg = "Error Occurred While Adding Major Group";
+            addSuccessMsg = "Major Group Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveMajorGroup",
+                data: JSON.stringify({ Cat: NewMG }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $("#btnaddnewmajorgroup").prop('disabled', true);
+                        $("#divAddMajorgroupInfoMsg").text(addSuccessMsg);
+                        $("#divAddMajorgroupInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddMajorgroupInfoMsg").addClass("alert-success");
+                        $.ajax({
+                            type: "POST",
+                            url: "/Purchase/GetAllMajorgruops",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                ddlcat = $("#ddl_Majorgroupcode");
+                                ddlcat.empty().append('<option selected="selected" value="Select">Select</option>');
+                                $.each(response, function () {
+                                    ddlcat.append($("<option></option>").val(this['Majorgroupval']).html(this['Majorgrouptext']));
+                                });
+                            },
+                            failure: function (response) {
+                                alert(response.responseText);
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            }
+                        });
+                    }
+                    else {
+                        $("#btnaddnewmajorgroup").prop('disabled', false);
+                        $("#divAddMajorgroupInfoMsg").text(response.saveStatus);
+                        $("#divAddMajorgroupInfoMsg").addClass("alert-danger");
+                        $("#divAddMajorgroupInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewmajorgroup").prop('disabled', false);
+                    $("#divAddMajorgroupInfoMsg").text(addFailMsg);
+                    $("#divAddMajorgroupInfoMsg").addClass("alert-danger");
+                    $("#divAddMajorgroupInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function ResetMojorgrouppop() {
+        $("#txtmdmajorgroupcode").val("");
+        $("#txtmdmajorgroupName").val("");
+        $("#btnaddnewmajorgroup").prop('disabled', false);
+        $("#divAddMajorgroupInfoMsg").text("");
+        $("#divAddMajorgroupInfoMsg").addClass("hidden");
+    }
+    function GetSubgroupcode() {
+        var itemcatname = $("#ddl_ItemCategory option:selected").text();
+        var itemcatindex = $("#ddl_ItemCategory option:selected").index();
+        var nameArr = itemcatname.split(',');
+        var catnameonly = nameArr[0];
+        var mgvalval = $("#ddl_Majorgroupcode option:selected").val();
+        var ttypeINDEX = $("#ddl_Majorgroupcode option:selected").index();
+        if (itemcatindex != "0") {
+            if (ttypeINDEX != "0") {
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/GetMajorsubgroups",
+                    data: '{Cat:"' + catnameonly + '",Grp:"' + mgvalval + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        $("#divsubgroupdropdown").removeClass("hidden");
+                        var count1 = Object.keys(response).length;
+                        if (count1 > 0) {
+                            $.each(response, function () {
+                                ddlsgc = $("#ddl_Subgroupcode");
+                                ddlsgc.empty().append('<option selected="selected" value="Select">-Please Select-</option>');
+                                ddlsgc.append('<option  value="00">Add NewSubGroup Code</option>');
+                                $.each(response, function () {
+                                    ddlsgc.append($("<option></option>").val(this['Subgroupval']).html(this['Subgrouptext']));
+                                });
+                            });
+                        }
+                        else {
+                            ddlsgc = $("#ddl_Subgroupcode");
+                            ddlsgc.empty().append('<option selected="selected" value="Select">-Please Select-</option>');
+                            ddlsgc.append('<option  value="00">Add NewSubGroup Code</option>');
+                            //ddlsgc.append('<option  value="001">001</option>');
+
+                        }
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+            }
+            else {
+                $("#divsubgroupdropdown").addClass("hidden");
+                $("#ddl_Subgroupcode").empty().append('<option selected="selected" value="Select">-Please Select-</option>');
+                $("#txtsubgroupcode").addClass("hidden");
+                $("#txtspecificationcode").addClass("hidden");
+            }
+        }
+        else {
+            $("#ddl_Majorgroupcode").prop('selectedIndex', 0);
+            alert("Select Category Code/Name");
+            return false;
+        }
+    }
+    function SetSubgroupcode() {
+        var subgroupval = $("#ddl_Subgroupcode option:selected").val();
+        var subgroupindex = $("#ddl_Subgroupcode option:selected").index();
+        var itemcatindex = $("#ddl_ItemCategory option:selected").index();
+        $("#txtsubgroupcode").removeClass("hidden");
+        $("#txtspecificationcode").removeClass("hidden");
+        if (itemcatindex != 0) {
+            if (subgroupindex != 0) {
+                if (subgroupval != 00) {
+                    $("#divsubgrouptext").removeClass("hidden");
+                    $('#txtsubgroupcode').prop('readonly', true);
+                    $("#txtsubgroupcode").val(subgroupval);
+                    $('#txtspecificationcode').prop('readonly', true);
+                    var itemcatname = $("#ddl_ItemCategory option:selected").text();
+                    var nameArr = itemcatname.split(',');
+                    var catnameonly = nameArr[0];
+                    var mgvalval = $("#ddl_Majorgroupcode option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetSpecificationcode",
+                        data: '{Cat:"' + catnameonly + '",MGrp:"' + mgvalval + '",SGrp:"' + subgroupval + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count2 = Object.keys(response).length;
+                            if (count2 > 0) {
+                                $.each(response, function () {
+                                    var code = this['Specificationcode'];
+                                    if (parseInt(code) >= 9)
+                                        $("#txtspecificationcode").val((parseInt(code) + 1));
+                                    else
+                                        $("#txtspecificationcode").val('0' + (parseInt(code) + 1));
+                                });
+                            }
+                            else {
+                                $("#txtspecificationcode").val("01");
+                            }
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+                else {
+                    $("#divsubgrouptext").removeClass("hidden");
+                    $('#txtsubgroupcode').prop('readonly', false);
+                    $("#txtsubgroupcode").val("");
+                    $('#txtspecificationcode').prop('readonly', true);
+                    $("#txtspecificationcode").val("01");
+
+                }
+            }
+
+            else {               
+                $("#divsubgrouptext").addClass("hidden");
+                $("#txtsubgroupcode").val("");
+                $("#txtspecificationcode").val("");
+                $("#txtspecificationcode").addClass("hidden");
+            }
+        }
+        else {
+            $("#ddl_Subgroupcode").prop('selectedIndex', 0);
+            alert("Select Category Code/Name");
+            return false;
+        }
+    }
+    function btnSubmitItemcodeData() {        
+        var errorMsg = "";
+        isValid = true;
+        var Category = $("#ddl_ItemCategory option:selected").index();
+        var Categoryval = $("#ddl_ItemCategory option:selected").text();
+        var dca = $("#ddl_Itemcodedcas option:selected").index();
+        var sdca = $("#ddl_Itemcodesdcas option:selected").index();
+        var hsn = $("#ddl_hsncodes option:selected").index();
+        var majorgroupcode = $("#ddl_Majorgroupcode option:selected").index();
+        var majorgroupcodeval = $("#ddl_Majorgroupcode option:selected").val();
+        var subgroupcode = $("#ddl_Subgroupcode option:selected").index();
+        var txtsubgroupcode = $("#txtsubgroupcode").val();
+        var txtsubgroupcodecurrentLength = $("#txtsubgroupcode").val().length;
+        var specificationcode = $("#txtspecificationcode").val();
+        var specification = $("#txtspecification").val();
+        var units = $("#ddl_Units option:selected").index();
+        var basicprice = $("#txtbasicprice").val();
+        var itemname = $("#txtitemname").val();
+        var itemtype = $("#ddl_ItemType option:selected").index();
+        if (itemtype == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Item Type</p>";
+            isValid = false;
+        }
+        if (Category == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category Code/Name</p>";
+            isValid = false;
+        }
+        if (dca == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select DCA</p>";
+            isValid = false;
+        }
+        if (sdca == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select SDCA</p>";
+            isValid = false;
+        }
+        if (hsn == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select HSN</p>";
+            isValid = false;
+        }
+        if (majorgroupcode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Majour Group Code</p>";
+            isValid = false;
+        }
+        if (subgroupcode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Sub Group Code</p>";
+            isValid = false;
+        }
+        if (txtsubgroupcode == "" || txtsubgroupcode == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Sub Group Code</p>";
+            isValid = false;
+        }
+        if (txtsubgroupcode != "") {
+            if (txtsubgroupcodecurrentLength != 3) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Invalid Sub Group Code</p>";
+                isValid = false;
+            }
+        }
+        if (specificationcode == "" || specificationcode == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Specification Code</p>";
+            isValid = false;
+        }
+        if (specification == "" || specification == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Specification</p>";
+            isValid = false;
+        }
+        if (units == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Units</p>";
+            isValid = false;
+        }
+        if (itemname == "" || itemname == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Item Name</p>";
+            isValid = false;
+        }
+        if (basicprice == "" || basicprice == null || basicprice == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Basic Price</p>";
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divItemcodeInfoMsg").text("");
+            $("#divItemcodeInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divItemcodeInfoMsg").addClass("alert-danger");
+            $("#divItemcodeInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            var nameArr1 = Categoryval.split(',');
+            var catidonly = nameArr1[0];
+            var category = catidonly.trim();
+            var itemcode = category + majorgroupcodeval + txtsubgroupcode + specificationcode;
+        $("#Viewitemcodemodeal").modal('show');
+       // $("#txtconfirmcode").html(1);
+            $("#txtconfirmcode").html(itemcode);
+            //$("#divItemcodeInfoMsg").text("");
+            //$("#divItemcodeInfoMsg").addClass("hidden");
+            //SaveItemCodedata(itemcode);
+        }
+    }
+    
+    function SaveItemCodedata() {   
+        var Categoryval = $("#ddl_ItemCategory option:selected").text();
+        var nameArr1 = Categoryval.split(',');
+        var catidonly = nameArr1[0];
+        var categoryid = catidonly.trim();
+        var nameArr2 = Categoryval.split(',');
+        var catidonly = nameArr2[1];
+        var categorydesc = catidonly.trim();
+        var dca = $("#ddl_Itemcodedcas option:selected").val();
+        var sdca = $("#ddl_Itemcodesdcas option:selected").val();
+        var hsn = $("#ddl_hsncodes option:selected").text();
+        var majorgroupcode = $("#ddl_Majorgroupcode option:selected").val();       
+        var txtsubgroupcode = $("#txtsubgroupcode").val();       
+        var specificationcode = $("#txtspecificationcode").val();
+        var specification = $("#txtspecification").val();
+        var units = $("#ddl_Units option:selected").val();
+        var basicprice = $("#txtbasicprice").val();
+        var itemtype = $("#ddl_ItemType option:selected").val();
+        var role_id = '@Session["Roleid"]';
+        var Created_by = '@Session["Createdby"]';
+        var itemname = $("#txtitemname").val();
+        var ItemCodeDetails = {
+            ItemCode: $("#txtconfirmcode").html(),
+            ItemCodestartswith: categoryid,
+            ItemCodecatname: categorydesc,
+            Itemdca: dca,
+            Itemsdca: sdca,
+            HSNCode: hsn,
+            Majorgroupcode: majorgroupcode,
+            Subgrouptxtcode: txtsubgroupcode,
+            Specificationcode: specificationcode,
+            Specification: specification,
+            Units: units,
+            Basicprice: basicprice,
+            ItemCodeType: itemtype,
+            Itemname:itemname,
+            RoleID: role_id,
+            Createdby: Created_by
+        };
+       // var ItemCodeDetails = {};
+        addFailMsg = "Error Occurred While Submitting.";
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveItemCodeDetails',
+            data: { newitemcodeDetails: ItemCodeDetails },
+            success: function (Data) {
+              //  alert("success");
+                if (Data.saveStatus == "Successfull") {
+                    //alert(Data.saveStatus);
+                    $("#Viewitemcodemodeal .close").click();
+                    $("#divItemcodeInfoMsg").text(Data.saveStatus);
+                    $("#divItemcodeInfoMsg").removeClass("hidden alert-danger");
+                    $("#divItemcodeInfoMsg").addClass("alert-success");
+                    $("#btnItemcodeSubmit").prop("disabled", true);
+                }
+                else {
+                    //alert("else");
+                    $("#divItemcodeInfoMsg").text(Data.saveStatus);
+                    $("#divItemcodeInfoMsg").addClass("alert-danger");
+                    $("#divItemcodeInfoMsg").removeClass("hidden alert-success");
+                    $("#btnItemcodeSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divItemcodeInfoMsg").text(addFailMsg);
+                $("#divItemcodeInfoMsg").addClass("alert-danger");
+                $("#divItemcodeInfoMsg").removeClass("hidden alert-success");
+                $("#btnItemcodeSubmit").prop("disabled", false);
+            }
+        });
+        
+        //$.ajax({
+        //    type: 'POST',           
+        //    url: '/Purchase/SaveItemCodeDetails',
+        //    data:{ newitemcodeDetails: ItemCodeDetails },            
+        //    dataType: 'json',
+        //    sucess: function (Data) {
+        //        console.log("success");              
+        //        if (Data.saveStatus == "Successfull") {  
+        //            alert(Data.saveStatus);
+        //            $("#Viewitemcodemodeal .close").click();
+        //            $("#divItemcodeInfoMsg").text(Data.saveStatus);
+        //            $("#divItemcodeInfoMsg").removeClass("hidden alert-danger");
+        //            $("#divItemcodeInfoMsg").addClass("alert-success");
+        //            $("#btnItemcodeSubmit").prop("disabled", true);
+        //        }
+        //        else {
+        //            alert("else");
+        //            $("#divItemcodeInfoMsg").text(Data.saveStatus);
+        //            $("#divItemcodeInfoMsg").addClass("alert-danger");
+        //            $("#divItemcodeInfoMsg").removeClass("hidden alert-success");
+        //            $("#btnItemcodeSubmit").prop("disabled", false);
+        //        }
+        //    },
+        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //        //console.log("fail");
+        //        $("#divItemcodeInfoMsg").text(addFailMsg);
+        //        $("#divItemcodeInfoMsg").addClass("alert-danger");
+        //        $("#divItemcodeInfoMsg").removeClass("hidden alert-success");
+        //        $("#btnItemcodeSubmit").prop("disabled", false);
+        //    }
+        //});
+    }
+    
+    function ClearItemcodereset() {
+        location.reload();
+    }
+    //function showmsg() {
+    //      alert("else");
+    //}
+</script>

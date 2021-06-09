@@ -1,0 +1,499 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPaymentInvoice
+@{
+    ViewBag.Title = "GeneralPaymentInvoice";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">General Payment Invoice</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-2 text-right" style="margin-top:5px">@Html.LabelFor(model => model.CCType)</div>
+                                            <div class="col-md-4 text-left">
+                                                <div class="form-group">
+                                                    @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpiCCType", onchange = "GenPayInvCCTypeChange()" })
+                                                </div>
+                                            </div>
+                                            <div id="divGPISubType">
+                                                <div class="col-md-2  text-right"  style="margin-top:5px">   @Html.LabelFor(model => model.CCSubType)</div>
+                                                <div class="col-md-4  text-left">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(model => model.CCSubType, new SelectList(Model.CCSubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpiSubType", onchange = "GenPayInvCCSubTypeChange()" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="divgpidetails">
+                                            <div class="row">
+                                                <hr />
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2"> </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CCCode)
+                                                        @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpiCCCode", onchange = "GenPayInvCCChange()" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.DCA)
+                                                        @Html.DropDownListFor(model => model.DCA, new SelectList(Model.DcaList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpidcacode", onchange = "GenPayInvdcaChange()" })
+                                                    </div>
+                                                </div> <div class="col-md-2"> </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2"> </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CreditSubDCA)
+                                                        @Html.DropDownListFor(model => model.CreditSubDCA, new SelectList(Model.CreditSubDcaList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpicreditsubdcacode" })
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.DebitSubDCA)
+                                                        @Html.DropDownListFor(model => model.DebitSubDCA, new SelectList(Model.DebitSubDcaList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpidebitsubdcacode" })
+                                                    </div>
+                                                </div>  <div class="col-md-2"> </div>
+                                            </div>
+                                            <div class="row">
+
+                                                <div class="col-md-2"></div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PartyName)
+                                                        @Html.TextBoxFor(model => model.PartyName, htmlAttributes: new { @class = "form-control", @id = "txtgpiPartyName" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceDate)
+                                                        @Html.TextBoxFor(model => model.InvoiceDate, "{0:dd-MMM-yyyy}", new { @id = "txtInvoiceDate", @class = "form-control date-picker", type = "text", @readonly = true })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2">  </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Remarks)
+                                                        @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtremarks" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceAmount)
+                                                        @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @id = "txtgpiamount", @value = "", onkeypress = "return ValidateAmount(this,event);" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2"> </div>
+                                            </div>
+                                            <div class="row" id="divDCAGST">
+
+                                                <div class="col-md-2"> </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.GSTNo)
+                                                        @Html.DropDownListFor(model => model.GSTNo, new SelectList(Model.GSTList, "TaxNoID", "TaxNoName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgpidcagst" })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="text-right">
+                                                    <button class="btn btn1 btn-success" id="btnSubmitgpinvCreation" onclick="SubmitGenPayInvCreation()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnResetgpinvCreation" onclick="ResetGenPayInvCreation()">Reset</button>
+                                                    <input type="text" value="0" id="taxExist" style="display:none"/>
+                                                </div>
+                                            </div>@*style="display:none"*@
+                                            <div class="row col-md-12 text-center">
+                                                <div id="divGenPayInvInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divgpidetails").addClass('hidden');
+        $("#divGPISubType").addClass('hidden');
+        $("#divDCAGST").addClass('hidden');
+        $("#txtInvoiceDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        }).datepicker("setDate", new Date());
+    });
+    function GenPayInvCCTypeChange() {
+        var index = $("#ddlgpiCCType option:selected").index();
+        var cctype = $("#ddlgpiCCType option:selected").text();
+        var cctypeid = $("#ddlgpiCCType option:selected").val();
+        if (cctypeid == 0) {
+            $("#divgpidetails").addClass('hidden');
+            $("#divGPISubType").addClass('hidden');
+
+        }
+        else if (cctypeid == 6) {
+            $("#divgpidetails").addClass('hidden');
+            $("#divGPISubType").removeClass('hidden');
+            $("#divGenPayInvInfoMsg").text("");
+            $("#divGenPayInvInfoMsg").addClass("hidden");
+        }
+        else {
+            $("#divgpidetails").removeClass('hidden');
+            $("#divGPISubType").addClass('hidden');
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetCostCenterbySubTypeForGPInvoice",
+                data: '{SubType:"' + cctype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var CostCenterddl = $("#ddlgpiCCCode");
+                    CostCenterddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        CostCenterddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+                    $("#divgpidetails").removeClass('hidden');
+                    $("#divGenPayInvInfoMsg").text("");
+                    $("#divGenPayInvInfoMsg").addClass("hidden");
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+        cleargpiinvoice();
+    }
+    function GenPayInvCCSubTypeChange() {
+        var index = $("#ddlgpiSubType option:selected").index();
+        var cctype = $("#ddlgpiSubType option:selected").text();
+        if (index == 0) {
+            $("#divgpidetails").addClass('hidden');
+            $("#ddlgpiCCCode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetCostCenterbySubTypeForGPInvoice",
+                data: '{SubType:"' + cctype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var CostCenterddl = $("#ddlgpiCCCode");
+                    CostCenterddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        CostCenterddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+                    $("#divgpidetails").removeClass('hidden');
+                    $("#divGenPayInvInfoMsg").text("");
+                    $("#divGenPayInvInfoMsg").addClass("hidden");
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        cleargpiinvoice();
+    }
+    function GenPayInvCCChange() {
+        var CCindex = $("#ddlgpiCCCode option:selected").index();
+        var ccode = $("#ddlgpiCCCode option:selected").val();
+        if (CCindex == 0) {
+            $("#ddlgpidcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlgpicreditsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlgpidebitsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlgpidcagst").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divDCAGST").addClass('hidden');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetDCAByCC",
+                data: '{CCCode:"' + ccode + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    var ddlGpDcaCode = $("#ddlgpidcacode");
+
+                    ddlGpDcaCode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        ddlGpDcaCode.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                    });
+
+                    $("#ddlgpicreditsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $("#ddlgpidebitsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $("#ddlgpidcagst").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $("#divDCAGST").addClass('hidden');
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+    }
+    function GenPayInvdcaChange() {
+
+        var dcaindex = $("#ddlgpidcacode option:selected").index();
+        var dca = $("#ddlgpidcacode option:selected").val();
+        //var paymodeIndex = $("#ddl_GPPayMode option:selected").index();
+        if (dcaindex === 0) {
+            $("#ddlgpicreditsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlgpidebitsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlgpidcagst").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divDCAGST").addClass('hidden');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetSubDCAbyDCA",
+                data: '{DCACode:"' + dca + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var ddlcreditsDcaCode = $("#ddlgpicreditsubdcacode");
+                    var ddldebitsDcaCode = $("#ddlgpidebitsubdcacode");
+                    ddlcreditsDcaCode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddldebitsDcaCode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        ddlcreditsDcaCode.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        ddldebitsDcaCode.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+
+                    $("#divGenPayInvInfoMsg").text("");
+                    $("#divGenPayInvInfoMsg").addClass("hidden");
+                    BindDCATaxes(dca);
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+    }
+    function cleargpiinvoice() {
+        $("#ddlgpiCCCode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlgpidcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlgpicreditsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlgpidebitsubdcacode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlgpidcagst").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#divDCAGST").addClass('hidden');
+        $("#txtgpiPartyName").val("");
+        $("#txtgpiamount").val("");
+        $("#txtremarks").val("");
+        $("#txtInvoiceDate").datepicker("setDate", 'dateToday');
+        $("#taxExist").val("");
+        $("#btnSubmitgpinvCreation").prop("disabled", false);
+        $("#divGenPayInvInfoMsg").text("");
+        $("#divGenPayInvInfoMsg").addClass("hidden");
+    }
+    function ResetGenPayInvCreation() {
+        $("#divgpidetails").addClass('hidden');
+        $("#divGPISubType").addClass('hidden');
+        $("#ddlgpiCCType").prop('selectedIndex', 0);
+        cleargpiinvoice();
+    }
+    function BindDCATaxes(taxdca) {
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/GetClientInvTaxNos",
+            data: "{DCACode:'" + taxdca + "',Taxtype:'GST'}",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    var gstddl = $("#ddlgpidcagst");
+                    gstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(data, function () {
+                        gstddl.append($("<option></option>").val(this['TaxNoID']).html(this['TaxNoName']));
+                    });
+                    $("#divDCAGST").removeClass('hidden');
+                    $("#taxExist").val("1");
+                }
+                else { $("#divDCAGST").addClass('hidden'); $("#taxExist").val(""); }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+    function SubmitGenPayInvCreation() {
+        var errorMsg = "";
+        isValid = true;
+        var cctypeindex = $("#ddlgpiCCType option:selected").index();
+        var CCindex = $("#ddlgpiCCCode option:selected").index();
+        var ccsubtypeindex = $("#ddlgpiSubType option:selected").index();
+        var dcaindex = $("#ddlgpidcacode option:selected").index();
+        var ddlcreditsDcaCode = $("#ddlgpicreditsubdcacode option:selected").index();
+        var ddldebitsDcaCode = $("#ddlgpidebitsubdcacode option:selected").index();
+        var taxexist = $("#taxExist").val();
+        var gstnoindex = $("#ddlgpidcagst option:selected").index();
+        var partyname = $("#txtgpiPartyName").val();
+        var invamt = $("#txtgpiamount").val();
+        var remarks = $("#txtremarks").val();
+        var invdate = $("#txtInvoiceDate").val();
+
+        var cctypeid = $("#ddlgpiCCType option:selected").val();
+        if (cctypeid == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select CostCenter Type</p>";
+            isValid = false;
+        }
+        else if (cctypeid === 6 && ccsubtypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select CostCenter Sub Type</p>";
+            isValid = false;
+        }
+        if (CCindex == 0 || CCindex == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select CostCenter</p>";
+            isValid = false;
+        }
+        if (dcaindex == 0 || dcaindex == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Account Head</p>";
+            isValid = false;
+        }      
+        if (taxexist === "1" && gstnoindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select GST No</p>";
+            isValid = false;
+        }
+        if (ddlcreditsDcaCode == 0 || ddlcreditsDcaCode == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Credit sub Account Head</p>";
+            isValid = false;
+        }
+        if (ddldebitsDcaCode == 0 || ddldebitsDcaCode == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Debit sub Account Head</p>";
+            isValid = false;
+        }
+        if (partyname === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Party Name</p>";
+            isValid = false;
+        }
+        if (invdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Date</p>";
+            isValid = false;
+        }
+        if (invamt === "" || invamt < 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Invoice Amount</p>";
+            isValid = false;
+        }
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (ddlcreditsDcaCode === ddldebitsDcaCode && ddlcreditsDcaCode !== 0 && ddldebitsDcaCode!==0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Credit SubAccountHead and Debit SubAccountHead Should Not be Same</p>";
+            isValid = false;}
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divGenPayInvInfoMsg").text("");
+            $("#divGenPayInvInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divGenPayInvInfoMsg").addClass("alert-danger");
+            $("#divGenPayInvInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divGenPayInvInfoMsg").text("");
+            $("#divGenPayInvInfoMsg").addClass("hidden");
+            //submit data to db
+            var gst='',gstid=0;
+            if (taxexist === "1") { gst = $("#ddlgpidcagst option:selected").text(); gstid = $("#ddlgpidcagst option:selected").val(); }
+
+            var InvData = {
+                CCCode: $("#ddlgpiCCCode option:selected").val(),
+                DCA: $("#ddlgpidcacode option:selected").val(),
+                GSTNo: gst,
+                CreditSubDCA: $("#ddlgpicreditsubdcacode option:selected").val(),
+                DebitSubDCA: $("#ddlgpidebitsubdcacode option:selected").val(),
+                PartyName: partyname,
+                InvoiceAmount: invamt,
+                InvoiceDate: invdate,
+                Remarks: remarks,
+                OldInvoiceAmount: 0,
+                Action: 'New', 
+                GSTId: gstid
+
+            };
+            debugger;
+            addFailMsg = "Error Occurred While Adding Client Invoice Details.";
+            addSuccessMsg = "Client Invoice Details Added Successfully.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Accounts/InsertUpdateGenPayInvoice',
+                data: { gpInv: InvData },
+                success: function (Data) {
+                    var typeArr = Data.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') { 
+                        addSuccessMsg = 'Invoice No. ' + typeArr[1] + ' Created Successfully';
+                   // if (Data.saveStatus == true) {
+                       // $("#btnSubmitgpinvCreation").prop("disabled", true);
+                        $("#divGenPayInvInfoMsg").text(addSuccessMsg);
+                        $("#divGenPayInvInfoMsg").removeClass("hidden alert-danger");
+                        $("#divGenPayInvInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        //$("#btnSubmitgpinvCreation").prop("disabled", true);
+                        $("#divGenPayInvInfoMsg").text(Data.saveStatus);
+                        $("#divGenPayInvInfoMsg").addClass("alert-danger");
+                        $("#divGenPayInvInfoMsg").removeClass("hidden alert-success");
+
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   //$("#btnSubmitgpinvCreation").prop("disabled", true);
+                    $("#divInvoiceCreationInfoMsg").text(addFailMsg);
+                    $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                    $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+
+                }
+            });
+        }
+    }
+</script>

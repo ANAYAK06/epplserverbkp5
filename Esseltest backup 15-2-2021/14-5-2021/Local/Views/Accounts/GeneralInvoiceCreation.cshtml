@@ -1,0 +1,489 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralInvoiceCreation
+@{
+    ViewBag.Title = "GeneralInvoiceCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">General Invoice Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CostCentertype)
+                                                        @Html.DropDownListFor(model => model.CostCentertype, new SelectList(Model.CCtypelist, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCCtypes", onchange = "CCTypeChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="divCCSubType">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CostCentersubtype)
+                                                        @Html.DropDownListFor(model => model.CostCentersubtype, new SelectList(Model.CCSubtypeList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCCSubtype", onchange = "CCSubTypeChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" id="divmaindata">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CostCenter)
+                                                        @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCCCode", onchange = "CCChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.DCACode)
+                                                        @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.DCAList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddldcacode", onchange = "DCAChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.CreditSubDca)
+                                                        @Html.DropDownListFor(model => model.CreditSubDca, new SelectList(Model.FromSUBDCAList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFromSubdca" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.DebitSubDca)
+                                                        @Html.DropDownListFor(model => model.DebitSubDca, new SelectList(Model.ToSUBDCAList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlToSubdca" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceDate)
+                                                        @Html.TextBoxFor(model => model.InvoiceDate, "{0:dd-MMM-yyyy}", new { @id = "txtInvoiceDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceAmount)
+                                                        @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @id = "txtInvoiceAmount", onkeypress = "return ValidateAmount(this,event)" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Name)
+                                                        @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtName" })
+                                                    </div>
+                                                </div>
+                                              
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Remarks)
+                                                        @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtRemarks", @rows = "3" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="col-md-12">
+                                                <div class="text-right">
+                                                    <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitInvoice()">Submit</button>
+                                                    <button class="btn btn1 btn-success" id="btnReset" onclick="ResetInvoiceCreation()">Reset</button>    
+                                                </div>
+                                            </div>
+                                            <div class="row col-md-12 text-center">
+                                                <div id="divInvoiceCreationInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </div>
+                                </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divCCSubType").addClass("hidden");
+        $("#divmaindata").addClass("hidden");
+        $("#btnSubmit").addClass("hidden");
+
+        $("#txtInvoiceDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+               
+            }
+        }).datepicker("setDate", new Date());
+    });
+    function CCTypeChange() {
+        var index = $("#ddlCCtypes option:selected").index();
+        var type = $("#ddlCCtypes option:selected").val();
+        var typetext = $("#ddlCCtypes option:selected").text();
+        var ddlCccode = $("#ddlCCCode");
+        var ddlDCA = $("#ddldcacode");
+        var ddlfromsDCA = $("#ddlFromSubdca");
+        var ddltosDCA = $("#ddlToSubdca");
+        var ddlsubtype = $("#ddlCCSubtype"); 
+        
+        if (index == 0) {
+            $("#divCCSubType").addClass("hidden");
+            $("#divmaindata").addClass('hidden');
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            $('#ddlsubtype').prop('selectedIndex', 0);
+            ddlCccode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#btnSubmit").addClass("hidden");
+        }
+        else if (type == 6) {
+            $("#divCCSubType").removeClass('hidden');
+            $("#divmaindata").addClass('hidden');
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            $('#ddlsubtype').prop('selectedIndex', 0);
+            ddlCccode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#btnSubmit").addClass("hidden");
+            //bind cc based on type
+        }
+        else {
+            $("#divCCSubType").addClass('hidden');
+            $("#divmaindata").removeClass('hidden');
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            $("#btnSubmit").removeClass("hidden");
+          
+            var SubType = '';
+            //bind all  cc
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetCostCentersbyType",
+                data: '{CCType:"' + typetext + '",SubType:"' + SubType + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    ddlCccode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        ddlCccode.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+    }
+    function CCSubTypeChange() {
+        var typeindex = $("#ddlCCtypes option:selected").index();
+        var subindex = $("#ddlCCSubtype option:selected").index();
+        var ddlCccode = $("#ddlCCCode");
+        var ddlDCA = $("#ddldcacode");
+        var ddlfromsDCA = $("#ddlFromSubdca");
+        var ddltosDCA = $("#ddlToSubdca");
+        var ddlsubtype = $("#ddlCCSubtype"); 
+        if (typeindex == 0) {
+            ddlCccode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#divmaindata").addClass("hidden");
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select CC Type</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            $("#btnSubmit").addClass("hidden");
+        }
+        else if (subindex == 0) {
+            $("#divmaindata").addClass("hidden");
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Sub Type</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            ddlCccode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#btnSubmit").addClass("hidden");
+        }
+        else {
+            $("#divmaindata").removeClass('hidden');
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            var ddlCccode = $("#ddlCCCode");
+            var type = $("#ddlCCtypes option:selected").text();
+            var SubType = $("#ddlCCSubtype option:selected").text();
+            $("#btnSubmit").removeClass("hidden");
+        
+            ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            //bind all  cc
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetCostCentersbyType",
+                data: '{CCType:"' + type + '",SubType:"' + SubType + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    ddlCccode.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        ddlCccode.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+
+                });
+        }
+    }
+    function CCChange() {      
+        var ccindex = $("#ddlCCCode option:selected").index();
+        var CC = $("#ddlCCCode option:selected").val();
+        var ddlfromsDCA = $("#ddlFromSubdca");
+        var ddltosDCA = $("#ddlToSubdca");
+        var ddlDCA = $("#ddldcacode");
+        if (ccindex == 0) {            
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select CostCenter</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            ddlDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetDCAbyCC",
+                data: "{CCCode:'" + CC + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                  
+                    ddlDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(data, function () {
+                        ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                    });
+                    ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+            
+        }
+
+    }
+    function DCAChange() {
+
+        var dcaindex = $("#ddldcacode option:selected").index();
+        var DCA = $("#ddldcacode option:selected").val();
+        var ddlfromsDCA = $("#ddlFromSubdca");
+        var ddltosDCA = $("#ddlToSubdca");
+        if (dcaindex == 0) {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append("<div>Select Account Head</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            ddlfromsDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            ddltosDCA.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            var ddlfromsDCA = $("#ddlFromSubdca");
+            var ddltosDCA = $("#ddlToSubdca");
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetSubDCAbyDCA",
+                data: "{DCACode:'" + DCA + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    
+                    ddlfromsDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                    ddltosDCA.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(data, function () {
+                        ddlfromsDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        ddltosDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+        }
+
+    }
+    function ResetInvoiceCreation() { location.reload(); }
+    function SubmitInvoice() {
+        var index = $("#ddlCCtypes option:selected").index();
+        var type = $("#ddlCCtypes option:selected").val();
+        //var typetext = $("#ddlCCtypes option:selected").text();
+
+        var ddlCccodeindex = $("#ddlCCCode option:selected").index();
+        var ddlDCAindex = $("#ddldcacode option:selected").index();
+        var ddlfromsDCAindex = $("#ddlFromSubdca option:selected").index();
+        var ddltosDCAindex = $("#ddlToSubdca option:selected").index();
+        var ddlsubtypeindex = $("#ddlCCSubtype option:selected").index();
+
+        var Cccode = $("#ddlCCCode option:selected").val();
+        var DCA = $("#ddldcacode option:selected").val();
+        var fromsDCA = $("#ddlFromSubdca option:selected").val();
+        var tosDCA = $("#ddlToSubdca option:selected").val();
+        //var subtype = $("#ddlCCSubtype option:selected").val();
+        var remarks = $("#txtRemarks").val();
+        var amount = $("#txtInvoiceAmount").val();
+        var date = $("#txtInvoiceDate").val();
+        var name = $("#txtName").val();
+        var errorMsg = "";
+        isValid = true;
+        ////debugger;
+        if (index == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select CC Type</p>";
+            isValid = false;
+        }
+        else if (type == 6 && ddlsubtypeindex==0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select CC Sub Type</p>";
+            isValid = false;
+        }
+        if (ddlCccodeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (ddlDCAindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Account Head</p>";
+            isValid = false;
+        }
+        if (ddlfromsDCAindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From SubAccountHead</p>";
+            isValid = false;
+        }
+        if (ddltosDCAindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To SubAccountHead</p>";
+            isValid = false;
+        }
+        if (date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        if (name === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+            isValid = false;
+        }
+        if (remarks === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (amount === 0 || amount === '' || amount==="0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Amount</p>";
+            isValid = false;
+        }
+        if (ddlfromsDCAindex !== 0 && ddltosDCAindex !== 0 && (fromsDCA === tosDCA)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Credit SubDCA and Debit SubDca Should Not Be Same</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+            $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divInvoiceCreationInfoMsg").text("");
+            $("#divInvoiceCreationInfoMsg").addClass("hidden");
+            //alert('Submit');
+
+            var saveData = {
+                CostCenter: Cccode,
+                DCACode: DCA,
+                CreditSubDca: fromsDCA,
+                DebitSubDca: tosDCA,
+                Remarks: remarks,
+                InvoiceAmount: amount,
+                InvoiceDate: date,
+                Name: name
+            };
+            addFailMsg = "Error Occurred While Creating Invoice";
+            addSuccessMsg = "Invoice Created Successfully.";
+            $("#btnSubmit").prop("disabled", true);
+           // //debugger;
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/InsertGeneralInvoice",
+                data: JSON.stringify({ InvData: saveData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+
+                    var typeArr = response.saveStatus.toString().split('$');
+                    var result = typeArr[0];
+                    if (result === 'Submited') {
+                        var addSuccessMsg = 'Invoice No. ' + typeArr[1] + ' Created Successfully';
+                        $("#divInvoiceCreationInfoMsg").text(addSuccessMsg);
+                        $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-danger");
+                        $("#divInvoiceCreationInfoMsg").addClass("alert-success");
+                       
+                    }
+                    else {
+                        $("#divInvoiceCreationInfoMsg").text(response.saveStatus);
+                        $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                        $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                        $("#btnSubmit").prop("disabled", false);
+                    }
+                   
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                    $("#btnSubmit").prop('disabled', false);
+                    $("#divInvoiceCreationInfoMsg").text(addFailMsg);
+                    $("#divInvoiceCreationInfoMsg").addClass("alert-danger");
+                    $("#divInvoiceCreationInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+</script>
+

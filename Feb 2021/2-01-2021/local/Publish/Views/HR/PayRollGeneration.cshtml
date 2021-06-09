@@ -1,0 +1,84 @@
+﻿@model EsselTestLocalApplication.Models.HR.PayRollGeneration
+@{
+    ViewBag.Title = "PayRollGeneration";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+@*<h2>PayRollGeneration</h2>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">PayRoll Generation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.GenerateByType)
+                                            @Html.DropDownListFor(model => model.GenerateByType, new SelectList(Model.GenerateTypelst, "Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlType" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <br />
+                                            @if (Model.RuleDateStatus == "Exist")
+                                            {
+                                                <button class="btn btn1 btn-success" id="btnGenerate" onclick="GetData()">Generate PayRoll</button>
+                                            }
+                                            <button class="btn btn1 btn-success" id="btnSResetAttendance" onclick="ResetGeneration()">Reset</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divgrid">
+                                    <div class="row" id="divMainGrid">
+
+                                    </div>
+                                    <div class="row text-center">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitFinalData()">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <br />
+                                    <div class="text-center">
+                                        <div id="divPayRollInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type = "text/javascript" >
+    $(document).ready(function () {
+        $("#divgrid").addClass("hidden");
+        let rulestausformonth = '@Model.RuleMonthStatus';
+        if (SalaryAccess === "NotExist") {
+            $("#divPayRollInfoMsg").text("PayRoll Generation Date is Configured For Current Month");
+            $("#divPayRollInfoMsg").addClass("alert-danger");
+            $("#divPayRollInfoMsg").removeClass("hidden alert-success");
+
+        }
+        else {
+            $("#divPayRollInfoMsg").text("");
+            $("#divPayRollInfoMsg").addClass("hidden");
+        }
+    });
+    function GetData() { }
+    function ResetGeneration() { location.reload(); }
+
+</script>
+

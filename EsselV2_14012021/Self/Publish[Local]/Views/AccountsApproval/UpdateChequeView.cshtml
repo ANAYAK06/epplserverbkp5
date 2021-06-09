@@ -1,0 +1,84 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.ChequeBook
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BankName)
+                        @Html.DropDownListFor(model => model.BankName, new SelectList(Model.RefundBanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ChequeBank" })
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CreationDate)
+                        @Html.TextBoxFor(model => model.CreationDate, "{0:dd-MMM-yyyy}", new { @id = "txtchequeopeningdate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FirstChequeno)
+                        @Html.TextBoxFor(model => model.FirstChequeno, htmlAttributes: new { @maxlength = "6", @class = "form-control", @id = "txtFirstChequeno", onkeypress = "return IsNumeric(event)" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.LastChequeno)
+                        @Html.TextBoxFor(model => model.LastChequeno, htmlAttributes: new { @maxlength = "6", @class = "form-control", @id = "txtLastChequeno", onkeypress = "return IsNumeric(event)" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Remarks)
+                        @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtchequeremarks", @Value = "" })
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <button class="btn btn1 btn-success" id="btnChequereturnSubmit" onclick="btnReturnChequeData('@Model.chequeid')">Submit</button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div id="divchequeReturnInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+       // debugger;
+        var Date = '@Model.CreationDate';
+        $("#txtchequeopeningdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtchequeopeningdate").val(selectedDate);
+            }
+        });
+        var bank = '@Model.BankId';
+        $("#ddl_ChequeBank").val(bank);
+        var From = '@Model.FirstChequeno';
+        $("#txtFirstChequeno").text(From);
+        var To = '@Model.LastChequeno';
+        $("#txtLastChequeno").text(To);
+     
+    });
+    
+</script>

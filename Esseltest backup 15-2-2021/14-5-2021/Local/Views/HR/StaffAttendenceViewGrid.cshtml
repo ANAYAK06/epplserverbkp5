@@ -1,0 +1,153 @@
+﻿
+@using System.Data
+@model DataTable
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;      
+        text-align: center !important;
+        font-size: 11px;
+        font-weight:100;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+    /*.thcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }*/
+</style>
+
+@if (Model.Rows.Count > 0)
+{
+    <div class="table-responsive row">
+
+        <table class="hover stripe nowrap example dataTable no-footer" id="tblDetails">
+            <thead>
+                <tr>
+                    @foreach (System.Data.DataColumn col in Model.Columns)
+                    {
+
+                        if (@col.Caption == "RefNo")
+                        {
+
+                            <th class="wrapcls">Employee ID</th>
+                        }
+                        else if (@col.Caption == "EmpName")
+                        {
+
+                            <th class="wrapcls">Name</th>
+                        }
+                        else if (@col.Caption == "WorkingLocation")
+                        {
+
+                            <th class="wrapcls">Working Location</th>
+                        }
+                        else if (@col.Caption == "TotalMonthDays")
+                        {
+
+                            <th class="wrapcls">Total</th>
+                        }
+                        else if (@col.Caption == "TotalPresentDays")
+                        {
+
+                            <th class="wrapcls">Worked</th>
+                        }
+                        else
+                        {
+                            if (col.ColumnName.Contains("#"))
+                            {
+                                string[] headarray = col.ColumnName.Split(new Char[] { '#' });
+                                //string[] headarray = col.ColumnName.Split(new Char[] { '#' });
+                                string header = headarray[1] + " (" + headarray[0] + ")";
+                                // dtfinalTable.Columns.Add(header);
+                                <th class="wrapcls">@header</th>
+                            }
+                            else
+                            {
+                                <th class="wrapcls">@col.Caption</th>
+                                //dtfinalTable.Columns.Add(column.ColumnName);
+                            }
+
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.Rows)
+                {
+                    <tr>
+                        @foreach (var cell in row.ItemArray)
+                        {
+                            <td class="wrapcls"><span style="max-width:10px !important;">@cell.ToString() </span></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @*}
+            else
+            {
+
+                <div class="text-center"><span>No Data Found</span></div>
+            }*@
+    </div>
+    <script>
+
+    $(document).ready(function () {
+        var AttendanceGrid = null;
+        InitializeAttendanceGrid();
+    });
+    function InitializeAttendanceGrid() {
+        AttendanceGrid = $('#tblDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [1],
+                    "visible": false
+                },
+                {
+                    "targets": [9],
+                    "visible": false
+                },
+                //{
+                //    "targets": [6],
+                //    "visible": false
+                //},
+                 {
+                    "targets": [10],
+                    "visible": false
+                },
+            ],
+            pageLength: 10
+        });
+    }
+
+
+    </script>
+
+}
+else
+{
+    <div class="text-center"><span>No Data Found</span></div>
+}

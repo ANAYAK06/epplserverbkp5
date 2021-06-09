@@ -1,0 +1,152 @@
+﻿@model List<EsselTestLocalApplication.Models.MasterWorkFlowStatus>
+@{
+    //ViewBag.Title = "CashPayments";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Cash Payments</h5>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+
+                                <ul class="nav nav-tabs" id="tabCashPayments" role="tablist">
+
+                                    @foreach (var item in Model)
+                                    {
+                                        if (item.MID == 146 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#GeneralPayablebyCash">Cash Voucher</a></li>
+                                        }
+                                        if (item.MID == 148 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#CCCashTransfer">CC Cash Transfer</a></li>
+                                        }
+                                    }
+
+                                    @*@if (Model.ActiveTab == "DebitFromOtherCostCenter")
+                                        {
+                                            <li class="active"><a data-toggle="tab" href="#GeneralPayablebyCash">General Invoice</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a data-toggle="tab" href="#GeneralPayablebyCash">General Invoice</a></li>
+                                        }
+                                        @if (Model.ActiveTab == "CastTransfer")
+                                        {
+                                            <li class="active"><a data-toggle="tab" href="#CCCashTransfer">CC Cash Transfer</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a data-toggle="tab" href="#CCCashTransfer">CC Cash Transfer</a></li>
+                                        }
+                                        @if (Model.ActiveTab == "Supplier")
+                                        {
+                                            <li class="active"><a data-toggle="tab" href="#Supplier">Supplier</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a data-toggle="tab" href="#Supplier">Supplier</a></li>
+                                        }
+                                        @if (Model.ActiveTab == "ServiceProvider")
+                                        {
+                                            <li class="active"><a data-toggle="tab" href="#ServiceProvider">Service Provider</a></li>
+                                        }
+                                        else
+                                        {
+                                            <li><a data-toggle="tab" href="#ServiceProvider">Service Provider</a></li>
+                                        }*@
+                                </ul>
+                                <div class="tab-content">
+
+                                    @foreach (var item in Model)
+                                    {
+                                        if (item.MID == 146 && item.WorkflowExist == true)
+                                        {
+                                            <div id="GeneralPayablebyCash" class="tab-pane">
+                                                @Html.Action("GeneralPayablebyCash", "Accounts")
+                                            </div>
+                                        }
+                                        if (item.MID == 148 && item.WorkflowExist == true)
+                                        {
+                                            <div id="CCCashTransfer" class="tab-pane fade">
+                                                @Html.Action("CCCashTransfer", "Accounts")
+                                            </div>
+                                        }
+                                    }
+                                    @*@if (Model.ActiveTab == "DebitFromOtherCostCenter")
+        {
+            <div id="GeneralPayablebyCash" class="tab-pane active">
+                @Html.Action("GeneralPayablebyCash", "Accounts")
+            </div>
+        }
+        else
+        {
+            <div id="GeneralPayablebyCash" class="tab-pane">
+                @Html.Action("GeneralPayablebyCash", "Accounts")
+            </div>
+        }
+        @if (Model.ActiveTab == "CastTransfer")
+        {
+            <div id="CCCashTransfer" class="tab-pane fade active">
+                @Html.Action("CCCashTransfer", "Accounts")
+            </div>
+        }
+        else
+        {
+            <div id="CCCashTransfer" class="tab-pane fade">
+                @Html.Action("CCCashTransfer", "Accounts")
+            </div>
+        }
+        @if (Model.ActiveTab == "Supplier")
+        {
+            <div id="Supplier" class="tab-pane fade active">
+                @Html.Action("SupplierCashPayment", "Accounts")
+            </div>
+        }
+        else
+        {
+            <div id="Supplier" class="tab-pane fade">
+                @Html.Action("SupplierCashPayment", "Accounts")
+            </div>
+        }
+        @if (Model.ActiveTab == "ServiceProvider")
+        {
+            <div id="ServiceProvider" class="tab-pane fade active">
+                @Html.Action("ServiceProviderCashPayment", "Accounts")
+            </div>
+        }
+        else
+        {
+            <div id="ServiceProvider" class="tab-pane fade">
+                @Html.Action("ServiceProviderCashPayment", "Accounts")
+            </div>
+        }*@
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+     $(document).ready(function () {
+         var Sessioncreated = '@Session["SessionCostCenter"]';
+         $("#txtSessionCC").val(Sessioncreated);
+         $('.nav-tabs li:eq(0) a').tab('show');
+        });
+</script>
+
+

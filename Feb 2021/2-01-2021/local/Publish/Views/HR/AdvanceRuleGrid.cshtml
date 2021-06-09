@@ -1,0 +1,171 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.AdvanceRules>
+@if (Model.Count > 0)
+{
+<style>
+    .tdtextcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+</style>
+<div class="table-responsive">
+    <table id="tblAdvGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="tdtextcls hidden">AdvanceId</th>
+                <th class="tdtextcls  hidden">CategoryId</th>
+                <th class="tdtextcls">Effective Date</th>
+                <th class="tdtextcls">EmpServiceYears</th>
+                <th class="tdtextcls">Not Exceed(Month Salary+Bonus+Paid Leaves)(LTA)</th>
+                <th class="tdtextcls">Applicable For Notice period(LTA)</th>
+                <th class="tdtextcls">Not Exceed(Month Salary+Bonus+Paid Leaves)(SA)</th>
+                <th class="tdtextcls">Applicable For Notice period(SA)</th>
+                <th class="tdtextcls">Emp Category</th>
+                <th class="tdtextcls">LTA Account Head</th>
+                <th class="tdtextcls">LTA SubAccount Head</th>
+                <th class="tdtextcls">SA Account Head</th>
+                <th class="tdtextcls">SA SubAccount Head</th>
+
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.AdvanceId)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.CategoryId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EffectiveDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmpServiceYears)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LTAAmountLimitExceed)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LTAApplicableForNP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SAAmountLimitExceed)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SAApplicableForNP)
+                </td>
+                <td>
+                    @if (item.CategoryId == 0)
+                    {
+                        <label>All</label>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.CategoryName)
+                    }
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LTADCAName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LTASubDCAName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SADCAName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SADCAName)
+                </td>
+                <td>
+                    <input type="button" class="deleteAdvRule btn btn-md btn-danger" value="Delete">
+                </td>
+            </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        var advGrid = null;
+        InitializeAdvanceGrid();
+        $("#tblAdvGrid").on("click", ".deleteAdvRule", function (event) {
+            //alert('deleted');
+            var row = $(this).closest("tr");
+            var Id = $.trim(row.find("td").eq(0).html());
+            var CatId = $.trim(row.find("td").eq(1).html());
+            var data = {
+                AdvanceId: Id,
+                CategoryId: CatId
+            };
+
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteAdvanceRule',
+                data: { AdvData: data },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                        //row.remove();
+                        //location.reload();
+                        $('#liAdvanceRules').trigger('click');
+                    }
+                    else {
+                        $("#divLTESalAdvanceInfoMsg").text(addFailMsg);
+                        $("#divLTESalAdvanceInfoMsg").addClass("alert-danger");
+                        $("#divLTESalAdvanceInfoMsg").removeClass("hidden alert-success");
+                    }
+                    var shcount = $("#tblAdvGrid tbody tr").length;
+                    if (shcount > 0) {
+                        $("#divAdvGrid").removeClass('hidden');
+                    }
+                    else { $("#divAdvGrid").addClass('hidden'); }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divLTESalAdvanceInfoMsg").text(addFailMsg);
+                    $("#divLTESalAdvanceInfoMsg").addClass("alert-danger");
+                    $("#divLTESalAdvanceInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+    });
+    function InitializeAdvanceGrid() {
+        leavesGrid = $('#tblAdvGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Leaves Found"
+            },
+            "createdRow": function (row, data, index) {
+
+                //var oldcarryfwd = $.trim($('td:eq(1)', row).html());
+                ////alert(oldstatus);
+                //debugger;
+                //if (oldcarryfwd === false) {
+                //    $('td:eq(1)', row).html("No");
+
+                //}
+                //else { $('td:eq(1)', row).html("Yes"); }
+
+            },
+            pageLength: 10
+        });
+    }
+</script>
+    }

@@ -1,0 +1,131 @@
+﻿@model EsselTestLocalApplication.Models.ClientNewAndAmendPO
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Amended Purchase Order Information</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div>
+                                        @*<div class="row">
+                                                <h5 style="text-align:center;font-weight:bold">Amended Purchase Order Information</h5>
+                                            </div>*@
+                                        <form onsubmit="return false">
+                                            <div class="row" id="divCCCostCenter">
+                                                <div class="col-md-2"></div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.AmendCostCenter)
+                                                        @Html.DropDownListFor(model => model.AmendCostCenter, new SelectList(Model.AmendCostCenters, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AmendCostCenterddl", onchange = "AmendPOCostCenterChange()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2" id="divopenamendcc">
+                                                    <div class="form-group">
+                                                        </br>
+                                                        <button class="btn btn1 btn-success" id="btnopenamendcc" onclick="btnCCviewDataamend()">View CC Details</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2" id="divcloseamendcc">
+                                                    <div class="form-group">
+                                                        </br>
+                                                        <button class="btn btn1 btn-success" id="btncloseamendcc" onclick="btnCCcloseDataamend()">Close CC Details</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row" id="divViewamendCCDetails">
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PONOamendList)
+                                                        @Html.DropDownListFor(model => model.PONOamendList, new SelectList(Model.PONOamendList, "AmendPONO", "AmendPOName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlamendpo" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Amendpono)
+                                                        @Html.TextBoxFor(model => model.Amendpono, htmlAttributes: new { @class = "form-control", @id = "txtamendpono" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.amendpocompletiondate)
+                                                        @Html.TextBoxFor(model => model.amendpocompletiondate, "{0:dd-MMM-yyyy}", new { @id = "txtamendpocompletiondate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Amendpovalue)
+                                                        @Html.TextBoxFor(model => model.Amendpovalue, htmlAttributes: new { @class = "form-control", @id = "txtamendpovalue", @Value = "", onkeypress = "return ValidateAmount(this,event)", onkeyup = "CalculateamentTotal()" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.gst)
+                                                        @Html.TextBoxFor(model => model.gst, htmlAttributes: new { @class = "form-control", @id = "txtamendgst", @Value = "", onkeypress = "return ValidateAmount(this,event)", onkeyup = "CalculateamentTotal()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Amendtotalvalue)
+                                                        @Html.TextBoxFor(model => model.Amendtotalvalue, htmlAttributes: new { @class = "form-control", @id = "txttotalamendvalue", @Value = "", @readonly = "true" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row ">
+                                                <div class="col-md-12">
+                                                    <div class="text-right">
+                                                        <button class="btn btn1 btn-success" id="btnClientamendPOSubmit" onclick="ClientamendPOSubmit()">Submit Amend PO</button>
+                                                        <button class="btn btn1 btn-success" id="btnClientPOReset" onclick="btnResetPOData()">Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row text-center">
+                                                <div id="divamendpoInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+         var Sessioncreated = '@Session["Createdby"]';
+        $("#txtamendpocompletiondate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        }).datepicker("setDate", new Date());
+    });
+    function btnResetPOData() { location.reload(); }
+</script>

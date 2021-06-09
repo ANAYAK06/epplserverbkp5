@@ -1,0 +1,488 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.EmployeeAssetAllocation
+@{
+    ViewBag.Title = "EmployeeAssetAllocation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Employee Asset Allocation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Employeeid)
+                                                                @Html.DropDownListFor(model => model.Employeeid, new SelectList(Model.EmployeeList, "Employeeid", "EmployeeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlemployee", onchange = "GetgridDetails();" })
+                                                            </div>
+                                                        </div>
+                                                        <div id="Searchitems">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.SearchItem)
+                                                                    @Html.EditorFor(model => model.SearchItem, new { htmlAttributes = new { @class = "form-control", @id = "txtItemSearch", @onkeyup = "onchangeeventitems();",
+                                                                   @onKeyDown = "preventBackspace();" ,@onpaste = "return false;" ,
+                                                                   style = "text-transform:uppercase" } })
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="form-group">
+                                                                    </br>
+                                                                    <input type="submit" value="Add" class="btn btn1 btn-success" id="btnaddnewitems" onclick="SubmitCategoryItem()" /> &nbsp;
+                                                                    <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="divgriddata">
+                                                        <div id="GridData">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-2">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Validfrom)
+                                                                    @Html.TextBoxFor(model => model.Validfrom, "{0:dd-MMM-yyyy}", new { @id = "txtvalidfromDate", @class = "form-control date-picker", type = "text", @readonly = true })  @*, onchange = "return dayscount()"*@
+                                                                </div>
+                                                            </div>
+                                                            @*<div class="col-md-2">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Validupto)
+                                                                    @Html.TextBoxFor(model => model.Validupto, "{0:dd-MMM-yyyy}", new { @id = "txtvalidToDate", @class = "form-control date-picker", type = "text", @readonly = true, onchange = "return dayscount()" })
+                                                                </div>
+                                                            </div>*@
+                                                            <div class="col-md-10">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.AllocationRemarks)
+                                                                    @Html.TextAreaFor(model => model.AllocationRemarks, htmlAttributes: new { @class = "form-control", @id = "txtremarks", @rows = "3" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="text-right" style="vertical-align:bottom">
+                                                                    <button class="btn btn1 btn-success" id="btnSubmit" onclick="btnSubmitIndentData()">Submit</button>
+                                                                    <button class="btn btn1 btn-success" id="btnreset" onclick="SubmitCleardata()">Clear</button>
+                                                                    <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                                                    <input type="text" id="txtnoofdays" style="display:none" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="col-md-12">
+                                                            <div class="text-center">
+                                                                <div id="divAssetInfoMsg" class="alert alert-danger hidden">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#Searchitems").addClass("hidden");
+        $("#divgriddata").addClass("hidden");
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+        $("#txtvalidfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            minDate: -30,
+            maxDate: 0,
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            //onClose: function (selectedDate) {
+            //    $("#txtvalidToDate").datepicker("option", "minDate", selectedDate);
+            //}
+        }).datepicker("setDate", new Date());
+        //$("#txtvalidToDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //    maxDate: 1825,
+        //}).datepicker("setDate", new Date());
+        $("#txtvalidfromDate").datepicker('setDate', null);
+        //$("#txtvalidToDate").datepicker('setDate', null);
+    });
+    //function dayscount() {
+    //    var date1 = $("#txtvalidfromDate").val();
+    //    var date2 = $("#txtvalidToDate").val();
+    //    if (date1 != "" && date2 != "") {
+    //        var startDate = Date.parse(date1);
+    //        var startDate = Date.parse(date1);
+    //        var endDate = Date.parse(date2);
+    //        var timeDiff = endDate - startDate;
+    //        var daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    //        var days = daysDiff + parseInt(1);
+    //        $("#txtnoofdays").val(days);
+    //    }
+    //    else { $("#txtnoofdays").val("0") }
+    //}
+    function btnSubmitIndentData() {        
+        isValid = true;
+        var errorMsg = "";
+        var Employeename = $("#ddlemployee option:selected").index();
+        var Fromdate = $("#txtvalidfromDate").val();
+        //var Todate = $("#txtvalidToDate").val();
+        var remarks = $("#txtremarks").val();
+        //var noofdays = $("#txtnoofdays").val();
+        if (Employeename === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Employee Name/Employee Id</p>";
+            isValid = false;
+        }
+        if (Fromdate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Valid From Date</p>";
+            isValid = false;
+        }
+        //if (Todate == "") {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Select Valid To Date</p>";
+        //    isValid = false;
+        //}
+        //if (parseInt(noofdays) == 1 || parseInt(noofdays) == "" || parseInt(noofdays) < 1 ) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Invalid Date Selection</p>";
+        //    isValid = false;
+        //}
+        if (remarks == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAssetInfoMsg").text("");
+            $("#divAssetInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAssetInfoMsg").addClass("alert-danger");
+            $("#divAssetInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAssetInfoMsg").text("");
+            $("#divAssetInfoMsg").addClass("hidden");
+                var chkcount = 0;
+                var currentrowcount = $("#ItemEmpAssetDataTable tbody tr").length;
+                $("#ItemEmpAssetDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');                   
+                    if (check == false) { chkcount = chkcount + 1; }
+                    
+                });
+                if (currentrowcount == 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Add Items to the List</p > ";
+                    isValid = false;
+                }
+                if (chkcount > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Items</p > ";
+                    isValid = false;
+                }              
+                if (!isValid) {
+                    var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                    $("#divAssetInfoMsg").text("");
+                    $("#divAssetInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                    $("#divAssetInfoMsg").addClass("alert-danger");
+                    $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    var selectedledlist = [];
+                    $("#ItemEmpAssetDataTable tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var Inedntid = currentRow.find("td").eq(7).html();
+                        if (Inedntid !== 0) {
+                            selectedledlist.push(currentRow.find("td").eq(7).html());
+                        }
+                    });
+                    var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                    if (duplicatelist.length > 0) {
+                        var finalerror2 = "<div style='align:center'><p>Duplicate ItemCode for Indent</p>";
+                        $("#divAssetInfoMsg").text("");
+                        $("#divAssetInfoMsg").append(finalerror2 + "</div>");
+                        $("#divAssetInfoMsg").addClass("alert-danger");
+                        $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                    else {
+                        $("#divAssetInfoMsg").text("");
+                        $("#divAssetInfoMsg").addClass("hidden");
+                        //alert("SaveCSKIndent()");
+                        SaveEmployeeAssets();
+                    }
+                }
+        }
+    }
+
+    function SaveEmployeeAssets() {      
+        var ccodeval = $("#ddlemployee option:selected").val();
+        var nameArr1 = ccodeval.split(',');
+        var CCCode = nameArr1[0];
+        var emprefno = nameArr1[1];
+        var Rowids = "";
+        $("#ItemEmpAssetDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var Rowid = currentRow.find("td").eq(7).html();           
+            Rowids += Rowid;
+            Rowids += ",";            
+        });       
+        var Itemdetails = {
+            Rid: Rowids, 
+            Employeeid: emprefno,
+            EmpCCCode: CCCode,
+            Validfrom: $("#txtvalidfromDate").val(),
+            //Validupto: $("#txtvalidToDate").val(),
+            AllocationRemarks: $("#txtremarks").val()
+        };
+        addFailMsg = "Error Occurred While Creating Indent.";
+        addSuccessMsg = "Indent Generated Successfully.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveEmployeeAssets',
+            data: { Ind: Itemdetails },
+            success: function (Data) {
+                var string = Data.saveStatus;
+                var nameArr1 = string.split(',');
+                var status = nameArr1[0];
+                var ICode = nameArr1[1];
+                if (status == "Submited") {
+                    $("#btnSubmit").prop("disabled", true);
+                    $("#divAssetInfoMsg").text(ICode + '   Reference No For Asset Allocation Successfully');
+                    $("#divAssetInfoMsg").removeClass("hidden alert-danger");
+                    $("#divAssetInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnSubmit").prop("disabled", false);
+                    $("#divAssetInfoMsg").text(Data.saveStatus);
+                    $("#divAssetInfoMsg").addClass("alert-danger");
+                    $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnSubmit").prop("disabled", false);
+                $("#divAssetInfoMsg").text(addFailMsg);
+                $("#divAssetInfoMsg").addClass("alert-danger");
+                $("#divAssetInfoMsg").removeClass("hidden alert-success");
+
+            }
+        });
+    }
+    function SubmitCleardata() {
+        location.reload();
+    }
+    function onchangeeventitems() {
+        var emp = $("#ddlemployee option:selected").index();
+        if (emp != 0) {
+            var empval = $("#ddlemployee option:selected").val();
+            var myarray = empval.split(',');
+            if ($("#txtItemSearch").val() != "") {
+                $("#txtItemSearch").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/Purchase/AutoCompleteEmpAsset',
+                            data: '{prefix:"' + request.term + '", CCCode:"' + myarray[0] + '"}',
+                            dataType: "json",
+                            type: "POST",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return { label: item.SearchItem, value: item.SearchItem };
+                                }))
+                            },
+                            error: function (data) {
+                                alert(data.responseText);
+                            },
+                            failure: function (data) {
+                                alert(data.responseText);
+                            }
+                        });
+                    },
+                });
+
+            }
+            else {
+                alert("Select Search By Type");
+                $("#txtItemSearch").val("");
+                return false;
+            }
+        }
+        else {
+
+            alert("Select Search By Category");
+            $("#txtItemSearch").val("");
+            return false;
+        }
+    }
+    function SubmitClearItem() {
+        $("#txtItemSearch").val("");
+        $("#btnaddnewitems").prop('disabled', false);
+    }
+    function GetgridDetails() {
+        $("#txtItemSearch").val("");
+        var ccodeval = $("#ddlemployee option:selected").val();
+        var nameArr1 = ccodeval.split(',');
+        var emprefno = nameArr1[1];
+        var emp = $("#ddlemployee option:selected").index();
+        if (emp != 0) {
+            $("#Searchitems").removeClass("hidden");
+            $.ajax({
+                type: 'GET',
+                url: "/Purchase/ViewemployeeAssetitemsDetails",
+                dataType: 'html',
+                data: { EmpRefno: emprefno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridData").html(data);
+                        var currentrowcount2 = $("#ItemEmpAssetDataTable tbody tr").length;
+                        if (currentrowcount2 > 0) {
+                            $("#divgriddata").removeClass('hidden');
+                        }
+                        else {
+                            $("#divgriddata").addClass('hidden');
+                        }
+                    }
+                    else {
+                        $("#GridData").html();
+                        $("#divgriddata").addClass('hidden');
+                    }
+                },
+                error: function (data) {
+                },
+                failure: function (data) {
+                }
+            });
+        }
+        else {
+            $("#divgriddata").addClass("hidden");
+        }
+    }
+    function SubmitCategoryItem() {
+        isValid = true;
+        var errorMsg = "";
+        var emp = $("#ddlemployee option:selected").index();
+        var Itemtext = $("#txtItemSearch").val();
+        if (emp === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Employee</p>";
+            isValid = false;
+        }
+        if (Itemtext === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Search Data</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divAssetInfoMsg").text("");
+            $("#divAssetInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAssetInfoMsg").addClass("alert-danger");
+            $("#divAssetInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var ccodeval = $("#ddlemployee option:selected").val();
+            var Itemtext = $("#txtItemSearch").val();
+            var itemcodeArr = Itemtext.split(',');
+            var nameArr1 = ccodeval.split(',');
+            var cccode = nameArr1[0];
+            var emprefno = nameArr1[1];
+            var itemcode = itemcodeArr[0];
+            $("#divAssetInfoMsg").text("");
+            $("#divAssetInfoMsg").addClass("hidden");
+            var Items = {
+                EmpRefno: emprefno,
+                EmpCCCode: cccode,
+                ItemCode: itemcode
+            };
+            addFailMsg = "Error Occurred While Adding Items";
+            addSuccessMsg = "Items Added Successfully.";
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/SaveAssetItems",
+                data: JSON.stringify({ Item: Items }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        $("#txtIndentItemSearch").val("");
+                        $.ajax({
+                            type: 'GET',
+                            url: "/Purchase/ViewemployeeAssetitemsDetails",
+                            dataType: 'html',
+                            data: { EmpRefno: emprefno },
+                            success: function (data) {
+                                var count = Object.keys(data).length;
+                                if (count > 0) {
+                                    $("#GridData").html(data);
+                                    var currentrowcount2 = $("#ItemEmpAssetDataTable tbody tr").length;
+                                    if (currentrowcount2 > 0) {
+                                        $("#divgriddata").removeClass('hidden');
+                                    }
+                                    else {
+                                        $("#divgriddata").addClass('hidden');
+                                        //$("#GridData").addClass('hidden');
+                                    }
+                                }
+                                else {
+                                    $("#GridData").html();
+                                    $("#divgriddata").addClass('hidden');
+                                }
+                            },
+                            error: function (data) {
+                            },
+                            failure: function (data) {
+                            }
+                        });
+                    }
+                    else {
+                        alert(response.saveStatus);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewitems").prop('disabled', false);
+                    $("#divAssetInfoMsg").text(addFailMsg);
+                    $("#divAssetInfoMsg").addClass("alert-danger");
+                    $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+</script>

@@ -1,0 +1,189 @@
+﻿@model EsselTestLocalApplication.Models.IndentData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGridOTHER">
+    <div class="strike">
+        <span>Indent Items</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemIndentDetailsOtherDataTable" class="table order-list itemIndentDetaillistother">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Sub DCA</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Raised Qty</label></td>
+                    @*<td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Issued Qty</label></td>
+                        <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Issued New Stock</label></td>*@
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Transfer From</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Transferred Stock</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                    <tr>
+                        <td style="text-align:center;width:10px!important;">
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        <input type="checkbox" class="eagle-check-input">
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                        <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.Specification</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Quantity)</td> @*Raised Qty*@
+                        @*<td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.IssuedQty)</td>
+                            <td style="font-weight:normal; white-space: normal; width:50px"><input type="text" class="form-control countcheck1" onkeypress="return IsNumericdecimal(this)" /></td> @*onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()"*@
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.TransferFrom)</td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Stock)</td>
+                        <td class="hidden"> @Html.DisplayFor(modelItem => item.IndentListId)</td>
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @foreach (var item in Model.Total)
+                {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-center" colspan="3"><label style="color:green">SubTotal: @item.TotalAmount</label></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                }
+            </tfoot>
+
+        </table>
+        <table id="ItemIndentDetailsRemDataTable" class="table order-list itemIndentDetailRemlist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remarks</label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Remarks)
+                {
+                    <tr>
+                        <td style="font-weight:normal; white-space: normal;font-size:smaller"> @Html.DisplayFor(modelItem => item.Remarks)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function IsNumericdecimal(e) {
+        //debugger;
+        //var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        //var str = e.value;
+        //if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        //if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        //if (keyCode != 46 && keyCode > 31
+        //    && (keyCode < 48 || keyCode > 57))
+        //    return false;
+
+        //return true;
+
+    }
+    $(document).ready(function () {
+        //$("table.order-list.itemIndentDetaillistpum").on("keyup", ".countcheck1", function (event) {
+        //    debugger;
+        //    var currentRow = $(this).closest("tr");
+        //    var Newquantity = currentRow.find("td").eq(12).html();
+        //    //var Qty = currentRow.find(".countcheck1");
+        //    var Qty =currentRow.find("td").eq(10).find("input[type='text']").val();
+        //    if (parseFloat(Qty) > parseFloat(Newquantity)) {
+        //        alert("Invalid Issued New Stock")
+        //        currentRow.find("td").eq(10).find("input[type='text']").val("");
+        //        return false;
+        //    }
+        //    if (parseFloat(Newquantity) == 0) {
+        //        currentRow.find("td").eq(10).find("input[type='text']").val("");
+        //        return false;
+        //    }
+
+
+        //});
+
+    });
+
+
+    //function CountItemTotal() {
+    //    var issuedquantity = 0;
+    //    var RaisedQty = 0;
+    //    var total = 0;
+    //    //var subtotal = 0;
+    //    var DefineType = $("#ddl_ItemType option:selected").index();
+    //    $("#ItemIndentDetailsDataTable tbody tr:first").each(function () {
+    //        var currentRow = $(this);
+    //        if (DefineType != 0) {
+    //            var DefineTypeVal = $("#ddl_ItemType option:selected").text();
+    //            $('#ddl_ItemType').attr("disabled", true);
+    //            if (DefineTypeVal == "Full Purchase") {
+    //                currentRow.find("td").eq(9).find("input[type='text']").val(0);
+    //                currentRow.find("td").eq(9).find("input[type='text']").attr("disabled", true);
+    //            }
+    //            //var currentRow = $(this);
+    //            //issuedquantity = currentRow.find("td").eq(9).html();
+    //            //price = currentRow.find("td").eq(8).find("input[type='text']").val();
+    //            //if (Basic != "" && price != "") {
+    //            //    rowtotal = parseFloat(Basic) * parseFloat(price);
+    //            //    currentRow.find("td").eq(9).find("input[type='text']").val(rowtotal);
+    //            //    subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+    //            //}
+    //            //else {
+    //            //    currentRow.find("td").eq(9).find("input[type='text']").val(0);
+    //            //}
+    //        }
+    //        else {
+    //            alert("Select Indent Type Define");
+    //            $('#ddl_ItemType').attr("disabled", false);
+    //            return false;
+    //        }
+    //    });
+    //    //$("#ItemIndentDataTable tfoot tr").each(function () {
+    //    //    var footerRow = $(this);
+    //    //    if (!isNaN(subtotal)) {
+    //    //        footerRow.find("td").eq(9).html("<b>" + parseFloat(subtotal).toFixed(2) + "</b>");
+    //    //    }
+    //    //    else {
+    //    //        footerRow.find("td").eq(9).html("");
+    //    //    }
+    //    //});
+
+    //}
+
+</script>
+

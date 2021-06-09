@@ -1,0 +1,269 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.VendorTDSPayment
+<div class="col-md-12 ">
+    <br />
+    <div class="table-responsive row">
+        <table id="tblTDSPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px" class="hidden">VendorTaxId</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Date of Payment/Credit</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice Date</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice No</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Vendor Name</th>
+
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Cost Center</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IT Code</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Amount</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Total TDS</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">TDS Balance</th>
+                    <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Paid Amount</th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.tDSPay.TaxDeductionData)
+                {
+                    <tr>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px" class="hidden">
+                            @Html.DisplayFor(modelItem => item.Ids)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.InoviceMakingDates)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.InoviceDates)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.Inovicenos)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.CostCenter)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.ITCode)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.InvBasicValue)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.DeductionAmount)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.DeductionBalance)
+                        </td>
+                        <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                            @Html.DisplayFor(modelItem => item.Amounts)
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+        </table>
+
+    </div>
+
+    <div class="col-md-12"><br />
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Bank Name:</label>
+                <input type="text" class="form-control" value="@Model.tDSPay.TransactionData.Name" readOnly="readOnly" id="ApprholdBank" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Transaction Number:</label>
+                <input type="text" class="form-control" value="@Model.tDSPay.TransactionData.Number" readOnly="readOnly" />
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Transaction Date:</label>
+                <input type="text" class="form-control" value="@Model.tDSPay.TransactionData.TransactionDate" readOnly="readOnly" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label>Transaction Amount:</label>
+                <input type="text" class="form-control" value="@Model.tDSPay.TransactionData.TransactionAmount" readOnly="readOnly" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br/>
+        <table id="ApprInvtax" style="width:100%;border:1px solid gray">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                    <th style="text-align:center;color:#fff">Action </th>
+                    <th style="text-align:center;color:#fff">Role Name</th>
+                    <th style="text-align:center;color:#fff">Employee </th>
+                    <th style="text-align:center;color:#fff">Remarks </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count2 = 1; }
+                @foreach (var item in Model.tDSPay.TransactionData.ApprovalDatalst)
+                {
+                    <tr>
+                        <th style="text-align:center" class="hidden">count2</th>
+                        @if (count2 == 1)
+                        {
+                            <th style="text-align:center">Created By </th>
+                        }
+                        else
+                        {
+                            <th style="text-align:center">Verified By </th>
+                        }
+                        <th style="text-align:center">@item.Rolename</th>
+                        <th style="text-align:center">@item.Empname </th>
+                        <th style="text-align:center">@item.Remarks </th>
+                    </tr>
+                    count2++;
+                }
+            </tbody>
+        </table>
+        <br />
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" value="@Model.tDSPay.TransactionData.MOID" id="txtMOID" style="display:none" />
+                <label>Status</label>
+                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppStatus" })
+
+            </div>
+        </div>
+        <div class="col-md-6 ">
+            <div class="form-group">
+                <label>Notes:</label><br />
+                <textarea rows="3" cols="60" class="form-control" id="AppNote"></textarea>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <br /><br /><button onClick="ApproveTDSPayment('@Model.tDSPay.TransactionData.TransactionRefNo')">Submit</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprPayInfoMsg" class="alert alert-danger hidden"></div>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppStatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        });
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+    });
+
+    function ApproveTDSPayment(Transno) {
+        isValid = true;
+        var errorMsg = "";
+        var desccheckcount = 0;
+       
+        var appstatus = $("#AppStatus option:selected").text();
+        retnote = $("#AppNote").val();
+        msg = $("#divApprPayInfoMsg");
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divApprPayInfoMsg").text("");
+            $("#divApprPayInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divApprPayInfoMsg").addClass("alert-danger");
+            $("#divApprPayInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divApprPayInfoMsg").text("");
+            $("#divApprPayInfoMsg").addClass("hidden");           
+            var apprData = {               
+                TransactionRefNo: Transno,
+                Remarks: retnote,
+                Action: appstatus             
+             
+            };
+            //debugger;
+            addFailMsg = "Error Occurred While Payment Verification";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/ApproveTDSPayment",
+                data: JSON.stringify({ apprTDS: apprData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+                success: function (response) {
+                    if (response.saveStatus === "Submited") {
+                        $('#ApproveTDSPayMsgModal').modal('show');
+                        var msg = "<div>" + finalmsg + "</div>";
+                        $("#AppTDSPayMsg").html(msg);
+                    }
+
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#AppTDSPayMsg").html(msg1);
+                        $('#ApproveTDSPayMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + " </div>";
+                    $("#AppTDSPayMsg").html(msg);
+                    $('#ApproveTDSPayMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

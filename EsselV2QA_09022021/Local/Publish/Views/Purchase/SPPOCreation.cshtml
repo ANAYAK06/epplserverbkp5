@@ -1,0 +1,301 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SPPO
+@{
+    ViewBag.Title = "SPPOCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+    .tbodytdcls{
+        text-align: center;
+        padding: 1px !important;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">SPPO Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorCode)
+                                                    @Html.DropDownListFor(model => model.VendorCode, new SelectList(Model.VendorsList, "VendorCode", "VendorName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSppoVendor", onchange = "NewSPPOVendorChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CCCode)
+                                                    @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSppoCC", onchange = "NewSPPOCCChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.DCACode)
+                                                    @Html.DropDownListFor(model => model.DCACode, new SelectList(Model.DCAList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSppoDCA", onchange = "NewSPPODCAChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.SubDcaCode)
+                                                    @Html.DropDownListFor(model => model.SubDcaCode, new SelectList(Model.SubDCAList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNSppoSubDCA" })
+                                                </div>
+                                            </div>
+                                            <div id="divNSppoDates">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SPPOStartDate)
+                                                        @Html.TextBoxFor(model => model.SPPOStartDate, "{0:dd/MM/yyyy}", new { @id = "txtNSppoStartDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.SPPOEndDate)
+                                                        @Html.TextBoxFor(model => model.SPPOEndDate, "{0:dd/MM/yyyy}", new { @id = "txtNSppoEndDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class=" change-tab" id="divitemDescGrid">
+                                                <div class="strike">
+                                                    <span>Item Description</span>
+                                                </div>
+                                                <div class="tabledynamic">
+                                                    <br />
+                                                    <table id="itemDescTable" class="table order-list itemDesc" cellspacing="1" cellpadding="1">
+                                                        <thead style="height:250px!important" >
+                                                            <tr >
+                                                                <td class="tdcls"></td>
+                                                                <td class="tdcls"><label  class="tdlabelcls">S.No</label></td>
+                                                                <td style="text-align:center;color:#fff !important;padding:0px!important;width:500px"><label  class="tdlabelcls">Item Description</label></td>
+
+                                                                <td class="tdcls"><label class="tdlabelcls" >Unit</label></td>
+                                                                <td class="tdcls"><label class="tdlabelcls">Quantity</label></td>
+                                                                <td class="tdcls"><label  class="tdlabelcls">Our Rate</label></td>
+                                                                <td class="tdcls"><label  class="tdlabelcls">PRW Rate</label></td>
+                                                                <td class="tdcls"><label  class="tdlabelcls">Rate</label></td>
+                                                                <td class="tdcls"><label  class="tdlabelcls">Amount</label></td>
+                                                                <td class="tdcls"><label  class="tdlabelcls"></label></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="tbodytdcls">
+                                                                    <ul class="list-inline">
+                                                                        <li class="eagle-checkbox">
+                                                                            <label class="eagle-check custom-checkbox">
+                                                                                <input type="checkbox" class="eagle-check-input" id="chkNSppouitemDesc">
+                                                                                <span class="eagle-check-indicator"></span>
+                                                                                <span class="eagle-check-description"></span>
+                                                                            </label>
+                                                                        </li>
+                                                                    </ul>
+                                                                </td>
+                                                                <td class="tbodytdcls"><label>1</label></td>
+                                                                <td style="text-align:center;padding:1px!important;width:500px">
+                                                                    <textarea class="form-control txtitemdesc" rows="1" cols="30" onkeypress="return RestrictComma(this,event);"></textarea>                                                                   
+                                                                </td>
+                                                                <td class="tbodytdcls">
+                                                                    <input type="text" class="form-control txtUnit" value="" onkeypress="return RestrictComma(this,event);" />
+                                                                </td>
+                                                                <td class="tbodytdcls">
+                                                                    <input type="text" class="form-control txtQuantity" value="" onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()" />
+                                                                </td>
+                                                                <td class="tbodytdcls"><input type="text" class="form-control txtOurRate" value="" onkeypress="return ValidateAmount(this,event);" /></td>
+                                                                <td class="tbodytdcls"><input type="text" class="form-control txtPRWRate" value="" onkeypress="return ValidateAmount(this,event);"  onkeyup="ChangeRatecolor()"/></td>
+                                                                <td class="tbodytdcls"><input type="text" class="form-control txtRate" value="" onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()" /></td>
+                                                                <td class="tbodytdcls"><input type="text" class="form-control txtAmount" value="" disabled /></td>
+                                                                <td class="tbodytdcls"> <input type="button" class="ibtnNsppoItemDescDel btn btn-md btn-danger" value="Delete"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>                                                              
+                                                                <td></td>
+                                                                <td class="text-center;" colspan="2"><label style='float:right'>Total Amount:</label></td>
+                                                                <td></td>
+                                                                <td>
+                                                                    <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoNewSPPOOItemDescGrid();" />
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="change-tab" id="divitemTACGrid">
+                                                <div class="strike">
+                                                    <span>Terms & Conditions</span>
+                                                </div>
+                                                <div class="tabledynamic">
+                                                    <br />
+                                                    <table id="TACTable" class="table order-list tactable">
+                                                        <thead>
+                                                            <tr>
+                                                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important"></label></td>
+                                                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important">S.No</label></td>
+                                                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Terms & Conditions</label></td>
+                                                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important"></label></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="text-align:center;width:10px!important;">
+                                                                    <ul class="list-inline">
+                                                                        <li class="eagle-checkbox">
+                                                                            <label class="eagle-check custom-checkbox">
+                                                                                <input type="checkbox" class="eagle-check-input" id="chkNSppoTAC">
+                                                                                <span class="eagle-check-indicator"></span>
+                                                                                <span class="eagle-check-description"></span>
+                                                                            </label>
+                                                                        </li>
+                                                                    </ul>
+                                                                </td>
+                                                                <td style="text-align:center;width:10px!important;"><label style="margin-top:10%">1</label></td>
+                                                                <td style="text-align:center;">
+                                                                    <textarea class="form-control txttac" rows="1" cols="50" onkeypress="return RestrictPipeSymbol(this,event);"></textarea>
+                                                                </td>
+                                                                <td style="text-align:center"><input type="button" class="ibtnNsppoTACDel btn btn-md btn-danger" value="Delete"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td class="text-center;"></td>
+                                                                <td></td>
+                                                                <td >
+                                                                    <input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoNewSPPOOTACGrid();" />
+                                                                </td>
+
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" >
+                                            <div class="text-right" style="margin-right:12px">
+                                                <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewSPPO" onclick="SubmitNewSPPOData()" value="Submit" />
+                                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetSPPO()" />
+                                            </div>
+                                        </div>
+                                        <div class="row text-center">
+                                            <div id="divNewSppoInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#divNSppoDates").addClass("hidden");     
+        $("#ddlNSppoDCA").prop("disabled", true);
+        $("#ddlNSppoSubDCA").prop("disabled", true);
+        $("#txtNSppoStartDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtNSppoEndDate").datepicker("option", "minDate", selectedDate);
+               // $("#txtNSppoStartDate").datepicker("option", "disabled", true);
+
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtNSppoEndDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            //maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            //onClose: function (selectedDate) {
+            //    $("#txtNSppoEndDate").datepicker("option", "minDate", selectedDate);
+            //    $("#txtNSppoStartDate").datepicker("option", "disabled", true);
+
+            //}
+        }).datepicker("setDate", new Date());
+
+        $("table.order-list.itemDesc").on("click", ".ibtnNsppoItemDescDel", function (event) {
+            var tablerowcount = $("#itemDescTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNo();
+                CountItemDescAmount();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    BindEmptyRowtoNewSppoGrid();
+
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNo();
+                    CountItemDescAmount();
+                }
+
+
+            }
+        });
+        $("table.order-list.tactable").on("click", ".ibtnNsppoTACDel", function (event) {
+            var tablerowcount = $("#TACTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoTAC();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    BindEmptyRowtoNewSppoTACGrid();
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoTAC();
+                }
+
+
+            }
+        });
+    });
+</script>
+

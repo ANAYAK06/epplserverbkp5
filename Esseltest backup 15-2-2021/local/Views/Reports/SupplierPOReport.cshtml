@@ -1,0 +1,94 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SupplierPO
+@{
+    ViewBag.Title = "SupplierPOReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Supplier PO Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CCCode)
+                                            @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSuppoCC" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divLRptFromdate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.FromDate)
+                                            @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtPOFromDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divLRptTodate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ToDate)
+                                            @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txtPOToDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divLRRptBtns">
+                                        <div class="form-group">
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewRpt" onclick="ShowSupplierReport()" />
+                                                </div>
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetRpt" onclick="ResetSupplierReport()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" id="divPOGrid">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <br />
+                                        <div class="text-center">
+                                            <div id="divPORptInfoMsg" class="alert alert-danger hidden"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divPOGrid").addClass('hidden');
+        $("#txtPOFromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtPOToDate").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtPOToDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+
+    });
+</script>
+

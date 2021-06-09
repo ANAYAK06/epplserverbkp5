@@ -1,0 +1,49 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.EmpCategorys>
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblEmpCategoriesGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th style="text-align:center">Category Name</th>                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>                        
+                        <td  style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.CategoryName)
+                        </td>
+                        @*<td><input type="button" class="deletesalhead btn btn-md btn-danger" value="Delete"></td>*@
+                        @*<td><a href="" class="deletesalhead">Delete</a></td>*@
+                    </tr>
+                }
+            </tbody>          
+        </table>
+    </div>
+    <script>
+    $(document).ready(function () {
+        var catGrid = null;
+        InitializeCategoryGrid();
+    });
+        function InitializeCategoryGrid() {
+            catGrid = $('#tblEmpCategoriesGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Categories Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+    }
+    </script>
+}

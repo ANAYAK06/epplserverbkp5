@@ -1,0 +1,128 @@
+﻿@model EsselTestLocalApplication.Models.BusinessRoles
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Update Role</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <form onsubmit="return false">
+                <div class="col-md-12">
+                    <br />
+                    <div class="form-group">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-3"><label>Role</label></div>
+                        <div class="col-md-4"><input type="text" class="form-control" id="txtupRolecode" value="@Model.RoleName" /></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3"><label>Status</label></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <select class="form-control dropdown-toggle" id="ddlupRoleStatus">
+                                <option selected="selected" value="Select">Select</option>
+                                @if (Model.Status == "Approved")
+                                {
+                                <option value="1" selected>Active</option>
+                                }
+                                else
+                                {
+                                <option value="1">Active</option>}
+                                @if (Model.Status == "Rejected")
+                                {
+                                <option value="0" selected>InActive</option>
+                                }
+                                else
+                                {
+                                <option value="0">InActive</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <ul class="list-inline">
+                                <li class="eagle-checkbox">
+                                    <label class="eagle-check custom-checkbox">
+                                        @if (Model.ApplicableForCC == "Yes")
+                                        {<input type="checkbox" class="eagle-check-input" name="" value="Yes" id="chkUpApplforCC" onclick="upApplicableforCCCheck()" checked>}
+                                        else
+                                        {<input type="checkbox" class="eagle-check-input" name="" value="Yes" id="chkUpApplforCC" onclick="upApplicableforCCCheck()">}
+
+                                        <span class="eagle-check-indicator"></span>
+                                        <span class="eagle-check-description">Applicable For CostCenter</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12" id="divUpRoleCCTypes">
+                    <div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-3">
+                            @Html.LabelFor(model => model.CCTypeIDs, htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-4 text-left">
+                            <div class="form-group">
+                                @if (Model.CCtypeList.ToList().Count > 0)
+                                {
+                                @Html.ListBoxFor(model => model.CCTypeIDs, new SelectList(Model.CCtypeList, "CCTypeID", "CCTypeDescription"), new { @class = "listbox form-control", @id = "UpRoleCCtypes", size = 4 })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <input type="submit" value="Submit" class="btn btn1 btn-success" onclick="SubmitRoleStatus()" />
+                            <input type="hidden" id="txtuproleid" value="@Model.UserRoleID" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <br />
+                        <div id="divUpRoleInfoMsg" class="alert alert-danger hidden row">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.listbox').multiselect({
+            includeSelectAllOption: false
+        });
+        if ('@Model.ApplicableForCC' == "Yes") {
+            $("#divUpRoleCCTypes").removeClass('hidden');
+        }
+        else {
+            $("#divUpRoleCCTypes").addClass('hidden');
+        }
+
+
+    });
+
+    function upApplicableforCCCheck() {
+
+        if ($('#chkUpApplforCC').is(":checked") === true) {
+            $("#divUpRoleCCTypes").removeClass('hidden');
+        }
+        else {
+            $("#divUpRoleCCTypes").addClass('hidden');
+        }
+    }
+</script>

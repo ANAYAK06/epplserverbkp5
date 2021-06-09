@@ -1,0 +1,255 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.SalaryMinWages>
+@{
+    var serializer1 = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblSalaryHeadBasicGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="hidden">CategoryId</th>
+                    <th>EffectiveDate</th>
+
+                    <th>Category</th>
+                    <th>States</th>
+                    @*<th>Headsdetails</th>*@
+                    <th>SalaryBasic</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.CategoryId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EffectiveDate)
+                    </td>
+                    <td>
+                        @if (item.CategoryId == 0)
+                        {
+                            <label>All</label>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.CategoryName)
+                        }
+
+                    </td>
+                    <td>
+                        @if (item.SelectedState.Count > 0)
+                        {
+                            <ol>
+                                @foreach (var cc in item.SelectedstateDetails)
+                                {
+                                    <li>@Html.DisplayFor(CC => cc.State_Name)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <label>All</label>
+
+                        }
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SalaryBasic)
+                    </td>
+                    @*<td>@serializer1.Serialize(item.StaffSalaryHeadsList)</td>*@
+                    <td><input type="button" class="deletesalheadbasic btn btn-md btn-danger" value="Delete"></td>
+                    @*<td><a href="" class="deletesalhead">Delete</a></td>*@
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+        var openRows = new Array();
+        $(document).ready(function () {
+
+            var basicshGrid = null;
+            InitializeBasicSalaryHeadGrid();
+
+            $("#tblSalaryHeadBasicGrid").on("click", ".deletesalheadbasic", function (event) {
+                //alert('deleted');
+                var row = $(this).closest("tr");
+                var Catid = $.trim(row.find("td").eq(1).html());
+                //$(this).closest("tr").remove();
+
+                addFailMsg = "Error Occurred While Adding.";
+                var data = {
+                    CategoryId: Catid,
+                    StaffType:"Staff"
+                }
+                debugger;
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/DeleteSalaryHeadMinWages',
+                    data: { salaryMinWages: data },
+                    success: function (Data) {
+                        //alert("Hi");
+                        if (Data.saveStatus === "Deleted") {
+                            row.remove();
+                            RebindSWCategories();
+                            //$('.nav-tabs li:eq(1) a').tab('show');
+                            //$('#SalMinWage').trigger('click');                  
+                        }
+                        else {
+                            $("#divSalaryHeadInfoMsg").text(addFailMsg);
+                            $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+                            $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+                        }
+                        //var shcount = $("#tblSalaryHeadGrid tbody tr").length;
+                        //if (shcount > 0) {
+                        //    $("#divGridSalaryHead").removeClass('hidden');
+                        //}
+                        //else { $("#divGridSalaryHead").addClass('hidden'); }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divSalaryHeadInfoMsg").text(addFailMsg);
+                        $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+                        $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            });
+
+        });
+        function InitializeBasicSalaryHeadGrid() {
+            basicshGrid = $('#tblSalaryHeadBasicGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Salary Heads Found"
+                },
+                "createdRow": function (row, data, index) {
+
+                },
+                pageLength: 10
+            });
+            $('#tblSalaryHeadBasicGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = basicshGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(basicshGrid, tr);
+                    // Open this row
+                    row.child(formatBasicSalaryHead(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+        }
+        function closeOpenedRows(table, selectedRow) {
+            $.each(openRows, function (index, openRow) {
+                // not the selected row!
+                if ($.data(selectedRow) !== $.data(openRow)) {
+                    var rowToCollapse = table.row(openRow);
+                    rowToCollapse.child.hide();
+                    openRow.removeClass('shown');
+                    // replace icon to expand
+                    //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                    // remove from list
+                    var index = $.inArray(selectedRow, openRows);
+                    openRows.splice(index, 1);
+                }
+            });
+        }
+
+        function formatBasicSalaryHead(d) {
+           
+            var htmltext;
+            var Headslist=[],catid=0;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    catid = value;
+                if (index == 6)
+                    Headslist = value;
+                //if (index == 7)
+                //    Backstatus = value;
+            });
+            var divid = "divHead" + catid;
+            var divid1 = $("#" + divid + "");
+            //var headData = {
+            //    StaffSalaryHeadsList: Headslist
+            //}
+            //console.log(headData);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/HR/ShowHeadGrid',
+                data: { Categoryid: catid },
+                success: function (Data) {
+                    var divid2 = "divHead" + catid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+            return '<div id="divHead' + catid + '" class="col-md-12"></div>';
+
+            //console.log(Headslist);
+            //let HeadTable = '<div style="width:100%;margin-top:-1% !important"><table cellpadding="5" cellspacing="0" style="padding-left:50px;width:100%;"><tr><td>lfskljf</td></tr></table</div>';
+
+            //for (var i = 0; i < Headslist.length; i++) {
+            //    var obj = Headslist[i];
+
+            //    console.log(obj);
+            //}
+            ////$.each(Headslist, function () {
+            ////    debugger;
+            ////    HeadTable += '<tr>';
+            ////    HeadTable += '<td></td>'
+            ////    HeadTable += '</tr>';
+            ////});
+            ////HeadTable += '</table</div>';
+            //return HeadTable;
+        }
+
+        function RebindSWCategories() {
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetEmpCategoriesForSalaryHeadRule",
+                data: '{ }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+                success: function (response) {
+                    var ddl = $("#ddlSWCategory");
+                    ddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        ddl.append($("<option></option>").val(this['CategoryId']).html(this['CategoryName']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    </script>
+}

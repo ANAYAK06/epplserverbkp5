@@ -1,0 +1,164 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.HSN
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Category)
+                    @Html.TextBoxFor(model => model.Category, htmlAttributes: new { @class = "form-control", @id = "txtcategory", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HSNCategory)
+                    @Html.TextBoxFor(model => model.HSNCategory, htmlAttributes: new { @class = "form-control", @id = "txthsncategory", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HSNCode)
+                    @Html.TextBoxFor(model => model.HSNCode, htmlAttributes: new { @class = "form-control", @id = "txthsncode", @readonly = true })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Cgstrate)
+                    @Html.TextBoxFor(model => model.Cgstrate, htmlAttributes: new { @class = "form-control", @id = "txtupdhsncgst", onkeypress = "return IsNumericdecimal(this)" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Sgstrate)
+                    @Html.TextBoxFor(model => model.Sgstrate, htmlAttributes: new { @class = "form-control", @id = "txtupdhsnsgst", onkeypress = "return IsNumericdecimal(this)" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Igstrate)
+                    @Html.TextBoxFor(model => model.Igstrate, htmlAttributes: new { @class = "form-control", @id = "txtupdhsnigst", onkeypress = "return IsNumericdecimal(this)" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txthsnupdateremarks" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ReturnRemarks)
+                    @Html.TextAreaFor(model => model.ReturnRemarks, htmlAttributes: new { @class = "form-control", @id = "txthsnreturnremarks", @readonly = true })
+                </div>
+            </div>            
+        </div>
+        <div class="row ">
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtChequeRoleId" style="display:none" />
+                    <button class="btn btn1 btn-success" id="btnCBDreturnSubmit" onclick="btnHSNrnSubmit('@Model.Rowid')">Submit</button>
+                    <input type="text" id="txtcbdCreatedby" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div id="divhsnInfoReturnMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    function btnHSNrnSubmit(Rid) {
+        refno = "divhsnInfoReturnMsg-" + Rid;
+        msg = $("#" + refno + "");
+        var Roleid = '@Session["Roleid"]';
+        var Crtedby = '@Session["Createdby"]';
+        isValid = true;
+        var errorMsg = "";
+        var Remarks = $("#txthsnupdateremarks").val();
+        var cgst = $("#txtupdhsncgst").val();
+        var sgst = $("#txtupdhsnsgst").val();
+        var igst = $("#txtupdhsnigst").val();
+        if (cgst == "" || cgst == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter CGST</p>";
+            isValid = false;
+        }
+        if (sgst == "" || sgst == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter SGST</p>";
+            isValid = false;
+        }
+        if (igst == "" || igst == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter IGST</p>";
+            isValid = false;
+        }
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remark</p>";
+            isValid = false;
+        }       
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divhsnInfoReturnMsg").text("");
+            $("#divhsnInfoReturnMsg").append(finalerror + errorMsg + "</div>");
+            $("#divhsnInfoReturnMsg").addClass("alert-danger");
+            $("#divhsnInfoReturnMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divhsnInfoReturnMsg").text("");
+            $("#divhsnInfoReturnMsg").addClass("hidden");
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var Details = {
+                Cgstrate: $("#txtupdhsncgst").val(),
+                Sgstrate: $("#txtupdhsnsgst").val(),
+                Igstrate: $("#txtupdhsnigst").val(),
+                Remarks: $("#txthsnupdateremarks").val(),  
+                Rowid: Rid,
+                RoleID: Roleid,
+                Createdby: Crtedby
+            };
+            addFailMsg = "Error Occurred While Adding Record.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/UpdateHSNData',
+                data: JSON.stringify({ apprdetails: Details }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    if (msg == "Successfull") {
+                        $('#ApprovehsnMsgModal').modal('show');
+                        var msg = "<div>HSN/SAC Return Updated Successfully</div>";
+                        $("#ApprovehsnMsgModal").on("hide.bs.modal", function () {
+                            $("#divApprcdbGrid").load('/Purchase/VerifyHSNCreationGrid');
+                        });                       
+                        $("#ApprhsnMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprhsnMsg").html(msg);
+                        $('#ApprovehsnMsgModal').modal('show');
+                    }
+
+                },
+                failure: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprhsnMsg").html(msg);
+                    $('#ApprovehsnMsgModal').modal('show');
+                },
+                error: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprhsnMsg").html(msg);
+                    $('#ApprovehsnMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,141 @@
+﻿@model EsselTestLocalApplication.Models.HR.LeaveApplication
+
+@{
+    ViewBag.Title = "LeaveReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Employee Leave Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">                             
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FromDate)
+                                        @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ToDate)
+                                        @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttoDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    </br>
+                                    <input type="submit" value="View" class="btn btn1 btn-success" id="btnviewleavereport" onclick="SubmitView()" /> 
+                                    <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divleavereportGrid" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divEmployeeTransferGrid").addClass('hidden');
+        $("#txtfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            minDate: -365,
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txttoDate").datepicker("option", "minDate", selectedDate);
+            },
+        }).datepicker("setDate", "");
+        $("#txttoDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+
+        }).datepicker("setDate", "");
+    });
+  
+    function SubmitClearItem() {
+        //$("#txtEmpSearch").val("");
+        //$("#btnempcc").prop('disabled', false);
+        location.reload();
+    }
+    function SubmitView() {
+        debugger;
+        isValid = true;
+        var errorMsg = "";
+        var Fromdate = $("#txtfromDate").val();
+        var Todate = $("#txttoDate").val();
+        if (Fromdate == "" || Fromdate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (Todate == "" || Todate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");           
+            var fromdate = $("#txtfromDate").val();
+            var todate = $("#txttoDate").val();
+            if (Fromdate != "" && Todate != "") {
+                $.ajax({
+                    type: "GET",
+                    url: "/HR/ViewLeaveReportGrid",
+                    data: { FromDate: fromdate, ToDate: todate},
+                    dataType: 'html',
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divleavereportGrid").html(response);
+                            $("#divleavereportGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divleavereportGrid").html('No Data Found');
+                            $("#divleavereportGrid").removeClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divleavereportGrid").addClass("hidden");
+                alert("Select From Date and To Date");
+                return false;
+            }
+        }       
+    }
+   
+</script>
+

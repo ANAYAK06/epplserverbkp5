@@ -1,0 +1,127 @@
+﻿@model List<EsselTestLocalApplication.Models.AddTermLoan>
+<div class="table-responsive w-100">
+    <table id="tblapproveTLGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">ID</th>
+                <th>Agency Code</th>
+                <th>Agency Name</th>
+                <th>Nature Of Group</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">AgencyStatus</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AgencyId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AgencyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NatureGroupName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.AgencyStatus)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveItcodeGrid = null;
+        InitializeApproveItcodeGrid();
+           var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppTLCreatedby").val(Sessioncreated);
+             var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+    });
+    function InitializeApproveItcodeGrid() {
+        ApproveItcodeGrid = $('#tblapproveTLGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Term Laon Agency Found"
+            },
+            "createdRow": function (row, data, index) {                
+            },
+            pageLength: 10
+        });
+        $('#tblapproveTLGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveItcodeGrid.row(tr);
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                closeOpenedRows(ApproveItcodeGrid, tr);
+                row.child(formatApproveIT(row.data())).show();
+                tr.addClass('shown');
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApproveIT(d) {
+            var id = 0;
+            var htmltext;
+            var agencycode;
+            $.each(d, function (index, value) {              
+                if (index == 2)
+                    agencycode = value;
+              
+        });
+        var divid = "divappragency" + agencycode;
+        var divid1 = $("#" + divid + "");
+        $("#currentagencyid").val(agencycode);
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/AccountsApproval/ViewApproveTLAgencyCodebyid',
+            data: { id: agencycode },
+            success: function (Data) {
+                var divid2 = "divappragency" + agencycode;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+            }
+        });
+        return '<div id="divappragency' + agencycode + '"></div>';
+    }
+</script>

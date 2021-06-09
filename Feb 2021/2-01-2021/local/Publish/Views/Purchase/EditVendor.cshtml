@@ -1,0 +1,509 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Vendor
+@if (Model.Status == "Approved")
+{
+    //normal update
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update Vendor</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Type)
+                                @Html.DropDownListFor(model => model.Type, new SelectList(Model.VendorTypeList, "Type", "Name"), Model.Type, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVendorType", @readOnly = "true" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.VendorName)
+                                @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @id = "txtUpVendorName", @readOnly = "true" })
+                            </div>
+                        </div>
+                        @if (Model.Type == "Service Provider")
+                        {
+                            <div class="col-md-6" id="divUppanno">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PanNo)
+                                    @Html.TextBoxFor(model => model.PanNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPanNo" })
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="divUopfregno">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PFRegNo)
+                                    @Html.TextBoxFor(model => model.PFRegNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPFRegNo" })
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-6" id="divUpcstno">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CstNo)
+                                    @Html.TextBoxFor(model => model.CstNo, htmlAttributes: new { @class = "form-control", @id = "txtUpCstNo" })
+                                </div>
+                            </div>
+                        }
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Phoneno)
+                                @Html.TextBoxFor(model => model.Phoneno, htmlAttributes: new { @class = "form-control", @id = "txtUpPhoneno", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MobileNo)
+                                @Html.TextBoxFor(model => model.MobileNo, htmlAttributes: new { @class = "form-control", @id = "txtUpMobileNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BankName)
+                                @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtUpBankName", })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.AccountNo)
+                                @Html.TextBoxFor(model => model.AccountNo, htmlAttributes: new { @class = "form-control", @id = "txtUpAccNo", })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.IFSCode)
+                                @Html.TextBoxFor(model => model.IFSCode, htmlAttributes: new { @class = "form-control", @id = "txtUpIFSCode" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.NatureGroupName)
+                                @Html.DropDownListFor(model => model.NatureGroupName, new SelectList(Model.VendorNatureOfGroups, "NatureGroupId", "NatureGroupName"), Model.NatureGroupName, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVNatureGroup", onchange = "VedndorNatureofGrpChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="divUpvMastergrp">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MasterGroup)
+                                @Html.DropDownListFor(model => model.MasterGroup, new SelectList(Model.VendorMasterGroups, "GroupId", "GroupName"), Model.MasterGroup, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVMasterGroup", onchange = "VedndorGrpChange()" })
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="divUpvsubgrp">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.SubGroup)
+                                @Html.DropDownListFor(model => model.SubGroup, new SelectList(Model.VendorSubGroups, "Id", "Name"), Model.SubGroup, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVSubGroup" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Address)
+                                @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtEAddress", @rows = "2" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.GstApplicable)
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            @if (Model.GstApplicable == "YES")
+                                            {
+                                                <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="Yes" id="chkUpVCGSTY" onclick="VendorGSTValidation(this)" checked>
+                                            }
+                                            else
+                                            { <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="Yes" id="chkUpVCGSTY" onclick="VendorGSTValidation(this)">}
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description">Yes</span>
+                                        </label>
+                                    </li>
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            @if (Model.GstApplicable == "No")
+                                            {
+                                                <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="No" id="chkUpVCGSTN" onclick="VendorGSTValidation(this)" checked>
+                                            }
+                                            else
+                                            { <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="No" id="chkUpVCGSTN" onclick="VendorGSTValidation(this)">}
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description">No</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="divUpVendorGst">
+                        <div style="margin-left:2px;">
+                            <div class="strike">
+                                <span>Add GST Details</span>
+                            </div>
+                            <div class="tabledynamic">
+                                <table id="UpVendorGstTable" class="table order-list upvendorgst">
+                                    <thead>
+                                        <tr>
+                                            <td class="hidden"></td>
+                                            <td style="text-align:center;">State</td>
+                                            <td style="text-align:center;">GST Number</td>
+                                            <td style="text-align:center;">Check</td>
+                                            <td>Delete</td>
+                                            <td class="hidden">Stateid</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.VendorGSTData)
+                                        {
+                                            <tr style="text-align:center">
+                                                <td class="hidden">1</td>
+                                                <td>
+                                                    @Html.DropDownListFor(modelItem => item.StateName, new SelectList(Model.StatesList, "State_ID", "State_Name"), @item.StateName, htmlAttributes: new { @class = "form-control dropdown-toggle", @readOnly = "true" })
+
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(modelItem => item.TaxNo, htmlAttributes: new { @class = "form-control" })
+                                                </td>
+                                                <td>
+                                                    <ul class="list-inline">
+                                                        <li class="eagle-checkbox">
+                                                            <label class="eagle-check custom-checkbox">
+                                                                <input type="checkbox" class="eagle-check-input" disabled="disabled" checked>
+                                                                <span class="eagle-check-indicator" style="background-color:#202447 !important;border-color:#202447"></span>
+
+                                                            </label>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                                <td><input type="button" class="ibtnUpGstDel btn btn-md btn-danger" value="Delete"></td>
+                                                <td class="hidden">
+                                                    @Html.TextBoxFor(modelItem => item.StateId, htmlAttributes: new { @class = "form-control" })
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td class="hidden"></td>
+                                            <td class="text-center"></td>
+                                            <td></td>
+                                            <td>
+                                                <input type="button" class="btn btn-default  btn-block" id="addNVGST" value="Add New GST" onclick="BindNewRowForUpdateVendorGST()" />
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="text-right">
+                            <input type="submit" class="btn btn1 btn-success" id="btnSubmitVendorChange" onclick="UpdateVendorData('@Model.VendorCode','@Model.Type','@Model.Status')" value="Update" />
+
+                            @if (Model.SubGroupId == 0)
+                            {
+                                <input type="hidden" id="txtupsubgrpexist" value="0" />
+                            }
+                            else
+                            {
+                                <input type="hidden" id="txtupsubgrpexist" value="1" />
+
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div id="divUpVendorInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    //returnupdate
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Type)
+                        @Html.DropDownListFor(model => model.Type, new SelectList(Model.VendorTypeList, "Type", "Name"), Model.Type, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVendorType", @readOnly = "true" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.VendorName)
+                        @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @id = "txtUpVendorName", @readOnly = "true" })
+                    </div>
+                </div>
+                @if (Model.Type == "Service Provider")
+                {
+                    <div class="col-md-6" id="divUppanno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PanNo)
+                            @Html.TextBoxFor(model => model.PanNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPanNo" })
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="divUopfregno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PFRegNo)
+                            @Html.TextBoxFor(model => model.PFRegNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPFRegNo" })
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-6" id="divUpcstno">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CstNo)
+                            @Html.TextBoxFor(model => model.CstNo, htmlAttributes: new { @class = "form-control", @id = "txtUpCstNo" })
+                        </div>
+                    </div>
+                }
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Phoneno)
+                        @Html.TextBoxFor(model => model.Phoneno, htmlAttributes: new { @class = "form-control", @id = "txtUpPhoneno", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MobileNo)
+                        @Html.TextBoxFor(model => model.MobileNo, htmlAttributes: new { @class = "form-control", @id = "txtUpMobileNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BankName)
+                        @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtUpBankName", })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountNo)
+                        @Html.TextBoxFor(model => model.AccountNo, htmlAttributes: new { @class = "form-control", @id = "txtUpAccNo", })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.IFSCode)
+                        @Html.TextBoxFor(model => model.IFSCode, htmlAttributes: new { @class = "form-control", @id = "txtUpIFSCode" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NatureGroupName)
+                        @Html.DropDownListFor(model => model.NatureGroupName, new SelectList(Model.VendorNatureOfGroups, "NatureGroupId", "NatureGroupName"), Model.NatureGroupName, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVNatureGroup", onchange = "VedndorNatureofGrpChange()" })
+                    </div>
+                </div>
+                <div class="col-md-6" id="divUpvMastergrp">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MasterGroup)
+                        @Html.DropDownListFor(model => model.MasterGroup, new SelectList(Model.VendorMasterGroups, "GroupId", "GroupName"), Model.MasterGroup, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVMasterGroup", onchange = "VedndorGrpChange()" })
+                    </div>
+                </div>
+                <div class="col-md-6" id="divUpvsubgrp">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubGroup)
+                        @Html.DropDownListFor(model => model.SubGroup, new SelectList(Model.VendorSubGroups, "Id", "Name"), Model.SubGroup, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlUpVSubGroup" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Address)
+                        @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtUpAddress", @rows = "2" })
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.GstApplicable)
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    @if (Model.GstApplicable == "YES")
+                                    {
+                                        <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="Yes" id="chkUpVCGSTY" onclick="VendorGSTValidation(this)" checked>
+                                    }
+                                    else
+                                    { <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="Yes" id="chkUpVCGSTY" onclick="VendorGSTValidation(this)">}
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description">Yes</span>
+                                </label>
+                            </li>
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    @if (Model.GstApplicable == "No")
+                                    {
+                                        <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="No" id="chkUpVCGSTN" onclick="VendorGSTValidation(this)" checked>
+                                    }
+                                    else
+                                    { <input type="checkbox" class="eagle-check-input" name="UpVGstApplicable" value="No" id="chkUpVCGSTN" onclick="VendorGSTValidation(this)">}
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description">No</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="divUpVendorGst">
+                <div style="margin-left:2px;">
+                    <div class="strike">
+                        <span>Add GST Details</span>
+                    </div>
+                    <div class="tabledynamic">
+                        <table id="UpVendorGstTable" class="table order-list upvendorgst">
+                            <thead>
+                                <tr>
+                                    <td class="hidden"></td>
+                                    <td style="text-align:center;">State</td>
+                                    <td style="text-align:center;">GST Number</td>
+                                    <td style="text-align:center;">Check</td>
+                                    <td>Delete</td>
+                                    <td class="hidden">Stateid</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.VendorGSTData)
+                                {
+                                    <tr style="text-align:center">
+                                        <td class="hidden">1</td>
+                                        <td>
+                                            @Html.DropDownListFor(modelItem => item.StateName, new SelectList(Model.StatesList, "State_ID", "State_Name"), @item.StateName, htmlAttributes: new { @class = "form-control dropdown-toggle", @readOnly = "true" })
+
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => item.TaxNo, htmlAttributes: new { @class = "form-control" })
+                                        </td>
+                                        <td>
+                                            <ul class="list-inline">
+                                                <li class="eagle-checkbox">
+                                                    <label class="eagle-check custom-checkbox">
+                                                        <input type="checkbox" class="eagle-check-input" disabled="disabled" checked>
+                                                        <span class="eagle-check-indicator" style="background-color:#202447 !important;border-color:#202447"></span>
+
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td><input type="button" class="ibtnUpGstDel btn btn-md btn-danger" value="Delete"></td>
+                                        <td class="hidden">
+                                            @Html.TextBoxFor(modelItem => item.StateId, htmlAttributes: new { @class = "form-control" })
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td class="hidden"></td>
+                                    <td class="text-center"></td>
+                                    <td></td>
+                                    <td>
+                                        <input type="button" class="btn btn-default  btn-block" id="addNVGST" value="Add New GST" onclick="BindNewRowForUpdateVendorGST()" />
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-right">
+                    <input type="submit" class="btn btn1 btn-success" id="btnSubmitVendorChange" onclick="UpdateVendorData('@Model.VendorCode','@Model.Type','@Model.Status')" value="Update" />
+                    @if (Model.SubGroupId == 0)
+                    {
+                        <input type="hidden" id="txtupsubgrpexist" value="0" />
+                    }
+                    else
+                    {
+                        <input type="hidden" id="txtupsubgrpexist" value="1" />
+
+                    }
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <div id="divUpVendorInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var status = '@Model.Status';
+        //if (status !== "Approved") {
+
+            var subgrpid = '@Model.SubGroupId';
+            if (subgrpid === "0") { $("#divUpvsubgrp").addClass("hidden"); } else { $("#divUpvsubgrp").removeClass("hidden"); }
+
+            var gstApplicable = '@Model.GstApplicable';
+            if (gstApplicable === "YES") { $("#divUpVendorGst").removeClass("hidden"); }
+            else {
+                $("#divUpVendorGst").addClass("hidden");
+            }
+
+            $("table.order-list.upvendorgst").on("click", ".ibtnUpGstDel", function (event) {
+                var tablerowcount = $("#UpVendorGstTable tbody tr").length;
+                if (tablerowcount > 1) {
+                    $(this).closest("tr").remove();
+                    $("#divUpVendorGst").removeClass('hidden');
+                    $("#chkUpVCGSTY").prop("checked", true);
+                    $("#chkUpVCGSTN").prop("checked", false);
+
+                }
+                else {
+                    if (tablerowcount == 1) {
+                        $(this).closest("tr").remove();
+                        emptyrowtoUpdatevendorgst();
+
+                    }
+                    else {
+                        $(this).closest("tr").remove();
+                        $("#chkUpVCGSTY").prop("checked", false);
+                        $("#chkUpVCGSTN").prop("checked", true);
+                        $("#divUpVendorGst").addClass('hidden');
+                    }
+
+
+                }
+            });
+
+            var natureofgrp = '@Model.NatureGroupName';
+
+            $("#ddlUpVNatureGroup").find("option:contains('" + natureofgrp + "')").each(function () {
+                if ($(this).text() == natureofgrp) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            var MasterGroup = '@Model.MasterGroup';
+
+            $("#ddlUpVMasterGroup").find("option:contains('" + MasterGroup + "')").each(function () {
+                if ($(this).text() == MasterGroup) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+            if (subgrpid !== "0") {
+                var SubGroup = '@Model.SubGroup';
+
+                $("#ddlUpVSubGroup").find("option:contains('" + SubGroup + "')").each(function () {
+                    if ($(this).text() == SubGroup) {
+                        $(this).attr("selected", "selected");
+                    }
+                });
+            }
+        //}
+
+    });
+</script>

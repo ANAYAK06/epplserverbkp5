@@ -1,0 +1,106 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.CreateTaxes>
+<div class="table-responsive">
+    <table id="tblApproveTaxGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Tax Id</th>
+                <th>Tax Number</th>
+                <th>Tax Name</th>
+                <th>Tax For</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.TaxId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxFor)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+        $(document).ready(function () {
+            var ApprovegstGrid = null;
+            InitializeApprGSTGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprGstCreatedby").val(Sessioncreated);
+        });
+    function InitializeApprGSTGrid() {
+        ApprovegstGrid = $('#tblApproveTaxGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No GST's Found"
+                },
+                "createdRow": function (row, data, index) {
+                },
+                pageLength: 10
+            });
+        $('#tblApproveTaxGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApprovegstGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child(formatApprGst(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+        }
+    function formatApprGst(d) {
+        var htmltext;
+        var taxid;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    taxid = value;
+            });
+        var divid = "divapprgst" + taxid;
+        var divid1 = $("#" + divid + "");
+        $("#currentGstid").val(taxid);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyTaxGSTView',
+                data: { id: taxid },
+                success: function (Data) {
+                    var divid2 = "divapprgst" + taxid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data); 
+                 
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                 
+                }
+            });
+        return '<div id="divapprgst' + taxid + '" class="col-md-12"></div>';
+        }
+</script>
+

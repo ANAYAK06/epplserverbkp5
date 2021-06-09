@@ -1,0 +1,152 @@
+﻿@model List<EsselTestLocalApplication.Models.AddBankDetails>
+
+<div class="table-responsive  w-100">
+    <table id="tblApproveBankGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">BankId</th>
+                <th>Bank Name</th>
+                <th>Account Number</th>
+                <th>Location</th>
+                <th>Nature of Group</th>
+                <th  class="hidden">Status</th>
+                <th class="hidden">Bank Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Bankid)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BankName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Accountno)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Banklocation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NatureGroupName)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.BankStatus)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveBankGrid = null;
+            InitializeApprBankGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprBankCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprBankGrid() {
+        ApproveBankGrid = $('#tblApproveBankGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,  
+                language: {
+                    "emptyTable": "No Bank Accounts Found"
+                },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(6)', row).html();
+                if (oldstatus == 1) {
+                    $('td:eq(6)', row).html("Verification Pending");
+                }
+                else { $('td:eq(6)', row).html("Return"); }
+                },
+                pageLength: 10
+            });
+        $('#tblApproveBankGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveBankGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveBankGrid, tr);
+                // Open this row
+                row.child(formatApprBankAccounts(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprBankAccounts(d) {
+        var htmltext;
+        var Bankid,Status,Backstatus;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    Bankid = value;
+                if (index == 6)
+                    Status = value;
+                if (index == 7)
+                    Backstatus = value;
+            });
+
+        var divid = "divapprBank" + Bankid;
+        var divid1 = $("#" + divid + "");
+        $("#currentBankAcc").val(Bankid);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyBankAccountsView',
+                data: { id: Bankid },
+                success: function (Data) {
+                    var divid2 = "divapprBank" + Bankid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                 
+                   // $(divid3).append('<input type="text" value="' + code+'" id="apprdcabudcc-' + code +'"/>');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                 
+                }
+            });
+        return '<div id="divapprBank' + Bankid + '" class="row" ></div>';
+        }
+</script>
+

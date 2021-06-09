@@ -1,0 +1,334 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.ClientInvoiceReport
+@{
+    ViewBag.Title = "ClientInvoiceReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Client Invoice Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-2 text-right" style="margin-top:3px;">@Html.LabelFor(model => model.ReportType)</div>
+                                    <div class="col-md-6  text-left">
+                                        <input id="rTypeBeforePayment" name="ReportType" value="BeforePayment" type="radio" style="font-weight:bold;">Pending &nbsp;
+                                        <input id="rTypeAfterPayment" name="ReportType" value="AfterPayment" type="radio">Received&nbsp;
+                                        <input id="rTypeAll" name="ReportType" value="AllRecords" type="radio">All Records&nbsp;
+                                    </div>
+                                    <div class="col-md-2"></div>
+
+                                </div>
+                                <div class="row" style="margin-top:-17px;">  <hr /></div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Clientcode)
+                                            @Html.DropDownListFor(model => model.Clientcode, new SelectList(Model.ClientList, "Clientcode", "clientname"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlClient", onchange = "CleintInvptClientChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.SubClientcode)
+                                            @Html.DropDownListFor(model => model.SubClientcode, new SelectList(Model.SubClientList, "SubClientCode", "SubClientCodename"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSubClient", onchange = "CleintInvptSubClientChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CCCode)
+                                            @Html.DropDownListFor(model => model.CCCode, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC", onchange = "CleintInvCCChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.PONO)
+                                            @Html.DropDownListFor(model => model.PONO, new SelectList(Model.POList, "ClientPOId", "PONumber"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPO", onchange = "CleintInvPOChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divRptFromdate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.FromDate)
+                                            @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtCIFromDate", @class = "form-control date-picker", type = "text", @readonly = true, value = "" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divRptTodate">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ToDate)
+                                            @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txtCIToDate", @class = "form-control date-picker", type = "text", @readonly = true, value = "" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <br />
+                                            <div class="row">
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="View" class="btn btn1 btn-success" id="btnViewADRpt" onclick="ShowCIReport()" />
+                                                </div>
+                                                <div class="col-md-3  text-center">
+                                                    <input type="submit" value="Reset" class="btn btn1 btn-success" id="btnResetADRpt" onclick="ResetCIReport()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divCIRptGrid">
+                                    <div id="divCIDataGrid">
+                                    </div>
+                                </div>
+                                <div class="row text-center">
+                                    <div id="divCIRptInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#ddlClient").prepend("<option value='SelectAll'>Select All</option>");
+        $("#divCIRptGrid").addClass("hidden");
+        $("#txtCIFromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtCIToDate").datepicker("option", "minDate", selectedDate);
+            }
+        });
+        $("#txtCIToDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+            }
+        });
+    });
+    function CleintInvptClientChange() {
+        //debugger;
+        var clientindex = $("#ddlClient option:selected").index();
+        var client = $("#ddlClient option:selected").val();
+        $("#divCIRptGrid").addClass("hidden");
+        if (clientindex === 0) {
+            $("#ddlSubClient").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlPO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Reports/GetSubClientsbyClientIDForReport",
+                data: '{Client:"' + client + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var ddlsubclient = $("#ddlSubClient");
+                    ddlsubclient.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddlsubclient.append("<option value='Select All'>Select All</option>");
+                    $.each(response, function () {
+                        ddlsubclient.append($("<option></option>").val(this['SubClientCode']).html(this['SubClientCodename']));
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+    }
+    function CleintInvptSubClientChange() {
+        var clientindex = $("#ddlClient option:selected").index();
+        var client = $("#ddlClient option:selected").val();
+        var subclientindex = $("#ddlSubClient option:selected").index();
+        var subclient = $("#ddlSubClient option:selected").val();
+        $("#divCIRptGrid").addClass("hidden");
+        if (clientindex === 0) {
+            $("#ddlSubClient").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlPO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else if (subclientindex === 0) {
+            $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlPO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Reports/GetCCbyClient",
+                data: '{Client:"' + client + '",SubClient:"' + subclient + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var ddlcc = $("#ddlCC");
+                    ddlcc.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddlcc.append("<option value='Select All'>Select All</option>");
+                    $.each(response, function () {
+                        ddlcc.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+
+
+    }
+    function CleintInvCCChange() {
+        var clientindex = $("#ddlClient option:selected").index();
+        var client = $("#ddlClient option:selected").val();
+        var subclientindex = $("#ddlSubClient option:selected").index();
+        var subclient = $("#ddlSubClient option:selected").val();
+        var ccindex = $("#ddlCC option:selected").index();
+        var cc = $("#ddlCC option:selected").val();
+        $("#divCIRptGrid").addClass("hidden");
+        if (clientindex === 0) {
+            $("#ddlSubClient").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlPO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else if (subclientindex === 0) {
+            $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $("#ddlPO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else if (ccindex === 0) {
+            $("#ddlPO").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Reports/GetPobyCCAndClient",
+                data: '{Client:"' + client + '",SubClient:"' + subclient + '",CCCode:"' + cc + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var ddlpo = $("#ddlPO");
+                    ddlpo.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    ddlpo.append("<option value='Select All'>Select All</option>");
+                    $.each(response, function () {
+                        ddlpo.append($("<option></option>").val(this['ClientPOId']).html(this['PONumber']));
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+        }
+    }
+    function CleintInvPOChange() {
+        $("#divCIRptGrid").addClass("hidden");
+    }
+    function ResetCIReport() { location.reload(); }
+    function ShowCIReport() {
+        var clientindex = $("#ddlClient option:selected").index();
+        var client = $("#ddlClient option:selected").val();
+        var subclientindex = $("#ddlSubClient option:selected").index();
+        var subclient = $("#ddlSubClient option:selected").val();
+        var ccindex = $("#ddlCC option:selected").index();
+        var cc = $("#ddlCC option:selected").val();
+        var poindex = $("#ddlPO option:selected").index();
+        var po = $("#ddlPO option:selected").text();
+        var fromdate = $("#txtCIFromDate").val();
+        var todate = $("#txtCIToDate").val();
+        var errorMsg = "";
+        isValid = true;
+        if (clientindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Client</p>";
+            isValid = false;
+        }
+        if (subclientindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Sub Client</p>";
+            isValid = false;
+        }
+        if (ccindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (poindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select PONO</p>";
+            isValid = false;
+        }
+        if ($("#rTypeBeforePayment").is(':checked') == false && $("#rTypeAfterPayment").is(':checked') == false && $("#rTypeAll").is(':checked') == false) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Report Type</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCIRptInfoMsg").text("");
+            $("#divCIRptInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCIRptInfoMsg").addClass("alert-danger");
+            $("#divCIRptInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divCIRptInfoMsg").text("");
+            $("#divCIRptInfoMsg").addClass("hidden");
+            let rtype = '';
+            if ($("#rTypeBeforePayment").is(':checked') == true) {
+                rtype = 'BeforePayment';
+            }
+            else if ($("#rTypeAfterPayment").is(':checked') == true) {
+                rtype = 'AfterPayment';
+            }
+            else if ($("#rTypeAll").is(':checked') == true) {
+                rtype = 'All';
+            }
+            //Client, SubClient, From, To, CCCode, PO, Type
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Reports/ClientInvoiceReportGrid',
+                data: { Client: client, SubClient: subclient, From: fromdate, To: todate, CCCode: cc, PO: po, Type: rtype},
+                success: function (Data) {
+                    var count1 = Object.keys(Data).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#divCIDataGrid").html(Data);
+                        $("#divMainGrid").removeClass('hidden');
+                        $("#divCIRptGrid").removeClass('hidden');
+                    }
+                    else {
+                        $("#divCIDataGrid").html('No Data Found');
+                        $("#divMainGrid").removeClass('hidden');
+                        $("#divCIRptGrid").removeClass('hidden');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                    alert("error");
+                }
+            });
+
+        }
+    }
+</script>

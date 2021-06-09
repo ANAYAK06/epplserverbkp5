@@ -1,0 +1,138 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmpCategorys
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-2"> @Html.LabelFor(model => model.CategoryName)</div>
+    <div class="col-md-3">
+        @Html.TextBoxFor(model => model.CategoryName, htmlAttributes: new { @class = "form-control", @id = "txtCategoryName" })
+    </div>
+</div>
+@if (Model.EmpReportToCategorysList.Count > 0)
+{
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-1"></div>
+        <div class="col-md-2"> @Html.LabelFor(model => model.ReportTo)</div>
+        <div class="col-md-3">
+            @Html.DropDownListFor(model => model.ReportTo, new SelectList(Model.EmpReportToCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlReportToCategory" })
+        </div>
+    </div>
+}
+<div class="row" style="margin-top:10px">
+    <div class="col-md-1"></div>
+    <div class="col-md-2"> @Html.LabelFor(model => model.CategoryCode)</div>
+    <div class="col-md-3">
+        @Html.TextBoxFor(model => model.CategoryCode, htmlAttributes: new { @class = "form-control", @id = "txtCategoryCode", oninput = "this.value = this.value.toUpperCase()" })
+    </div>
+</div>
+<div class="row rowspace">
+    <div class="col-md-1"></div>
+    <div class="col-md-2"></div>
+    <div class="col-md-4 ">
+        <br />
+        <button class="btn btn1 btn-success" id="btnCategorySubmit" onclick="SubmitCategoryData()">Submit</button>
+        <button class="btn btn1 btn-success" id="btnCategoryReset" onclick="ResetCategoryData()">Reset</button>
+    </div>
+</div>
+<div class="row rowspace">
+    <div class="text-center">
+        <br />
+        <div id="divCategoryInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div id="divGridCategories">
+        @Html.Action("GetAllEmpCategories", "HR")
+    </div>
+</div>
+<div class="modal fade" id="EditCategoryModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script>
+    $(document).ready(function () {
+        $("#EditCategoryModel").on("hidden.bs.modal", function () {
+            //$("#divFamilyGridData").load('/HR/FamilyMembersGrid');
+            $('#liEmpCategory').trigger('click');
+        });
+    });
+    //Start of Category *************************************************************
+    function SubmitCategoryData() {
+        var errorMsg = "";
+        isValid = true;
+        var code = $("#txtCategoryCode").val();
+        var name = $("#txtCategoryName").val();
+        if (name === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Category Name</p>";
+            isValid = false;
+        }
+        if (code === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Category Code</p>";
+            isValid = false;
+        }
+        else {
+            var letters = /^[A-Z]+$/;
+            if (!code.match(letters)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Capital Alphabets For Category Code</p>";
+                isValid = false;
+            }
+        }
+        var emprowcount = $("#tblEmpCategoriesGrid tbody tr").length;
+        if (emprowcount > 0) {
+            var ddlreporttoindex = $("#ddlReportToCategory option:selected").index();
+            if (ddlreporttoindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Report To</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCategoryInfoMsg").text("");
+            $("#divCategoryInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCategoryInfoMsg").addClass("alert-danger");
+            $("#divCategoryInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCategoryInfoMsg").text("");
+            $("#divCategoryInfoMsg").addClass("hidden");
+            let reporto = "";
+            if (emprowcount > 0) {
+                reporto = $("#ddlReportToCategory option:selected").val();
+            }
+            else { reporto = 0; }
+            let catdata = {
+                CategoryName: name,
+                ReportToId: reporto,
+                Action: 'New',
+                CategoryCode: code
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+            //debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertNewEmpCategory',
+                data: { CategoryData: catdata },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        $('#liEmpCategory').trigger('click');
+                        //$("#divGridCategories").load('/HR/GetAllEmpCategories');
+                    }
+                    else {
+                        $("#divCategoryInfoMsg").text(Data.saveStatus);
+                        $("#divCategoryInfoMsg").addClass("alert-danger");
+                        $("#divCategoryInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCategoryInfoMsg").text(addFailMsg);
+                    $("#divCategoryInfoMsg").addClass("alert-danger");
+                    $("#divCategoryInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+
+        }
+    }
+    function ResetCategoryData() {
+        $('#liEmpCategory').trigger('click');
+    }
+</script>

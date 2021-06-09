@@ -1,0 +1,36 @@
+﻿
+
+@{
+    ViewBag.Title = "GroupsTreeView";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+
+<div class="col-md-10">
+    <div id="ajax" class="demo">
+    </div>
+
+</div>
+@Scripts.Render("~/bundles/jstree")
+@*<script src="~/Scripts/JsTree/treview.min.js"></script>
+    <script src="~/Scripts/JsTree/jstree.min.js"></script>*@
+<script type="text/javascript">
+
+    $('#ajax').jstree({
+        core: {
+            'data': {
+                "themes": {
+                    "responsive": true
+                },
+                "url": "/GroupSubgrouptree.ashx",
+                "dataType": "json"
+            }
+        },
+        types: {
+            "default": { "icon": "glyphicon glyphicon-cloud" }
+        },
+        plugins: ["types"]
+    }).on('open_node.jstree', function (e, data) {
+        data.instance.set_icon(data.node, "glyphicon glyphicon-minus");
+    }).on('close_node.jstree', function (e, data) { data.instance.set_icon(data.node, "glyphicon glyphicon-cloud"); });
+</script>

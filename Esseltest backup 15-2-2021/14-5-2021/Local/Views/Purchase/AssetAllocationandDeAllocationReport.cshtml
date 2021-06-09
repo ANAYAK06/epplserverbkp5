@@ -1,0 +1,153 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.EmployeeAssetAllocation
+@{
+    ViewBag.Title = "AssetAllocationandDeAllocationReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Employee Asset Allocation And DeAllocation Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Allocationtype)
+                                        @Html.DropDownListFor(model => model.Allocationtype, new SelectList(Model.AllocationList, "Selectionid", "SelectionValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlallocation", onchange = "Assetchange();" }) 
+                                    </div>
+                                </div>
+                                <div id="divempdata">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Employeeid)
+                                            @Html.DropDownListFor(model => model.Employeeid, new SelectList(Model.EmployeeList, "Employeeid", "EmployeeName"),  htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlemployee" }) @*, onchange = "GetgridDetails();"*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">      
+                                        <br/>
+                                        <input type="submit" value="View" class="btn btn1 btn-success" id="btnviewleavereport" onclick="SubmitView()" />
+                                        <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="text-center">
+                                            <br />
+                                            <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="divreportGrid" class="col-md-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divreportGrid").addClass('hidden');
+        $("#divempdata").addClass('hidden');
+        
+    });
+    function Assetchange() {
+        var ttypeind = $("#ddlallocation option:selected").index();
+        var ttypeval = $("#ddlallocation option:selected").val();
+        if (ttypeind != "0") {
+            $("#ddlemployee option").remove();
+            $.ajax({                
+                type: "POST",
+                url: "/Purchase/GetEmployeeDetails",
+                data: '{id:"' + ttypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ddlemployee"); 
+                        ddlaprovalstatus.empty().append('<option selected="-Please Select-" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Employeeid']).html(this['EmployeeName']));
+                        });                        
+                    }
+                    $("#divempdata").removeClass('hidden');
+                },               
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        else {
+            $("#divempdata").addClass('hidden');
+        }
+    }
+    function SubmitClearItem() {        
+        location.reload();
+    }
+    function SubmitView() {      
+        isValid = true;
+        var errorMsg = "";
+        var AllocationType = $("#ddlallocation").index();
+        var employee = $("#ddlemployee").index();       
+        if (AllocationType == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Allocation Type</p>";
+            isValid = false;
+        }
+        if (employee == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Employee</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            //debugger;
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+            var AllocationType = $("#ddlallocation").val();
+            var ccodeval = $("#ddlemployee option:selected").val();
+            var nameArr1 = ccodeval.split(',');
+            var emprefno = nameArr1[1];
+            if (AllocationType != 0 && employee != 0) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Purchase/ViewemployeeitemsDetails",
+                    data: { EmpRefno: emprefno, Type: AllocationType},
+                    dataType: 'html',
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divreportGrid").html(response);
+                            $("#divreportGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divreportGrid").html('No Data Found');
+                            $("#divreportGrid").removeClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divreportGrid").addClass("hidden");
+                return false;
+            }
+        }
+    }
+
+</script>
+

@@ -1,0 +1,178 @@
+﻿
+@model EsselTestLocalApplication.Models.ReportParameters.AccruedDateData
+<style>
+    /*.wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+    }
+    .tdalign {
+        text-align: right !important;
+    }*/
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: center;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+</style>
+<div class=" col-md-12 verifydiv">
+    <br />
+    <div class="row">
+        <div class="col-lg-2"><h5>@Model.CCCode</h5></div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-4"><h5 style="text-decoration:underline">CASH/BANK DEBIT DETAILS OF THE DAY</h5></div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-2">@Model.Date</div>
+        <div class="col-lg-2"></div>
+    </div>
+    <div class="row"><br />
+        <div align="right">
+            <span>Export to : </span>
+            <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelACCInterestDateWise();" />
+            @*<img src="~/Content/EsselImages/pdf1.png" onclick="Exportpdf();" />*@
+        </div>
+    </div>   
+    <div class="row"><br/>
+        <div class="tabledynamic">
+            <table id="tblAIDateGrid" style="width:100%" class="table order-list" cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th class="tdcls">Invoice Date</th>
+                        <th class="tdcls">Paid Date</th>
+                        <th class="tdcls">Transaction From</th>
+                        <th class="tdcls">DCA</th>
+                        <th class="tdcls">SubDCA</th>
+                        <th class="tdcls">ITHead</th>
+                        <th class="tdcls">Description With Transaction ID/Voucher ID</th>
+                        <th class="tdcls">Cash</th>
+                        <th class="tdcls">Bank</th>
+                        <th class="tdcls">TotalExpense</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DateTransactionsList)
+                    {
+                        <tr>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.InvoiceDate)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.PaidDate)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.TransactionFrom)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.DCA)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.SubDCA)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.ITHead)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.Cash)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.Bank)
+                            </td>
+                            <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                                @Html.DisplayFor(modelItem => item.TotalExpense)
+                            </td>                            
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>
+                            
+                        </td>
+                        <td>
+                           
+                        </td>
+                        <td >
+                           
+                        </td>
+                        <td >
+                         
+                        </td>
+                        <td>
+                          
+                        </td>
+
+                        <td style="font-weight:normal; white-space: normal;font-size:11px">
+                            
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                           Total Debit Of the Day:
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                            @Model.CashBankTotal
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                            @Model.BankTotal
+                        </td>
+                        <td style="font-weight:normal; white-space: normal;font-size:11px; text-align: center;">
+                          @Model.CashBankTotal
+                        </td>
+                    </tr>
+                </tfoot>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+<script>
+    function ExportExcelACCInterestDateWise() {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelACCInterestDateWise',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = "Accrued Interest Report.xlsx";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+    }
+    function ExportpdfACCInterestDateWise() {
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelACCInterestDateWise',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = "Accrued Interest Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+    }
+</script>

@@ -1,0 +1,233 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.GratuityEligibility
+    <style>
+        .strike1 {
+            font-size:12px
+        }
+    </style>
+    <div class="row">
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.DCA)
+            @Html.DropDownListFor(model => model.DCA, new SelectList(Model.DCACodes, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGDca", onchange = "GDCAChange()" })
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.SubDCA)
+            @Html.DropDownListFor(model => model.SubDCA, new SelectList(Model.SubDCACodes, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGSubDca" })
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EffectiveDate)
+                @Html.TextBoxFor(model => model.EffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtGrauityEffectiveDate", @readOnly = "true" })
+            </div>
+        </div>
+    </div>
+<div class="row">
+    @*<div class="col-md-2">
+        @Html.LabelFor(model => model.GratuityCategory)
+        @Html.DropDownListFor(model => model.GratuityCategory, new SelectList(Model.GratuityEmpCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlGTCategory" })
+    </div>*@
+   
+    <div class="col-md-7">
+        <div class="row"><label style="margin-left:15px">Calculation</label></div>
+        @*<div class="row"><hr style="margin-top:0px"/></div>*@
+        <div class="row">
+            <div class="col-md-12 change-tab">             
+                <div class="tabledynamic text-center">                 
+                    <table style="margin-left:15%">
+                        <tbody>
+                            <tr>
+                                <th>
+                                    @Html.LabelFor(model => model.ElgibilityInYear, htmlAttributes: new { @class = "strike1" } )
+                                    @Html.TextBoxFor(model => model.ElgibilityInYear, htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "txtGrauityElgibilityInYear", onkeypress = "return ValidateAmount(this,event);" })
+                                </th>
+                                <th><br /><b>*</b></th>
+                                <th>
+                                    @Html.LabelFor(model => model.InDays, htmlAttributes: new { @class = "strike1" })
+                                    @Html.TextBoxFor(model => model.InDays, htmlAttributes: new { @class = "form-control", @id = "txtGrauityInDays", onkeypress = "return ValidateAmount(this,event);" })
+                                                            </th>
+                                <th><br /><b>+Daily Allowance(DA)</b></th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+   
+    <div class="col-md-6">
+        <div class="form-group">
+        </div>
+    </div>
+</div>
+<div class="row rowspace">
+    <div class="col-md-12 text-right">
+        <br />
+        <button class="btn btn1 btn-success" id="btnGratuitySubmit" onclick="SubmitGratuityData()">Submit</button>
+
+        <button class="btn btn1 btn-success" id="btnGratuityUpdate" onclick="SubmitGratuityData()">Update</button>
+        <button class="btn btn1 btn-success" id="btnGratuityReset" onclick="ResetGratuityData()">Reset</button>
+    </div>
+</div>
+<div class="row rowspace">
+    <div class="text-center">
+        <br />
+        <div id="divGratuityInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#txtGrauityEffectiveDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            yearRange: "-100:+1",
+        });
+        if (@Model.InDays!==0) {//update data
+
+            $("#btnGratuityUpdate").removeClass("hidden");
+            $("#btnGratuitySubmit").addClass("hidden");
+            $("#btnGratuitySubmit").prop('disabled', false);
+            $("#btnGratuityUpdate").prop('disabled', false);
+            $("#txtESIWithEffectDate").datepicker("setDate", '@Model.EffectiveDate');
+        }
+        else {//first time rule set
+            $("#btnGratuityUpdate").addClass("hidden");
+            $("#btnGratuitySubmit").removeClass("hidden");
+            $("#btnGratuitySubmit").prop('disabled', false);
+            $("#btnGratuityUpdate").prop('disabled', false);
+        }
+    });
+
+    function SubmitGratuityData() {
+        var errorMsg = "";
+        isValid = true;
+        var Effectdate = $('#txtGrauityEffectiveDate').val();
+        var Tenureyears = $("#txtGrauityElgibilityInYear").val();
+        var DaysinMonth = $('#txtGrauityInDays').val();
+        var dcaindex = $("#ddlGDca option:selected").index();
+        var subdcaindex = $("#ddlGSubDca option:selected").index();
+        var dca = $("#ddlGDca option:selected").val();
+        var subdca = $("#ddlGSubDca option:selected").val();
+        if (Effectdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+            isValid = false;
+        }
+        if (Tenureyears === "" || Tenureyears === "0" || Tenureyears === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter No of Years of Tenure </p>";
+            isValid = false;
+        }
+        if (DaysinMonth === "" || DaysinMonth === "0" || DaysinMonth === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter No of Days in a Month</p>";
+            isValid = false;
+        }
+        else {
+            if (DaysinMonth > 31) {
+                errorMsg += "<p style='margin-top:-5px!important;'>No of Days in a Month Should Not be Greater Than 31</p>";
+                isValid = false;
+            }
+        }
+        if (dcaindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Account Head</p>";
+            isValid = false;
+        }
+        if (subdcaindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select SubAccount Head</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divGratuityInfoMsg").text("");
+            $("#divGratuityInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divGratuityInfoMsg").addClass("alert-danger");
+            $("#divGratuityInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divGratuityInfoMsg").text("");
+            $("#divGratuityInfoMsg").addClass("hidden");
+
+            let gratuitydata = {
+                EffectiveDate: Effectdate,
+                ElgibilityInYear: Tenureyears,
+                InDays: DaysinMonth,
+                DCA: dca,
+                SubDCA: subdca
+            };
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+            $("#btnGratuitySubmit").prop('disabled', true);
+            $("#btnGratuityUpdate").prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveHRGratuityRule',
+                data: { objHRRules: gratuitydata },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                       // location.reload();
+                        //$("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+                        //$('#txtMinWageAmount').val("");
+                        //$("#ddlMinWageSkillName").prop('selectedIndex', 0);
+                        $("#divGratuityInfoMsg").text("Rule Added Successfully");
+                        $("#divGratuityInfoMsg").removeClass("hidden alert-danger");
+                        $("#divGratuityInfoMsg").addClass("alert-success");
+                        
+                    }                    
+                    else {
+                        $("#divGratuityInfoMsg").text(addFailMsg);
+                        $("#divGratuityInfoMsg").addClass("alert-danger");
+                        $("#divGratuityInfoMsg").removeClass("hidden alert-success");
+                        $("#btnGratuitySubmit").prop('disabled', false);
+                        $("#btnGratuityUpdate").prop('disabled', false);
+                    }
+                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divGratuityInfoMsg").text(addFailMsg);
+                    $("#divGratuityInfoMsg").addClass("alert-danger");
+                    $("#divGratuityInfoMsg").removeClass("hidden alert-success");
+                    $("#btnGratuitySubmit").prop('disabled', false);
+                    $("#btnGratuityUpdate").prop('disabled', false);
+                }
+            });
+        }
+    }
+    function ResetGratuityData() {
+        //location.reload();
+        $('#liGratuityRules').trigger('click');
+    }
+    function GDCAChange() {
+
+        // //debugger;
+        let dcaindex = $("#ddlGDca option:selected").index();
+        let dca = $("#ddlGDca option:selected").val();
+        var sdcaddl = $("#ddlGSubDca");
+        if (dcaindex == 0) {
+            sdcaddl.empty().append('<option selected="selected" value="-Please Select-">-Please Select-</option>');
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetSubDCAbyDCA",
+                data: "{DCACode:'" + dca + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(data, function () {
+                        sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    }
+</script>

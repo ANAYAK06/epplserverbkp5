@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "SPPOClose";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Service Provider PO Close</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div id="divApprSPPOGrid">
+                                    @Html.Action("SPPOCloseGrid", "Purchase")
+                                </div>
+                                <div id="ClosesppoMsgModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <br />
+                                                <div id="clSPPOMsg" style="text-align:center;font-size:20px;color:forestgreen"></div>
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="closePOConfirmation" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<script>
+    $(document).ready(function () {
+        $("#closePOConfirmation").on("hidden.bs.modal", function () {
+            //alert("");
+            location.reload();
+            //$("#divApprSPPOGrid").load('/Purchase/SPPOCloseGrid');
+        });
+    });
+</script>

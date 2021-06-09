@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "VerifyLeaveApplication";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Leave Application Verification</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <input type="text" value="0" id="txtApprLeaveappCreatedby" style="display:none" />
+                                <input type="text" value="0" id="txtApprLeaveappRole" style="display:none" />
+                                <input type="hidden" id="currentleaveid" />
+                                <div id="divApprLeaveGrid">
+                                    @Html.Action("VerifyLeaveApplicationGrid", "HR")
+                                </div>
+                                <div id="ApproveLeaveAppMsgModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                    <div class="modal-dialog modal-lg">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <br />
+                                                <div id="ApprLeaveappMsg" style="text-align:center;font-size:20px;color:forestgreen"></div>
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @**@
+</div>

@@ -1,0 +1,510 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.SPPOAmend
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px;
+        /*word-wrap:normal;
+       word-break: break-all;
+        white-space: normal;*/
+    }
+
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+
+    .Minus {
+        color: green;
+    }
+
+    .Plus {
+        color: red;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorName)
+                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCCode)
+                    @Html.TextBoxFor(model => model.CCCode, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPONo)
+                    @Html.TextBoxFor(model => model.SPPONo, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AmendDate)
+                    @Html.TextBoxFor(model => model.AmendDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OldPOValue)
+                    @Html.TextBoxFor(model => model.OldPOValue, htmlAttributes: new { @class = "form-control", @readOnly = "true",@id="txtupOldPOValue" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OldBalance)
+                    @Html.TextBoxFor(model => model.OldBalance, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 change-tab" id="divUpAmenditemDescGrid">
+            <div class="strike">
+                <span>Old Item Description</span>
+            </div>
+            <div class="tabledynamic">
+                <br />
+                <table id="UpAmendOlditemDescTable" class="table order-list UpoldAmenditemDesc" cellspacing="1" cellpadding="1">
+                    <thead style="height:250px!important">
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            <td class="tdcls"></td>
+                            <td class="tdcls"><label class="tdlabelcls">S.No</label></td>
+                            <td style="text-align:center;color:#fff !important;padding:0px!important;width:300px"><label class="tdlabelcls">Item Description</label></td>
+
+                            <td class="tdcls"><label class="tdlabelcls">Unit</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">Qty</label></td>
+
+                            @*<td class="tdcls"><label class="tdlabelcls">OurRate</label></td>
+        <td class="tdcls"><label class="tdlabelcls">PRWRate</label></td>*@
+                            <td class="tdcls"><label class="tdlabelcls">Rate</label></td>
+                            <td class="tdcls" style="width:110px"><label class="tdlabelcls">Type</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">AemndQty</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">Amount</label></td>
+                            <td class="tdcls"><label class="tdlabelcls hidden">ItemStatus</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">ItemID</label></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int count = 1; }
+                        @foreach (var item in Model.ItemDescList)
+                        {
+                            if (item.ItemStatus == "Old")
+                            {
+                        <tr>
+                            <td class="tbodytdcls">
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            <input type="checkbox" class="eagle-check-input" checked>
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td class="tbodytdcls"><label>@count</label></td>
+                            <td style="text-align:center;padding:1px!important;width:300px">
+                                <textarea class="form-control txtitemdesc" rows="1" cols="10" disabled>@item.Description</textarea>
+                            </td>
+
+                            <td class="tbodytdcls">
+                                <input type="text" class="form-control txtUpOldUnit" value='@item.Unit' disabled />
+
+                            </td>
+                            <td class="tbodytdcls">
+                                <input type="text" class="form-control txtUpoldQty" value='@item.CurrentQuantity' disabled />
+                            </td>
+                            @*<td class="tbodytdcls">@item.ClientRate</td>
+        <td class="tbodytdcls">@item.PRWRate</td>*@
+                            <td class="tbodytdcls"><input type="text" class="form-control txtUpoldRate" value='@item.Rate' disabled /></td>
+                            <td class="tbodytdcls">
+                                <select class="form-control dropdown-toggle typeddl" disabled>
+                                    <option value="Select">Select</option>
+                                    @if (item.POType == "Add")
+                                    {
+                                        <option value="Add" selected>Add</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Add">Add</option>}
+
+                                    }
+                                    @if (item.POType == "Substract")
+                                    {
+
+                                        <option value="Substract" selected>Substract</option>
+                                    }
+                                    else
+                                    {
+
+                                        <option value="Substract">Substract</option>
+                                    }
+                                </select>
+
+                            </td>
+                            <td class="tbodytdcls">
+                                <input type="text" class="form-control txtUpoldAmendPOQty" value="@item.AmendQuantity" onkeypress="return ValidateAmount(this,event);" />
+                            </td>
+                            <td class="tbodytdcls"><input type="text" class="form-control txtUpoldAmount" value="@item.Amount" disabled /></td>
+                            <td class="tbodytdcls hidden">@item.ItemStatus</td>
+
+                            <td class="tbodytdcls">@item.SPPOItemId</td>
+
+
+                        </tr>
+                                count++;
+                            }
+
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            @*<td class="text-center;" colspan="2"></td>
+                            <td></td>*@
+
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-12 change-tab" id="divUpAmenditemDescGrid">
+            <div class="strike">
+                <span>New Item Description</span>
+            </div>
+            <div class="tabledynamic">
+                <br />
+                <table id="UpAmenditemDescTable" class="table order-list UpAmenditemDesc" cellspacing="1" cellpadding="1">
+                    <thead style="height:250px!important">
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            <td class="tdcls"></td>
+                            <td class="tdcls"><label class="tdlabelcls">S.No</label></td>
+                            <td style="text-align:center;color:#fff !important;padding:0px!important;width:300px"><label class="tdlabelcls">Item Description</label></td>
+
+                            <td class="tdcls"><label class="tdlabelcls">Unit</label></td>
+                            @*<td class="tdcls"><label class="tdlabelcls">Current Quantity</label></td>*@
+                            <td class="tdcls"><label class="tdlabelcls">Aemnd Quantity</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">Our Rate</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">PRW Rate</label></td>
+                            <td class="tdcls"><label class="tdlabelcls">Rate</label></td>
+                            @*<td class="tdcls"><label class="tdlabelcls">Type</label></td>*@
+                            <td class="tdcls"><label class="tdlabelcls">Amount</label></td>
+                            @*<td class="tdcls"><label class="tdlabelcls hidden">ItemStatus</label></td>*@
+                            @*<td></td>*@
+                            <td class="tdcls"><label class="tdlabelcls">ItemID</label></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int count1 = 1; }
+                        @foreach (var item in Model.ItemDescList)
+                        {
+                            if (item.ItemStatus == "New")
+                            {
+                        <tr>
+                            <td class="tbodytdcls">
+                                <ul class="list-inline">
+                                    <li class="eagle-checkbox">
+                                        <label class="eagle-check custom-checkbox">
+                                            <input type="checkbox" class="eagle-check-input" checked>
+                                            <span class="eagle-check-indicator"></span>
+                                            <span class="eagle-check-description"></span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td class="tbodytdcls"><label>@count1</label></td>
+                            <td style="text-align:center;padding:1px!important;width:300px">
+                                <textarea class="form-control txtitemdesc" rows="1" cols="50" onkeypress="return RestrictComma(this,event);" disabled>@item.Description</textarea>
+                            </td>
+
+                            <td class="tbodytdcls">
+                                <input type="text" class="form-control txtUnit" value=" @item.Unit" onkeypress="return RestrictComma(this,event);" />
+                            </td>
+                            <td class="tbodytdcls">
+                                <input type="text" class="form-control txtQuantity" value="@item.AmendQuantity" onkeypress="return ValidateAmount(this,event);" onkeyup="CountUpAmendItemDescAmount()" />
+                            </td>
+                            <td class="tbodytdcls"><input type="text" class="form-control txtOurRate" value="@item.ClientRate" onkeypress="return ValidateAmount(this,event);" /></td>
+                            <td class="tbodytdcls"><input type="text" class="form-control txtPRWRate" value="@item.PRWRate" onkeypress="return ValidateAmount(this,event);" onkeyup="ChangeUpAmendRatecolor()" /></td>
+                            <td class="tbodytdcls"><input type="text" class="form-control txtRate" value="@item.Rate" onkeypress="return ValidateAmount(this,event);" onkeyup="CountUpAmendItemDescAmount()" /></td>
+                            @*<td class="tbodytdcls">@item.POType</td>*@
+                            <td class="tbodytdcls"><input type="text" class="form-control txtAmount" value="@item.Amount" disabled /></td>
+                            @*<td class="tbodytdcls hidden">@item.ItemStatus</td>*@
+                            @*<td class="tbodytdcls">
+            <input type="button" class="ibtUpsppoAmendItemDescDel btn btn-md btn-danger" value="Delete">
+        </td>*@
+                            <td class="tbodytdcls">@item.SPPOItemId</td>
+                        </tr>
+                                count1++;
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            @*<td></td>
+                            <td></td>*@
+                            @*<td></td>*@
+
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="row" id="divTotals" style="margin-top:10px">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.AmendMinusValue)
+                @Html.TextBoxFor(model => model.SubstractAmount, new { @id = "txtUpSpAemndPOMinusValue", @class = "form-control Minus", type = "text", value = "0", readOnly = "true" })
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.AmendPlusValue)
+                @Html.TextBoxFor(model => model.AmendAmount, new { @id = "txtUpSpAemndPOPlusValue", @class = "form-control Plus", type = "text", value = "0", readOnly = "true" })
+            </div> <div class="col-md-1"></div>
+            <div class="col-md-3">
+                <label>Total PO Value</label>
+                @Html.TextBoxFor(model => model.TotalPOValue, new { @id = "txtUpSpAemndTotalValue", @class = "form-control", type = "text", value = "0", readOnly = "true" })
+            </div>
+            <div class="col-md-1"></div>
+
+
+        </div>
+        <div class="col-md-12">
+            <div class="change-tab" id="divApprTACGrid">
+                <div class="strike">
+                    <span>Terms & Conditions</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="UpTACTable" class="table order-list uptactable">
+                        <thead>
+                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important"></label></td>
+                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important">S.No</label></td>
+                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Terms & Conditions</label></td>
+                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important"></label></td>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count2 = 1; }
+                            @foreach (var item in Model.AmendTermsList)
+                            {
+                                <tr>
+                                    <td style="text-align:center;width:10px!important;">
+                                        <ul class="list-inline">
+                                            <li class="eagle-checkbox">
+                                                <label class="eagle-check custom-checkbox">
+                                                    <input type="checkbox" class="eagle-check-input" checked>
+                                                    <span class="eagle-check-indicator"></span>
+                                                    <span class="eagle-check-description"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td style="text-align:center;width:10px!important;"><label style="margin-top:10%">@count2</label></td>
+                                    <td style="text-align:center;">
+                                        @*@if (item.Type == "Old")
+                                        {
+                                            <textarea class="form-control txttac" rows="1" cols="50" disabled>@item.Term</textarea>
+                                        }
+                                        else
+                                        {*@
+                                            <textarea class="form-control txttac" rows="1" cols="50" disabled>@item.Term</textarea>
+                                        @*}*@
+                                    </td>
+                                    <td style="text-align:center">@item.Type</td>
+
+                                </tr>
+                                count2++;
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td class="text-center;"></td>
+                                <td></td>
+                                <td></td>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" style="margin-top:10px">
+            <div class="text-right" style="margin-right:12px">
+                <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewSPPOAmend" onclick="UpdateSPPOAmendData('@Model.AmendId','@Model.SPPONo','@Model.VendorCode','@Model.CCCode','@Model.AmendDate','@Model.DCACode','@Model.AmendAmount','@Model.SubstractAmount')" value="Submit" />
+            </div>
+        </div>
+        <div class="col-md-12 text-center" style="margin-top:10px">
+            <div id="divUpSppoAmendInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+         var oldpo = '@Model.OldPOValue';
+            var finalpo = '@Model.POValue';
+            if (parseFloat(oldpo) > parseFloat(finalpo)) {
+                $("#txtUpSpAemndTotalValue").css("color", "red");
+            }
+            else {
+                $("#txtUpSpAemndTotalValue").css("color", "green");
+            }
+
+        $("table.order-list.UpoldAmenditemDesc").on("keyup", ".txtUpoldAmendPOQty", function (event) {
+            var currentRow = $(this).closest("tr");
+            var typeindex = currentRow.find(".typeddl option:selected").index();
+            var actualqty = currentRow.find(".txtUpoldQty").val();
+            var amendQty = currentRow.find(".txtUpoldAmendPOQty").val();
+
+            if (typeindex === 0) {
+                $("#divUpSppoAmendInfoMsg").text("");
+                $("#divUpSppoAmendInfoMsg").append("<div>Select Type Before Adding Quantity</div>");
+                $("#divUpSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divUpSppoAmendInfoMsg").removeClass("hidden alert-success");
+                currentRow.find(".txtUpoldAmendPOQty").val(0);
+                currentRow.find(".txtUpoldAmount").val(0);
+
+            }
+            else if (parseFloat(actualqty) < parseFloat(amendQty)) {
+                $("#divUpSppoAmendInfoMsg").text("");
+                $("#divUpSppoAmendInfoMsg").append("<div>Invalid Amend Quantity</div>");
+                $("#divUpSppoAmendInfoMsg").addClass("alert-danger");
+                $("#divUpSppoAmendInfoMsg").removeClass("hidden alert-success");
+                currentRow.find(".txtUpoldAmendPOQty").val(0);
+                currentRow.find(".txtUpoldAmount").val(0);
+
+            }
+            else {
+                //debugger;
+                if (amendQty != "" || amendQty != 0) {
+                    $("#divUpSppoAmendInfoMsg").text("");
+                    $("#divUpSppoAmendInfoMsg").addClass("hidden");
+                    var type = currentRow.find(".typeddl  option:selected").val();
+                    var rate = currentRow.find(".txtUpoldRate").val();
+
+                    var ramt = currentRow.find(".txtUpoldAmount");
+                    var rowamount = 0;
+                    if (amendQty !== 0 && amendQty !== "") {
+                        rowamount = parseFloat(rate) * parseFloat(amendQty);
+                        ramt.val(parseFloat(rowamount).toFixed(2));
+                    }
+                }
+                else {                   
+                    currentRow.find(".txtUpoldAmount").val(0);
+                }
+
+            }
+            ValidateAmendPOValue();
+        });
+    });
+    function ValidateAmendPOValue() {
+        var plus = 0;
+        var Minus = 0;
+        var Total = 0;
+        var ActualPOValue = $("#txtupOldPOValue").val();
+        $("#UpAmendOlditemDescTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var amt = currentRow.find("td").eq(8).find("input[type='text']").val();
+            var type = currentRow.find("td").eq(6).find("select  option:selected").val();
+            if (type === "Add") {
+                plus = parseFloat(plus) + parseFloat(amt);
+            }
+            if (type === "Substract") {
+                Minus = parseFloat(Minus) + parseFloat(amt);
+            }
+        });
+        var newitemsfinalamount = 0;
+        var count = $("#UpAmenditemDescTable tbody tr").length;
+        if (count > 0) {
+            $("#UpAmenditemDescTable tbody tr").each(function () {
+
+                var currentRow = $(this);
+                var rowquantity = currentRow.find("td").eq(4).find("input[type='text']").val();
+                //var rowPWR = currentRow.find("td").eq(6).find("input[type='text']").val();
+                var rowrate = currentRow.find("td").eq(7).find("input[type='text']").val();
+                var rowamount = currentRow.find("td").eq(8).find("input[type='text']");
+                //var rate = currentRow.find("td").eq(7).find("input[type='text']");
+                var rowtotal = 0;
+
+                if (rowquantity !== "" && rowrate !== "") {
+                    rowtotal = parseFloat(rowquantity) * parseFloat(rowrate);
+                    rowamount.val(rowtotal);
+                    newitemsfinalamount = parseFloat(newitemsfinalamount) + parseFloat(rowtotal);
+                }
+                else { rowamount.val(""); }
+            });
+        }
+
+        var totalPlusamount = parseFloat(plus) + parseFloat(newitemsfinalamount);
+        $("#txtUpSpAemndPOPlusValue").val(totalPlusamount);
+        $("#txtUpSpAemndPOMinusValue").val(parseFloat(Minus).toFixed(2));
+        Total = parseFloat(ActualPOValue) + parseFloat(totalPlusamount) - parseFloat(Minus);
+        //Total = parseFloat(ActualPOValue) + parseFloat(totalPlusamount) - parseFloat(Minus);
+        $("#txtUpSpAemndTotalValue").val(parseFloat(Total).toFixed(2));
+        if (parseFloat(ActualPOValue) > parseFloat(Total)) {
+            $("#txtUpSpAemndTotalValue").css("color", "red");
+        }
+        else {
+            $("#txtUpSpAemndTotalValue").css("color", "green");
+        }
+
+    }
+    function CountUpAmendItemDescAmount() {
+
+        var finalamount = 0;
+        $("#UpAmenditemDescTable tbody tr").each(function () {
+
+            var currentRow = $(this);
+            var rowquantity = currentRow.find("td").eq(4).find("input[type='text']").val();
+            var rowPWR = currentRow.find("td").eq(6).find("input[type='text']").val();
+            var rowrate = currentRow.find("td").eq(7).find("input[type='text']").val();
+            var rowamount = currentRow.find("td").eq(8).find("input[type='text']");
+            //var rate = currentRow.find("td").eq(7).find("input[type='text']");
+            var rowtotal = 0;
+
+            if (parseFloat(rowPWR) < parseFloat(rowrate)) { currentRow.find("td").eq(7).find("input[type='text']").css({ 'color': 'red' }); }
+            else { currentRow.find("td").eq(7).find("input[type='text']").css({ 'color': 'black' }); }
+
+            if (rowquantity !== "" && rowrate !== "") {
+                rowtotal = parseFloat(rowquantity) * parseFloat(rowrate);
+                rowamount.val(rowtotal);
+                finalamount = parseFloat(finalamount) + parseFloat(rowtotal);
+            }
+            else { rowamount.val(""); }
+        });
+        ValidateAmendPOValue();
+    }
+</script>

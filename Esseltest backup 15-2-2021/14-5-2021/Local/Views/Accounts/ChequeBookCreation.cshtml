@@ -1,0 +1,213 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.ChequeBook
+@{
+    ViewBag.Title = "ChequeBookCreation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Cheque Book Creation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <li role="presentation" class="active"><a data-toggle="tab" href="#New_PO">ChequeNo Creation</a></li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.BankName)
+                                                                @Html.DropDownListFor(model => model.BankName, new SelectList(Model.RefundBanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ChequeBank" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.ChequeOpeningDate)
+                                                                @Html.TextBoxFor(model => model.ChequeOpeningDate, "{0:dd-MMM-yyyy}", new { @id = "txtchequeopeningdate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.FirstChequeno)
+                                                                @Html.TextBoxFor(model => model.FirstChequeno, htmlAttributes: new { @maxlength = "6", @class = "form-control", @id = "txtFirstChequeno", @Value = "", onkeypress = "return IsNumeric(event)" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.LastChequeno)
+                                                                @Html.TextBoxFor(model => model.LastChequeno, htmlAttributes: new { @maxlength = "6", @class = "form-control", @id = "txtLastChequeno", @Value = "", onkeypress = "return IsNumeric(event)" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Remarks)
+                                                                @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtchequeremarks", @Value = "" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                        <div class="col-md-12">
+                                                            <div class="text-right">
+                                                                <input type="text" value="0" id="txtChequeRoleId" style="display:none" />
+                                                                <button class="btn btn1 btn-success" id="btnChequenoSubmit" onclick="btnSubmitChequeData()">Submit</button>
+                                                                <button class="btn btn1 btn-success" id="btnChequenoReset" onclick="Clearchequedetailsreset()">Reset</button>
+                                                                @*<input type="reset" value="Reset" class="btn btn1 btn-success" onclick="" />*@
+                                                                <input type="text" id="txtCreatedby" style="display:none" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row text-center">
+                                                        <div id="divchequeInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#txtchequeopeningdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+    });
+    function btnSubmitChequeData() {
+        var errorMsg = "";
+        isValid = true;
+        var bankname = $("#ddl_ChequeBank option:selected").index();
+        var date = $("#txtchequeopeningdate").val();
+        var FirstchqNo = $("#txtFirstChequeno").val();
+        var LastchqNo = $("#txtLastChequeno").val();
+        var Remarks = $("#txtchequeremarks").val();
+        if (bankname == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+            isValid = false;
+        }
+        if (date == "" || date == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select date</p>";
+            isValid = false;
+        }
+        if (FirstchqNo == "" || FirstchqNo == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter First Cheque Number</p>";
+            isValid = false;
+        }
+        if (LastchqNo == "" || LastchqNo == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Last Cheque Number</p>";
+            isValid = false;
+        }
+        if (LastchqNo.length != 6 || LastchqNo.length != 6) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter six digits in from and to textboxes</p>";
+            isValid = false;
+        }
+        if (Number(FirstchqNo) >= Number(LastchqNo)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter valid cheque nos</p>";
+            isValid = false;
+        }
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divchequeInfoMsg").text("");
+            $("#divchequeInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divchequeInfoMsg").addClass("alert-danger");
+            $("#divchequeInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divchequeInfoMsg").text("");
+            $("#divchequeInfoMsg").addClass("hidden");
+            //SaveRefunddata();
+            Savechequedata();
+        }
+
+    }
+    function Clearchequedetailsreset() {        
+        $("#ddl_ChequeBank").prop('selectedIndex', 0);
+        $("#txtchequeopeningdate").datepicker({}).datepicker("setDate", new Date()); 
+        $("#txtFirstChequeno").val("");
+        $("#txtLastChequeno").val("");
+        $("#txtchequeremarks").val("");
+        $("#divchequeInfoMsg").text("");
+        $("#divchequeInfoMsg").addClass("hidden");  
+        //$('#txtchequeopeningdate').datepicker();
+        //$('#txtchequeopeningdate').datepicker('setDate', new Date());
+    }
+    function Savechequedata() {
+        var Roleid = '@Session["Roleid"]';
+        var chequenos = {
+            BankName: $("#ddl_ChequeBank option:selected").val(),
+            ChequeOpeningDate: $("#txtchequeopeningdate").val(),
+            FirstChequeno: $("#txtFirstChequeno").val(),
+            LastChequeno: $("#txtLastChequeno").val(),
+            Remarks: $("#txtchequeremarks").val(),
+            RoleID: Roleid,
+            CreatedBy: $("#txtCreatedby").val()
+        };
+        addFailMsg = "Error Occurred While Adding Cheque Nos.";
+        $("#btnChequenoSubmit").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/NewSavechequeDetails',
+            data: { newchequenoDetails: chequenos },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divchequeInfoMsg").text(Data.saveStatus);
+                    $("#divchequeInfoMsg").removeClass("hidden alert-danger");
+                    $("#divchequeInfoMsg").addClass("alert-success");
+                   
+                }
+                else {
+                    $("#divchequeInfoMsg").text(Data.saveStatus);
+                    $("#divchequeInfoMsg").addClass("alert-danger");
+                    $("#divchequeInfoMsg").removeClass("hidden alert-success");
+                    $("#btnChequenoSubmit").prop("disabled", false);
+                }
+           
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+             
+                $("#divchequeInfoMsg").text(addFailMsg);
+                $("#divchequeInfoMsg").addClass("alert-danger");
+                $("#divchequeInfoMsg").removeClass("hidden alert-success");
+                $("#btnChequenoSubmit").prop("disabled", false);
+            }
+        });
+    }
+</script>

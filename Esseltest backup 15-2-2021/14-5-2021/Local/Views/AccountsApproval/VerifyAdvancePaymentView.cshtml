@@ -1,0 +1,301 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.AdvancePayment>
+<div class="col-md-12">
+    <br />
+    @foreach (var item in Model)
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Purchase Order Number:</label>
+                        <input type="text" class="form-control" value="@item.PONo" readOnly="readOnly" id="Apprledgername-@item.BankTransactionId" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Cost Center:</label>
+                        <input type="text" class="form-control" value="@item.CCCode" readOnly="readOnly" id="appradvpaysubclien" />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client Code:</label>
+                        <input type="text" class="form-control" value="@item.Client" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Subclient:</label>
+                        <input type="text" class="form-control" value="@item.SubClient" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Request Date:</label>
+                        <input type="text" class="form-control" value="@item.RequestDate" readOnly="readOnly" id="ApprAdvReqDate-@item.BankTransactionId" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Running Account Number:</label>
+                        <input type="text" class="form-control" value="@item.RANo" readOnly="readOnly" />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Basic Value:</label>
+                        <input type="text" class="form-control" value="@item.BasicValue" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            @*<div class="col-md-12" id="divapprAdvancetaxtable-@item.BankTransactionId">
+                    <table id="ApprAdvancetax-@item.BankTransactionId" style="width:100%;border:1px solid gray">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center">Tax Number</th>
+                                <th style="text-align:center">Cost Center </th>
+                                <th style="text-align:center">Account Head </th>
+                                <th style="text-align:center">Sub Account Head</th>
+                                <th style="text-align:center">TaxValue</th>
+                                <th style="text-align:center">TypesOfTaxName</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tfoot>
+                    </table>
+                    <br />
+                </div>*@
+            <div class="col-md-12" id="divappradvanceDeductiontable-@item.BankTransactionId">
+                <table id="AppradvanceDeduction-@item.BankTransactionId" style="width:100%;border:1px solid gray">
+                    <thead>
+                        <tr>
+                            <th style="text-align:center">Cost Center </th>
+                            <th style="text-align:center">Account Head </th>
+                            <th style="text-align:center">Sub Account Head</th>
+                            <th style="text-align:center">Deduction Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot><tr><td></td><td></td><td></td><td></td></tr></tfoot>
+                </table>
+                <br />
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Bank Name:</label>
+                        <input type="text" class="form-control" value="@item.Bank" readOnly="readOnly" id="ApprAdvBank" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Transaction Number:</label>
+                        <input type="text" class="form-control" value="@item.Number" readOnly="readOnly" />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Transaction Date:</label>
+                        <input type="text" class="form-control" value="@item.TransactionDate" readOnly="readOnly" id="ApprAdvTransDate-@item.BankTransactionId" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Transaction Amount:</label>
+                        <input type="text" class="form-control" value="@item.InvTotalValue" readOnly="readOnly" id="ApprAdvPayAmount" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="hidden" value="@item.MOID" id="txtMOID" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppAdvstatus" })
+                        @*<select class="form-control dropdown-toggle" id="AppAdvstatus-@item.BankTransactionId">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Verify">Verify</option>
+                                <option value="Approve">Approve</option>
+                                <option value="Return">Return</option>
+                                <option value="Reject">Reject</option>
+                            </select>*@
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppAdvNote-@item.BankTransactionId"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveAdvancePayment('@item.BankTransactionId')">Submit</button>
+                        <input type="hidden" value="@item.BankTransactionRefNo" id="ApprAdvpayRefno-@item.BankTransactionId" />
+
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divAppradvPayInfoMsg-@item.BankTransactionId" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+
+        </form>
+    }
+</div>
+<script>
+    $(document).ready(function () {
+           var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",               
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppAdvstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }                   
+                },
+                failure: function (response) {                   
+                    alert(response.responseText);
+                },
+                error: function (response) {                   
+                    alert(response.responseText);
+                }
+            });
+
+        var refno = $("#currentAdvanceTransno").val();
+        var transid = $("#currentAdvanceTransid").val();
+        //reqdateid = "ApprAdvReqDate-" + transid;
+        //makedateid = "ApprAdvTransDate-" + transid;
+        //reqdate = $("#" + reqdateid + "").val();
+        //makedate = $("#" + makedateid + "").val();
+        //var idate = "'" + reqdate + "'";
+        //var idate1 = moment(idate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+        //$("#" + reqdateid + "").val(idate1);
+        //var mdate = "'" + makedate + "'";
+        //var mdate1 = moment(mdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+        //$("#" + makedateid + "").val(mdate1);
+
+        //var taxdivid = "divapprAdvancetaxtable-" + transid;
+        //var taxdiv = $("#" + taxdivid + "");
+
+        //$.ajax({
+        //    type: 'POST',
+        //    dataType: 'json',
+        //    url: '/AccountsApproval/GetClientInvTaxDetailsbyInvno',
+        //    data: { InvNo: refno },
+        //    success: function (response) {
+        //        var count = Object.keys(response).length;
+        //        var taxtotal = 0;
+        //        if (count > 0) {
+        //            var rowno = 0;
+        //            $.each(response, function () {
+
+        //                rowno = rowno + 1;
+        //                var newRow = $("<tr>");
+        //                var cols = "";
+        //                //cols += '<td style="text-align:center" class="rowno">' + this['TaxName'] + '</td>';
+        //                cols += '<td style="text-align:center" class="rowno">' + this['TaxNo'] + '</td>';
+        //                cols += '<td style="text-align:center" class="rowno">' + this['CCCode'] + '</td>';
+        //                cols += '<td style="text-align:center" class="rowno">' + this['DCACode'] + '</td>';
+        //                cols += '<td style="text-align:center" class="rowno">' + this['SubDCACode'] + '</td>';
+        //                cols += '<td style="text-align:center" class="rowno">' + this['TaxValue'] + '</td>';
+        //                cols += '<td style="text-align:center" class="rowno">' + this['TypesOfTaxName'] + '</td>';
+        //                newRow.append(cols);
+        //                $("#ApprAdvancetax-" + transid + "").append(newRow);
+        //                taxtotal = parseFloat(taxtotal) + parseFloat(this['TaxValue']);
+
+        //            });
+        //            $("#ApprAdvancetax-" + transid + " tfoot tr").each(function () {
+
+        //                var footerRow = $(this);
+        //                if (!isNaN(taxtotal)) {
+        //                    footerRow.find("td").eq(4).html("Tax Total: <b>" + parseFloat(taxtotal).toFixed(2) + "</b>");
+        //                }
+        //                else {
+        //                    footerRow.find("td").eq(4).html("");
+        //                }
+
+        //            });
+        //            $("#" + taxdivid + "").removeClass("hidden");
+        //        }
+        //        else {
+        //            $("#" + taxdivid + "").addClass("hidden");
+        //        }
+             
+        //    },
+        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+              
+        //    }
+        //});
+        var deddivid = "divappradvanceDeductiontable-" + transid;
+        var deddiv = $("#" + deddivid + "");
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/AccountsApproval/GetClientDeduction',
+            data: { InvNo: refno },
+            success: function (response) {
+                //debugger;
+                var count1 = Object.keys(response).length;
+                var dedtotal = 0;
+                if (count1 > 0) {
+                    var rowno = 0;
+                    $.each(response, function () {
+                        rowno = rowno + 1;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center" class="rowno">' + this['CCCode'] + '</td>';
+                        cols += '<td style="text-align:center" class="rowno">' + this['DCACode'] + '</td>';
+                        cols += '<td style="text-align:center" class="rowno">' + this['SubDcaCode'] + '</td>';
+                        cols += '<td style="text-align:center" class="rowno">' + this['DeducationValue'] + '</td>';
+                        newRow.append(cols);
+                        $("#AppradvanceDeduction-" + transid + "").append(newRow);
+                        var dedvalue = this['DeducationValue'];
+                        dedtotal = parseFloat(dedtotal) + parseFloat(dedvalue);
+                    });
+                    $("#AppradvanceDeduction-" + transid + " tfoot tr").each(function () {
+                        var footerRow = $(this);
+                        if (!isNaN(dedtotal)) {
+                            footerRow.find("td").eq(3).html("Deduction Total: <b>" + parseFloat(dedtotal).toFixed(2) + "</b>");
+                        }
+                        else {
+                            footerRow.find("td").eq(3).html("");
+                        }
+
+                    });
+                    //$("#" + deddiv + "").removeClass("hidden");
+                }
+                else {
+                    $("#" + deddivid + "").addClass("hidden");
+                }
+             
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+             
+            }
+        });
+
+    });
+    function showdetails() {
+        alert($("#appradvpaysubclien").val());
+    }
+</script>
+

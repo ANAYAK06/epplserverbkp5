@@ -1,0 +1,1134 @@
+﻿@model EsselTestLocalApplication.Models.NewUsers
+    <style>
+        .modal-backdrop {
+            visibility: hidden !important;
+        }
+
+        .modal.in {
+            background-color: rgba(0,0,0,0.5);
+        }
+    </style>
+<form onsubmit="return false">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.joiningcategory)
+                    <select class="form-control dropdown-toggle" id="ddljoiningCategory">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Labour">Labour</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JoiningType)
+                    <select class="form-control dropdown-toggle" id="ddlJoiningType">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="New">New</option>
+                        @*<option value="ReJoin">ReJoin</option>*@
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @*@Html.LabelFor(model => model.Category)*@
+                  
+                            @Html.LabelFor(model => model.Category)
+                            @Html.DropDownListFor(model => model.Category, new SelectList(Model.EmpCategorysList, "CategoryName", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCategory" })
+                        
+                    @*<select class="form-control dropdown-toggle" id="ddlCategory">
+            <option selected="selected" value="Select">Select</option>
+            <option value="Directors">Directors</option>
+            <option value="Senior Management Staff">Senior Management Staff</option>
+            <option value="Management Staff">Management Staff</option>
+            <option value="Contract Management Staff">Contract Management Staff</option>
+            <option value="Dummy Employees">Dummy Employees</option>
+        </select>*@
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+
+            @*<div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Appointmenttype)
+                    <select class="form-control dropdown-toggle" id="ddlAppointmenttype">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Direct">Direct</option>
+                    </select>
+                </div>
+            </div>*@
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Firstname)
+                    @Html.TextBoxFor(model => model.Firstname, new { @id = "txtfirstname", @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Middlename)
+                    @Html.TextBoxFor(model => model.Middlename, new { @id = "txtmiddlename", @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Lastname)
+                    @Html.TextBoxFor(model => model.Lastname, new { @id = "txtlastname", @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Gender)
+                    <select class="form-control dropdown-toggle" id="ddlGender">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="TransGender">TransGender</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Dob)
+                    @Html.TextBoxFor(model => model.Dob, "{0:dd-MMM-yyyy}", new { @id = "txtdob", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Calculate Age</label></br>
+                    <button id="calculate" onclick="yearcal()">Calculate</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Age)
+                    @Html.TextBoxFor(model => model.Age, new { @id = "txtage", @class = "form-control", @readonly = "true" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MartialStatus)
+                    <select class="form-control dropdown-toggle" id="ddlMartialStatus">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widower">Widower</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DateofMarriage)
+                    @Html.TextBoxFor(model => model.DateofMarriage, "{0:dd-MMM-yyyy}", new { @id = "txtdomarriage", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SpouseName)
+                    @Html.TextBoxFor(model => model.SpouseName, new { @id = "txtspousename", @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NomineeName)
+                    @Html.TextBoxFor(model => model.NomineeName, new { @id = "txtnomineename", @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NomineeGender)
+                    <select class="form-control dropdown-toggle" id="ddlNomineeGender" onchange="NomineeGenderChange()">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Relation)
+                    <select class="form-control dropdown-toggle" id="ddlRelation">
+                        <option selected="selected" value="Select">Select</option>
+                    </select>
+                    @*@Html.TextBoxFor(model => model.Relation, new { @id = "txtRelation", @class = "form-control" })*@
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Mobile)
+                    @Html.TextBoxFor(model => model.Mobile, new { @id = "txtMobile", @maxlength = "10", @class = "form-control", onkeypress = "return IsNumeric(event)" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.workemail)
+                    @Html.TextBoxFor(model => model.workemail, new { @id = "txtworkemail", @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Jobtype)
+                    <select class="form-control dropdown-toggle" id="ddlJobtype">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Permanent">Permanent</option>
+                        <option value="Semi Permanent/Contractual">Semi Permanent/Contractual</option>
+                        <option value="Temporary">Temporary</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PermanentAddress)
+                    @Html.TextAreaFor(model => model.PermanentAddress, new { @id = "txtPermanentAddress", @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Department)
+                    <a href="javascript:void(0)" onclick="ShowDepartmentModel()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add Department</a>
+                    @Html.DropDownListFor(model => model.Department, new SelectList(Model.DepartmentList, "DepartmentId", "DepartmentName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlDepartment" })
+
+                    @*<select class="form-control dropdown-toggle" id="ddlDepartment">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="BOARD DIRECTORS">BOARD DIRECTORS</option>
+                        <option value="PROJECT MANAGEMENT">PROJECT MANAGEMENT</option>
+                        <option value="FINANACE & ADMINISTRATION">FINANACE & ADMINISTRATION</option>
+                        <option value="STORE & ADMINISTRATION">STORE & ADMINISTRATION</option>
+                        <option value="HR & ADMINISTRATION">HR & ADMINISTRATION</option>
+                    </select>*@
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Appointed)
+                    <a href="javascript:void(0)" onclick="ShowDesignationModel()" style="text-decoration:underline;cursor: pointer;float:right;color:#202447;font-weight:900">Add Designation</a>
+
+                    @*@Html.DropDownListFor(model => model.Appointed, new SelectList(Model.UserRoleList, "UserRoleID", "UserRoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNUserRole", onchange = "ddlNUserRoleChange()" })*@
+                    @Html.DropDownListFor(model => model.Appointed, new SelectList(Model.DesignationList, "DesignationId", "DesignationName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpDesignatedAs" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.JoiningCostCenter)
+                    @Html.DropDownListFor(model => model.JoiningCostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlNEmpJoiningCostCenter" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AdharNo)
+                    @Html.TextBoxFor(model => model.AdharNo, htmlAttributes: new { @class = "form-control", @id = "txtNEmpAdharNo", maxlength = "12", onkeypress = "return IsNumeric(event)" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PanNo)
+                    @Html.TextBoxFor(model => model.PanNo, htmlAttributes: new { @class = "form-control", @id = "txtNEmpPanNo", maxlength = "10", onkeypress = "return AlphanumericOnly(this);" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Username)
+                    @Html.TextBoxFor(model => model.Username, htmlAttributes: new { @class = "form-control ", @id = "txtNUsername" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">    
+        </div>
+        <div class="col-md-12">
+            <div class="text-right">
+                <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewUser" value="Submit" onclick="SubmitNewUserData()" />  @**@
+                <input type="button" class="btn btn1 btn-success" id="btnResetNewUser" value="Reset" onclick="ClearNewUser()" />  @*onclick="ClearNewUser()"*@
+              
+                <input type="hidden" value="" id="txtReporttoExist" />
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <br />
+                <div id="divAddUserInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal fade" id="EmpDesignationModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       
+        $("#txtdomarriage").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+        }).datepicker("setDate", new Date());
+        $("#txtdob").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0", 
+        }).datepicker("setDate", new Date());
+        $("#divReportto").addClass("hidden");
+        //$("#EmpDesignationModel").on("hidden.bs.modal", function () {
+        //    RebindDesignation();
+        //});
+        $("#txtNEmpPanNo").on("keypress", function (event) {
+            var englishAlphabetAndWhiteSpace = /[A-Z0-9]/g;
+            var key = String.fromCharCode(event.which);
+            if (englishAlphabetAndWhiteSpace.test(key)) {
+                return true;
+            }
+            return false;
+        });
+    });
+
+     function RebindDesignation() {
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetAllDesignations",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                //debugger;
+                @*var Action = '@Session["EmpAction"]';
+                if (Action === "New") {
+                    ddlDesign = $("#ddlNEmpDesignatedAs");
+                }
+                else { ddlDesign = $("#ddlUpEmpDesignatedAs"); }*@
+                ddlDesign = $("#ddlNDesignation");
+                ddlDesign.empty().append('<option selected="selected" value="Select">Select</option>');
+                $.each(response, function () {
+                    ddlDesign.append($("<option></option>").val(this['DesignationId']).html(this['DesignationName']));
+                });
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+
+    }
+    function yearcal() {
+        if ($("#txtdob").val() != "") {
+            var From_date = new Date($("#txtdob").val());
+            var To_date = new Date();
+            var diff_date = To_date - From_date;
+            var years = Math.floor(diff_date / 31536000000);
+            $("#txtage").val(years);
+        }
+        else {
+            alert("Select Date of Birth");
+            return false;
+        }
+    }
+    function SubmitNewUserData() {
+        isValid = true;
+        var errorMsg = "";
+        var joiningCategory = $("#ddljoiningCategory option:selected").index();
+        var JoiningType = $("#ddlJoiningType option:selected").index();
+        var Category = $("#ddlCategory option:selected").index();
+        var Appointmenttype = $("#ddlNEmpAppointType option:selected").index();
+        var firstname = $("#txtfirstname").val();
+        var middlename = $("#txtmiddlename").val();
+        var lastname = $("#txtlastname").val();
+        var Gender = $("#ddlGender option:selected").index();
+        var dob = $("#txtdob").val();
+        var age = $("#txtage").val();
+        var MartialStatus = $("#ddlMartialStatus option:selected").index();
+        var domarriage = $("#txtdomarriage").val();
+        var spousename = $("#txtspousename").val();
+        var nomineename = $("#txtnomineename").val();
+        var NomineeGender = $("#ddlNomineeGender option:selected").index();
+        //var Relation = $("#txtRelation").val();
+        var Relation = $("#ddlRelation option:selected").index();
+        var Mobile = $("#txtMobile").val();
+        var workemail = $("#txtworkemail").val();
+        var Jobtype = $("#ddlJobtype option:selected").index();
+        var PermanentAddress = $("#txtPermanentAddress").val();
+        var Department = $("#ddlDepartment option:selected").index();
+        //var RoleId = $("#txtRoleId").val();
+        var Designation = $("#ddlNEmpDesignatedAs option:selected").index();
+        //var pwd = $("#txtNPwd").val();
+        //var cpwd = $("#txtNConfPwd").val();
+        var DesignationId = $("#ddlNUserRole  option:selected").val();
+        var joiningCCindex = $("#ddlNEmpJoiningCostCenter option:selected").index();
+        var joiningCC= $("#ddlNEmpJoiningCostCenter option:selected").val();
+        var username1 = $("#txtNUsername").val();
+        let AdharNo = $("#txtNEmpAdharNo").val();
+        let PanNo = $("#txtNEmpPanNo").val();
+        if (joiningCategory === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Category</p>";
+            isValid = false;
+        }
+        if (JoiningType === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Type</p>";
+            isValid = false;
+        }
+        if (Category === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+            isValid = false;
+        }
+        if (Appointmenttype === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Appointment type</p>";
+            isValid = false;
+        }
+        //if (firstname == "") {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter First Name</p>";
+        //    isValid = false;
+        //}
+        //if (middlename == "") {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Middle Name</p>";
+        //    isValid = false;
+        //}
+        if (firstname == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter First Name</p>";
+            isValid = false;
+        }
+        if (lastname == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Last Name</p>";
+            isValid = false;
+        }
+        if (Gender === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Gender</p>";
+            isValid = false;
+        }
+        if (dob == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Date of Birth</p>";
+            isValid = false;
+        }
+        if (age == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Calculate Age</p>";
+            isValid = false;
+        }
+        if (age === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Age</p>";
+            isValid = false;
+        }
+        if (MartialStatus === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Martial Status</p>";
+            isValid = false;
+        }
+        if (MartialStatus != 0) {
+            var MartialStatusval = $("#ddlMartialStatus option:selected").val();
+            if (MartialStatusval != "Single") {
+                if (domarriage == "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Date of Marriage</p>";
+                    isValid = false;
+                }
+                if (spousename == "") {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Enter Spouse Name</p>";
+                    isValid = false;
+                }
+            }
+        }
+        if (nomineename == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Name</p>";
+            isValid = false;
+        }
+        if (NomineeGender === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Nominee Gender</p>";
+            isValid = false;
+        }
+        if (Relation === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Nominee Relation</p>";
+            isValid = false;
+        }
+        if (Mobile == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Mobile No</p>";
+            isValid = false;
+        }
+        if (Mobile != "") {
+            var length = Mobile.length;
+            if (length < 10 || length > 10) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Invalid number; must be ten digits Mobile No</p>";
+                isValid = false;
+            }
+        }
+        if (workemail == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Work E-Mail</p>";
+            isValid = false;
+        }
+        if (workemail != "") {
+            var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+            if (!expr.test(workemail)) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Work Emailid</p>";
+                isValid = false;
+            }
+        }
+        if (Jobtype === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Job Type</p>";
+            isValid = false;
+        }
+        if (PermanentAddress == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Permanent Address</p>";
+            isValid = false;
+        }
+        if (Department === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Department</p>";
+            isValid = false;
+        }
+        //if (RoleId === 0) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Role Id</p>";
+        //    isValid = false;
+        //}
+        if (username1 == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Username</p>";
+            isValid = false;
+        }
+        if (joiningCCindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Cost Center</p>";
+            isValid = false;
+        }
+        //if (username1 != "") {
+        //    var expr = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        //    if (!expr.test(username1)) {
+        //        errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Emailid for Username</p>";
+        //        isValid = false;
+        //    }
+        //}
+
+        if (Designation === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Designation</p>";
+            isValid = false;
+        }
+        if (AdharNo == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter AdharNo</p>";
+            isValid = false;
+        }
+        else if (AdharNo.length !== 12) {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid  AadharNo</p>";
+            isValid = false;
+        }
+        
+        if (PanNo != "" && PanNo.length !== 10) {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid  PAN No</p>";
+            isValid = false;
+        }
+        //else {
+        //    var count = parseInt($("#txtCCExist").val());
+        //    if (count > 0) {
+        //        var options = $('#ddlMultiCCCode > option:selected');
+        //        if (options.length == 0) {
+        //            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+        //            isValid = false;
+        //        }
+        //    }
+        //}
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddUserInfoMsg").text("");
+            $("#divAddUserInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAddUserInfoMsg").addClass("alert-danger");
+            $("#divAddUserInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddUserInfoMsg").text("");
+            $("#divAddUserInfoMsg").addClass("hidden");
+            //debugger;
+            var pwd = generateUserPassword();
+            var encodedpwd = window.btoa(pwd);
+            var saveNewUser = {};
+            //if (count > 0) {
+            //    //var SelectedCC = $('#ddlMultiCCCode option:selected').toArray().map(item => item.value).join() + ',';
+            //    saveNewUser = {
+            //        Userid: 0,
+            //        Username: $("#txtNUsername").val(),
+            //        //Password: encodedpwd,
+            //        //RoleId: $("#ddlNUserRole option:selected").val(),
+            //        Createdby: $("#txtNUCreatedby").val(),
+            //        Action: 'Add',
+            //       // CCCode: SelectedCC,
+            //        //OriginalPassword: pwd,
+            //        joiningcategory: $("#ddljoiningCategory option:selected").val(),
+            //        JoiningType: $("#ddlJoiningType option:selected").val(),
+            //        Category: $("#ddlCategory option:selected").val(),
+            //        Appointmenttype: $("#ddlAppointmenttype option:selected").val(),
+            //        Firstname: $("#txtfirstname").val(),
+            //        Middlename: $("#txtmiddlename").val(),
+            //        Lastname: $("#txtlastname").val(),
+            //        Gender: $("#ddlGender option:selected").val(),
+            //        Dob: $("#txtdob").val(),
+            //        Age: $("#txtage").val(),
+            //        MartialStatus: $("#ddlMartialStatus option:selected").val(),
+            //        DateofMarriage: $("#txtdomarriage").val(),
+            //        SpouseName: $("#txtspousename").val(),
+            //        NomineeName: $("#txtnomineename").val(),
+            //        NomineeGender: $("#ddlNomineeGender option:selected").val(),
+            //        Relation: $("#ddlRelation option:selected").val(),
+            //        Mobile: $("#txtMobile").val(),
+            //        workemail: $("#txtworkemail").val(),
+            //        Jobtype: $("#ddlJobtype option:selected").val(),
+            //        PermanentAddress: $("#txtPermanentAddress").val(),
+            //        Department: $("#ddlDepartment option:selected").val(),
+            //        NomineeName: $("#txtnomineename").val(),
+            //        DesignationId: $("#ddlNDesignation option:selected").val()
+            //    };
+
+            //}
+            //else {
+                saveNewUser = {
+                   // Userid: 0,
+                    Username: $("#txtNUsername").val(),
+                    Password: encodedpwd,
+                    //RoleId: $("#ddlNUserRole option:selected").val(),
+                    Createdby: $("#txtNUCreatedby").val(),
+                    Action: 'Add',
+                    OriginalPassword: pwd,
+                    joiningcategory: $("#ddljoiningCategory option:selected").val(),
+                    JoiningType: $("#ddlJoiningType option:selected").val(),
+                    Category: $("#ddlCategory option:selected").val(),
+                    Appointmenttype: $("#ddlNEmpAppointType option:selected").val(),
+                    Firstname: $("#txtfirstname").val(),
+                    Middlename: $("#txtmiddlename").val(),
+                    Lastname: $("#txtlastname").val(),
+                    Gender: $("#ddlGender option:selected").val(),
+                    Dob: $("#txtdob").val(),
+                    Age: $("#txtage").val(),
+                    MartialStatus: $("#ddlMartialStatus option:selected").val(),
+                    DateofMarriage: $("#txtdomarriage").val(),
+                    SpouseName: $("#txtspousename").val(),
+                    NomineeName: $("#txtnomineename").val(),
+                    NomineeGender: $("#ddlNomineeGender option:selected").val(),
+                    Relation: $("#ddlRelation option:selected").val(),
+                    Mobile: $("#txtMobile").val(),
+                    workemail: $("#txtworkemail").val(),
+                    Jobtype: $("#ddlJobtype option:selected").val(),
+                    PermanentAddress: $("#txtPermanentAddress").val(),
+                    Department: $("#ddlDepartment option:selected").val(),
+                    NomineeName: $("#txtnomineename").val(),
+                    DesignationId: $("#ddlNEmpDesignatedAs option:selected").val(),
+                    JoiningCostCenter: joiningCC,
+                    AdharNo: AdharNo,
+                    PanNo: PanNo
+                };
+
+           // }
+            //debugger;
+            addFailMsg = "Error Occurred While Adding User";
+            addSuccessMsg = "User Detials Added Successfully.";
+
+            $("#btnSubmitNewUser").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveNewUser",
+                data: JSON.stringify({ usr: saveNewUser }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submitted") {
+                        $("#divAddUserInfoMsg").text(addSuccessMsg);
+                        $("#divAddUserInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddUserInfoMsg").addClass("alert-success");
+                    }
+                    else if (response.saveStatus == "Exist") {
+                        $("#btnSubmitNewUser").prop('disabled', false);
+                        $("#divAddUserInfoMsg").text("User Already Exist");
+                        $("#divAddUserInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddUserInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnSubmitNewUser").prop('disabled', false);
+                        $("#divAddUserInfoMsg").text(response.saveStatus);
+                        $("#divAddUserInfoMsg").addClass("alert-danger");
+                        $("#divAddUserInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnSubmitNewUser").prop('disabled', false);
+                    $("#divAddUserInfoMsg").text(addFailMsg);
+                    $("#divAddUserInfoMsg").addClass("alert-danger");
+                    $("#divAddUserInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+
+    function NomineeGenderChange() {
+
+        var NomineeGenderIndex = $("#ddlNomineeGender option:selected").index();
+        var NomineeGender = $("#ddlNomineeGender option:selected").val();
+        if (NomineeGenderIndex != 0) {
+            var ddlr = $("#ddlRelation");
+            ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+            if (NomineeGender === 'Male') {
+                ddlr.append($("<option></option>").val('Father').html('Father'));
+                ddlr.append($("<option></option>").val('Husband').html('Husband'));
+                ddlr.append($("<option></option>").val('Husband').html('Brother'));
+
+            }
+            else if (NomineeGender === 'Female') {
+                ddlr.append($("<option></option>").val('Mother').html('Mother'));
+                ddlr.append($("<option></option>").val('Wife').html('Wife'));
+                ddlr.append($("<option></option>").val('Wife').html('Sister'));
+            }
+
+        }
+        else {
+            var ddlr = $("#ddlRelation");
+            ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+        }
+
+    }
+
+    function ClearNewUser() {
+
+        location.reload();
+        //$("#btnSubmitNewUser").prop('disabled', false);
+        //$("#txtNUsername").val("");
+        //$("#ddlNUserRole").prop('selectedIndex', 0);
+        //$("#txtNPwd").val("");
+        //$("#txtNConfPwd").val("");
+        //$("#divAddUserInfoMsg").text("");
+        //$("#divAddUserInfoMsg").addClass("hidden");
+
+        ////$('#ddljoiningCategory').val("");
+        ////// $("#ddljoiningCategory option:selected").prop('selectedValue', "Select");
+        //////$("#ddlJoiningType option:selected").prop('selectedIndex', 0);
+        ////$('#ddlJoiningType').val("");
+
+        ////$("#ddlCategory option:selected").prop('selectedIndex', 0);
+        ////$("#ddlAppointmenttype option:selected").prop('selectedIndex', 0);
+        //$("#txtfirstname").val("");
+        //$("#txtmiddlename").val("");
+        //$("#txtlastname").val("");
+        ////$("#ddlGender option:selected").prop('selectedIndex', 0);
+        //$("#txtdob").val("");
+        //$("#txtage").val("");
+        //// $("#ddlMartialStatus option:selected").prop('selectedIndex', 0);
+        //$("#txtdomarriage").val("");
+        //$("#txtspousename").val("");
+        //$("#txtnomineename").val("");
+        //// $("#ddlNomineeGender option:selected").prop('selectedIndex', 0);
+        //var ddlr = $("#ddlRelation");
+        //ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+        ////$("#txtRelation").val("");
+        //$("#txtMobile").val("");
+        //$("#txtworkemail").val("");
+        //// $("#ddlJobtype option:selected").prop('selectedIndex', 0);
+        //$("#txtPermanentAddress").val("");
+        ////$("#ddlDepartment option:selected").prop('selectedIndex', 0);
+        ////$("#txtRoleId").val("");
+        //$("#txtNUsername").val("");
+        ////$("#ddlNDesignation option:selected").prop('selectedIndex', 0);
+
+        ////$("#ddlMultiCCCode option:selected").prop("selected", false);
+        ////$("#ddlMultiCCCode option").remove();
+        ////$('#ddlMultiCCCode').multiselect('rebuild');
+        //$('#ddlDepartment option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+
+        //$('#ddlJobtype option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+
+        //$('#ddlNomineeGender option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+        //$('#ddlMartialStatus option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+
+        //$('#ddlNEmpAppointType option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+        //$('#ddlCategory option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+
+        //$('#ddljoiningCategory option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+
+
+        //$('#ddlJoiningType option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+        //$('#ddlGender option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+        //$('#ddlNDesignation option').prop('selected', function () {
+        //    return this.defaultSelected;
+        //});
+
+     //   $("#divCCCodes").addClass('hidden');
+    }
+    function ShowDepartmentModel() {
+        $('#AddNewDepartment').modal('show');
+        ResetDept();
+    }
+
+   
+    function SubmitDeparment() {
+
+
+        isValid = true;
+        var errorMsg = "";
+        var DeptName = $("#txtNDeptname").val();
+        if (DeptName==="") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter DepartName</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            // var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddDeptInfoMsg").text("");
+            $("#divAddDeptInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAddDeptInfoMsg").addClass("alert-danger");
+            $("#divAddDeptInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddDeptInfoMsg").text("");
+            $("#divAddDeptInfoMsg").addClass("hidden");
+
+            var NewDept = {
+                DepartmentName: $("#txtNDeptname").val()
+            };
+            addFailMsg = "Error Occurred While Adding Department";
+            addSuccessMsg = "Department Added Successfully.";
+            $("#btnaddnewDept").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveDepartment",
+                data: JSON.stringify({ Dept: NewDept }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        
+                        $("#divAddDeptInfoMsg").text(addSuccessMsg);
+                        $("#divAddDeptInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddDeptInfoMsg").addClass("alert-success");
+                        RebindDepartments();
+                    }
+                    else{
+                        $("#btnaddnewDept").prop('disabled', false);
+                        $("#divAddDeptInfoMsg").text(response.saveStatus);
+                        $("#divAddDeptInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddDeptInfoMsg").addClass("alert-success");
+                    }
+                   
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewDept").prop('disabled', false);
+                    $("#divAddDeptInfoMsg").text(addFailMsg);
+                    $("#divAddDeptInfoMsg").addClass("alert-danger");
+                    $("#divAddDeptInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+
+    function RebindDepartments(){
+
+                 $.ajax({
+                    type: "POST",
+                    url: "/Home/GetAllDepartments",
+                    data: '{ }',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                     success: function (response) {
+                         ddlDept = $("#ddlDepartment");
+                        ddlDept.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlDept.append($("<option></option>").val(this['DepartmentId']).html(this['DepartmentName']));
+                        });
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+    }
+    function ResetDept() {
+        $("#txtNDeptname").val("");
+        $("#btnaddnewDept").prop('disabled', false);
+        $("#divAddDeptInfoMsg").text("");
+        $("#divAddDeptInfoMsg").addClass("hidden");
+
+    }
+
+
+    function ShowDesignationModel() {
+        $.ajax({
+            type: "POST",
+            url: "/HR/AddEmpDesignation",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+                $('#EmpDesignationModel').html(data);
+                $('#EmpDesignationModel').modal();
+            }
+        });
+
+        //$('#AddNewDesignation').modal('show');
+       // ResetDesign();
+    }
+
+    function SubmitDesignation() {
+
+
+        isValid = true;
+        var errorMsg = "";
+        var DesignName = $("#txtNDesignation").val();
+        if (DesignName === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Designation Name</p>";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            // var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddDesignInfoMsg").text("");
+            $("#divAddDesignInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divAddDesignInfoMsg").addClass("alert-danger");
+            $("#divAddDesignInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddDesignInfoMsg").text("");
+            $("#divAddDesignInfoMsg").addClass("hidden");
+
+            var NewDesign = {
+                DesignationName: $("#txtNDesignation").val()
+            };
+            addFailMsg = "Error Occurred While Adding  Designation";
+            addSuccessMsg = "Designation Added Successfully.";
+            $("#btnaddnewDesign").prop('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveDesignation",
+                data: JSON.stringify({ Design: NewDesign }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus == "Submited") {
+                        
+                        $("#divAddDesignInfoMsg").text(addSuccessMsg);
+                        $("#divAddDesignInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddDesignInfoMsg").addClass("alert-success");
+                        RebindDesignation();
+                    }
+                    else {
+                        $("#btnaddnewDesign").prop('disabled', false);
+                        $("#divAddDesignInfoMsg").text(response.saveStatus);
+                        $("#divAddDesignInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddDesignInfoMsg").addClass("alert-success");
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnaddnewDesign").prop('disabled', false);
+                    $("#divAddDesignInfoMsg").text(addFailMsg);
+                    $("#divAddDesignInfoMsg").addClass("alert-danger");
+                    $("#divAddDesignInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+
+    function ResetDesign() {
+        $("#txtNDesignation").val("");
+        $("#btnaddnewDesign").prop('disabled', false);
+        $("#divAddDesignInfoMsg").text("");
+        $("#divAddDesignInfoMsg").addClass("hidden");
+
+    }
+    function RebindDesignation() {
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetAllDesignations",
+            data: '{ }',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                ddlDesign = $("#ddlNEmpDesignatedAs");
+                ddlDesign.empty().append('<option selected="selected" value="Select">Select</option>');
+                $.each(response, function () {
+                    ddlDesign.append($("<option></option>").val(this['DesignationId']).html(this['DesignationName']));
+                });
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+
+    }
+    function DirectEmpCategoryChange() {
+        //debugger;
+        var Categoryindex = $("#ddlCategory option:selected").index();
+        var catId = $("#ddlCategory option:selected").val();
+        var ddlReportto = $("#ddlNEmpReportToCategory");
+        if (Categoryindex == 0) {
+            ddlReportto.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            $("#divReportto").addClass("hidden");
+        }
+        else {
+
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetReportToEmpForDirectEmp",
+                data: '{ CategoryId:"' + catId + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/Home/GetReportToEmpid",
+            //    data: '{ Categoryid:"' + catId + '"}',            
+            //    dataType: "json",
+            //    success: function (response) {
+            //        var Portion = response.Status;
+            //        if (Portion ==="Exist") {
+            //            ddlReportto.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            //            $.each(response.ReporttoEmplist, function () {
+            //                ddlReportto.append($("<option></option>").val(this['EmpRefNo']).html(this['FirstName']));
+            //            });
+            //            $("#divReportto").removeClass("hidden");
+            //        }
+            //        else {
+            //            ddlReportto.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            //            $("#divReportto").addClass("hidden");
+            //        }                  
+            //        $("#txtReporttoExist").val(Portion);
+                   
+                  
+            //    },
+            //    failure: function (response) {
+            //        alert(response.responseText);
+            //    },
+            //    error: function (response) {
+            //        alert(response.responseText);
+            //    }
+            //});
+
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/Home/CheckReportToForFirstUser",
+            //    data:Json.stringify({CategoryId:catId}),
+            //    contentType: "application/json; charset=utf-8",
+            //    dataType: "json",
+            //    success: function (response) {
+            //        //debugger;
+            //        var Portion = response.Status;;
+            //        if (Portion ==="Exist") {
+            //           ddlReportto.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            //            $.each(response, function () {
+            //                ddlReportto.append($("<option></option>").val(this['EmpRefNo']).html(this['FirstName']));
+            //            });
+            //            $("#divReportto").removeClass("hidden");
+            //        }
+            //        else {
+            //            ddlReportto.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            //            $("#divReportto").addClass("hidden");
+            //        }                  
+            //        $("#txtReporttoExist").val(Portion);
+
+            //    },
+            //    failure: function (response) {
+
+            //    },
+            //    error: function (response) {
+
+            //    }
+            //});
+          
+
+        }
+        
+
+    }
+
+    function GetReportTo() {
+        var catId = $("#ddlCategory option:selected").val();
+        var ddlReportto = $("#ddlNEmpReportToCategory");
+        //debugger;
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetReportToEmpid",
+            data: '{ Categoryid:"' + catId + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                ddlReportto.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                $.each(response, function () {
+                    ddlReportto.append($("<option></option>").val(this['EmpRefNo']).html(this['FirstName']));
+                });
+                $("#divReportto").removeClass("hidden");
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+
+    }
+    function generateUserPassword() {
+        var length = 8,
+            charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+            retVal = "";
+        for (var i = 0, n = charset.length; i < length; ++i) {
+            retVal += charset.charAt(Math.floor(Math.random() * n));
+        }
+        return retVal;
+    }
+    function IsNumeric(evt) {
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((iKeyCode < 48 || iKeyCode > 57))
+            return false;
+    }
+   
+</script>
+

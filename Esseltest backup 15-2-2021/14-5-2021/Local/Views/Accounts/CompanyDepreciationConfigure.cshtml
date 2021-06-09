@@ -1,0 +1,219 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.CompanyDepreciationConfigure
+@{
+    ViewBag.Title = "CompanyDepreciationConfigure";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*<h2>CompanyDepreciationConfigure</h2>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Company Depreciation Configuration</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="Pageconfig" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Year)
+                                                                @Html.DropDownListFor(model => model.Year, new SelectList(Model.CDFnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Fyear", onchange = "configuretypechange()" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="divconfigdata" >
+                                                        <div id="GridConfigData">
+                                                        </div>
+                                                        <div class="text-right" style="vertical-align:bottom">
+                                                            <button class="btn btn1 btn-success" id="btnPLCSubmit" onclick="btnSubmitData()">Submit</button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="row ">
+                                                    </div>
+
+                                                    <div class="row text-center">
+                                                        <div id="divplcInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divconfigdata").addClass("hidden");      
+    });
+    function configuretypechange() {
+        //debugger;
+        var yearindex = $("#ddl_Fyear option:selected").index();
+        var Code = $("#ddl_pfcode");
+        if (yearindex != 0) {
+            var yearval = $("#ddl_Fyear option:selected").val();
+            var listSplit = yearval.split('-');
+            var year1 = parseInt(listSplit[0]);
+            var year2 = parseInt(listSplit[1]);
+            var previousyear = ((year1) - 1) + "-" + ((year2) - 1);
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Accounts/CompanyDepreciationConfigureGrid',
+                data: { FYear: yearval, PrevYear: previousyear, Type: 'Get' },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridConfigData").html(data);
+                        var currentrowcount11 = $("#companydepDataTable tbody tr").length;
+                        if (currentrowcount11 > 0) {
+                            $("#divconfigdata").removeClass("hidden");
+                        }
+                        else {
+                            $("#divconfigdata").addClass("hidden");
+                            $("#divplcInfoMsg").addClass("hidden");}
+                    }
+                },
+            });            
+        }
+        else {
+            alert("Please Select Year");
+            $("#divconfigdata").addClass("hidden");
+        }
+    }
+    function btnSubmitData() {
+        isValid = true;
+        var errorMsg = "";
+        var year = $("#ddl_Fyear option:selected").index();      
+        if (year === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Year</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divplcInfoMsg").text("");
+            $("#divplcInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divplcInfoMsg").addClass("alert-danger");
+            $("#divplcInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divplcInfoMsg").text("");
+            $("#divplcInfoMsg").addClass("hidden");
+            var Percentcount = "";
+            var currentrowcount = $("#companydepDataTable tbody tr").length;
+            $("#companydepDataTable tbody tr").each(function () {
+                var currentRow = $(this);                
+                var Percentage = currentRow.find("td").eq(2).find("input[type='text']").val();
+                if (Percentage == "" || Percentage == 0) { Percentcount = Percentcount + 1; }                
+            });
+            if (currentrowcount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Add Items to Indent</p > ";
+                isValid = false;
+            }
+            if (Percentcount >0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Enter Percentage</p > ";
+                isValid = false;
+            }           
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divplcInfoMsg").text("");
+                $("#divplcInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divplcInfoMsg").addClass("alert-danger");
+                $("#divplcInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var selectedledlist = [];
+                $("#companydepDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var Iid = currentRow.find("td").eq(4).html();
+                    if (Iid !== 0) {
+                        selectedledlist.push(currentRow.find("td").eq(4).html());
+                    }
+                });
+                var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                if (duplicatelist.length > 0) {
+                    var finalerror2 = "<div style='align:center'><p>Duplicate</p>";
+                    $("#divplcInfoMsg").text("");
+                    $("#divplcInfoMsg").append(finalerror2 + "</div>");
+                    $("#divplcInfoMsg").addClass("alert-danger");
+                    $("#divplcInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divplcInfoMsg").text("");
+                    $("#divplcInfoMsg").addClass("hidden");
+                    SaveCompayDep();                    
+                }
+            }
+
+        }
+    }
+    function SaveCompayDep() {
+        var year = $("#ddl_Fyear option:selected").text();
+        var  Percents = "",SubDcas = "";
+        $("#companydepDataTable tbody tr").each(function () {
+            var currentRow = $(this);            
+            var Percent = currentRow.find("td").eq(2).find("input[type='text']").val();
+            var SubDca = currentRow.find("td").eq(0).html();       
+            Percents += Percent;
+            Percents += ",";
+            SubDcas += SubDca;
+            SubDcas += ",";            
+        });
+        var Depdetails = {
+            Fyear: year,
+            SubDCAs: SubDcas,
+            Percentages: Percents,
+            Type: 'Set'
+        };
+        addFailMsg = "Error Occurred While Set Generate Company Depreciation.";
+        addSuccessMsg = "Company Depreciation Percentage Done Successfully.";
+        $("#btnPLCSubmit").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/SaveCompanyDepreciationConfig',
+            data: { Dep: Depdetails },
+            success: function (Data) {                
+                if (Data.saveStatus === "Submited") {
+                    
+                    $("#divplcInfoMsg").text('Company Depreciation Percentage For the Year ' + year + ' Generated Successfully');
+                    $("#divplcInfoMsg").removeClass("hidden alert-danger");
+                    $("#divplcInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnPLCSubmit").prop("disabled", false);
+                    $("#divplcInfoMsg").text(Data.saveStatus);
+                    $("#divplcInfoMsg").addClass("alert-danger");
+                    $("#divplcInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnPLCSubmit").prop("disabled", false);
+                $("#divplcInfoMsg").text(addFailMsg);
+                $("#divplcInfoMsg").addClass("alert-danger");
+                $("#divplcInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+</script>

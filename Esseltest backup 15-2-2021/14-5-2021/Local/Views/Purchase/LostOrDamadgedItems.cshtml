@@ -1,0 +1,635 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Indent
+@{
+    ViewBag.Title = "LostOrDamadgedItems";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Lost Or Damaged Items</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <form onsubmit="return false">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Costcenter)
+                                                @Html.DropDownListFor(model => model.Costcenter, new SelectList(Model.CentralCCTypeList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLDcostcenter", onchange = "GetLDgridDetails();" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.ItemCategoryCode)
+                                                @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.IndentItemCategoryList, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLDIndentItemCategory", onchange = "Clearcat()" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.SelectionType)
+                                                @Html.DropDownListFor(model => model.SelectionType, new SelectList(Model.ItemSelectionTypeList, "Selectionid", "SelectionValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlLDItemSelectiontype", onchange = "Clearsel()" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.SearchItem)
+                                                @Html.EditorFor(model => model.SearchItem, new { htmlAttributes = new { @class = "form-control", @id = "txtIndentItemSearch", @onkeyup = "onchangeeventind();",
+                                               @onKeyDown = "preventBackspace();" ,@onpaste = "return false;" ,
+                                               style = "text-transform:uppercase" } })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 text-right" style="vertical-align:bottom;margin-top:15px">
+                                            <button class="btn btn1 btn-success" id="btnLDSubmit" onclick="SubmitLDData()">Add</button>
+                                            <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                            <input type="text" id="txtCCType" style="display:none" />
+                                        </div>
+                                    </div>
+                                    <div class="row" id="divgrid">
+                                        <div id="GridData">
+                                        </div>
+                                    </div>
+                                    <div class="row" id="divdate">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Date)
+                                                @Html.TextBoxFor(model => model.Date, "{0:dd/MM/yyyy}", new { @id = "txtNDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                        <div class="row" id="divbtns">
+                                            <div class="text-right" style="margin-right:12px">
+                                                <input type="submit" class="btn btn1 btn-success" id="btnSubmitMultipleLD" onclick="SubmitMultipleLDData()" value="Submit" />
+                                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetLD()" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="text-center">
+                                                <div id="divIndentLDInfoMsg" class="alert alert-danger hidden">
+                                                </div>
+                                            </div>
+                                        </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#GridData").addClass("hidden");
+        $("#divgrid").addClass("hidden");
+        $("#divdate").addClass("hidden");
+        $("#divbtns").addClass("hidden");
+        $("#txtNDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+               
+            }
+        }).datepicker("setDate", new Date());
+    });
+    function SubmitClearItem() {
+        $("#txtIndentItemSearch").val("");
+        $("#btnLDSubmit").prop('disabled', false);
+    }
+    function Clearcat() {
+        $("#txtIndentItemSearch").val("");
+        $("#ddlLDItemSelectiontype").prop('selectedIndex', 0);
+    }
+    function Clearsel() {
+        var typecat = $("#ddlLDIndentItemCategory option:selected").index();
+        if (typecat != 0) {
+            $("#txtIndentItemSearch").val("");
+        }
+        else {
+            alert("Select Search By Category");
+            $("#txtIndentItemSearch").val("");
+            return false;
+        }
+    }
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+    function GetLDgridDetails() {      
+        var ccode = $("#ddlLDcostcenter option:selected").index();
+        if (ccode != 0) {
+            var ccodeval = $("#ddlLDcostcenter option:selected").text();
+            var typeArr = ccodeval.toString().split(',');
+            var CC = typeArr[0];
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetCostCenterType",
+                data: '{CType:"' + CC + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txtCCType").val(this['CCType']);
+                    });
+                    BindCategories(CC, $("#txtCCType").val())
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });   
+            }       
+    }
+    function BindCategories(cccode,CCType) {
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/GetCategories",
+            data: '{CType:"' + cccode + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#ddlLDIndentItemCategory");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {
+                        ddlaprovalstatus.append($("<option></option>").val(this['Categoryid']).html(this['CategoryValue']));
+                    });
+
+                    BindLostOrDamadgedItemsGrid(cccode);
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+
+    function BindLostOrDamadgedItemsGrid(cccode) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/LostOrDamadgedItemsGrid',
+            data: { cccode: cccode },
+            success: function (data) {
+                let count1 = Object.keys(data).length;
+              //  alert(count1);
+                if (count1 > 0) {
+                    $("#GridData").html(data);
+                    var tablerowcount = $("#ItemLostDamageDataTable tbody tr").length;
+                    if (tablerowcount>0) {
+                        $("#divgrid").removeClass("hidden");
+                       
+                        $("#GridData").removeClass("hidden");   
+                        $("#divdate").removeClass("hidden");
+                        $("#divbtns").removeClass("hidden");
+                    }
+                    else {
+                        $("#divgrid").addClass("hidden");
+                        // $("#GridData").html();
+                        $("#GridData").addClass("hidden");
+                        $("#divdate").addClass("hidden");
+                        $("#divbtns").addClass("hidden");
+                    }
+                }
+                else {
+                    $("#divgrid").addClass("hidden");
+                   // $("#GridData").html();
+                    $("#GridData").addClass("hidden");
+                }
+            },
+        });
+    }
+    function onchangeeventind() {
+        var typecat = $("#ddlLDIndentItemCategory option:selected").index();
+        var typesel = $("#ddlLDItemSelectiontype option:selected").index();
+        var FromCC = $("#ddlLDcostcenter option:selected").index();
+        if (FromCC != 0) {
+            if (typecat != 0) {
+                if (typesel != 0) {
+                    var typeval = $("#ddlLDItemSelectiontype option:selected").val();
+                    var typecatval = $("#ddlLDIndentItemCategory option:selected").val();
+                    var fromccodeval = $("#ddlLDcostcenter option:selected").val();
+                   
+                    var typeArr = fromccodeval.toString().split(',');
+                    var CC = typeArr[0];
+                    if ($("#txtIndentItemSearch").val() != "") {
+                        $("#divIndentLDInfoMsg").text("");
+                        $("#divIndentLDInfoMsg").addClass("hidden");
+                        $("#txtIndentItemSearch").autocomplete({
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: '/Purchase/AutoCompleteItemTransfer',
+                                    data: '{prefix:"' + request.term + '", Type:"' + typeval + '", Cat:"' + typecatval + '", CC:"' + CC + '"}',
+                                    dataType: "json",
+                                    type: "POST",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data) {
+                                        response($.map(data, function (item) {
+                                            return { label: item.SearchItem, value: item.SearchItem };
+                                        }))
+                                    },
+                                    error: function (data) {
+                                        alert(data.responseText);
+                                    },
+                                    failure: function (data) {
+                                        alert(data.responseText);
+                                    }
+                                });
+                            },
+                        });
+                    }
+                    else {
+                        $("#ddlLDItemSelectiontype").prop('selectedIndex', 0);
+                        $("#divIndentLDInfoMsg").text("");
+                        $("#divIndentLDInfoMsg").addClass("hidden");
+                    }
+                }
+                else {
+                    $("#divIndentLDInfoMsg").text("");
+                    $("#divIndentLDInfoMsg").append("<div>Select Search By Type</div>");
+                    $("#divIndentLDInfoMsg").addClass("alert-danger");
+                    $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                   // alert("Select Search By Type");
+                    $("#txtIndentItemSearch").val("");
+                    return false;
+                }
+            }
+            else {
+                $("#divIndentLDInfoMsg").text("");
+                $("#divIndentLDInfoMsg").append("<div>Select Search By Category</div>");
+                $("#divIndentLDInfoMsg").addClass("alert-danger");
+                $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+               // alert("Select Search By Category");
+                $("#txtIndentItemSearch").val("");
+                return false;
+            }
+        }
+        else {
+            $("#divIndentLDInfoMsg").text("");
+            $("#divIndentLDInfoMsg").append("<div>Select Transfer Cost Center</div>");
+            $("#divIndentLDInfoMsg").addClass("alert-danger");
+            $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+            //alert("Select Transfer Cost Center");
+            $("#txtIndentItemSearch").val("");
+            return false;
+        }
+    }
+   
+    function SubmitLDData() {
+        
+
+        isValid = true;
+        var errorMsg = "";
+        var typecat = $("#ddlLDIndentItemCategory option:selected").index();
+        var typesel = $("#ddlLDItemSelectiontype option:selected").index();
+        var ccode = $("#ddlLDcostcenter option:selected").index();
+        var Itemtext = $("#txtIndentItemSearch").val();
+        if (typecat === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Category</p>";
+            isValid = false;
+        }
+        if (typesel === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Type</p>";
+            isValid = false;
+        }
+        if (Itemtext === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Search Data</p>";
+            isValid = false;
+        }
+        if (ccode === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        let gridcount = $("#ItemLostDamageDataTable tbody tr").length;
+        let itemcodeno = 0;
+        let category = $("#ddlLDIndentItemCategory option:selected").text();
+        let catno = category.charAt(0);
+        
+        if (gridcount > 0) {
+            $("#ItemLostDamageDataTable tbody tr:first").each(function () {
+                var currentRow = $(this);
+                var itemcode = currentRow.find("td").eq(2).html();
+                itemcodeno = $.trim(itemcode).charAt(0);
+            });
+            alert(itemcodeno + " ====== " + catno);
+            if (itemcodeno !== catno) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Invalid Item Code</p>";
+                isValid = false;
+            }
+        }   
+       
+        if (!isValid) {
+            $("#divIndentLDInfoMsg").text("");
+            $("#divIndentLDInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divIndentLDInfoMsg").addClass("alert-danger");
+            $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divIndentLDInfoMsg").text("");
+            $("#divIndentLDInfoMsg").addClass("hidden");
+            var fromccodeval = $("#ddlLDcostcenter option:selected").val();
+            var typeArr = fromccodeval.toString().split(',');
+            var CC = typeArr[0];
+            
+            var icode = Itemtext.split(',');
+            var finalitemcode = icode[0].toUpperCase();
+            var addData = {
+                CCCode: $.trim(CC),
+                itemcode: $.trim(finalitemcode),
+                ReportType: '1'                
+            };
+          
+            addFailMsg = "Error Occurred While Adding Item";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/InsertLostorDamageSingleItem',
+                data: { LDdata: addData },
+                success: function (Data) {
+                    if (Data.saveStatus === 'Submited') {
+                        RebindGrid();
+                       // alert('Submited');
+                    }
+                    else {
+                        $("#divIndentLDInfoMsg").text(Data.saveStatus);
+                        $("#divIndentLDInfoMsg").addClass("alert-danger");
+                        $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                        //$("#btnSubmitMultipleLD").prop("disabled", true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divIndentLDInfoMsg").text(addFailMsg);
+                    $("#divIndentLDInfoMsg").addClass("alert-danger");
+                    $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+
+    }
+    function RebindGrid() {
+        var fromccodeval = $("#ddlLDcostcenter option:selected").val();
+        var typeArr = fromccodeval.toString().split(',');
+        var CC = typeArr[0];
+        BindLostOrDamadgedItemsGrid(CC) 
+    }
+    function SubmitMultipleLDData() {
+        isValid = true;
+        var errorMsg = "";
+        var CCCodeIndex = $("#ddlLDcostcenter option:selected").index();
+        var typecat = $("#ddlLDIndentItemCategory option:selected").index();
+        var typesel = $("#ddlLDItemSelectiontype option:selected").index();
+        var fromccodeval = $("#ddlLDcostcenter option:selected").val();
+        var ldate = $("#txtNDate").val();
+
+        var typeArr = fromccodeval.toString().split(',');
+        var CC = typeArr[0];
+        var Itemtext = $("#txtIndentItemSearch").val();
+        if (typecat === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Category</p>";
+            isValid = false;
+        }
+        if (typesel === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By Type</p>";
+            isValid = false;
+        }
+        if (ldate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        if (CCCodeIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        let gridcount = $("#ItemLostDamageDataTable tbody tr").length;
+        let itemcodeno = 0;
+        let category = $("#ddlLDIndentItemCategory option:selected").text();
+        let catno = category.charAt(0);
+        let gridcc = "";
+        if (gridcount > 0) {
+            $("#ItemLostDamageDataTable tbody tr:first").each(function () {
+                var currentRow = $(this);
+                var cc = currentRow.find("td").eq(1).html();
+                var itemcode = currentRow.find("td").eq(2).html();
+                itemcodeno = $.trim(itemcode).charAt(0);
+                gridcc = cc;
+            });
+        }
+        //alert(itemcodeno + " ====== " + catno);
+        if (itemcodeno !== catno) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Item Code</p>";
+            isValid = false;
+        }
+        if ($.trim(gridcc) !== $.trim(CC)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Cost Center Code</p>";
+            isValid = false;
+        }
+        var invalidqty = 0, remarkcount = 0,typecount=0,emptylostdamagedcount=0,checkcount=0;
+        $("#ItemLostDamageDataTable tbody tr").each(function () {            
+            var currentRow = $(this);
+            var check = currentRow.find('input[type="checkbox"]').is(':checked');
+            var stocktype = currentRow.find("td").eq(10).find("select option:selected").index();
+            var remark = currentRow.find("td").eq(13).find("textarea").val();
+            var issuedQty = currentRow.find("td").eq(9).html();
+            var Lostnum = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+            var Damagednum = isNaN(parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())
+            if (Lostnum == 0 && Damagednum==0) {
+                emptylostdamagedcount = emptylostdamagedcount + 1;
+            }
+            else if (parseFloat(issuedQty) < (parseFloat(Lostnum) + parseFloat(Damagednum))) {
+                invalidqty += 1;                
+            }
+            if (stocktype === 0) {
+                typecount += 1;      
+            }
+            if (remark === "") {
+                remarkcount += 1;
+            }
+            if (check === false) { checkcount += 1;      }
+        });
+        if (emptylostdamagedcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Damaged or Lost Quantity</p>";
+            isValid = false;
+        }
+        if (typecount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Stock Type</p>";
+            isValid = false;
+        }
+       
+        if (remarkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (invalidqty > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Damaged/Lost Quantity</p>";
+            isValid = false;          
+        }
+        if (checkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Verify Items</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divIndentLDInfoMsg").text("");
+            $("#divIndentLDInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divIndentLDInfoMsg").addClass("alert-danger");
+            $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divIndentLDInfoMsg").text("");
+            $("#divIndentLDInfoMsg").addClass("hidden");
+            var fromccodeval = $("#ddlLDcostcenter option:selected").val();
+            var typeArr = fromccodeval.toString().split(',');
+            var CC = typeArr[0];
+            var ids = "", icodes = "", avlqtys = "", types = "", lqtys = "", dqtys = "", remarks = "";
+            $("#ItemLostDamageDataTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var id = currentRow.find("td").eq(14).html();
+                var itemcode = currentRow.find("td").eq(2).html();
+                var issuedQty = currentRow.find("td").eq(9).html();
+                var AQty = currentRow.find("td").eq(9).html();
+                var stocktype = currentRow.find("td").eq(10).find("select option:selected").val();
+                var remark = currentRow.find("td").eq(13).find("textarea").val();;
+                var Lostnum = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+                var Damagednum = isNaN(parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())
+                ids += $.trim(id)+',';
+                icodes += $.trim(itemcode) + ',';
+                avlqtys += $.trim(issuedQty) + ',';
+                types += $.trim(stocktype) + ',';
+                
+                itemcodeno = $.trim(itemcode).charAt(0);
+
+                if (itemcodeno === '1') {
+                    if (Lostnum !== 0) {
+                        lqtys += '1' + ',';
+                    }
+                    else {
+                        lqtys += '0' + ',';
+                    }
+                    if (Damagednum !== 0) {
+                        dqtys += '1' + ',';
+                    }
+                    else{
+                        dqtys += '0' + ',';
+                    }
+                }
+                else {
+                    if (Lostnum !== 0) {
+                        lqtys += $.trim(Lostnum) + ',';
+                    }
+                    else {
+                        lqtys += '0' + ',';
+                    }
+                    if (Damagednum !== 0) {
+                        dqtys += $.trim(Damagednum) + ',';
+                    }
+                    else {
+                        dqtys += '0' + ',';
+                    }
+                   
+                   
+                }
+               
+                remarks += $.trim(remark) + ',';
+
+            });
+           
+            var addData = {
+                CCCode: $.trim(CC),
+                itemcodes: icodes,
+                Reporttype: '1',
+                itemids: ids,
+                Lostqtys: lqtys,
+                Damangedqtys: dqtys,
+                Stocktype: types,
+                Remarks: remarks,
+                AvlQtys: avlqtys,
+                CategoryNo: catno,
+                Date: ldate
+            };
+            //debugger;
+            $("#btnSubmitMultipleLD").prop("disabled", true);
+            addFailMsg = "Error Occurred While Adding Items";
+            addSuccessMsg = "Items Added Successfully.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/InsertLostorDamageMultipleItem',
+                data: { LDdata: addData },
+                success: function (Data) {
+                    if (Data.saveStatus === 'Submited') {
+                        $("#divIndentLDInfoMsg").text(addSuccessMsg);
+                        $("#divIndentLDInfoMsg").removeClass("hidden alert-danger");
+                        $("#divIndentLDInfoMsg").addClass("alert-success");
+                     
+                    }
+                    else {
+                        $("#divIndentLDInfoMsg").text(Data.saveStatus);
+                        $("#divIndentLDInfoMsg").addClass("alert-danger");
+                        $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                       $("#btnSubmitMultipleLD").prop("disabled", false);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divIndentLDInfoMsg").text(addFailMsg);
+                    $("#divIndentLDInfoMsg").addClass("alert-danger");
+                    $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                    $("#btnSubmitMultipleLD").prop("disabled", false);
+                }
+            });
+        }
+    }
+    function ResetLD() {
+        location.reload();
+    }
+</script>
+
+

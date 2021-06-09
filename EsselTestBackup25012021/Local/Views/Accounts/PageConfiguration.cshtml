@@ -1,0 +1,310 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.PageConfiguration1
+@{
+    ViewBag.Title = "PageConfiguration";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Page Level Configuration</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="Pageconfig" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.configfor)
+                                                                @Html.DropDownListFor(model => model.configfor, new SelectList(Model.pgconfiglist, "pfconfigid", "pfconfigvalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_pfconfigType", onchange = "configuretypechange()" })  @*, onchange = "paymenttypechange()"*@
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4" id="divCode">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Code)
+                                                                @Html.DropDownListFor(model => model.Code, new SelectList(Model.CodesList, "codeid", "codevalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_pfcode", onchange = "GetAllcodes()" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4" id="divAllCode">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.AllCode)
+                                                                @Html.DropDownListFor(model => model.AllCode, new SelectList(Model.AllCodesList, "acodeid", "acodevalue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_pfallcodes" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                        <div class="col-md-12">
+                                                            <div class="text-right">
+                                                                <button class="btn btn1 btn-success" id="btnPLCSubmit" onclick="btnPLCSubmitData()">Submit</button>
+                                                                <input type="hidden" id="Type" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                    </div>
+                                                    <div class="row" id="divgrid">
+                                                        <div class="col-xs-12 col-sm-12 col-md-12">
+                                                            <div id="divRptDetails">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row text-center">
+                                                        <div id="divplcInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divCode").addClass("hidden");
+        $("#divAllCode").addClass("hidden");
+        $("#divgrid").addClass("hidden");
+        $("#btnPLCSubmit").addClass("hidden");
+        $("#btnPLCSubmit").prop('disabled', true);
+    });
+    function configuretypechange() {
+        var configtypindex = $("#ddl_pfconfigType option:selected").index();
+        var Code = $("#ddl_pfcode");
+        if (configtypindex != 0) {
+            var configtypeval = $("#ddl_pfconfigType option:selected").val();
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/Getcodes",
+                data: '{code:"' + configtypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#divCode").removeClass("hidden");
+                    $("#divgrid").removeClass("hidden");
+                    Code.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        Code.append($("<option></option>").val(this['codeid']).html(this['codevalue']));
+                    });
+                    fillgrid(configtypeval);
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+
+        }
+        else {
+            alert("Please check Configuration");
+            $("#divCode").addClass("hidden");
+            $("#divAllCode").addClass("hidden");
+
+        }
+    }
+    function fillgrid(txt) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Accounts/ViewConfiginfo',
+            data: { code:  txt },
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divRptDetails").html(Data);
+                }
+                else {
+                    $("#divRptDetails").html('No Data Found');
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+
+        });
+        //Submitenable(txt);
+    }
+    function GetAllcodes() {
+        //var configtypeval = $("#ddl_pfconfigType option:selected").val();
+        var configtypindex = $("#ddl_pfcode option:selected").index();
+        var Code = $("#ddl_pfallcodes");
+        if (configtypindex != 0) {
+            var configtypeval = $("#ddl_pfcode option:selected").val();
+            var configtypetext = $("#ddl_pfcode option:selected").text();
+            var configforval = $("#ddl_pfconfigType option:selected").val(); 
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetCheckconfigtype",
+                data: '{code:"' + configtypeval + '",codetext:"' + configtypetext + '",codefor:"' + configforval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#Type").val(this['Code']);                      
+                    });                   
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+            var typeval = $("#Type").val();
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetAllcodes",
+                data: '{code:"' + configtypeval + '",codetext:"' + typeval + '",codefor:"' + configforval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $("#divAllCode").removeClass("hidden");
+                    Code.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                    $.each(response, function () {
+                        Code.append($("<option></option>").val(this['acodeid']).html(this['acodevalue']));
+                    });
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+
+            });
+            Submitenable(configforval, configtypetext);
+        }
+        else {
+            alert("Please check Type");
+            $("#divAllCode").addClass("hidden");
+        }
+    }
+    function btnPLCSubmitData() {
+        var errorMsg = "";
+        isValid = true;
+        var Configfor = $("#ddl_pfconfigType option:selected").index();
+        var Typeid = $("#ddl_pfcode option:selected").index();
+        var Codes = $("#ddl_pfallcodes option:selected").index();
+        var Codestext = $("#ddl_pfallcodes option:selected").text();
+        if (Configfor == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Confirguration for</p>";
+            isValid = false;
+        }
+        if (Typeid == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Type</p>";
+                isValid = false;
+        }
+        if (Codes == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Type of Code</p>";
+                isValid = false;
+        }        
+        if (Codestext == "Please select DCA before SDCA" || Codestext == "Please select SDCA before IT") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Valid Type of Code</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divplcInfoMsg").text("");
+            $("#divplcInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divplcInfoMsg").addClass("alert-danger");
+            $("#divplcInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divplcInfoMsg").text("");
+            $("#divplcInfoMsg").addClass("hidden");
+            SavePLCdata();
+        }
+    }
+    function SavePLCdata() {
+        var Configfor = $("#ddl_pfconfigType option:selected").val();
+        var Roleid = '@Session["Roleid"]';
+        var Createdby = '@Session["Createdby"]';
+        var PLCDetails = {
+            configfor: $("#ddl_pfconfigType option:selected").val(),
+            Code: $("#ddl_pfcode option:selected").text(),
+            CodeValue: $("#ddl_pfcode option:selected").val(),
+            AllCode: $("#ddl_pfallcodes option:selected").val(),
+            RoleID: Roleid,
+            Createdby: Createdby
+        };
+        addFailMsg = "Error Occurred While Submitting.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/SavePLCDetails',
+            data: { newplcDetails: PLCDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divplcInfoMsg").text(Data.saveStatus);
+                    $("#divplcInfoMsg").removeClass("hidden alert-danger");
+                    $("#divplcInfoMsg").addClass("alert-success");
+                    //$("#btnPLCSubmit").prop("disabled", true);
+                    fillgrid(Configfor);
+                }
+                else {
+                    $("#divplcInfoMsg").text(Data.saveStatus);
+                    $("#divplcInfoMsg").addClass("alert-danger");
+                    $("#divplcInfoMsg").removeClass("hidden alert-success");
+                    //$("#btnPLCSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divplcInfoMsg").text(addFailMsg);
+                $("#divplcInfoMsg").addClass("alert-danger");
+                $("#divplcInfoMsg").removeClass("hidden alert-success");
+                //$("#btnPLCSubmit").prop("disabled", false);
+            }
+        });
+    }
+    function Submitenable(cde, configtypeval) {
+        var txt = {
+            Code: cde,
+            AllCodeval: configtypeval
+        };
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/Checkexistpending',
+            data: { code: txt },
+            success: function (Data) {
+                if (Data.saveStatus == true) {
+                    $("#btnPLCSubmit").addClass("hidden");
+                    $("#btnPLCSubmit").prop('disabled', true);
+                }
+                else {
+                    $("#btnPLCSubmit").removeClass("hidden");
+                    $("#btnPLCSubmit").prop('disabled', false);
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+
+        });
+    }
+</script>

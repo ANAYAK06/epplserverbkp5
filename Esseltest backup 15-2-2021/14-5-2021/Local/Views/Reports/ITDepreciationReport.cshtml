@@ -1,0 +1,91 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.ITDepreciationReport
+    @{
+        ViewBag.Title = "ITDepreciationReport";
+        Layout = "~/Views/Shared/EsselMaster.cshtml";
+    }
+
+    @*<h2>ITDepreciationReport</h2>*@
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align:left;font-weight:bold">IT Depreciation</h4>
+                    </div>
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <!-- Example Tabs Left-->
+                                <div class="card-inner">
+                                    <div class="col-md-12">
+                                        <!-- Example Tabs Left-->
+                                        <div class="card-inner">
+                                            <div class="tab-content">
+                                                <div role="tabpanel" id="Pageconfig" class="tab-pane fade in active">
+                                                    <form onsubmit="return false">
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Year)
+                                                                    @Html.DropDownListFor(model => model.Year, new SelectList(Model.ITDepYearList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Fyear", onchange = "configuretypechange()" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="GridItDepData" class="row">
+                                                        </div>
+                                                        @*<div class="row ">
+                                                        </div>*@
+                                                        <div class="row text-center">
+                                                            <div id="divplcInfoMsg" class="alert alert-danger hidden">
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#GridItDepData").addClass("hidden");
+        });
+        function configuretypechange() {
+            //debugger;
+            var yearindex = $("#ddl_Fyear option:selected").index();           
+            if (yearindex != 0) {
+                var yearval = $("#ddl_Fyear option:selected").val();
+                 $.ajax({
+                    type: 'GET',
+                    dataType: 'html',
+                     url: '/Reports/ITDepreciationReportGrid',
+                    data: { FYear: yearval},
+                    success: function (data) {
+                        var count = Object.keys(data).length;
+                        if (count > 0) {
+                            $("#GridItDepData").html(data);
+                            var currentrowcount11 = $("#ITdepDataTable tbody tr").length;
+                            if (currentrowcount11 > 0) {
+                                $("#GridItDepData").removeClass("hidden");
+                            }
+                            else {
+                                $("#GridItDepData").removeClass("hidden");                                
+                            }
+                        }
+                    },
+                });
+            }
+            else {
+                alert("Please Select Year");
+                $("#GridItDepData").addClass("hidden");
+            }
+        }
+    </script>

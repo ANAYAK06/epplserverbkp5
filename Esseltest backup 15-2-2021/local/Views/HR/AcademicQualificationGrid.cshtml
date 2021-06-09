@@ -1,0 +1,100 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.AcademicQualification>
+    @if (Model.Count > 0)
+    {
+<div class="col-md-12 change-tab">
+    <div class="strike1">
+        <span>Academic Qualification</span>
+    </div>
+    <div class="tabledynamic">
+        <br />
+        <table id="AcademicTable" class="table order-list academictable">
+            <thead>
+                <tr>
+                    <td style="text-align:center;color:#fff !important">S.No</td>
+                    <td style="text-align:center;color:#fff !important">Class</td>
+                    <td style="text-align:center;color:#fff !important">Name of University</td>
+                    <td style="text-align:center;color:#fff !important">From</td>
+                    <td style="text-align:center;color:#fff !important">To</td>
+                    <td style="text-align:center;color:#fff !important">Percentage</td>
+                    <td style="text-align:center;color:#fff !important"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count2 = 1; }
+
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="text-align:center">@count2</td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.AcademicClass)
+                        </td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.NameofUniversity)
+                        </td>
+
+                        <td style="text-align:center">@Html.DisplayFor(modelItem => item.FromYear)</td>
+                        <td style="text-align:center">
+                            @Html.DisplayFor(modelItem => item.ToYear)
+                        </td>
+
+                        <td style="text-align:center">@Html.DisplayFor(modelItem => item.Percentage)</td>
+                        <td style="text-align:center"><input type="button" class="ibtnAddAcademicClassdelete btn btn-md btn-danger" value="Delete"></td>
+                    </tr>
+                    count2++;
+                }
+                </tbody>
+            <tfoot>              
+            </tfoot>
+        </table>
+    </div>
+</div>
+     <script>
+         $(document).ready(function () {
+         $("table.order-list.academictable").on("click", ".ibtnAddAcademicClassdelete", function (event) {
+             var row = $(this).closest("tr");
+             var aclass = $.trim(row.find("td").eq(1).html());
+             var rowno = $.trim(row.find("td").eq(0).html());
+             addFailMsg = "Error Occurred While Deleting.";
+             $.ajax({
+                 type: 'POST',
+                 dataType: 'json',
+                 url: '/HR/DeleteAcademicQualificationData',
+                 data: { AcademicClassName: aclass },
+                 success: function (Data) {
+                     //alert("Hi");
+                     if (Data.saveStatus === "Deleted") {
+                         row.remove();
+                         if (rowno == 1 || rowno === "1") {
+                             $("#divAcademicQualGridData").load('/HR/AcademicQualificationGrid');
+                         }
+                         else { ReassignRowNoforAQGrid(); }
+                     }
+                     else {
+                         $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                         $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                         $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                     }
+                 },
+                 error: function (XMLHttpRequest, textStatus, errorThrown) {
+                     $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                     $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                     $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                 }
+             });
+         });
+           
+         });
+         function ReassignRowNoforAQGrid() {
+             var rowno = 1;
+             $("#AcademicTable tbody tr").each(function () {
+                 var currentRow = $(this);
+                 currentRow.find("td").eq(0).html(rowno);
+                 rowno++;
+             });
+
+         }
+     </script>
+    }

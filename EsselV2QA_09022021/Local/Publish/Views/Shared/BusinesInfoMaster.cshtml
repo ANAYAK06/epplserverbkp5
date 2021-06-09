@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+    @*<script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>*@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/EsselStyles/responsive.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+</head>
+<body>
+    <header class="header-home">
+        <nav aria-label="breadcrumb">
+            <div class="row">
+                <div class="col-md-4"> <img src="~/Content/EsselImages/logo.jpg" class="img-responsive" /></div>
+                <div class="col-md-4">
+                    <h4 style="text-align:center;font-weight:bold;color:#fff">Firm Registration</h4>
+                </div>
+            </div>
+        </nav>
+        <!--SIDE MENU-->
+        <div id="side-menu-icon" class="hidden-lg hidden-md hidden-sm visible-xs">
+            <div id="menu"><span></span></div>
+        </div>
+        <div id="side-menu" class="hidden-lg hidden-md hidden-sm visible-xs">
+            <ul class="f-menu">
+                <li><a href="index.html"><i class="fa fa-angle-double-right"></i> Home</a></li>
+                <li>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-double-right"></i>  Purchase</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#homeSubmenu1" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-double-right"></i> Warehouse</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu1">
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                    </ul>
+                </li>
+
+
+                <li>
+                    <a href="#homeSubmenu2" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-double-right"></i>  Configuration</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu2">
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                        <li><a href="#">about us</a></li>
+                        <li><a href="#">contact us</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"> <i class="fa fa-angle-double-right"></i> My Account</a>
+
+                </li>
+                <li>
+                    <a href="#homeSubmenu4" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-double-right"></i> Notifications </a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu4">
+                        <li><a href="#">Purchase <span class="badge pull-right badge-notify">3</span></a></li>
+                        <li><a href="#">Accounts <span class="badge pull-right badge-notify">2</span></a></li>
+                        <li><a href="#">Warehouse <span class="badge pull-right badge-notify">4</span></a></li>
+                        <li><a href="#">Sales <span class="badge pull-right badge-notify">1</span></a></li>
+                        <li><a href="#">Hr <span class="badge pull-right badge-notify">3</span></a></li>
+                        <li><a href="#">Purchase <span class="badge pull-right badge-notify">3</span></a></li>
+                        <li><a href="#">Accounts <span class="badge pull-right badge-notify">2</span></a></li>
+                        <li><a href="#">Warehouse <span class="badge pull-right badge-notify">4</span></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-angle-double-right"></i>Settings</a>
+
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-angle-double-right"></i>info</a>
+
+                </li>
+            </ul>
+        </div>
+        <!-- mobile-menu-area end -->
+    </header>
+
+    <section class="m-tb-40">
+        <div class="container">
+            <div class="row">
+            </div>
+            <div class="row">
+                <div class="card">
+                    <div class="card-header">
+
+                    </div>
+                    <div class="body">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.POQuantityData>
+    <style>
+        .tdtextcls {
+            word-wrap: break-word;
+            word-break: break-all !important;
+            white-space: normal;
+        }
+    </style>
+<div class="table-responsive row">
+    <table id="tblPOGrid" style="width:100%;overflow:hidden" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr style="word-wrap: break-word; word-break: break-all; white-space: normal;">
+                <th></th>
+                <th class="hidden">Indentlistid</th>
+                <th class="hidden">S.No</th>
+                <th></th>
+                <th class="tdtextcls">ItemCode</th>
+                <th class="tdtextcls">ItemName</th>
+                <th class="tdtextcls">Specification</th>
+                <th class="hidden">AccountHead</th>
+                <th class="hidden">SubAccountHead</th>
+                <th class="hidden">Units</th>
+                <th class="tdtextcls">Quantity</th>
+                <th width="50px" class="tdtextcls">QuotedPrice</th>
+                <th class="tdtextcls">StandardPrice</th>
+                <th width="50px" class="tdtextcls">POQty</th>
+                <th class="tdtextcls">PurchasePrice</th>
+                <th class="tdtextcls">Amount</th>
+                <th class="tdtextcls">StandardTotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int count = 1; }
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control">
+                    <button type="button" class="btn btn-info">
+                        <i class="fa fa-search" aria-hidden="false"></i>
+                    </button>
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.IndentListId)
+                </td>
+                <td class="hidden">
+                    @count
+                </td>
+                <td style="text-align:center">
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chksingle" name="chksingle"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.itemcode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.itemname)
+                </td>
+                <td style="word-wrap: break-word; word-break: break-all; white-space: normal;">
+                    @Html.DisplayFor(modelItem => item.specification)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.dcacode)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.subdcacode)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.units)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Requestedqty)
+                </td>
+                <td width="50px">
+                    <input type="text" class="form-control quotedprice" onkeypress="return ValidateAmount(this,event);"/>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.basicprice)
+                </td>
+                <td width="50px">
+                    <input type="text" class="form-control poqty" onkeyup="CountSupplierPOAmount()" onkeypress="return ValidateAmount(this,event);"/>
+                </td>
+                <td>
+                    <input type="text" class="form-control purchaseprice" style="width:100px" value="@item.basicprice" onkeyup="CountSupplierPOAmount()" onkeypress="return ValidateAmount(this,event);"/>
+                </td>
+                <td>
+                    <input type="text" style="width:100px;" class="form-control amount" disabled />
+                </td>
+                <td>
+                  
+                </td>
+            </tr>
+                count++;
+            }
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td></td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right"><label>PO Value</label></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<div class="modal fade" id="ModalPOData" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#tblPOGrid').on('change', '.chksingle', function () {
+           
+            var row = $(this).closest('tr'); // get the row
+            var checkbox = row.find("td").eq(3).find("input[type='checkbox']").is(":checked");
+            var poqty = row.find("td").eq(13).find("input[type='text']").val();
+            let initialqty = row.find("td").eq(10).html();
+            if (checkbox == true && poqty==="") {
+                var qty = row.find("td").eq(10).html();
+                row.find("td").eq(12).find("input[type='text']").val($.trim(qty));
+            }
+            if (checkbox == false) {
+                row.find("td").eq(13).find("input[type='text']").val("");
+                row.find("td").eq(14).find("input[type='text']").val("");
+                row.find("td").eq(11).find("input[type='text']").val("");
+            }
+            CountSupplierPOAmount();
+        });
+        var PoGrid = null;
+        InitializePoGrid();
+    });
+    function InitializePoGrid() {
+        PoGrid = $('#tblPOGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+
+        });
+        $('#tblPOGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = PoGrid.row(tr);
+            ShowPopUp(row.data());
+        });
+
+    }
+    function ShowPopUp(data) {
+        var code = "";
+        $.each(data, function (index, value) {
+            if (index == 4)
+                code = value;
+        });
+        // alert(InvNo);
+        //var title = "Edit General DCA";
+        $.ajax({
+            type: 'POST',
+            url: "/Purchase/GetPreviousePODetails",
+            data: { Itemcode: code },
+            dataType: 'html',
+            success: function (response) {
+                $('#ModalPOData').html(response);
+                $('#ModalPOData').modal();
+            },
+            error: function () {
+            }
+        });
+
+    }
+</script>

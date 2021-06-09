@@ -1,0 +1,691 @@
+﻿@model  EsselTestLocalApplication.Models.Accounts.ClientRecievables
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Purchase Order Nuumber:</label>
+                    <input type="text" class="form-control" value="@Model.PONo" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Invoice Number:</label>
+                    <input type="text" class="form-control" value="@Model.InvoiceNo" readOnly="readOnly"
+                           id="ApprClientRecInvoice" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Cost Center Code:</label>
+                    <input type="text" class="form-control" value="@Model.CCCode" readOnly="readOnly" id="ApprClientRecCC" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Client Code:</label>
+                    <input type="text" class="form-control" value="@Model.Client" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Sub Client Code:</label>
+                    <input type="text" class="form-control" value="@Model.SubClient" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Invoice Sub Type:</label>
+                    <input type="text" class="form-control" value="@Model.InvoiceCategory" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Running Account Number:</label>
+                    <input type="text" class="form-control" value="@Model.RANo" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Invoice Date:</label>
+                    <input type="text" class="form-control" value="@Model.InvoiceDate" readOnly="readOnly"
+                           id="ApprUpcleitnrecInvoicedate" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Invoice Making Date:</label>
+                    <input type="text" class="form-control" value=@Model.InvoiceMakingDate readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Basic Value:</label>
+                    <input type="text" class="form-control" value="@Model.Basic_Value" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+        </div>
+        <div class="col-md-12" id="divapprclientrectaxtable-@Model.BankTransactionId">
+            <table id="ClientRecTaxTable" class="table order-list tax" style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">Types Of TaxName</th>
+
+                        <th style="text-align:center">Cost Center </th>
+                        <th style="text-align:center">Account Head </th>
+                        <th style="text-align:center">Sub Account Head</th>
+                        <th style="text-align:center">Tax Number</th>
+                        <th style="text-align:center">TaxValue</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.InvoiceClienttaxeslist)
+                    {
+                        <tr>
+                            <td style="text-align:center" class="rowno">@item.TypesOfTaxName</td>
+                            <td style="text-align:center" class="rowno">@item.CCCode</td>
+                            <td style="text-align:center" class="rowno">@item.DCACode</td>
+                            <td style="text-align:center" class="rowno">@item.SubDCACode</td>
+                            <td style="text-align:center" class="rowno">@item.TaxNo</td>
+                            <td style="text-align:center" class="rowno">@item.TaxValue</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tfoot>
+            </table>
+            <br />
+        </div>
+        <div id="divDeduction">
+            <div class="col-md-12" style="margin-top:15px">
+                <hr />
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="col-md-4 text-center">
+                            <div class="form-group">
+                                <input id="chkDedY" name="ClientRecDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                <input id="chkDedN" name="ClientRecDeduction" value="No" type="radio" checked>No
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 change-tab" id="divdeductiongrid">
+                <div class="strike">
+                    <span>Add Deduction</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="ClientRecDCAGrid" class="table order-list DCAgrid" style="width:100%">
+                        <thead>
+                            <tr>
+                                <td style="text-align:center;font-weight:bold" class="hidden">No</td>
+                                <td style="text-align:center;font-weight:bold">Is deducted from other CC</td>
+                                <td style="text-align:center;font-weight:bold">Cost Center</td>
+                                <td style="text-align:center;font-weight:bold">Account Head</td>
+                                <td style="text-align:center;font-weight:bold">SubAccount Head </td>
+                                <td style="text-align:center;font-weight:bold">Amount</td>
+                                <td style="text-align:center;font-weight:bold">Check</td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addDeduction" value="Add More Deduction Dca" onclick="ClientRec_BindNewRowtoGrid();" />
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-md-12 change-tab" id="divPayment">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Advance)
+                                    @Html.TextBoxFor(model => model.Advance, new { @id = "txtAdvance", @class = "form-control", onkeyup = "ClientRec_FinalAmount();", onkeypress = "return ValidateAmount(this,event);" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Rentention)
+                                    @Html.TextBoxFor(model => model.Rentention, new { @id = "txtRentention", @class = "form-control", onkeyup = "ClientRec_FinalAmount();", onkeypress = "return ValidateAmount(this,event);" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Hold)
+                                    @Html.TextBoxFor(model => model.Hold, new { @id = "txtHold", @class = "form-control", onkeyup = "ClientRec_FinalAmount();", onkeypress = "return ValidateAmount(this,event);" })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Bank)
+                                    @Html.DropDownListFor(model => model.Bank, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ClRecBankddl" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Number)
+                                    @Html.TextBoxFor(model => model.Number, new { @id = "txtNo", @class = "form-control" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Transaction Date</label>
+                                    @*@Html.LabelFor(model => model.ReturnPayDate)*@
+                                    @Html.TextBoxFor(model => model.ReturnPayDate, "{0:dd/MM/yyyy}", new { @id = "txtClientPayDate", @class = "form-control date-picker", @type = "text", @readonly = "true" })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Remarks)
+                                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txtRemarks", @class = "form-control", @rows = "2" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Amount)
+                                    @Html.TextBoxFor(model => model.Amount, new { @id = "txtFinalAmount", @class = "form-control", @readonly = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-right">
+                                <input type="hidden" value="0" id="txtTaxPlusBasic" />
+                                <input type="hidden" value="0" id="txtDeductionExist" />
+                                <input type="hidden" value="0" id="txtMinusAmount" />
+                                <input type="hidden" value="false" id="txtShowingDeduction" />
+                                <input type="hidden" value="false" id="txtoldfinalamount" />
+                                <input type="hidden" value="0" id="txtCreatedby" style="display:none" />
+                                <input type="hidden" value="0" id="txtupdclientrecRoleId" style="display:none" />
+                                <button class="btn btn1 btn-success" id="btnClientRecSubmit" onclick="UpdateClientRecievableData('@Model.BankTransactionId',@Model.Advance,@Model.Rentention,@Model.Hold)">Submit</button>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="text-center">
+                                <br />
+                                <div id="divClientRecInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div><input type="hidden" id="txtolddeductionids" /></div>
+            
+        </div>
+                 
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+           var RoleID = '@Session["Roleid"]';
+        $("#txtupdclientrecRoleId").val(RoleID);
+           var total = '@Model.Amount';
+           var basic = '@Model.Basic_Value';
+        $("#txtClientPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        });
+        $("#txtPayInvoiceDate").datepicker("option", "disabled", true);
+        $("#txtPayInsMakingDate").datepicker("option", "disabled", true);
+        @*var transdate = '@Model.TransactionDate';
+        var idate = transdate.toString().split(' ');
+        var idate1 = idate.toString().split(' ');
+        var edate = "'" + idate1 + "'";
+        var edate1 = moment(edate, "DD-MM-YYYY").format('DD-MMM-YYYY');*@
+       // $("#txtClientPayDate").datepicker("setDate", '@Model.ReturnPayDate');
+
+         var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+        var currentid = $("#currentClRectransid").val();
+        var taxtotal = 0;
+        $("#ClientRecTaxTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var amount = currentRow.find('td').eq(5).html();
+            taxtotal = parseFloat(taxtotal) + parseFloat(amount);
+        });
+        $("#ClientRecTaxTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            if (!isNaN(taxtotal)) {
+                footerRow.find("td").eq(5).html("Tax Total: <b>" + parseFloat(taxtotal).toFixed(2) + "</b>");
+            }
+            else {
+                footerRow.find("td").eq(5).html("");
+            }
+            $("#txtTaxPlusBasic").val(parseFloat(taxtotal) + parseFloat(basic));
+
+        });
+        var bank = '@Model.Bank';
+        $("#ddl_ClRecBankddl").find("option:contains('" + bank + "')").each(function () {
+                if ($(this).text() == bank) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+        //bind deductions
+        var invoiceno = '@Model.InvoiceNo';
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/AccountsApproval/GetClientDeduction',
+            data: { InvNo: invoiceno },
+            success: function (response) {
+                var count1 = Object.keys(response).length;
+                var dedtotal = 0;
+
+                if (count1 > 0) {
+                    $("#divdeductiongrid").removeClass("hidden");
+                    $("#chkDedY").prop("checked", true);
+                    $("#chkDedN").prop("checked", false);
+                    for (i = 0; i < count1; i++) {
+                        var rowno = i + 1;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td  style="text-align:center" class="hidden">' + rowno + '</td>';
+                        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle OtherCC"><option selected="selected" value="Select">Select</option>';
+                        cols += ' <option value="Yes">Yes</option>';
+                        cols += ' <option value="No">No</option>';
+                        cols += '</select>';
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle CC" ><option selected="selected" value="Select">Select</option></select></td>';
+                        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle DCA"><option selected="selected" value="Select">Select</option></select></td>';
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle SubDCA" ><option selected="selected" value="Select">Select</option></select></td>';
+                        cols += '<td style="text-align:center"><input type="text" value=""  class="form-control DcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountClientRec_DCATotal()" /></td>';
+                        cols += '<td style="text-align:center"> <ul class="list-inline"><li class="eagle-checkbox">';
+                        cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkDeduction" name="chkDeduction">';
+                        cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul>';
+                        //if (rowno > 1) {
+                            cols += '<td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+                        //}
+                        newRow.append(cols);
+                        $("table.order-list.DCAgrid").append(newRow);
+                    }
+                    var OldDeductionids = '';
+                    var selecteddcalist = [];
+                    for (var i = 0; i < response.length; i++) {
+
+                        var item = response[i];
+                        selecteddcalist.push(item.CCCode);
+                        var invoiceCC = $("#").val();
+                        $("#ClientRecDCAGrid tbody tr").each(function () {
+                            var currentRow = $(this);
+                            var RowNo = currentRow.find("td").eq(0).html();
+                            var checkbox = currentRow.find("td").eq(6).find("input[type='checkbox']").is(":checked");
+                            var OtherCC = currentRow.find("td").eq(1).find("select");
+                            var ddlCCCode = currentRow.find("td").eq(2).find("select");
+                            var ddlDCA = currentRow.find("td").eq(3).find("select");
+                            var ddlSubDCA = currentRow.find("td").eq(4).find("select");
+                            var DcaAmount = currentRow.find("td").eq(5).find("input[type='text']").val();
+                            var ddltype = currentRow.find("td").eq(1).find("select");
+                            var CC1 = '@Model.CCCode';
+                            var currentdedcc = item.CCCode;
+                            var currentdeddca = item.DCACode;
+                            var currentdedsdca = item.SubDcaCode;
+                            var currentdedid = item.ClientDeducationsId;
+                            
+
+
+                            if (RowNo == i + 1) {
+                                OldDeductionids += currentdedid + ',';
+                                //alert(OtherCC.val('Yes'));
+                                // OtherCC.val('Yes').attr("selected", "selected");
+                              //  alert(CC1);
+                                if (item.CCCode !== CC1) {
+                                    OtherCC.prop('selectedIndex', 1);
+                                    @*ddlCCCode.append($("<option selected='selected'></option>").val(ApprClientRecCC).html(ApprClientRecCC+','+'@Model.CCName'));*@
+
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Accounts/BindClientRec_Deduction_CCcodes",
+                                        data: '{ CC_code:"' + CC1 + '"}',
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        success: function (response) {
+                                            $.each(response, function () {
+                                                var dbdedCC = this['CC_Code'];
+                                                if (currentdedcc == dbdedCC) {
+                                                    ddlCCCode.append($("<option selected='selected'></option>").val(this['CC_Code']).html(this['CC_Name']));
+                                                }
+                                                else {
+                                                    var status = checkValueInArrayUpdate(this['CC_Code'], selecteddcalist);
+                                                    if (status === false) {
+                                                        ddlCCCode.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                                                    }
+                                                }
+                                            });
+                                           
+                                        },
+                                        failure: function (response) {
+                                           
+                                        },
+                                        error: function (response) {
+                                        
+                                        }
+                                    });
+                                }
+                                else {
+                                    OtherCC.prop('selectedIndex', 2);
+                                    ddlCCCode.append($("<option selected='selected'></option>").val(CC1).html(CC1 + ',' + '@Model.CCName'));
+                                }
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Accounts/BindClientRec_Deduction_DCA",
+                                    data: '{ CC_code:"' + currentdedcc + '"}',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    success: function (response) {
+                                        $.each(response, function () {
+
+                                            var dbdeddca = this['DCACode'];
+                                            if (currentdeddca == dbdeddca) {
+                                                ddlDCA.append($("<option selected='selected'></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                            }
+                                            else { ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR'])); }
+                                        });
+                                       
+                                    },
+                                    failure: function (response) {
+                                      
+                                    },
+                                    error: function (response) {
+                                       
+                                    }
+                                });
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Accounts/GetSubDCAForCleintInvDeductionbycode",
+                                    data: '{ DCACode:"' + currentdeddca + '"}',
+                                    contentType: "application/json; charset=utf-8",
+                                    dataType: "json",
+                                    success: function (response) {
+                                        $.each(response, function () {
+                                            var dbdedsdca = this['SubDCACode'];
+                                            if (currentdedsdca == dbdedsdca) {
+                                                ddlSubDCA.append($("<option selected='selected'></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                            }
+                                            else { ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR'])); }
+                                        });
+                                      
+                                    },
+                                    failure: function (response) {
+                                      
+                                    },
+                                    error: function (response) {
+                                      
+                                    }
+                                });
+                                currentRow.find("td").eq(5).find("input[type='text']").val(item.DeducationValue);
+                                currentRow.find("td").eq(6).find('input[type="checkbox"]').prop("checked", true);
+                            }
+                            });
+                   
+                   
+                    
+                            }
+                    //CountClientRec_DCATotal();
+                    $("#txtolddeductionids").val(OldDeductionids);
+                    CountClientRec_DCATotal();
+                    ClientRec_FinalAmount();
+                }
+                else {
+                    //var rowno = i + 1;
+                    //var newRow = $("<tr>");
+                    //var cols = "";
+                    //cols += '<td  style="text-align:center" class="hidden">' + rowno + '</td>';
+                    //cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle OtherCC"><option selected="selected" value="Select">Select</option>';
+                    //cols += ' <option value="Yes">Yes</option>';
+                    //cols += ' <option value="No">No</option>';
+                    //cols += '</select>';
+                    //cols += '<td style="text-align:center"><select class="form-control dropdown-toggle CC" ><option selected="selected" value="Select">Select</option></select></td>';
+                    //cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle DCA"><option selected="selected" value="Select">Select</option></select></td>';
+                    //cols += '<td style="text-align:center"><select class="form-control dropdown-toggle SubDCA" ><option selected="selected" value="Select">Select</option></select></td>';
+                    //cols += '<td style="text-align:center"><input type="text" value=""  class="form-control DcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountClientRec_DCATotal()" /></td>';
+                    //cols += '<td style="text-align:center"> <ul class="list-inline"><li class="eagle-checkbox">';
+                    //cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkDeduction" name="chkDeduction">';
+                    //cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul>';
+                    //if (rowno > 1) {
+                    //    cols += '<td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+                    //}
+                    //newRow.append(cols);
+                    //$("table.order-list.DCAgrid").append(newRow);
+                    $("#divdeductiongrid").addClass("hidden");
+                    $("#chkDedY").prop("checked", false);
+                    $("#chkDedN").prop("checked", true);
+                }
+            
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+             
+            }
+
+        });
+        $('#ClientRecDCAGrid').on('change', '.OtherCC', function () {
+            var index = $(this).find("option:selected").index();
+            var selectedCC = $("#ApprClientRecCC").val();
+            var selectedCCText = $("#ApprClientRecCC").val();
+            var selecteddcalist = [];
+            var row = $(this).closest('tr'); // get the row
+            var ddlCC = row.find('.CC'); // get the other select in the same row
+            var ddlDCA = row.find('.DCA');
+            var ddlSubDCA = row.find('.SubDCA');
+            var amount = row.find('.DcaAmount');
+            $("#ClientRecDCAGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var DedCC = currentRow.find("td").eq(2).find("select option:selected").index();
+                if (DedCC !== 0) {
+                    selecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                   //alert(currentRow.find("td").eq(2).find("select option:selected").val());
+                }
+            });
+            if (index == 0) {
+                ddlCC.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                amount.val("");
+
+            }
+            else if (index == 2) {
+                ddlCC.empty().append('<option selected="selected" value="0">-Select-</option>');
+                ddlCC.append($("<option></option>").val(selectedCC).html(selectedCCText));
+            }
+            else {
+
+                ddlCC.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindClientRec_Deduction_CCcodes",
+                    data: '{ CC_code:"' + selectedCC + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        ddlCC.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                        $.each(response, function () {
+                            var status = checkValueInArrayUpdate(this['CC_Code'], selecteddcalist);
+                            if (status === false) {
+                                ddlCC.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                            }
+
+                        });
+
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        });
+        $('#ClientRecDCAGrid').on('change', '.CC', function () {
+            var ddlCC = $(this).find("option:selected").val();
+            var row = $(this).closest('tr'); // get the row
+            var ddlDCA = row.find('.DCA'); // get the other select in the same row
+            var ddlSubDCA = row.find('.SubDCA');
+            var amount = row.find('.DcaAmount');
+            if ($(this).find("option:selected").index() == 0) {
+                alert("select");
+                ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                amount.val("");
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindClientRec_Deduction_DCA",
+                    data: '{ CC_code:"' + ddlCC + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                        $.each(response, function () {
+                            ddlDCA.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                        });
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+
+
+        });
+        $('#ClientRecDCAGrid').on('change', '.DCA', function () {
+            var ddlDCA = $(this).find("option:selected").val();
+            var row = $(this).closest('tr'); // get the row
+            var ddlSubDCA = row.find('.SubDCA'); // get the other select in the same row
+            var amount = row.find('.DcaAmount');
+            if ($(this).find("option:selected").index() == 0) {
+                ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                amount.val("");
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "/Accounts/BindClientRec_Deduction_SubDCA",
+                    data: '{ DCAID:"' + ddlDCA + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                        $.each(response, function () {
+                            ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                        });
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        });
+        $("table.order-list.DCAgrid").on("click", ".ibtnDel", function (event) {           
+
+            var rowcount = $("#ClientRecDCAGrid tbody tr").length;
+            ////debugger;
+            if (rowcount == 1) {
+                $("#chkDedY").prop("checked", false);
+                $("#chkDedN").prop("checked", true);
+                $("#divdeductiongrid").addClass("hidden");              
+                $("#ClientRecDCAGrid tbody tr").remove();   
+                $("#txtDeductionExist").val("0");
+            }
+            $(this).closest("tr").remove();
+            CountClientRec_DCATotal();
+            ClientRec_FinalAmount();
+
+        });
+        $("input:radio[name='ClientRecDeduction']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var DedExist = _val;
+            
+            if (DedExist == "Yes") {                               
+                $("#divdeductiongrid").removeClass("hidden");
+                BindEmptyrowtoDeduction();
+            }
+            else if (DedExist == "No") {
+                $("#divdeductiongrid").addClass("hidden");                
+                $("#ClientRecDCAGrid tbody tr").remove();         
+                $("#txtDeductionExist").val("0");
+            }
+            CountClientRec_DCATotal();
+            ClientRec_FinalAmount();
+        });
+    });
+
+    function checkValueInArrayUpdate(value, arr) {
+        var status = false;//Not Exist in array
+        for (var i = 0; i < arr.length; i++) {
+            var name = arr[i];
+            if (name == value) {
+                status = true;//Exist  in array
+                break;
+            }
+        }
+        return status;
+    }
+    function BindEmptyrowtoDeduction() {      
+        $("#ClientRecDCAGrid tbody tr").remove();  
+        var rowno = 1;
+        var newRow = $("<tr>");
+        var cols = "";
+        cols += '<td  style="text-align:center" class="hidden">' + rowno + '</td>';
+        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle OtherCC"><option selected="selected" value="Select">Select</option>';
+        cols += ' <option value="Yes">Yes</option>';
+        cols += ' <option value="No">No</option>';
+        cols += '</select>';
+        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle CC" ><option selected="selected" value="Select">Select</option></select></td>';
+        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle DCA"><option selected="selected" value="Select">Select</option></select></td>';
+        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle SubDCA" ><option selected="selected" value="Select">Select</option></select></td>';
+        cols += '<td style="text-align:center"><input type="text" value=""  class="form-control DcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountClientRec_DCATotal()" /></td>';
+        cols += '<td style="text-align:center"> <ul class="list-inline"><li class="eagle-checkbox">';
+        cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkDeduction" name="chkDeduction">';
+        cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul>';
+        if (rowno > 1) {
+            cols += '<td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+        }
+        newRow.append(cols);
+        $("table.order-list.DCAgrid").append(newRow);
+        $("#divdeductiongrid").removeClass("hidden");
+        $("#txtDeductionExist").val("0");
+    }
+</script>

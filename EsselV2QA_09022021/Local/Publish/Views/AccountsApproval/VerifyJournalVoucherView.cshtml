@@ -1,0 +1,368 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.JournalVoucherCreation
+@if (Model.Status != "0")
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>JV Creation Date:</label>
+                    <input type="text" class="form-control" value="@Model.Date" readOnly="readOnly" />  @*id="ApprInvno-@Model.ClientInvoiceNo"*@
+                </div>
+            </div>
+            <div class="col-md-8">
+
+            </div>
+
+        </div>
+        <div class="col-md-12" id="divapprjvtable-@Model.TranNo">
+            <table id="ApprJVtax-@Model.TranNo" style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr>
+                        <th style="text-align:center">Ledger Name</th>
+                        <th style="text-align:center">Transaction Type </th>
+                        <th style="text-align:center">Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot><tr><td></td><td></td><td></td></tr></tfoot>
+            </table>
+            <br />
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>JV Remarks:</label>
+                    <input type="text" class="form-control" value="@Model.JVRemarks" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Credit Amount:</label>
+                    <input type="text" class="form-control" value="@Model.Amount" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Debit Amount:</label>
+                    <input type="text" class="form-control" value="@Model.Amount" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppInvstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppInvNote-@Model.TranNo"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="Approvejournal('@Model.TranNo')">Submit</button>  @**@
+
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprjvInfoMsg-@Model.TranNo" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+}
+else
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.JVCreationDate)
+                        @Html.TextBoxFor(model => model.JVCreationDate, "{0:dd-MMM-yyyy}", new { @id = "txtjvupdDate", @class = "form-control date-picker", type = "text", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+            <div class="col-md-12 change-tab" id="divJVGrid">
+                <div class="strike">
+                    <span>Add Journal</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="JVTable" class="table order-list jv">
+                        <thead>
+                            <tr>
+                                <td style="text-align:center"><label>No</label></td>
+                                <td style="text-align:center"><label>LedgerName</label></td>
+                                <td style="text-align:center"><label>TransactionType</label></td>
+                                <td style="text-align:center"><label>Amount</label></td>
+                                <td style="text-align:center"><label>Check</label></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @*<tr>
+                                    <td style="text-align:center" >1</td>
+                                    <td style="text-align:center">
+                                        <select class="form-control dropdown-toggle ctaxdca" id="ddlLedger">
+                                            <option selected="selected" value="Select">-Select-</option>
+                                        </select>
+                                    </td>
+                                    <td style="text-align:center">
+                                        <select class="form-control dropdown-toggle ctrantype" id="ddlTranType" onchange="Ledgercount();">
+                                            <option selected="selected" value="Select">-Select-</option>
+                                            <option value="Credit">Credit</option>
+                                            <option value="Debit">Debit</option>
+                                        </select>
+
+                                    </td>
+                                    <td style="text-align:center"><input type="text" class="form-control ctaxamount" value="" id="txttranAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="Ledgercount()" /></td>  @*onkeypress="return ValidateAmount(this,event);" onkeyup="CountInvoiceTotal()"
+                                    <td style="text-align:center">
+                                        <ul class="list-inline">
+                                            <li class="eagle-checkbox">
+                                                <label class="eagle-check custom-checkbox">
+                                                    <input type="checkbox" class="eagle-check-input" id="chkJV">
+                                                    <span class="eagle-check-indicator"></span>
+                                                    <span class="eagle-check-description"></span>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>*@
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" id="addLedger" value="Add New Ledger" onclick="JVRowUpd_BindNewRowtoGrid();" /> @*onclick="ClientInv_BindNewRowtoGrid();"*@
+                                </td>
+                                <td></td>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.JVRemarks)
+                        @Html.TextAreaFor(model => model.JVRemarks, htmlAttributes: new { @class = "form-control", @id = "txtJVupdDescription", @rows = "3" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SumCreditamount)
+                        @Html.TextBoxFor(model => model.SumCreditamount, htmlAttributes: new { @class = "form-control", @id = "txtupdsumcreditamount", @Value = "", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SumDebitamount)
+                        @Html.TextBoxFor(model => model.SumDebitamount, htmlAttributes: new { @class = "form-control", @id = "txtupdsumdebitamount", @Value = "", @readonly = true })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <button id="btnSubmitjvCreation" onclick="SubmitupdateJournal();">Submit</button> @*onclick="SubmitJournal()"*@
+                    <input type="text" value="0" id="txtJournalupdatedby" style="display:none" />
+                    <input type="text" value="0" id="LedExist" style="display:none" />
+                    <input type="text" id="txtltranno" style="display:none" />
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row col-md-12 text-center">
+            <div id="divJournalCreationupdInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+}
+    <script>
+    $(document).ready(function () {
+       if (@Model.Status!= '0') {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppInvstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+           });
+           var tranvo = $("#currentjvno").val();
+           var jvdivid = "divapprjvtable-" + tranvo;
+           var taxdiv = $("#" + jvdivid + "");
+           $.ajax({
+               type: 'POST',
+               dataType: 'json',
+               url: '/AccountsApproval/GetJVledgerDetailsbyTranno',
+               data: { TranNo: tranvo },
+               success: function (response) {
+                   var count = Object.keys(response).length;
+                   if (count > 0) {
+                       var rowno = 0;
+                       $.each(response, function () {
+                           rowno = rowno + 1;
+                           var newRow = $("<tr>");
+                           var cols = "";                           
+                           cols += '<td style="text-align:center" class="rowno">' + this['Ledgers'] + '</td>';
+                           cols += '<td style="text-align:center" class="rowno">' + this['Trantypes'] + '</td>';
+                           cols += '<td style="text-align:center" class="rowno">' + this['Ledgeramounts'] + '</td>';
+                           newRow.append(cols);
+                           $("#ApprJVtax-" + tranvo + "").append(newRow);
+                       });
+                       $("#" + jvdivid + "").removeClass("hidden");
+                   }
+                   else {
+                       $("#" + jvdivid + "").addClass("hidden");
+                   }
+               },
+               error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   alert("error");
+               }
+           });
+        }
+       else if (@Model.Status == '0') {
+           var Sessioncreated = '@Session["Createdby"]';
+           $("#txtJournalupdatedby").val(Sessioncreated);
+           $("table.order-list.jv").on("click", ".ibtnledgerdelete", function (event) {
+               $(this).closest("tr").remove();
+               Ledgercountupdate();
+           });
+           var tranvo = $("#currentjvno").val();
+           $("#txtltranno").val(tranvo);
+           var Date = '@Model.Date';
+           $("#txtjvupdDate").val(Date);
+           var Description = '@Model.JVRemarks';
+           $("#txtJVupdDescription").val(Description);
+           var CreditAmount = '@Model.Amount';
+           $("#txtupdsumcreditamount").val(CreditAmount);
+           var DebitAmount = '@Model.Amount';
+           $("#txtupdsumdebitamount").val(DebitAmount);
+           $("#txtjvupdDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtjvupdDate").val(selectedDate);
+                }
+           });
+           $.ajax({
+                type: 'POST',
+                dataType: 'json',
+               url: '/AccountsApproval/GetJVledgerDetailsbyTranno',
+               data: { TranNo: tranvo }, 
+                success: function (response) {
+                    var count = Object.keys(response).length;                    
+                    if (count > 0) {
+                        for (i = 0; i < count; i++) {
+                            var rowno = i + 1;
+                            var newRow = $("<tr>");
+                            var cols = "";
+                            cols += '<td style="text-align:center" >' + rowno + '</td>';
+                            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle ctaxtype" id="ddlLedger">';
+                            cols += '</select></td>';
+                            cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle ctrantype" id="ddlTranType" onchange="Ledgercountupdate();">';
+                            cols += '</select></td>';
+                            cols += '<td style="text-align:center"><input type="text" class="form-control ctaxamount" value="" id="txttranAmount"   onkeypress="return ValidateAmount(this,event);" onkeyup="Ledgercountupdate()" /></td>';
+                            cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox"><label class="eagle-check custom-checkbox">';
+                            cols += '<input type="checkbox" class="eagle-check-input" id="chkJV"><span class="eagle-check-indicator"></span> <span class="eagle-check-description"></span>';
+                            cols += '</label></li></ul></td>';
+                            //if (rowno > 1) {
+                                cols += '<td style="text-align:center"><input type="button" class="ibtnledgerdelete btn btn-md btn-danger" value="Delete"></td>';
+                            //}
+                            cols += '</label></li></ul></td>';
+                            newRow.append(cols); 
+                            $("#JVTable").append(newRow);
+                        }
+                        var selectedledgerlist1 = [];
+                        for (var i = 0; i < response.length; i++) {
+                            var item = response[i];
+                            selectedledgerlist1.push(item.Ledgers);                             
+                            $("#JVTable tbody tr").each(function () {                                  
+                                var currentRow = $(this);
+                                var rowno = currentRow.find("td").eq(0).html();  
+                                var ddlledger = currentRow.find("td").eq(1).find("select");
+                                var ddltype = currentRow.find("td").eq(2).find("select"); 
+                                if (rowno == i + 1) {
+                                    var currentledger = item.Ledgers;
+                                    var currentledgerid = item.Ledgerids;
+                                    var trantype = item.Trantypes;
+                                    var ledamount = item.Ledgeramounts;
+                                    //alert(currentledgerid);                                    
+                                    ddlledger.append($('<option selected="selected" value="Select">Select</option>'));
+                                    ddlledger.append($("<option selected='selected'></option>").val(currentledgerid).html(currentledger));
+                                    ddltype.append($('<option selected="selected" value="Select">Select</option>'));
+                                    ddltype.append($("<option selected='selected'></option>").val(trantype).html(trantype));
+                                    currentRow.find("td").eq(3).find("input[type='text']").val(ledamount);
+                                }
+                            });
+                        }                       
+                    }
+                    else {
+                        var rowno = i + 1;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center"  class="hidden">' + rowno + '</td>';
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle ctaxtype" id="ddlLedger">';
+                        cols += '<option selected="selected" value="Select">-Select-</option>';
+                        cols += '</select></td>';
+                        cols += ' <td style="text-align:center"><select class="form-control dropdown-toggle ctrantype" id="ddlTranType" onchange="Ledgercountupdate();">';
+                        cols += '<option selected="selected" value="Select">-Select-</option><option value="Credit">Credit</option><option value="Debit">Debit</option></select></td>';
+                        cols += '<td style="text-align:center"><input type="text" class="form-control ctaxamount" value="" id="txttranAmount"   onkeypress="return ValidateAmount(this,event);" onkeyup="Ledgercountupdate()" /></td>';
+                        cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox"><label class="eagle-check custom-checkbox">';
+                        cols += '<input type="checkbox" class="eagle-check-input" id="chkJV"><span class="eagle-check-indicator"></span> <span class="eagle-check-description"></span>';
+                        cols += '</label></li></ul></td>';
+                        cols += '</label></li></ul></td>';                       
+                        newRow.append(cols);
+                        $("#JVTable").append(newRow);                       
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+    });   
+    </script>

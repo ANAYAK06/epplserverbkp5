@@ -1,0 +1,210 @@
+﻿
+@{
+
+    ViewBag.Title = "BusinessInfoApprovalHierarchy";
+    //Layout = "~/Views/Shared/_BusinessInfoSetup.cshtml";
+}
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables/media/js/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+@Scripts.Render("~/bundles/Accounts")
+<div class="row">
+    <div class="col-md-12">
+        @*<h4>Approval Hierarchy</h4>*@
+        @*<hr />*@
+        <button class="btn btn1 btn-success" id="btnewgroup" data-dismiss="modal" onclick="ViewAddNewHierarchyModel()">New Hierarchy</button>
+        <div id="divworkflowgrid">
+            @Html.Action("ViewWorkFlowLevelGrid", "Home")
+        </div>
+    </div>
+    <div id="AddNewHierarchyModal" class="modal fade" role="dialog" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Hierarchy Creation</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden" id="AddNewHierarchy">
+                    @*@Html.Action("AddNewHierarchy", "Home")*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="deleteHierarchy" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="icon-box">
+                        <i class="fa fa-check"></i>
+                    </div>
+                    <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="confirmmsg">
+                        <p>Do you really want to delete Approval Hierarchy </p><label id="lblMastercode"></label>
+                        <p>This process cannot be undone.</p>
+                    </div>
+                    <div id="divDeleteHierarchyInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="confirmbtn">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="DeleteHierarchy()">Delete</button>
+                        <input type="hidden" id="txtdeleteMasterid" />
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="deleteVerifypendingHierarchy" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                @*<div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>*@
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsgpending">
+                    <div id="divDeletePeningsHierarchyInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                    @*<p>Do you really want to delete Approval Hierarchy </p><label id="lblMastercode"></label>
+        <p>This process cannot be undone.</p>*@
+                </div>
+               
+            </div>
+            <div class="modal-footer">
+                @*<div id="confirmbtn">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="DeleteHierarchy()">Delete</button>
+                    <input type="hidden" id="txtdeleteMasterid" />
+                    
+                </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //$("#LevelOfVerificationBtn").on("click", function () {
+        //    debugger;
+        //    var selectedcount = 0;
+        //    $("#tblapprovalHierachy tbody tr").each(function () {
+        //        var currentRow = $(this);
+        //        var selected = currentRow.find("td").eq(2).find("select option:selected").index();
+        //        if (selected == 0) {
+        //            selectedcount = selectedcount + 1;
+        //        }
+        //    });
+        //    if (selectedcount > 0) {
+        //        $("#divApprHierarchyInfoMsg").text("");
+        //        $("#divApprHierarchyInfoMsg").append("<div>Select Role</div>");
+        //        $("#divApprHierarchyInfoMsg").addClass("alert-danger");
+        //        $("#divApprHierarchyInfoMsg").removeClass("hidden alert-success");
+        //    }
+        //    else {
+        //        $("#divApprHierarchyInfoMsg").text("");
+        //        $("#divApprHierarchyInfoMsg").addClass("hidden");
+
+        //        var counter = $("#txtcounter").val();
+        //        var selectedroles = [];
+        //        var idvalues = '';
+
+        //        $("#tblapprovalHierachy tbody tr").each(function () {
+        //            var currentRow = $(this);
+        //            var selected = currentRow.find("td").eq(2).find("select option:selected").val();
+        //            idvalues += selected + ',';
+        //        });
+
+        //        if (idvalues != '') {
+        //            var rowcount = $("#tblapprovalHierachy tbody tr").length;
+        //            var rowno = rowcount + 1;
+        //            $.ajax({
+        //                type: 'POST',
+        //                dataType: 'html',
+        //                url: '/Home/ShowMultiselectView',
+        //                data: { iddata: idvalues },
+        //                success: function (Data) {
+        //                    $("#mdlcode").val(Data);
+        //                },
+        //                error: function (XMLHttpRequest, textStatus, errorThrown) {
+        //                    alert("error");
+        //                }
+        //            });
+        //            $.ajax({
+        //                type: "POST",
+        //                url: "/Home/GetAllUserRoles",
+        //                data: '',
+        //                contentType: "application/json; charset=utf-8",
+        //                dataType: "json",
+        //                success: function (response) {
+        //                    var newRow = $("<tr>");
+        //                    var cols = "";
+        //                    cols += '<td class="hidden">' + rowno + '</td>';
+        //                    if (counter == 0) {
+        //                        cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'st Level of Verification</Label></td>';
+        //                    }
+        //                    else if (counter == 1) {
+        //                        cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'nd Level of Verification</Label></td>';
+        //                    }
+        //                    else if (counter == 2) {
+        //                        cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'rd Level of Verification</Label></td>';
+        //                    }
+        //                    else {
+        //                        cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'th Level of Verification</Label></td>';
+        //                    }
+        //                    cols += '<td style="text-align:center">';
+        //                    cols += $("#mdlcode").val();
+        //                    cols += '</td ><td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+        //                    newRow.append(cols);
+        //                    $("table.order-list.newhier").append(newRow);
+        //                    counter++;
+        //                    $("#txtcounter").val(counter);
+        //                },
+        //                failure: function (response) {
+        //                    alert(response.responseText);
+        //                },
+        //                error: function (response) {
+        //                    alert(response.responseText);
+        //                }
+        //            });
+        //        }
+
+        //    }
+        //});
+
+        $("#AddNewHierarchyModal").on("hide.bs.modal", function () {
+            //$("#divworkflowgrid").load('/Home/ViewWorkFlowLevelGrid');
+            location.reload();
+        });
+        $("#deleteHierarchy").on("hidden.bs.modal", function () {
+            $("#divworkflowgrid").load('/Home/ViewWorkFlowLevelGrid');
+        });
+    });
+
+    function checkValueInArray(value, arr) {
+        var status = false;//Not Exist in array
+        for (var i = 0; i < arr.length; i++) {
+            var name = arr[i];
+            if (name == value) {
+                status = true;//Exist  in array
+                break;
+            }
+        }
+        return status;
+    }
+</script>
+

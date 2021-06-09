@@ -1,0 +1,163 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Accounts.FDPayments>
+<div class="table-responsive">
+    <table id="tblApprovecfdGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">BankTransactionRefNo</th>
+                <th>FD Number</th>
+                <th>Closing Date</th>
+                <th>Amount</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.BankTransactionRefNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FDRNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FDRClosingDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FDRAmount)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveCfdGrid = null;
+            InitializeApprPfdGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApppclfdCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprPfdGrid() {
+        ApproveCfdGrid = $('#tblApprovecfdGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+              
+
+                var oldstatus = $('td:eq(5)', row).html();
+
+                    if (oldstatus == 0) {
+                        
+                        $('td:eq(5)', row).html("Return");
+                    }
+                    else { $('td:eq(5)', row).html("Verification Pending");}
+                },
+                pageLength: 10
+            });
+        $('#tblApprovecfdGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveCfdGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveCfdGrid, tr);
+                    // Open this row
+                    row.child(formatCloseFDPay(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatCloseFDPay(d) {
+        var htmltext;
+        var transstatus, refno;
+            $.each(d, function (index, value) {
+                if (index == 5)
+                    transstatus = value;
+                if (index == 1)
+                    refno = value;
+            });
+        var divid = "divapprClfd" + refno;
+        var divid1 = $("#" + divid + "");
+        $("#currentclfdTransno").val(refno);
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Accounts/ViewFDCloseUpdate',
+                data: { TransactionRefno: refno},
+                success: function (Data) {
+                    var divid2 = "divapprClfd" + refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                    
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                 
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyCloseFDView',
+                data: { TransactionRefno: refno },
+                success: function (Data) {
+                    var divid2 = "divapprClfd" + refno;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+
+        }
+
+        return '<div id="divapprClfd' + refno + '" class="col-md-12"></div>';
+        }
+</script>

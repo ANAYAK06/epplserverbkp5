@@ -1,0 +1,148 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.Transfer
+@{
+    ViewBag.Title = "IssueReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Transfer Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Costcenter)
+                                        @Html.DropDownListFor(model => model.Costcenter, new SelectList(Model.CCList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddltransferCC" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FromDate)
+                                        @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ToDate)
+                                        @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttoDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="text-align:right">                                    
+                                    <input type="submit" value="View" class="btn btn1 btn-success" id="btnviewindents" onclick="SubmitViewItems()" />
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="divTransferGrid" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divTransferGrid").addClass('hidden');    
+        $("#txtfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txttoDate").datepicker("option", "minDate", selectedDate);
+            },
+        }).datepicker("setDate", "");
+        $("#txttoDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+
+        }).datepicker("setDate", "");
+    });
+    function SubmitViewItems() {
+        isValid = true;
+        var errorMsg = "";
+        var Catid = $("#ddltransferCC option:selected").index();
+        var Fromdate = $("#txtfromDate").val();
+        var Todate = $("#txttoDate").val();
+        if (Catid == 0) {
+            $("#divTransferGrid").addClass("hidden");
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (Fromdate == "" || Fromdate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (Todate == "" || Todate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+            var ccindex = $("#ddltransferCC option:selected").index();
+            var ccval = $("#ddltransferCC option:selected").val();
+            var fromdate = $("#txtfromDate").val();
+            var todate = $("#txttoDate").val();
+            if (ccindex != 0) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Reports/ViewTransferGrid",
+                    data: { CCVal: ccval, FromDate: fromdate, ToDate: todate },
+                    dataType: 'html',
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divTransferGrid").html(response);
+                            $("#divTransferGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divTransferGrid").html('No Data Found');
+                            $("#divTransferGrid").removeClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divTransferGrid").addClass("hidden");
+                alert("Select Cost Center");
+                return false;
+            }
+        }
+
+    }
+</script>
+

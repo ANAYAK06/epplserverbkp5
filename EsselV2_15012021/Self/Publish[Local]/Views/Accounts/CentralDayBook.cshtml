@@ -1,0 +1,300 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.CentralDayBook
+@{
+    ViewBag.Title = "CentralDayBook";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Central DayBook</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TransferDate)
+                                                                @Html.TextBoxFor(model => model.TransferDate, "{0:dd-MMM-yyyy}", new { @id = "txtcbdtransferdate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TransferType)
+                                                                @Html.DropDownListFor(model => model.TransferType, new SelectList(Model.TransactionMode, "PaymentModeid", "PaymentModeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_CDBPaymentType", onchange = "paymenttypechange()" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4" id="divCDBbankname">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Bankname)
+                                                                @Html.DropDownListFor(model => model.Bankname, new SelectList(Model.BanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_CDBbankname" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group" id="divCDBcostcenter">
+                                                                @Html.LabelFor(model => model.CostCenter)
+                                                                @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CcCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_CDBcostcenter" })
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Remarks)
+                                                                @Html.TextAreaFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @id = "txtcbdremarks", @Value = "" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Amount)
+                                                                @Html.TextBoxFor(model => model.Amount, htmlAttributes: new { @class = "form-control", @id = "txtcbdamount", @Value = "", onkeypress = "return IsNumeric(event)" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Unassignedbalance)
+                                                                @Html.TextBoxFor(model => model.Unassignedbalance, htmlAttributes: new { @class = "form-control", @id = "txtcbdunassignedbalance", @Value = "", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.TotalCostCenterBalance)
+                                                                @Html.TextBoxFor(model => model.TotalCostCenterBalance, htmlAttributes: new { @class = "form-control", @id = "txtcbdcostcenterbalance", @Value = "", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.PendingCostCenterBalance)
+                                                                @Html.TextBoxFor(model => model.PendingCostCenterBalance, htmlAttributes: new { @class = "form-control", @id = "txtcbdpendingbalance", @Value = "", @readonly = true })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ">
+                                                        <div class="col-md-12">
+                                                            <div class="text-right">
+                                                                <input type="text" value="0" id="txtChequeRoleId" style="display:none" />
+                                                                <button class="btn btn1 btn-success" id="btnCBDSubmit" onclick="btnSubmitCDBData()" >Submit</button>
+                                                                <button class="btn btn1 btn-success" id="btnCBDReset" onclick="ClearCDBreset()" >Reset</button>                                                              
+                                                                <input type="text" id="txtcbdCreatedby" style="display:none" />
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row text-center">
+                                                        <div id="divcbdInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#txtcbdtransferdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            minDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+        $("#divCDBbankname").addClass("hidden");
+        $("#divCDBcostcenter").addClass("hidden");
+        var CC = $("#ddl_TransToCC option:selected").val();
+        $("#txtcbdunassignedbalance").val("0");
+        $("#txtcbdcostcenterbalance").val("0");
+        $("#txtcbdpendingbalance").val("0");
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/GetCashAmounts",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $.each(response, function () {
+                    $("#txtcbdunassignedbalance").val(this['Unassignedbalance']);
+                    $("#txtcbdcostcenterbalance").val(this['Allccbalance']);
+                    $("#txtcbdpendingbalance").val(this['Pendingbalance']);          
+                });
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    });
+    function paymenttypechange() {
+        var paymenttypeval = $("#ddl_CDBPaymentType option:selected").val();
+        if (paymenttypeval == "1") {
+            $("#divCDBbankname").removeClass("hidden");
+            $("#divCDBcostcenter").addClass("hidden");
+        }
+        else if (paymenttypeval == "2") {
+            $("#divCDBbankname").addClass("hidden");
+            $("#divCDBcostcenter").removeClass("hidden");
+        }
+
+        else {
+            $("#divCDBbankname").addClass("hidden");
+            $("#divCDBcostcenter").addClass("hidden");
+        }
+    }
+    function btnSubmitCDBData() {
+        var errorMsg = "";
+        isValid = true;
+        var PaymentType = $("#ddl_CDBPaymentType option:selected").index();
+        var bankname = $("#ddl_CDBbankname option:selected").index();
+        var CostCenter = $("#ddl_CDBcostcenter option:selected").index();
+        var date = $("#txtcbdtransferdate").val();        
+        var Remarks = $("#txtcbdremarks").val();
+        var Amount = $("#txtcbdamount").val();
+        if (PaymentType == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Payment Type</p>";
+            isValid = false;
+        }
+        if (PaymentType == 1) {
+            if (bankname == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+                isValid = false;
+            }
+        }
+        if (PaymentType == 2) {
+            if (CostCenter == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select CostCenter</p>";
+                isValid = false;
+            }
+        }
+        if (date == "" || date == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select date</p>";
+            isValid = false;
+        }       
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remarks</p>";
+            isValid = false;
+        }
+        if (Amount == "" || Amount == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divcbdInfoMsg").text("");
+            $("#divcbdInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divcbdInfoMsg").addClass("alert-danger");
+            $("#divcbdInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divcbdInfoMsg").text("");
+            $("#divcbdInfoMsg").addClass("hidden");
+             SaveCBDdata();
+        }
+
+    }
+    function SaveCBDdata() {
+        var Roleid = '@Session["Roleid"]';
+        var Createdby = '@Session["Createdby"]';
+        var CDBDetails = {
+            TransferType: $("#ddl_CDBPaymentType option:selected").text(),
+            CostCenter: $("#ddl_CDBcostcenter option:selected").val(),
+            Bankname: $("#ddl_CDBbankname option:selected").val(),
+            TransferDate: $("#txtcbdtransferdate").val(),
+            Remarks: $("#txtcbdremarks").val(),
+            Amount: $("#txtcbdamount").val(),
+            RoleID: Roleid,
+            Createdby: Createdby
+        };
+        addFailMsg = "Error Occurred While Submitting.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/SaveCDBDetails',
+            data: { newcdbDetails: CDBDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divcbdInfoMsg").text(Data.saveStatus);
+                    $("#divcbdInfoMsg").removeClass("hidden alert-danger");
+                    $("#divcbdInfoMsg").addClass("alert-success");
+                    $("#btnCBDSubmit").prop("disabled", true);
+                    $("#txtcbdunassignedbalance").val("0");
+                    $("#txtcbdcostcenterbalance").val("0");
+                    $("#txtcbdpendingbalance").val("0");
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetCashAmounts",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $.each(response, function () {
+                                $("#txtcbdunassignedbalance").val(this['Unassignedbalance']);
+                                $("#txtcbdcostcenterbalance").val(this['Allccbalance']);
+                                $("#txtcbdpendingbalance").val(this['Pendingbalance']);
+                            });
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                }
+                else {
+                    $("#divcbdInfoMsg").text(Data.saveStatus);
+                    $("#divcbdInfoMsg").addClass("alert-danger");
+                    $("#divcbdInfoMsg").removeClass("hidden alert-success");
+                    $("#btnCBDSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divcbdInfoMsg").text(addFailMsg);
+                $("#divcbdInfoMsg").addClass("alert-danger");
+                $("#divcbdInfoMsg").removeClass("hidden alert-success");
+                $("#btnCBDSubmit").prop("disabled", false);
+            }
+        });
+    }
+    function ClearCDBreset() {        
+        $("#ddl_CDBPaymentType").prop('selectedIndex', 0);
+        $("#ddl_CDBbankname").prop('selectedIndex', 0);
+        $("#ddl_CDBcostcenter").prop('selectedIndex', 0);
+        $("#txtcbdtransferdate").datepicker({}).datepicker("setDate", new Date());
+        $("#txtcbdremarks").val("");
+        $("#txtcbdamount").val("");      
+        $("#btnCBDSubmit").prop("disabled", false);
+        $("#divcbdInfoMsg").text("");
+        $("#divcbdInfoMsg").addClass("hidden");
+        //$("#divcbdInfoMsg").removeClass("alert-success");
+        //$("#divcbdInfoMsg").removeClass("hidden alert-success");
+    }
+ </script>

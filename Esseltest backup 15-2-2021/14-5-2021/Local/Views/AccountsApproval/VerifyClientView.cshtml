@@ -1,0 +1,583 @@
+﻿@model EsselTestLocalApplication.Models.AddClient
+
+<div class="col-md-12 verifydiv">
+    <br/>
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Client Code:</label>
+                        <input type="text" class="form-control" value="@Model.Client_Code" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Client Name:</label>
+                        <input type="text" class="form-control" value="@Model.Client_Name" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Nature of Group:</label>
+                        <input type="text" class="form-control" value="@Model.NatureGroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Contact Person:</label>
+                        <input type="text" class="form-control" value="@Model.Contact_Person_Name" readOnly="readOnly" />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>TIN Number:</label>
+                        <input type="text" class="form-control" value="@Model.TINNo" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>PAN Number:</label>
+                        <input type="text" class="form-control" value="@Model.PANNo" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>TAN Number:</label>
+                        <input type="text" class="form-control" value="@Model.TANNo" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <input type="text" class="form-control" value="@Model.ClientStatus" readOnly="readOnly" />
+                    </div>
+                </div>
+                @*<div class="col-md-4">
+                        <div class="form-group">
+                            <label>GST Applicable:</label>
+                            <input type="text" class="form-control gstapplicatble" value=@Model.GST_Applicable readOnly="readOnly" id="gstapplicatble" />
+                        </div>
+                    </div>*@
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Address:</label>
+                        <textarea rows="2" class="form-control" readOnly="readOnly">@Model.Address </textarea>
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="col-md-12" id="divapprclienttaxtable">
+                    <table id="Apprclienttax" style="width:100%;border:1px solid gray">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center">TaxNo</th>
+                                <th style="text-align:center">State Name</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <br />
+                </div>*@
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Group Name:</label>
+                        <input type="text" class="form-control" readonly="readonly" value='@Model.GroupName' />
+                    </div>
+                </div>
+                @if (Model.SubGroupId != "0")
+                {
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sub Group Name:</label>
+                            <input type="text" class="form-control" readonly="readonly" value='@Model.SubGroupName' />
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppClientstatus" })
+
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppClientNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveClient('@Model.Client_Code','@Model.ClientStatus')">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprclientInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+
+        <form onsubmit="return false">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Client_Code)
+                        @Html.TextBoxFor(model => model.Client_Code, htmlAttributes: new { @class = "form-control", @id = "txtUpClientcode", readOnly = "readOnly" })
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Client_Name)
+                        @Html.TextBoxFor(model => model.Client_Name, htmlAttributes: new { @class = "form-control", @id = "txtUpClient", readOnly = "readOnly" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TINNo)
+                        @Html.TextBoxFor(model => model.TINNo, htmlAttributes: new { @class = "form-control", @id = "txtUpTINNo" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PANNo)
+                        @Html.TextBoxFor(model => model.PANNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPANNo" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TANNo)
+                        @Html.TextBoxFor(model => model.TANNo, htmlAttributes: new { @class = "form-control", @id = "txtUpTANNo" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Contact_Person_Name)
+                        @Html.TextBoxFor(model => model.Contact_Person_Name, htmlAttributes: new { @class = "form-control", @id = "txtUpContactPersonName" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Person_PhoneNo)
+                        @Html.TextBoxFor(model => model.Person_PhoneNo, htmlAttributes: new { @class = "form-control", @id = "txtUpPersonPhoneNo", @maxlength = "10", @onkeypress = "return IsNumeric(event);" })
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NatureGroupName)
+                        @Html.TextBoxFor(model => model.NatureGroupName, htmlAttributes: new { @class = "form-control", @id = "txtUpClientNature", readOnly = "readOnly" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Group Name:</label>
+                        <input type="text" class="form-control" readonly="readonly" value='@Model.GroupName' />
+                    </div>
+                </div>
+                @if (Model.SubGroupId != "0")
+                {
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Sub Group Name:</label>
+                            <input type="text" class="form-control" readonly="readonly" value='@Model.SubGroupName' />
+                        </div>
+                    </div>
+                }
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Address)
+                        @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "form-control", @id = "txtUpAddress", @rows = "3" })
+                    </div>
+                </div>
+
+                @*<div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.GST_Applicable)
+                <ul class="list-inline">
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" name="upGstApplicable" value="Yes" id="chkUpGSTY" onclick="upgstCheckchange(this)">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">Yes</span>
+                        </label>
+                    </li>
+                    <li class="eagle-checkbox">
+                        <label class="eagle-check custom-checkbox">
+                            <input type="checkbox" class="eagle-check-input" name="upGstApplicable" value="No" id="chkUpGSTN" onclick="upgstCheckchange(this)">
+                            <span class="eagle-check-indicator"></span>
+                            <span class="eagle-check-description">No</span>
+                        </label>
+                    </li>
+                </ul>
+
+            </div>
+        </div>*@
+            </div>
+            @*<div class="row" id="divUpClientGst">
+                    <div style="margin-left:2px">
+                        <div class="strike">
+                            <span>Update GST Details</span>
+                        </div>
+                        <div class="tabledynamic">
+                            <table id="UpClientGstTable" class="table order-list UpClientGstGrid">
+                                <thead>
+                                    <tr>
+                                        <td class="hidden"></td>
+                                        <td style="text-align:center">@Html.LabelFor(model => model.State)</td>
+                                        <td style="text-align:center">@Html.LabelFor(model => model.GST_No)</td>
+                                        <td style="text-align:center"><label>Check</label></td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="hidden"></td>
+                                        <td class="text-center"></td>
+                                        <td></td>
+                                        <td>
+                                            <input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Tax" onclick="UpdateClientBindNewRowForGST()" />
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="row">
+                <div class="text-right">
+                    <input type="text" value="@Model.ClientID" id="txtUpclientid" style="display:none" />
+                    <input type="submit" id="btnUpClient" onclick="UpdateClientData('@Model.Client_Code')" value="Update" class="btn btn1 btn-success" />
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <div id="divUpClientInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+
+</div>
+
+<script>
+        $(document).ready(function () {
+            var status = '@Model.Status';
+            var code = $("#currentClientcode").val();
+           // var gst = '@Model.GST_Applicable';
+            //alert(gst);
+            if (status != '0') {
+
+                //if (gst == 'YES') {
+                //    $.ajax({
+                //        type: 'POST',
+                //        dataType: 'json',
+                //        url: '/AccountsApproval/GetVerifyClientTaxes',
+                //        data: { ClientCode: code },
+                //        beforeSend: function () {
+                //            $('#ajax-container').html('');
+                //            addSpinner($('#ajax-container'));
+                //        },
+                //        success: function (response) {
+                //            var count = Object.keys(response).length;
+                //            if (count > 0) {
+                //                var rowno = 0;
+                //                $.each(response, function () {
+
+                //                    rowno = rowno + 1;
+                //                    var newRow = $("<tr>");
+                //                    var cols = "";
+                //                    cols += '<td style="text-align:center">' + this['TaxNo'] + '</td>';
+                //                    cols += '<td style="text-align:center">' + this['State'] + '</td>';
+
+                //                    newRow.append(cols);
+                //                    $("#Apprclienttax").append(newRow);
+
+                //                });
+                //                $("#divapprclienttaxtable").removeClass("hidden");
+                //            }
+                //            else {
+                //                $("#divapprclienttaxtable").addClass("hidden");
+                //            }
+                //            removeSpinner($('#ajax-container'), function () {
+                //                $('#ajax-container').html('');
+                //            })
+                //        },
+                //        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                //            removeSpinner($('#ajax-container'), function () {
+                //                $('#ajax-container').html('');
+                //            })
+                //            alert("error");
+                //        }
+                //    });
+                //}
+                //else {
+                //    $("#divapprclienttaxtable").addClass("hidden");
+                //}
+                BindStatusDDL();
+            }
+            //else {
+            //    if (gst == 'YES') {
+            //        $.ajax({
+            //            type: 'POST',
+            //            dataType: 'json',
+            //            url: '/AccountsApproval/GetVerifyClientTaxes',
+            //            data: { ClientCode: code },
+            //            beforeSend: function () {
+            //                $('#ajax-container').html('');
+            //                addSpinner($('#ajax-container'));
+            //            },
+            //            success: function (response) {
+            //                $("#UpClientGstTable tbody tr").remove();
+            //                var count = Object.keys(response).length;
+            //                if (count > 0) {
+            //                    var rowno = 0;
+            //                    $.each(response, function () {
+            //                        rowno = rowno + 1;
+            //                        var newRow = $("<tr>");
+            //                        var cols = "";
+            //                        cols += '<td style="text-align:center" class="hidden">' + rowno + '</td>';
+            //                        cols += '<td  class="statetd"><select class="form-control dropdown-toggle" id="ddlGstState" >';
+            //                        cols += '<option value=' + this['StateId'] + ' select="selected">' + this['State'] + '</option>';
+            //                        cols += '</select>';
+            //                        cols += '</td><td style="text-align:center"  class="gst"><input class="form-control" data-val="true" id="txtUpGSTNo" name="txtGSTNo" type="text" value=' + this['TaxNo'] + ' /></td >';
+            //                        cols += '<td style="text-align:center"  class="gstcheckbox"><ul class="list-inline">';
+            //                        cols += '<li class="eagle-checkbox">';
+            //                        cols += '<label class="eagle-check custom-checkbox">';
+            //                        cols += '<input type="checkbox" class="eagle-check-input" id="chkGstCheck" checked>';
+            //                        cols += '<span class="eagle-check-indicator"></span>  </label>';
+            //                        cols += '</li>';
+            //                        cols += '</ul ></td>';
+            //                        cols += '<td style="text-align:center"><input type="button" class="ibtnUpClientDel btn btn-md btn-danger" value="Delete"></td>';
+            //                        newRow.append(cols);
+            //                        $("table.order-list.UpClientGstGrid").append(newRow);
+            //                    });
+
+            //                    var rowcount = $("#UpClientGstTable tbody tr").length;
+            //                    if (rowcount > 0) {
+            //                        $("#chkUpGSTY").prop("checked", true);
+            //                        $("#chkUpGSTN").prop("checked", false);
+            //                        $("#divUpClientGst").removeClass('hidden');
+            //                    }
+            //                    else {
+            //                        $("#chkUpGSTY").prop("checked", false);
+            //                        $("#chkUpGSTN").prop("checked", true);
+            //                        $("#divUpClientGst").addClass('hidden');
+            //                    }
+            //                }
+            //                removeSpinner($('#ajax-container'), function () {
+            //                    $('#ajax-container').html('');
+            //                })
+            //            },
+            //            failure: function (response) {
+            //                removeSpinner($('#ajax-container'), function () {
+            //                    $('#ajax-container').html('');
+            //                })
+            //                alert(response.responseText);
+            //            },
+            //            error: function (response) {
+            //                removeSpinner($('#ajax-container'), function () {
+            //                    $('#ajax-container').html('');
+            //                })
+            //                alert(response.responseText);
+            //            }
+            //        });
+            //    }
+            //    else {
+            //        $("#chkUpGSTY").prop("checked", false);
+            //        $("#chkUpGSTN").prop("checked", true);
+            //        $("#divUpClientGst").addClass('hidden');
+
+            //    }
+            //}
+            //$("table.order-list.UpClientGstGrid").on("click", ".ibtnUpClientDel", function (event) {
+            //    var clientcode = $("#txtUpClientcode").val();
+            //    var row = $(this).closest("tr");
+            //    var st = row.find("td").eq(1).find("select option:selected").val();
+            //    var gstno = row.find("td").eq(2).find("input[type='text']").val();
+            //    var delgstids = $("#txtdelgstid").val();
+            //    delgstids += st + ",";
+            //    $("#txtdelgstid").val(delgstids);
+            //    row.remove();
+
+            //    var tablerowcount = $("#UpClientGstTable tbody tr").length;
+            //    if (tablerowcount < 1) {
+            //        $("#divUpClientGst").addClass('hidden');
+            //        $("#chkUpGSTY").prop("checked", false);
+            //        $("#chkUpGSTN").prop("checked", true);
+            //    }
+            //    else {
+            //        $("#divUpClientGst").removeClass('hidden');
+            //        $("#chkUpGSTY").prop("checked", true);
+            //        $("#chkUpGSTN").prop("checked", false);
+            //    }
+            //});
+        });
+        //function UpdateClientBindNewRowForGST() {
+
+        //    var list = [];
+        //    isValid = true;
+        //    var errorMsg = "";
+        //    var ddlcount = 0;
+        //    var amountcount = 0;
+        //    var i = 0;
+
+        //    $("#UpClientGstTable tbody tr").each(function () {
+
+        //        var currentRow = $(this);
+        //        var col2_value = currentRow.find("td").eq(1).find("select option:selected").val();
+        //        var col1_value = currentRow.find("td").eq(2).find("input[type='text']").val();
+        //        // var col3_value = currentRow.find("td").find("input[type='checkbox']");
+        //        var stateName = currentRow.find("td").eq(1).find("select option:selected").text();
+        //        var stateid = currentRow.find("td").eq(1).find("select option:selected").val();
+        //        var check = currentRow.find('input[type="checkbox"]').is(':checked');
+        //        list.push(stateid);
+        //        //alert(stateid);
+
+        //        if (col1_value == "" || col1_value == "0") {
+        //            amountcount = amountcount + 1;
+        //        }
+
+        //        if (amountcount > 0) {
+        //            errorMsg += "<p style='margin-top:-5px!important;'>Enter GSTNo</p>";
+        //            isValid = false;
+        //        }
+        //        if (check == false) {
+        //            errorMsg += "<p style='margin-top:-5px!important;'>Select Check</p>";
+        //            isValid = false;
+        //        }
+        //    });
+
+        //    if (!isValid) {
+
+        //        var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+        //        $("#divUpClientInfoMsg").text("");
+        //        $("#divUpClientInfoMsg").append(finalerror + errorMsg + "</div>");
+        //        $("#divUpClientInfoMsg").addClass("alert-danger");
+        //        $("#divUpClientInfoMsg").removeClass("hidden alert-success");
+        //        return false;
+        //    }
+        //    else {
+        //        list = $.unique(list);
+
+        //        $("#divUpClientInfoMsg").text("");
+        //        $("#divUpClientInfoMsg").addClass("hidden");
+
+        //        $.ajax({
+        //            type: "POST",
+        //            url: "/Home/GetAllStates",
+        //            data: '{}',
+        //            contentType: "application/json; charset=utf-8",
+        //            dataType: "json",
+        //            beforeSend: function () {
+        //                $('#ajax-container').html('');
+        //                addSpinner($('#ajax-container'));
+        //            },
+        //            success: function (response) {
+        //                //debugger;
+        //                var count = $("#UpClientGstTable tbody tr").length;
+        //                var rowno = parseInt(count) + parseInt(1);
+        //                var newRow = $("<tr>");
+        //                var cols = "";
+        //                cols += '<td style="text-align:center" class="hidden">' + rowno + '</td>';
+        //                cols += '<td  class="statetd"><select class="form-control dropdown-toggle" id="ddlupGstState" ><option value="">-Please Select-</option>';
+        //                $.each(response, function () {
+        //                    var status = checkValueInArray(this['State_ID'], list);
+        //                    if (status == false) {
+        //                        cols += '<option value=' + this['State_ID'] + '>' + this['State_Name'] + '</option>';
+        //                    }
+        //                });
+
+        //                cols += '</select>';
+        //                cols += '</td><td style="text-align:center"  class="gst"><input class="form-control" data-val="true" id="txtUpGSTNo" name="txtupGSTNo" type="text" /></td >';
+        //                cols += '<td style="text-align:center"  class="gstcheckbox"><ul class="list-inline">';
+        //                cols += '<li class="eagle-checkbox">';
+        //                cols += '<label class="eagle-check custom-checkbox">';
+        //                cols += '<input type="checkbox" class="eagle-check-input">';
+        //                cols += '<span class="eagle-check-indicator"></span>  </label>';
+        //                cols += '</li>';
+        //                cols += '</ul ></td>';
+        //                cols += '<td style="text-align:center"><input type="button" class="ibtnUpClientDel btn btn-md btn-danger" value="Delete"></td>';
+        //                newRow.append(cols);
+        //                $("table.order-list.UpClientGstGrid").append(newRow);
+        //                removeSpinner($('#ajax-container'), function () {
+        //                    $('#ajax-container').html('');
+        //                })
+        //            },
+        //            failure: function (response) {
+        //                removeSpinner($('#ajax-container'), function () {
+        //                    $('#ajax-container').html('');
+        //                })
+        //                alert(response.responseText);
+        //            },
+        //            error: function (response) {
+        //                removeSpinner($('#ajax-container'), function () {
+        //                    $('#ajax-container').html('');
+        //                })
+        //                alert(response.responseText);
+        //            }
+        //        });
+
+        //    }
+        //}
+
+        function BindStatusDDL() {
+            //alert("binding");
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppClientstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                             if ('@Model.ClientStatus' === "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                        });
+
+                    }
+
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+
+        }
+</script>

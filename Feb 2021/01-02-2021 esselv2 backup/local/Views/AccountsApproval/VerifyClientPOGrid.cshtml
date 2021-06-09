@@ -1,0 +1,154 @@
+﻿@model List<EsselTestLocalApplication.Models.ClientNewAndAmendPO>
+<div class="table-responsive">
+    <table id="tblApproveClientPoGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Purchase Order Number</th>
+                <th>Cost Center</th>
+                <th>Client Code</th>
+                <th>Sub Client</th>
+                <th>Amount</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">RowID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.pono)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CostCenter)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.clientid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.subclientid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.povalue)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ROWID)
+                </td>
+                
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+        var openRows = new Array();
+        $(document).ready(function () {
+            var ApprovePoGrid = null;
+            InitializeApprClientPoGrid();
+            var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppClientPoCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+    });
+    
+    function InitializeApprClientPoGrid() {
+        //debugger;
+        ApprovePoGrid = $('#tblApproveClientPoGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false, 
+            language: {
+                "emptyTable": "No Purchase Orders Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(6)', row).html();               
+                if (oldstatus == 1) {
+                    $('td:eq(6)', row).html("Verification Pending");
+                }
+                else { $('td:eq(6)', row).html("Return"); }
+            },
+            pageLength: 10
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+        $('#tblApproveClientPoGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApprovePoGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApprovePoGrid, tr);
+                // Open this row
+                row.child(formatApprClientPo(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+
+        });
+    function formatApprClientPo(d) {       
+        
+        var htmltext;
+        var PoNo;
+        var Rowid;
+
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    PoNo = value;
+                if (index == 7)
+                    Rowid = value;
+            });
+        
+        var divid = "divapprclientPo" + Rowid;
+        var divid1 = $("#" + divid + "");
+        $("#currentPoNo").val(PoNo);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyClientPOView',
+                data: { PoNumber: PoNo },
+                success: function (Data) {
+                    var divid2 = "divapprclientPo" + Rowid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+               
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+        return '<div id="divapprclientPo' + Rowid + '" class="col-md-12"></div>';
+        }
+</script>
+

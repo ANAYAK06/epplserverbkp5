@@ -1,0 +1,237 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ItemCodeCreation
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-12">
+                <h5 style=" border-bottom: 2px solid brown;">
+                    <a style="color:brown"> Item Category</a>
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemCode)
+                    @Html.TextBoxFor(model => model.ItemCode, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Itemname)
+                    @Html.TextBoxFor(model => model.Itemname, htmlAttributes: new { @class = "form-control", id = "txtupditemname", style = "text-transform:uppercase" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Basicprice)
+                    @Html.TextBoxFor(model => model.Basicprice, htmlAttributes: new { @class = "form-control", id = "txtupdbasic", onkeypress = "return IsNumericdecimal(this)" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemCodeType)
+                    @Html.TextBoxFor(model => model.ItemCodeType, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionType)
+                    @Html.TextBoxFor(model => model.TransactionType, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HSNCode)
+                    @Html.TextBoxFor(model => model.HSNCode, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemcodeDca)
+                    @Html.TextBoxFor(model => model.ItemcodeDca, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemcodeSDca)
+                    @Html.DropDownListFor(model => model.ItemcodeSDca, new SelectList(Model.ItemSdcaList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_UpdItemcodesdcas" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h5 style=" border-bottom: 2px solid brown;">
+                    <a style="color:brown">Group Code</a>
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Majorgroupcode)
+                    @Html.TextBoxFor(model => model.Majorgroupcode, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Subgroupcode)
+                    @Html.TextBoxFor(model => model.Subgroupcode, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Specificationcode)
+                    @Html.TextBoxFor(model => model.Specificationcode, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h5 style=" border-bottom: 2px solid brown;">
+                    <a style="color:brown">Specification</a>
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Specification)
+                    @Html.TextBoxFor(model => model.Specification, htmlAttributes: new { @class = "form-control", id = "txtupdspecification" })
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Units)
+                    @Html.DropDownListFor(model => model.Units, new SelectList(Model.UnitsList, "Unitsval", "Unitstext"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_UpdUnits" }) @*, onchange = "GetSubgroupcode()"  *@
+                </div>
+            </div>
+        </div>
+        <div class="row">
+        </div>
+        <div class="row ">
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label>Return Remarks</label>                  
+                    @Html.TextBoxFor(model => model.Remarks, htmlAttributes: new { @class = "form-control", @readonly = true })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-right"></br>                   
+                    <button class="btn btn1 btn-success" id="btnICreturnSubmit" onclick="btnICUPDSubmit('@Model.Rowid')" >Submit</button>                    
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div id="divICInfoReturnMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        var sdca = '@Model.Itemsdca';
+        $("#ddl_UpdItemcodesdcas").val(sdca);
+
+    });
+    function btnICUPDSubmit(Rid) {
+        refno = "divICInfoReturnMsg-" + Rid;
+        msg = $("#" + refno + "");
+        var Roleid = '@Session["Roleid"]';
+        var Crtedby = '@Session["Createdby"]';
+        var itemcode = '@Model.ItemCode'; 
+        isValid = true;
+        var errorMsg = "";
+        var Itemname = $("#txtupditemname").val();
+        var basic = $("#txtupdbasic").val();
+        var sdca = $("#ddl_UpdItemcodesdcas option:selected").index();
+        var specification = $("#txtupdspecification").val();
+        var units = $("#ddl_UpdUnits option:selected").index();
+        if (Itemname == "" || Itemname == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Item Name</p>";
+            isValid = false;
+        }
+        if (basic == "" || basic == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Basic Value</p>";
+            isValid = false;
+        }
+        if (sdca == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Select Sub Dca</p>";
+            isValid = false;
+        }
+        if (specification == "" || specification == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Specification</p>";
+            isValid = false;
+        }
+        if (units == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Units</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divICInfoReturnMsg").text("");
+            $("#divICInfoReturnMsg").append(finalerror + errorMsg + "</div>");
+            $("#divICInfoReturnMsg").addClass("alert-danger");
+            $("#divICInfoReturnMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divICInfoReturnMsg").text("");
+            $("#divICInfoReturnMsg").addClass("hidden");
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var Details = {
+                Itemname: $("#txtupditemname").val(),
+                Basicprice: $("#txtupdbasic").val(),
+                Itemsdca: $("#ddl_UpdItemcodesdcas option:selected").val(),
+                Specification: $("#txtupdspecification").val(),
+                Units: $("#ddl_UpdUnits option:selected").val(),
+                Rowid: Rid,
+                RoleID: Roleid,
+                Createdby: Crtedby
+            };
+            addFailMsg = "Error Occurred While updating Record.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/UpdateItemCodeData',
+                data: JSON.stringify({ apprdetails: Details }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    if (msg == "Successfull") {
+                        $('#ApproveicMsgModal').modal('show');
+                        var msg = "<div>ItemCode Return Updated Successfully</div>";
+                        msg = "<div>Item Code " + itemcode +"  Return Updated Successfully</div>";
+                        $("#ApproveicMsgModal").on("hide.bs.modal", function () {
+                            $("#divAppricGrid").load('/Purchase/VerifyItemCodeCreationGrid');
+                        });
+                        $("#AppricMsg").html(msg);
+                    }
+                    else {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#AppricMsg").html(msg);
+                        $('#ApproveicMsgModal').modal('show');
+                    }
+
+                },
+                failure: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppricMsg").html(msg);
+                    $('#ApproveicMsgModal').modal('show');
+                },
+                error: function (response) {
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#AppricMsg").html(msg);
+                    $('#ApproveicMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>

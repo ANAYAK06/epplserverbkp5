@@ -1,0 +1,205 @@
+﻿@using System.Data
+@model DataTable
+@*<style>
+        .tdcls {
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal;
+        }
+    </style>*@
+
+<style>
+    /* The heart of the matter */
+
+    .horizontal-scrollable > .row {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+        .horizontal-scrollable > .row > .col-xs-4 {
+            display: inline-block;
+            float: none;
+        }
+    /* Decorations */
+
+    .col-xs-4 {
+        color: white;
+        font-size: 24px;
+        padding-bottom: 20px;
+        padding-top: 18px;
+    }
+
+        .col-xs-4:nth-child(2n+1) {
+            background: green;
+        }
+
+        .col-xs-4:nth-child(2n+2) {
+            background: black;
+        }
+</style>
+<div class="horizontal-scrollable">
+    @if (Model.Rows.Count > 0)
+    {
+        <table><tr><span>Avaliable Stock at Other Cost Centers</span></tr></table>
+        <table class="table order-list tblIndividualCCitemDetails" id="ItemCSKCCDataTable">
+            <thead>
+
+                <tr>
+                    @foreach (System.Data.DataColumn col in Model.Columns)
+                    {
+                        <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><span style="width:20px !important">@col.Caption </span></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.Rows)
+                {
+                    int i = 0;
+                    <tr>
+
+                        @foreach (var cell in row.ItemArray)
+                        {
+                            string ItemCode = row.ItemArray[0].ToString();
+
+                            if (i == 0)
+                            {
+                                <td style="font-weight:normal; white-space: normal;font-size:smaller"><span style="max-width:10px !important;">@cell.ToString() </span></td>
+                            }
+                            else
+                            {
+                                if (cell.ToString() != "")
+                                {
+                                    <td style="font-weight:normal; white-space: normal;font-size:smaller"><input type="text" style="font-size:smaller" class="form-control countcheck" value="@cell.ToString()" /></td>
+                                }
+                                else
+                                {
+                                    <td style="font-weight:normal; white-space: normal;font-size:smaller"><input type="text" class="form-control countcheck" style="font-size:smaller" readonly value="0" /></td>
+                                }
+                            }
+
+                            i = i + 1;
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="text-center"><span>No Data Found</span></div>
+    }
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var IndccGrid = null;
+        InitializeIndccGrid();
+    });
+
+    function InitializeIndccGrid() {
+        IndccGrid = $('#tblIndividualCCitemDetails').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            lengthChange: false,
+            info: false,
+            paging: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function (settings, json) {
+
+            },
+            "createdRow": function (row, data, index) {               
+                $('td:eq(0)', row).html();               
+            },
+        });
+    }
+    $("table.order-list.tblIndividualCCitemDetails").on("keyup", ".countcheck", function (event) {
+        //debugger;
+        var currentRow = $(this).closest("tr");
+        var qty = currentRow.find(".countcheck");
+        var itemcode = currentRow.find("td").eq(0);
+        var totalqty = 0;
+        var subtotal = 0;
+        var total2 = 0;
+        for (var i = 0; i < qty.length; i++) {
+            if (qty[i].value == "") {
+                qty[i].value = 0;
+            }
+            if (parseFloat(qty[i].value) > parseFloat(qty[i].defaultValue)) {
+                alert('You can not enter more than available quantity')
+                qty[i].value = qty[i].defaultValue;
+            }
+            totalqty = parseFloat(totalqty) + parseFloat(qty[i].value);
+        }
+        $("#ItemIndentDetailsCSKDataTable tbody tr").each(function () {
+            var currentRow1 = $(this);
+            //debugger;
+            var itemcode1 = currentRow1.find("td").eq(1);
+            var RaisedQty = currentRow1.find("td").eq(8);
+            if (itemcode[0].innerText == itemcode1[0].innerText && parseFloat(totalqty) > parseFloat(RaisedQty[0].innerText)) {
+                alert("You can issue more then requested quantity of item :" + itemcode[0].innerText);
+                currentRow1.find("td").eq(9).find("input[type='text']").val("");
+            }
+            else if (itemcode[0].innerText == itemcode1[0].innerText) {
+                currentRow1.find("td").eq(9).find("input[type='text']").val(totalqty);
+            }
+            else if (currentRow1.find("td").eq(9).find("input[type='text']").val() == 0) {
+                currentRow1.find("td").eq(9).find("input[type='text']").val("");
+            }
+        });
+        $("#ItemIndentCSKDataTable tbody tr").each(function () {
+            debugger;
+            var givenqty = 0;
+            var totqty = 0;
+            var currentRow2 = $(this);            
+            var itemcode2 = currentRow2.find("td").eq(1);
+            var basic2 = currentRow2.find("td").eq(6);
+            givenqty = currentRow2.find("td").eq(9).find("input[type='text']").val();
+            totqty = currentRow2.find("td").eq(10).find("input[type='text']").val();    
+            total2 = currentRow2.find("td").eq(11).find("input[type='text']").val();
+            var num = isNaN(parseFloat(total2)) ? 0 : parseFloat(total2)
+            var numgivenqty = isNaN(parseFloat(givenqty)) ? 0 : parseFloat(givenqty)
+            if (itemcode[0].innerText == itemcode2[0].innerText) {
+                currentRow2.find("td").eq(8).find("input[type='text']").val(totalqty);
+                currentRow2.find("td").eq(10).find("input[type='text']").val(parseFloat(totalqty) + parseFloat(numgivenqty));
+                currentRow2.find("td").eq(11).find("input[type='text']").val(((parseFloat(totalqty) + parseFloat(numgivenqty)) * num).toFixed(2));
+                subtotal = (parseFloat(subtotal) + parseFloat(num)).toFixed(2);
+            }
+            else if (currentRow2.find("td").eq(8).find("input[type='text']").val() == 0) {
+                currentRow2.find("td").eq(8).find("input[type='text']").val("0");
+                currentRow2.find("td").eq(10).find("input[type='text']").val(parseFloat(0) + parseFloat(numgivenqty));  
+                currentRow2.find("td").eq(11).find("input[type='text']").val(((parseFloat(0) + parseFloat(numgivenqty)) * num).toFixed(2));
+                subtotal = (parseFloat(subtotal) + parseFloat(num)).toFixed(2);
+            }        
+            if ((itemcode[0].innerText == itemcode2[0].innerText) && (currentRow2.find("td").eq(8).find("input[type='text']").val() != 0)) {
+                currentRow2.find("td").eq(10).find("input[type='text']").val(parseFloat(currentRow2.find("td").eq(8).find("input[type='text']").val()) + parseFloat(numgivenqty));
+                currentRow2.find("td").eq(11).find("input[type='text']").val((parseFloat(basic2[0].innerText) * (parseFloat(totalqty) + parseFloat(numgivenqty))).toFixed(2));
+                subtotal = (parseFloat(subtotal) + parseFloat(num)).toFixed(2);
+            }
+            if ((itemcode[0].innerText == itemcode2[0].innerText) && (currentRow2.find("td").eq(8).find("input[type='text']").val() == 0)) {
+                currentRow2.find("td").eq(10).find("input[type='text']").val(parseFloat(currentRow2.find("td").eq(8).find("input[type='text']").val()) + parseFloat(numgivenqty));
+                currentRow2.find("td").eq(11).find("input[type='text']").val("0")
+                subtotal = (parseFloat(subtotal) + parseFloat(num)).toFixed(2);
+            }
+        });
+        $("#ItemIndentDataTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            if (!isNaN(subtotal)) {
+                footerRow.find("td").eq(11).html("<b>" + parseFloat(subtotal).toFixed(2) + "</b>");
+            }
+            else {
+                footerRow.find("td").eq(11).html("");
+            }
+        });
+    });
+
+    function QtyCalculate(e, ItemCode) {
+        var currentRow = $(this).closest("tr");
+        var qty = currentRow.find(".countcheck");
+        // var itemcode = currentRow.find("td").eq(0).html();
+        alert(e, ItemCode);
+    }
+</script>
+

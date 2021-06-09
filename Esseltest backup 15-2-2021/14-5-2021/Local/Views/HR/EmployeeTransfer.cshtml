@@ -1,0 +1,367 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmployeeTransfer
+@{
+    ViewBag.Title = "EmployeeTransfer";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Employee Transfer</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.EmployeeId)
+                                                                @Html.EditorFor(model => model.EmployeeId, new { htmlAttributes = new { @class = "form-control", @id = "txtEmpSearch", @onkeyup = "onchangeeventEmp();",
+                                                               @type = "search",
+                                                               @onpaste = "return false;" ,
+                                                               @onKeyDown = "preventBackspace();",
+                                                                style = "text-transform:uppercase" } })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6" id="btnsearch">
+                                                            <div class="form-group">
+                                                                </br>
+                                                                <button class="btn btn1 btn-success" id="btnempcc" onclick="btnSubmitempcc()">View Employee CostCenter</button>
+                                                                <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div id="datadetails">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.FromCC)
+                                                                    @Html.TextBoxFor(model => model.FromCC, htmlAttributes: new { @class = "form-control", @id = "txtFromCC", @readonly = true })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.ToCC)
+                                                                    @Html.DropDownListFor(model => model.ToCC, new SelectList(Model.ToCCCodelist, "CC_Code", "CC_Name"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlToCCCode" }) @*, onchange = "BindCashCCCode()"*@
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.RelievingDate)
+                                                                    @Html.TextBoxFor(model => model.RelievingDate, "{0:dd-MMM-yyyy}", new { @id = "txtrelivedate", @class = "form-control date-picker", type = "text", @readonly = true, onchange = "return dayscount()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.JoiningDate)
+                                                                    @Html.TextBoxFor(model => model.JoiningDate, "{0:dd-MMM-yyyy}", new { @id = "txtjoindate", @class = "form-control date-picker", type = "text", @readonly = true, onchange = "return dayscount()" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Remarks)
+                                                                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txtleaveRemarks", @class = "form-control", @rows = "3" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row ">
+                                                            <div class="col-md-12">
+                                                                <div class="text-right">
+                                                                    <input type="text" id="txtnoofdays" style="display:none" />
+                                                                    <button class="btn btn1 btn-success" id="btnemptransferSubmit" onclick="btnSubmitTransferData()">Submit</button>
+                                                                    <button class="btn btn1 btn-success" id="btnReset" onclick="Clearreset()">Reset</button>
+                                                                    <input type="text" value="0" id="txtEmpTransferRoleId" style="display:none" />
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row text-center">
+                                                        <div id="divEmployeeTransferInfoMsg" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var RoleID = '@Session["Roleid"]';
+        $("#txtEmpTransferRoleId").val(RoleID);
+        $("#datadetails").addClass("hidden");
+        $("#btnsearch").addClass("hidden");
+
+    });
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+    function SubmitClearItem() {
+        $("#txtEmpSearch").val("");
+        $("#btnempcc").prop('disabled', false);
+    }
+    function onchangeeventEmp() {
+        var previxvalue = $("#txtEmpSearch").val();
+        if (previxvalue != "") {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $("#txtEmpSearch").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/HR/GetEmployeeExtender',
+                        data: '{prefix:"' + request.term + '"}',
+                        dataType: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.FirstName, value: item.FirstName };
+                            }))
+                            $("#btnsearch").removeClass("hidden");
+                        },
+                        error: function (data) {
+                            alert(data.responseText);
+                        },
+                        failure: function (data) {
+                            alert(data.responseText);
+                        }
+                    });
+                },
+            });
+        }
+    }
+    function btnSubmitempcc() {
+        var errorMsg = "";
+        isValid = true;
+        var prefixvalue = $("#txtEmpSearch").val();
+        if (prefixvalue == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Search EmployeeId / Name</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+            $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            var myarray = prefixvalue.split(',');
+            $.ajax({
+                url: '/HR/GetEmployeeCCCode',
+                data: '{Empid:"' + myarray[0] + '"}',
+                dataType: "json",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txtFromCC").val(this['FromCC']);
+                    });
+                    $("#datadetails").removeClass("hidden");
+                    var myccarray = $("#txtFromCC").val().split(',');
+                    var CC = $("#ddlToCCCode");
+                    $.ajax({
+                        type: "POST",
+                        url: "/HR/GetAllEmpCC",
+                        data: '{cc:"' + myccarray[0] + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            CC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                CC.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                            });
+                            $("#txtrelivedate").datepicker({
+                                dateFormat: 'dd-M-yy',
+                                changeMonth: true,
+                                changeYear: true,
+                                showOn: "button",
+                                minDate: -30,
+                                maxDate: 0,
+                                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                                onClose: function (selectedDate) {
+                                    $("#txtjoindate").datepicker("option", "minDate", selectedDate);
+                                }
+                            }).datepicker("setDate", new Date());
+                            $("#txtjoindate").datepicker({
+                                dateFormat: 'dd-M-yy',
+                                changeMonth: true,
+                                changeYear: true,
+                                showOn: "button",
+                                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                                maxDate: 10,
+                            }).datepicker("setDate", new Date());
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                },
+                failure: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+
+    }
+    function dayscount() {
+        var date1 = $("#txtrelivedate").val();
+        var date2 = $("#txtjoindate").val();
+        if (date1 != "" && date2 != "") {
+            var startDate = Date.parse(date1);
+            var endDate = Date.parse(date2);
+            var timeDiff = endDate - startDate;
+            var daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            var days = daysDiff + parseInt(1);
+            $("#txtnoofdays").val(days);
+        }
+        else { $("#txtnoofdays").val("0") }
+    }
+    function btnSubmitTransferData() {      
+        var errorMsg = "";
+        isValid = true;
+        var employeeid = $("#txtEmpSearch").val();
+        var ToCC = $("#ddlToCCCode option:selected").index();
+        var reldate = $("#txtrelivedate").val();
+        var joindate = $("#txtjoindate").val();
+        var Remarks = $("#txtleaveRemarks").val();
+        var noofdays = $("#txtnoofdays").val();
+        if (employeeid == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Search Employee Id/Name</p>";
+            isValid = false;
+        }
+        if (ToCC == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Cost Center</p>";
+            isValid = false;
+        }
+        if (reldate == "" || reldate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Releiving Date</p>";
+            isValid = false;
+        }
+        if (joindate == "" || joindate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Joining Date</p>";
+            isValid = false;
+        }  
+        if (joindate == reldate) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Date</p>";
+            isValid = false;
+        }  
+        if (parseInt(noofdays) == 0 || parseInt(noofdays) == "" || parseInt(noofdays) < 0 || parseInt(noofdays) > 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Date Selection Max 10 Days</p>";
+            isValid = false;
+        }       
+        if (Remarks == "" || Remarks == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Please Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divEmployeeTransferInfoMsg").text("");
+            $("#divEmployeeTransferInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divEmployeeTransferInfoMsg").addClass("alert-danger");
+            $("#divEmployeeTransferInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divEmployeeTransferInfoMsg").text("");
+            $("#divEmployeeTransferInfoMsg").addClass("hidden");
+            Savedata();
+        }
+
+    }
+    function Savedata() {
+        var Employeeidraw = $("#txtEmpSearch").val();
+        var Employeeid = Employeeidraw.split(',');
+        var TransferfromCCraw = $("#txtFromCC").val();
+        var TransferFrom = TransferfromCCraw.split(',');
+        var Roleid = '@Session["Roleid"]';
+        var Createdby = '@Session["Createdby"]';
+        var Details = {
+            Employeeid: Employeeid,
+            FromCC: TransferFrom,
+            ToCC: $("#ddlToCCCode option:selected").val(),
+            RelievingDate: $("#txtrelivedate").val(),
+            JoiningDate: $("#txtjoindate").val(),
+            Remarks: $("#txtleaveRemarks").val(),
+            RoleID: $("#txtEmpTransferRoleId").val(),
+            Createdby: Createdby
+        };
+        addFailMsg = "Error Occurred While Submitting.";
+        $("#btnemptransferSubmit").prop("disabled", true);       
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/HR/SaveEmployeeTransferDetails',
+            data: { newDetails: Details },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divEmployeeTransferInfoMsg").text(Data.saveStatus);
+                    $("#divEmployeeTransferInfoMsg").removeClass("hidden alert-danger");
+                    $("#divEmployeeTransferInfoMsg").addClass("alert-success");
+                                
+                }
+                else {
+                    $("#divEmployeeTransferInfoMsg").text(Data.saveStatus);
+                    $("#divEmployeeTransferInfoMsg").addClass("alert-danger");
+                    $("#divEmployeeTransferInfoMsg").removeClass("hidden alert-success");
+                    $("#btnemptransferSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divEmployeeTransferInfoMsg").text(addFailMsg);
+                $("#divEmployeeTransferInfoMsg").addClass("alert-danger");
+                $("#divEmployeeTransferInfoMsg").removeClass("hidden alert-success");
+                $("#btnemptransferSubmit").prop("disabled", false);
+            }
+        });
+    }
+    function Clearreset() {
+        location.reload();
+    }
+</script>

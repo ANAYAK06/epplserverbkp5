@@ -1,0 +1,209 @@
+﻿@model List<EsselTestLocalApplication.Models.AddClient>
+<div class="table-responsive">
+    <table id="tblClientDetails" style="width:100%" class="hover stripe nowrap example">
+        <thead>
+            <tr>
+                <th class="hidden">Client Id</th>
+                <th>Client Code</th>
+                <th>Client Name</th>
+                <th>Client Name And Address</th>
+                <th>Actions</th>
+                <th class="hidden">ClientStatus</th>
+                <th class="hidden">Groupname</th>
+                <th class="hidden">GroupId</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ClientID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client_Code)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client_Name)
+                </td>
+                <td style="text-wrap:normal">
+                    <p>@Html.DisplayFor(modelItem => item.Contact_Person_Name)</p>
+                    <p style="width:50%">@Html.DisplayFor(modelItem => item.Address)</p>
+                </td>
+                @if ((item.ClientStatus == "Approved" || item.ClientStatus == null) && (item.SubClientStatus == "Approved" || item.SubClientStatus == null))
+                {
+                    <td>
+                        <select class="form-control dropdown-toggle" id="ddlClientActions" onchange="ddlClientActionschange(@item.ClientID,'@item.Client_Code', '@item.Client_Name', '@item.NatureGroupName', '@item.Nid',this)">
+                            <option selected="selected" value="Select">-Select-</option>
+                        </select>
+
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.ClientStatus)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.NatureGroupName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Nid)
+                </td>
+            </tr>
+            }
+        </tbody>
+        <tfoot>
+           
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+    $(document).ready(function () {
+        var clientGrid = null;
+        InitializeClientDetialsGrid();   
+    });
+    function InitializeClientDetialsGrid() {
+        clientGrid = $('#tblClientDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Clients Found"
+            },
+            "createdRow": function (row, data, index) {
+                var ddlAction = $('td:eq(4)', row).find("select");
+                    ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    var Roleid = '@Session["Roleid"]';
+                    var Mid = 'Client';
+                    $.ajax({
+                        type: "POST",
+                        url: "/Home/GetApprovalstatusother",
+                        data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count = Object.keys(response).length;
+                            if (count > 0) {
+                                $.each(response, function () {
+                                    ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                                });
+                                ddlAction.append($("<option></option>").val("ViewClientDetails").html("ViewClientDetails"));
+                            }
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+
+
+
+
+
+                //var ddlAction = $('td:eq(4)', row).find("select");
+                ////var ClientStatus = $('td:eq(5)', row).html();
+                //ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                //ddlAction.append($("<option></option>").val("UpdateClient").html("UpdateClient"));               
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/CheckSubClientbyClientCodebyRoleid",
+                    data: '{ClientCode:"' + data[1] + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;                    
+                        if (count == 1) {
+                          
+                           
+                            $.each(response, function () {
+                                var wfexist = this['WFExist'];
+                                var scexist = this['SubClientCExist'];
+
+                                if (wfexist == 1) { ddlAction.append($("<option></option>").val("AddNewSubClient").html("AddNewSubClient")); }
+
+                                if (scexist == 1) { 
+                            $.ajax({
+                                type: "POST",
+                                url: "/Home/GetApprovalstatusother",
+                                data: '{Checktype:"SubClient",Rid:"' + Roleid + '"}',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                success: function (response) {
+                                    var count = Object.keys(response).length;
+                                    if (count > 0) {
+                                        $.each(response, function () {
+                                            ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                                        });
+                                       
+                                    }
+                                },
+                                failure: function (response) {
+                                    alert(response.responseText);
+                                },
+                                error: function (response) {
+                                    alert(response.responseText);
+                                }
+                            });
+                                }
+                            });
+
+                            //ddlAction.append($("<option></option>").val("UpdateSubClient").html("UpdateSubClient"));
+                            //ddlAction.append($("<option></option>").val("CloseSubClient").html("CloseSubClient"));
+                        }
+                    },
+                    failure: function (response) {
+                    },
+                    error: function (response) {
+                    }
+                });
+                //ddlAction.append($("<option></option>").val("ViewClientDetails").html("ViewClientDetails"));
+                //ddlAction.append($("<option></option>").val("Close").html("Delete Client"));
+                //if (data[2]!="") {
+                //    var ddl = $('td:eq(3)', row).find("select");
+                //    ddl.append($("<option></option>").val("text").html("text"));
+                //    BindActionsForClient(data[1]);
+
+                //}
+
+
+            },
+            pageLength: 50
+        });
+    }
+
+    function fnajaxput() {
+        alert('submit');        
+     
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',        
+            url: '/Home/PUT',
+            data: '{ no: 1 }',
+            success: function (Data) {
+                if (Data.saveStatus == true) {
+                    alert('submit true');
+                }
+                else {
+
+                    alert('false');   
+                } 
+              
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+           
+            }
+        });
+
+    }
+   
+</script>

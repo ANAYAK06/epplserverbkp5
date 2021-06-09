@@ -1,0 +1,130 @@
+﻿@model EsselTestLocalApplication.Models.HR.EmployeeTransfer
+@{
+    ViewBag.Title = "EmployeeTransferReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Employee Transfer</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">                              
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.EmployeeId)
+                                        @Html.EditorFor(model => model.EmployeeId, new { htmlAttributes = new { @class = "form-control", @id = "txtEmpSearch", @onkeyup = "onchangeeventEmp();",
+                                        @type = "search",
+                                        @onpaste = "return false;" ,
+                                        @onKeyDown = "preventBackspace();",
+                                        style = "text-transform:uppercase" } })
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        </br>
+                                        <button class="btn btn1 btn-success" id="btnempcc" onclick="btnSubmitempcc()">View Employee Transfer Details</button>
+                                        <input type="submit" value="Clear" class="btn btn1 btn-success" id="btncleartextbox" onclick="SubmitClearItem()" />
+                                    </div>
+                                </div> 
+                                <div id="divEmployeeTransferGrid" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divEmployeeTransferGrid").addClass('hidden');
+        
+    });
+    function preventBackspace(e) {
+        var evt = e || window.event;
+        if (evt) {
+            var keyCode = evt.charCode || evt.keyCode;
+            if (keyCode === 8) {
+                if (evt.preventDefault) {
+                    evt.preventDefault();
+                }
+                else {
+                    evt.returnValue = false;
+                }
+            }
+        }
+    }
+    function SubmitClearItem() {
+        //$("#txtEmpSearch").val("");
+        //$("#btnempcc").prop('disabled', false);
+        location.reload();
+    }
+    function onchangeeventEmp() {
+        var previxvalue = $("#txtEmpSearch").val();
+        if (previxvalue != "") {
+            $("#divAddNewEmpInfoMsg").text("");
+            $("#divAddNewEmpInfoMsg").addClass("hidden");
+            $("#txtEmpSearch").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/HR/GetEmployeeExtenderReport',
+                        data: '{prefix:"' + request.term + '"}',
+                        dataType: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.FirstName, value: item.FirstName };
+                            }))
+                            $("#btnsearch").removeClass("hidden");
+                        },
+                        error: function (data) {
+                            alert(data.responseText);
+                        },
+                        failure: function (data) {
+                            alert(data.responseText);
+                        }
+                    });
+                },
+            });
+        }
+    }
+    function btnSubmitempcc() {      
+        var prefixvalue = $("#txtEmpSearch").val();        
+        if (prefixvalue != "") {     
+            var myarray = prefixvalue.split(',');
+            $.ajax({
+                type: "GET",
+                url: "/HR/ViewEmployeeTranferDetailsGrid",
+                data: { Lvid: myarray[0] },
+                dataType: 'html',
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    var msg = "";
+                    if (count1 > 0) {
+                        $("#divEmployeeTransferGrid").html(response);
+                        $("#divEmployeeTransferGrid").removeClass('hidden');
+                    }
+                    else {
+                        $("#divEmployeeTransferGrid").html('No Data Found');
+                        $("#divEmployeeTransferGrid").removeClass('hidden');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        else {
+            $("#divEmployeeTransferGrid").addClass("hidden");
+            alert("Enter Employee Name / Employee Id");
+            return false;
+        }
+    }
+</script>

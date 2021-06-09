@@ -1,0 +1,1022 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.ClientInvoiceCreation
+@if (Model.Status != "0")
+{
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client Invoice Number:</label>
+                        <input type="text" class="form-control" value="@Model.ClientInvoiceNo" readOnly="readOnly" id="ApprInvno" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>PO Number:</label>
+                        <input type="text" class="form-control" value="@Model.PONumber" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Cost Center Code:</label>
+                        <input type="text" class="form-control" value="@Model.CCCode" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Sub Type:</label>
+                        <input type="text" class="form-control" value="@Model.InvoiceSubType" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @*<label>Client Code:</label>
+                            <input type="text" class="form-control" value="@Model.Clientcode" readOnly="readOnly" />*@
+                        <label>Client:</label>
+                        <input type="text" class="form-control" value="@Model.ClientName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>SubClient:</label>
+                        @*<input type="text" class="form-control" value="@Model.SubClientcode" readOnly="readOnly" />*@
+                        <input type="text" class="form-control" value="@Model.SubClientName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Running Account Number:</label>
+                        <input type="text" class="form-control" value="@Model.RANO" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Date:</label>
+                        @Html.TextBoxFor(model => Model.VerificationInvDate, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text" })
+
+                        @*<input type="text" class="form-control" value=@Model.InvoiceDate readOnly="readOnly" id="ApprInvDate-@Model.ClientInvoiceNo" />*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Making Date:</label>
+                        @Html.TextBoxFor(model => Model.VerificationMakingDate, "{0:dd-MMM-yyyy}", new { @class = "form-control", @readonly = "true", @type = "text" })
+
+                        @*<input type="text" class="form-control" value=@Model.InvoiceMakingDate readOnly="readOnly" id="ApprInvMakeDate-@Model.ClientInvoiceNo" />*@
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Basic Value:</label>
+                        <input type="text" class="form-control" value=@Model.BasicValue readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>GST Type:</label>
+                        <input type="text" class="form-control" value=@Model.GSTType readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Company GST:</label>
+                        <input type="text" class="form-control" value=@Model.CompanyGST readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client GST:</label>
+                        <input type="text" class="form-control" value=@Model.ClientGST readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Is GST Applicable:</label>
+                        <input type="text" class="form-control" value=@Model.IsGstApplicable readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Is TCS Applicable:</label>
+                        <input type="text" class="form-control" value=@Model.IsTCSApplicable readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            @*@if (Model.Taxdcas != null)*@
+            @if (Model.IsGstApplicable == "Yes")
+            {
+                <div id="divSPInvTaxGrid">
+                    <div class="col-md-12 change-tab" id="TaxGrid">
+                        <div class="strike" style="margin-bottom:10px">
+                            <span>GST Taxes</span>
+                        </div>
+
+                        <div class="tabledynamic col-md-12" id="divSameStateGrid">
+                            <br />
+                            <div class="col-md-12 text-center">
+                                @if (Model.Statecheck == true)
+                                {
+                                    <div class="col-md-2" id="divcgstdca">
+
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                            <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Taxdcas" id="txtTaxDCA1" style="font-size:12px" disabled />
+                                        </div>
+
+                                    </div>
+                                }
+                                @if (Model.Statecheck == false)
+                                {
+                                    <div class="col-md-3" id="divigstdca">
+                                        <div class="form-group">
+                                            <label>Account Head</label>
+                                            <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Taxdcas" id="txtTaxDCA2" disabled />
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Statecheck == true)
+                                {
+                                    <div id="divcgst">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">CGST Sub Account Head</label>
+                                                <input type="text" class="form-control sppotaxCGSTsdca" value="@Model.Cgstsdca" id="txtTaxCGSTSDCA" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">CGST Amount</label>
+                                                <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Cgstsdcaamt" id="txtTaxCGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">SGST Sub Account Head</label>
+                                                <input type="text" class="form-control sppotaxSGSTsdca" value="@Model.Sgstsdca" id="txtTaxSGSTSDCA" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">SGST Amount</label>
+                                                <input type="text" class="form-control sppotaxSGSTsdcaamount" value="@Model.Sgstsdcaamt" id="txtTaxSGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Statecheck == false)
+                                {
+                                    <div id="divigst">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>IGST Sub Account Head</label>
+                                                <input type="text" class="form-control sppotaxIGSTsdca" value="@Model.Igstsdca" id="txtTaxIGSTSDCA" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>IGST Amount</label>
+                                                <input type="text" class="form-control sppotaxIGSTsdcaamount" value="@Model.Igstsdcaamt" id="txtTaxIGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" disabled />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }@if (Model.Statecheck == true)
+                                {
+                                    <div class="col-md-2" id="divcgstotal">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">Total Tax</label>
+                                            <input type="text" class="form-control sppotaxamountTotal" value="@Model.TaxTotal" id="txtTaxTotalGSTSDCAamt" disabled style="font-size:12px" />
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Statecheck == false)
+                                {
+                                    <div class="col-md-3" id="divigstotal">
+                                        <div class="form-group">
+                                            <label>Total Tax</label>
+                                            <input type="text" class="form-control sppotaxamountTotal" value="@Model.TaxTotal" id="txtTaxTotalGSTSDCAamt1" disabled />
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+            @if (Model.IsTCSApplicable == "Yes")
+            {
+                <div id="divSPInvTaxGrid">
+                    <div class="col-md-12 change-tab" id="TaxGrid">
+                        <div class="strike" style="margin-bottom:10px">
+                            <span>TCS Taxes</span>
+                        </div>
+
+                        <div class="tabledynamic col-md-12">
+                            <br />
+                            <div class="col-md-12 text-center">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                        <input type="text" class="form-control" value="@Model.TCSDCA" id="txtTaxtcsdca" style="font-size:12px" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Sub Account Head</label>
+                                        <input type="text" class="form-control" value="@Model.TCSSDCA" id="txtTaxtcsSDCA" style="font-size:12px" disabled />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Amount</label>
+                                        <input type="text" class="form-control" value="@Model.TCSAmount" id="txtTaxtcsamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppInvstatus" })
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppInvNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveClientInvoice('@Model.ClientInvoiceNo')">Submit</button>
+                        <input type="hidden" id="gststatecheck" value="@Model.Statecheck" />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprInvInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+}
+else
+{
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client Invoice Number:</label>
+                        <input type="text" class="form-control" value="@Model.ClientInvoiceNo" readOnly="readOnly" id="ApprInvno" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>PO Number:</label>
+                        <input type="text" class="form-control" value="@Model.PONumber" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Cost Center Code:</label>
+                        <input type="text" class="form-control" value="@Model.CCCode" readOnly="readOnly" id="UpCCCode" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Sub Type:</label>
+                        <input type="text" class="form-control" value="@Model.InvoiceSubType" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client Code:</label>
+                        @*<input type="text" class="form-control" value="@Model.Clientcode" readOnly="readOnly" />*@
+                        <input type="text" class="form-control" value="@Model.ClientName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>SubClient Code:</label>
+                        @*<input type="text" class="form-control" value="@Model.SubClientcode" readOnly="readOnly" />*@
+                        <input type="text" class="form-control" value="@Model.SubClientName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Running Account Number:</label>
+                        <input type="text" class="form-control" value="@Model.RANO" id="txtRANo" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Date:</label>
+                        @Html.TextBoxFor(model => model.VerificationInvDate, "{0:dd-MMM-yyyy}", new { @id = "txtInvoiceDate", @class = "form-control date-picker", type = "text", @readonly = true })
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Invoice Making Date:</label>
+                        @Html.TextBoxFor(model => model.VerificationMakingDate, "{0:dd/MM/yyyy}", new { @id = "txtInsMakingDate", @class = "form-control  date-picker", type = "text", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Basic Value:</label>
+                        @Html.TextBoxFor(model => model.BasicValue, htmlAttributes: new { @class = "form-control", @id = "txtBasicValue", onkeypress = "return ValidateAmount(this,event);" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>GST Type:</label>
+                        <input type="text" class="form-control" value=@Model.GSTType readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Company GST:</label>
+                        <input type="text" class="form-control" value=@Model.CompanyGST readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client GST:</label>
+                        <input type="text" class="form-control" value=@Model.ClientGST readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Is GST Applicable:</label>
+                        <input type="text" class="form-control" value=@Model.IsGstApplicable readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Is TCS Applicable:</label>
+                        <input type="text" class="form-control" value=@Model.IsTCSApplicable readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            @*@if (Model.Taxdcas != null)*@
+            @if (Model.IsGstApplicable == "Yes")
+            {
+                <div id="divSPInvTaxGrid">
+                    <div class="col-md-12 change-tab" id="TaxGrid">
+                        <div class="strike" style="margin-bottom:10px">
+                            <span>Taxes</span>
+                        </div>
+
+                        <div class="tabledynamic col-md-12" id="divSameStateGrid">
+                            <br />
+                            <div class="col-md-12 text-center">
+                                @if (Model.Statecheck == true)
+                                {
+                                    <div class="col-md-2" id="divcgstdca">
+
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                            <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Taxdcas" id="txtTaxDCA1" style="font-size:12px" disabled />
+                                        </div>
+
+                                    </div>
+                                }
+                                @if (Model.Statecheck == false)
+                                {
+                                    <div class="col-md-3" id="divigstdca">
+                                        <div class="form-group">
+                                            <label>Account Head</label>
+                                            <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Taxdcas" id="txtTaxDCA2" disabled />
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Statecheck == true)
+                                {
+                                    <div id="divcgst">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">CGST Sub Account Head</label>
+                                                <input type="text" class="form-control sppotaxCGSTsdca" value="@Model.Cgstsdca" id="txtTaxCGSTSDCA" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">CGST Amount</label>
+                                                <input type="text" class="form-control sppotaxCGSTsdcaamount" value="@Model.Cgstsdcaamt" id="txtTaxCGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">SGST Sub Account Head</label>
+                                                <input type="text" class="form-control sppotaxSGSTsdca" value="@Model.Sgstsdca" id="txtTaxSGSTSDCA" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label style="font-size:12px;font-weight:bold;text-align:center">SGST Amount</label>
+                                                <input type="text" class="form-control sppotaxSGSTsdcaamount" value="@Model.Sgstsdcaamt" id="txtTaxSGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Statecheck == false)
+                                {
+                                    <div id="divigst">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>IGST Sub Account Head</label>
+                                                <input type="text" class="form-control sppotaxIGSTsdca" value="@Model.Igstsdca" id="txtTaxIGSTSDCA" disabled />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>IGST Amount</label>
+                                                <input type="text" class="form-control sppotaxIGSTsdcaamount" value="@Model.Igstsdcaamt" id="txtTaxIGSTSDCAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" disabled />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }@if (Model.Statecheck == true)
+                                {
+                                    <div class="col-md-2" id="divcgstotal">
+                                        <div class="form-group">
+                                            <label style="font-size:12px;font-weight:bold;text-align:center">Total Tax</label>
+                                            <input type="text" class="form-control sppotaxamountTotal" value="@Model.TaxTotal" id="txtTaxTotalGSTSDCAamt" disabled style="font-size:12px" />
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.Statecheck == false)
+                                {
+                                    <div class="col-md-3" id="divigstotal">
+                                        <div class="form-group">
+                                            <label>Total Tax</label>
+                                            <input type="text" class="form-control sppotaxamountTotal" value="@Model.TaxTotal" id="txtTaxTotalGSTSDCAamt1" disabled />
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+            @if (Model.IsTCSApplicable == "Yes")
+            {
+                <div id="divSPInvTaxGrid">
+                    <div class="col-md-12 change-tab" id="TaxGrid">
+                        <div class="strike" style="margin-bottom:10px">
+                            <span>TCS Taxes</span>
+                        </div>
+
+                        <div class="tabledynamic col-md-12">
+                            <br />
+                            <div class="col-md-12 text-center">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                                        <input type="text" class="form-control" value="@Model.TCSDCA" id="txtTaxtcsdca" style="font-size:12px" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Sub Account Head</label>
+                                        <input type="text" class="form-control" value="@Model.TCSSDCA" id="txtTaxtcsSDCA" style="font-size:12px" disabled />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label style="font-size:12px;font-weight:bold;text-align:center">Amount</label>
+                                        <input type="text" class="form-control" value="@Model.TCSAmount" id="txtTaxtcsAamt" onkeypress="return ValidateAmount(this,event);" onkeyup="CountPOInvoiceTotal()" style="font-size:12px" disabled />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            @*<div class="col-md-12 change-tab" id="divTaxGrid">
+
+            <div class="strike">
+                <span>Add Tax</span>
+            </div>
+            <div class="tabledynamic">
+                <br />
+                <table id="ClientTaxTable" class="table order-list clienttax">
+                    <thead>
+                        <tr>
+                            <td style="text-align:center" class="hidden"><label>No</label></td>
+                            <td style="text-align:center"><label>IsCreditable</label></td>
+                            <td style="text-align:center"><label>Account Head</label></td>
+                            <td style="text-align:center"><label>SubAccount Head</label></td>
+                            <td style="text-align:center"><label>TaxName</label></td>
+                            <td style="text-align:center"><label>Amount</label></td>
+                            <td style="text-align:center"><label>Check</label></td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Tax" onclick="ClientInv_BindNewRowtoGrid();" />
+                            </td>
+                            <td></td>
+                            <td class="text-center"><label>SubTotal</label></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>*@
+            <div class="col-md-12  change-tab">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.InvoiceRemarks)
+                        @Html.TextAreaFor(model => model.InvoiceRemarks, htmlAttributes: new { @class = "form-control", @id = "txtDescription", @rows = "3" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Total)
+                        @Html.TextBoxFor(model => model.Total, htmlAttributes: new { @class = "form-control", @id = "txtInvoiceValue", @readonly = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <button class="btn btn1 btn-success" id="btnSubmitClientInvCreation" onclick="UpdateClientInvoiceCreation('@Model.ClientInvoiceNo')">Submit</button>
+
+                    <input type="text" value="0" id="taxExist" style="display:none" />
+                    <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                    <input type="text" value="Edit" id="txtAction" style="display:none" />
+                    <input type="text" id="gststatecheck" value="@Model.Statecheck" />
+                </div>
+            </div>
+            <div class="row col-md-12 text-center">
+                <div id="divInvoiceCreationInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </form>
+    </div>
+}
+
+<div id="ajax-container" class="row"></div>
+<script>
+    $(document).ready(function () {
+
+       // alert('@Model.Statecheck');
+        if (@Model.Status!= '0') {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppInvstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        var currentstatus = '@Model.Status';
+        //alert(currentstatus);
+        if (currentstatus != '0') {
+            var invno = $("#currentInvno").val();
+            //invdateid = "ApprInvDate-" + invno;
+            //makedateid = "ApprInvMakeDate-" + invno;
+            //invdate = $("#" + invdateid + "").val();
+            //makedate = $("#" + makedateid + "").val();
+            //var idate = "'" + invdate + "'";
+            //var idate1 = moment(idate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#" + invdateid + "").val(idate1);
+
+            //var mdate = "'" + makedate + "'";
+            //var mdate1 = moment(mdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#" + makedateid + "").val(mdate1);
+
+            //var taxdivid = "divapprInvtaxtable";
+            //var taxdiv = $("#" + taxdivid + "");
+
+            //$.ajax({
+            //    type: 'POST',
+            //    dataType: 'json',
+            //    url: '/AccountsApproval/GetClientInvTaxDetailsbyInvno',
+            //    data: { InvNo: invno },
+            //    success: function (response) {
+            //        var count = Object.keys(response).length;
+            //        var taxtotal = 0;
+            //        if (count > 0) {
+            //            var rowno = 0;
+            //            $.each(response, function () {
+
+            //                rowno = rowno + 1;
+            //                var newRow = $("<tr>");
+            //                var cols = "";
+            //                //cols += '<td style="text-align:center" class="rowno">' + this['TaxName'] + '</td>';
+            //                cols += '<td style="text-align:center" class="rowno">' + this['TaxNo'] + '</td>';
+            //                cols += '<td style="text-align:center" class="rowno">' + this['CCCode'] + '</td>';
+            //                cols += '<td style="text-align:center" class="rowno">' + this['DCACode'] + '</td>';
+            //                cols += '<td style="text-align:center" class="rowno">' + this['SubDCACode'] + '</td>';
+            //                cols += '<td style="text-align:center" class="rowno">' + this['TaxValue'] + '</td>';
+            //                cols += '<td style="text-align:center" class="rowno">' + this['TypesOfTaxName'] + '</td>';
+            //                newRow.append(cols);
+            //                $("#ApprInvtax").append(newRow);
+            //                taxtotal = parseFloat(taxtotal) + parseFloat(this['TaxValue']);
+
+            //            });
+            //            $("#ApprInvtax tfoot tr").each(function () {
+
+            //                var footerRow = $(this);
+            //                if (!isNaN(taxtotal)) {
+            //                    footerRow.find("td").eq(4).html("Tax Total: <b>" + parseFloat(taxtotal).toFixed(2) + "</b>");
+            //                }
+            //                else {
+            //                    footerRow.find("td").eq(4).html("");
+            //                }
+
+            //            });
+            //            $("#" + taxdivid + "").removeClass("hidden");
+            //        }
+            //        else {
+            //            $("#" + taxdivid + "").addClass("hidden");
+            //        }
+            //    },
+            //    error: function (XMLHttpRequest, textStatus, errorThrown) {
+            //        alert("error");
+            //    }
+            //});
+            CountInvoiceTotal1();
+        }
+        else {
+            $("#txtBasicValue").keyup(function () {
+                CountInvoiceTotal1();
+            });
+            $("table.order-list.clienttax").on("click", ".ibtnclientTaxdelect", function (event) {
+                $(this).closest("tr").remove();
+                CountInvoiceTotal1();
+            });
+
+            $("#ClientTaxTable tbody tr").on("keyup", ".ctaxamount", function (event) {
+                CountInvoiceTotal1();
+            });
+            @*$("#txtInvoiceDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtInsMakingDate").datepicker("option", "minDate", selectedDate);
+                }
+            });
+            $("#txtInsMakingDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                maxDate: 'dateToday',
+                minDate: '@Model.InvoiceDate'
+            });*@
+            //var invmakingdate = $("#txtInsMakingDate").val();
+            //var makingdate = "'" + invmakingdate + "'";
+            //var mdate1 = moment(makingdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            //$("#txtInsMakingDate").val(mdate1);
+            @*var invdate = $("#txtInvoiceDate").val();
+            var invoiceno = '@Model.ClientInvoiceNo';
+           $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/AccountsApproval/GetClientInvTaxDetailsbyInvno',
+                data: { InvNo: invoiceno },
+                beforeSend: function () {
+                    $('#ajax-container').html('');
+                    addSpinner($('#ajax-container'));
+                },
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    var taxtotal = 0;
+                    if (count > 0) {
+                        for (i = 0; i < count; i++) {
+                            var rowno = i + 1;
+                            var newRow = $("<tr>");
+                            var cols = "";
+                            cols += '<td style="text-align:center"  class="hidden">' + rowno + '</td>';
+                            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle ctaxtype" id="ddlCTaxType"  onchange="ClientTaxTypeChange(this)">';
+                            cols += '<option value="Select">-Select-</option>';
+                            cols += '<option value="Creditable">Creditable</option>';
+                             cols += '<option value="Non-Creditable">Non-Creditable</option></select></td>';
+                            //cols += '</select ></td >';
+                            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle ctaxdca" id="ddlCTaxDCA" onchange="ClientTaxDCAChange(this)">';
+                            cols += '<option selected="selected" value="Select" >-Select-</option></select></td>';
+                            cols += '<td  style="text-align:center"><select class="form-control dropdown-toggle ctaxsdca" id= ddlCTaxSubDCA"  onchange="ClientTaxSubDCAChange(this)">';
+                            cols += '<option selected="selected" value="Select">-Select-</option></select></td>';
+                            cols += '<td  style="text-align:center"><select class="form-control dropdown-toggle ctaxname" id="ddlCTaxName">';
+                            cols += '<option selected="selected" value="Select">-Select-</option></select></td>';
+                            cols += '<td style="text-align:center"><input type="text" class="form-control ctaxamount" value="" id="txtclienttaxAmount"  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountInvoiceTotal()"/></td>';
+                            cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox">';
+                            cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkClientTax">';
+                            cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+                            if (rowno > 1) {
+                                cols += '<td style="text-align:center"><input type="button" class="ibtnclientTaxdelect btn btn-md btn-danger" value="Delete"></td>';
+                            }
+                            cols += '</label></li></ul></td>';
+                            newRow.append(cols);
+                            $("#ClientTaxTable").append(newRow);
+                        }
+                        var selecteddcalist = [];
+                        for (var i = 0; i < response.length; i++) {
+                            var item = response[i];
+                                selecteddcalist.push(item.DCACode);
+                            $("#ClientTaxTable tbody tr").each(function () {
+                                var currentRow = $(this);
+                                var rowno = currentRow.find("td").eq(0).html();
+                                var ddltype = currentRow.find("td").eq(1).find("select");
+                                var selecteddcalist = [];
+                                ddltype.val(item.TypesOfTaxName).attr("selected", "selected");
+                                if (rowno == i + 1) {
+                                    var currenttaxtpe = item.TypesOfTaxName;
+                                    var currentdca = item.DCACode;
+                                    var currentsdca = item.SubDCACode;
+                                    var currenttaxname = item.TaxNo;
+                                    var currentamount = item.TaxValue;
+                                    var CC = '@Model.CCCode';
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Accounts/GetInvTaxDCA1",
+                                        data: "{CcCode:'" + CC + "' ,TaxType: '" + item.TypesOfTaxName + "',invdate: '" + invdate + "'}",
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        success: function (data) {
+                                            var taxdcaddl = currentRow.find("td").eq(2).find("select");
+                                            $.each(data, function () {
+                                                var dbdcacode = this['DCACode'];
+                                                if (currentdca == dbdcacode) {
+                                                    taxdcaddl.append($("<option selected='selected'></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                                }
+                                                else {
+                                                    var status = checkValueInArrayUpdate(this['DCACode'], selecteddcalist);
+                                                    if (status === false) {
+                                                        taxdcaddl.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                                    }
+                                                }
+                                            });
+                                         },
+                                        failure: function (response) {
+                                            alert(data.responseText);
+                                        },
+                                        error: function (response) {
+                                           alert(data.responseText);
+                                        }
+                                    });
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Accounts/GetSubDCAbyDCA",
+                                        data: "{DCACode:'" + currentdca + "'}",
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        success: function (data) {
+                                            $.each(data, function () {
+                                                var dbsdcacode = this['SubDCACode'];
+                                                var taxsdcaddl = currentRow.find("td").eq(3).find("select");
+                                                if (currentsdca == dbsdcacode) {
+                                                    taxsdcaddl.append($("<option selected='selected'></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                                }
+                                                else { taxsdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR'])); }
+                                            });
+                                        },
+                                        failure: function (response) {
+                                              alert(data.responseText);
+                                        },
+                                        error: function (response) {
+                                            alert(data.responseText);
+                                        }
+                                    });
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Accounts/GetClientInvTaxNos",
+                                        data: "{DCACode:'" + currentdca + "',Taxtype:'" + currenttaxtpe + "'}",
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        beforeSend: function () {
+                                            $('#ajax-container').html('');
+                                            addSpinner($('#ajax-container'));
+                                        },
+
+                                        success: function (data) {
+                                            var taxnameddl = currentRow.find("td").eq(4).find("select");
+                                            $.each(data, function () {
+                                                var dbtaxname = this['TaxNoName'];
+                                                if (currenttaxname == dbtaxname) {
+                                                    taxnameddl.append($("<option selected='selected'></option>").val(this['TaxNoID']).html(this['TaxNoName']));
+                                                }
+                                                else { taxnameddl.append($("<option></option>").val(this['TaxNoID']).html(this['TaxNoName'])); }
+                                            });
+                                            removeSpinner($('#ajax-container'), function () {
+                                                $('#ajax-container').html('Content loaded.');
+                                            })
+
+                                        },
+                                        failure: function (response) {
+                                            removeSpinner($('#ajax-container'), function () {
+                                                $('#ajax-container').html('Content loaded.');
+                                            })
+
+                                            alert(data.responseText);
+                                        },
+                                        error: function (response) {
+                                            removeSpinner($('#ajax-container'), function () {
+                                                $('#ajax-container').html('Content loaded.');
+                                            })
+
+                                            alert(data.responseText);
+                                        }
+                                    });
+                                    currentRow.find("td").eq(5).find("input[type='text']").val(currentamount);
+                                    currentRow.find("td").eq(6).find('input[type="checkbox"]').prop("checked", true);
+                                }
+                            });
+                        }
+                        CountInvoiceTotal();
+                    }
+                    else {
+                        var rowno = i + 1;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center"  class="hidden">' + rowno + '</td>';
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle ctaxtype" id="ddlCTaxType"  onchange="ClientTaxTypeChange(this)">';
+                        cols += '<option selected="selected" value="Select">-Select-</option>';
+                        cols += '<option value="Creditable">Creditable</option>';
+                        cols += '<option value="Non-Creditable">Non-Creditable</option></select></td>';
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle ctaxdca" id="ddlCTaxDCA" onchange="ClientTaxDCAChange(this)">';
+                        cols += '<option selected="selected" value="Select" >-Select-</option></select></td>';
+                        cols += '<td  style="text-align:center"><select class="form-control dropdown-toggle ctaxsdca" id= ddlCTaxSubDCA"  onchange="ClientTaxSubDCAChange(this)">';
+                        cols += '<option selected="selected" value="Select">-Select-</option></select></td>';
+                        cols += '<td  style="text-align:center"><select class="form-control dropdown-toggle ctaxname" id="ddlCTaxName">';
+                        cols += '<option selected="selected" value="Select">-Select-</option></select></td>';
+                        cols += '<td style="text-align:center"><input type="text" class="form-control ctaxamount" value="" id="txtclienttaxAmount"  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountInvoiceTotal()"/></td>';
+                        cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox">';
+                        cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkClientTax">';
+                        cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+                        cols += '</label></li></ul></td>';
+                        newRow.append(cols);
+                        $("#ClientTaxTable").append(newRow);
+                        $("#txtInvoiceValue").val('@Model.BasicValue');
+                    }
+                    removeSpinner($('#ajax-container'), function () {
+                        $('#ajax-container').html('Content loaded.');
+                    })
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    removeSpinner($('#ajax-container'), function () {
+                        $('#ajax-container').html('Content loaded.');
+                    })
+
+                    alert("error");
+                }
+            });*@
+            CountInvoiceTotal1();
+        }
+    });
+    function checkValueInArrayUpdate(value, arr) {
+        var status = false;//Not Exist in array
+        for (var i = 0; i < arr.length; i++) {
+            var name = arr[i];
+            if (name == value) {
+                status = true;//Exist  in array
+                break;
+            }
+        }
+        return status;
+    }
+    function CountInvoiceTotal1() {
+        //debugger;
+        var Basic = $("#txtBasicValue").val();
+        var subtotal = 0;
+        var rowtotal = 0;
+
+        //$("#ClientTaxTable tbody tr").each(function () {
+        //    var currentRow = $(this);
+        //    rowtotal = currentRow.find("td").eq(5).find("input[type='text']").val();
+        //    if (rowtotal != "") {
+        //        subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+        //    }
+        //    //else { subtotal = 0;}
+        //});
+        //$("#ClientTaxTable tfoot tr").each(function () {
+        //    var footerRow = $(this);
+        //    foottotal = footerRow.find("td").eq(5).find("input[type='text']").val();
+        //    if (!isNaN(subtotal)) {
+        //        footerRow.find("td").eq(4).html("<b>" + subtotal + "</b>");
+        //    }
+        //    else {
+        //        footerRow.find("td").eq(4).html("");
+        //    }
+        //});
+        //alert($("#gststatecheck").val());
+        var statecheck = '@Model.Statecheck';
+        var gsttotal = 0;
+
+        if (statecheck === "True") {
+            let cgst = $("#txtTaxCGSTSDCAamt").val();
+            let sgst = $("#txtTaxSGSTSDCAamt").val();
+            if (cgst === "") { cgst = 0; }
+            if (sgst === "") { sgst = 0; }
+            gsttotal = parseFloat(cgst) + parseFloat(sgst);
+            if (!isNaN(gsttotal)) {
+                $("#txtTaxTotalGSTSDCAamt").val(gsttotal);
+                subtotal = parseFloat(subtotal) + parseFloat(gsttotal);
+            }
+            //if (!isNaN(Taxsubtotal)) {
+            //    Plus = parseFloat(Plus) + parseFloat(Taxsubtotal);
+            //}
+        }
+        else if (statecheck === "False") {
+
+            let igst = $("#txtTaxIGSTSDCAamt").val();
+            if (igst === "") { igst = 0; }
+            gsttotal = parseFloat(igst);
+
+            if (!isNaN(gsttotal)) {
+                $("#txtTaxTotalGSTSDCAamt1").val(gsttotal);
+                subtotal = parseFloat(subtotal) + parseFloat(gsttotal);
+            }
+            //if (!isNaN(Taxsubtotal)) {
+            //    Plus = parseFloat(Plus) + parseFloat(Taxsubtotal);
+            //}
+
+
+        }
+
+
+        var total = 0;
+        if (Basic !== "") {
+            total = parseFloat(subtotal) + parseFloat(Basic);
+        }
+        if (subtotal !== 0) {
+            total = parseFloat(subtotal) + parseFloat(Basic);
+
+        }
+        if (!isNaN(total)) {
+            $("#txtInvoiceValue").val(total.toFixed(2));
+        }
+        else {
+            $("#txtInvoiceValue").val("");
+        }
+
+    }
+</script>

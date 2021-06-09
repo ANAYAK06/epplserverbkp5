@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "BasicBusinessInfoView";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Company Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div id="divDCABudgetRptDetails">
+                            </div>
+                            <br />
+                            <div id="divcapitalRptDetails">
+                            </div>
+                            <br />
+                            <div id="divpromoterRptDetails">
+                            </div>
+                            <br />
+                            <div id="divshareholderDetails">
+                            </div>                          
+                            <div id="divdirectorDetails">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {        
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/Viewfirminfo',           
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divDCABudgetRptDetails").html(Data);                   
+                }
+                else {
+                    $("#divDCABudgetRptDetails").html('No Data Found');                 
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/Viewcapitalinfo',
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divcapitalRptDetails").html(Data);
+                }
+                else {
+                    $("#divcapitalRptDetails").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });    
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewPromoterinfo',
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divpromoterRptDetails").html(Data);
+                }
+                else {
+                    $("#divpromoterRptDetails").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        }); 
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/Viewshareholderinfo',
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divshareholderDetails").html(Data);
+                }
+                else {
+                    $("#divshareholderDetails").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        }); 
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewDirectorsinfo',
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divdirectorDetails").html(Data);
+                }
+                else {
+                    $("#divdirectorDetails").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        }); 
+    });
+</script>
+
+

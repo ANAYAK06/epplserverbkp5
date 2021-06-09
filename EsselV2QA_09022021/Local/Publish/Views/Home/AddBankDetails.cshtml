@@ -1,0 +1,506 @@
+﻿
+@model EsselTestLocalApplication.Models.AddBankDetails
+@{
+    ViewBag.Title = "AddBankDetails";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Bank Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button class="btn btn1 btn-success" id="btnewBank" onclick="ViewAddNewBankModel()">Add Bank</button>
+                                        <input type="text" value="0" id="txtNBankCreatedby" style="display:none" /> <input id="txtUpRole" type='text' style="display:none" />
+                                        <div id="divBankDetailsGrid">
+                                            @Html.Action("ViewBankGrid", "Home")
+                                        </div>
+                                    </div>
+                                    <div id="AddNewBankModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Create Bank</h4>
+                                                </div>
+                                                <div class="modal-body" style="overflow-x:hidden">
+                                                    <form onsubmit="return false">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.BankName)
+                                                                    @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtBankACName" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.AccountHolderName)
+                                                                    @Html.TextBoxFor(model => model.AccountHolderName, htmlAttributes: new { @class = "form-control", @id = "txtBankACHolderName" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Accountno)
+                                                                    @Html.TextBoxFor(model => model.Accountno, htmlAttributes: new { @class = "form-control", @id = "txtBankACNo", Value = "", @onkeypress = "return IsNumeric(event);" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.AccountType)
+                                                                    @Html.DropDownListFor(model => model.AccountType, new SelectList(Model.BankACTypesList, "AcType", "AcType_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "BankACType", onchange = "BankACTypeChange()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.AccOpeningDate)
+                                                                    @Html.TextBoxFor(model => model.AccOpeningDate, "{0:dd-MMM-yyyy}", new { @id = "txtBankACOpeningDate", @class = "form-control  date-picker", @readonly = "true" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.BalanceAsOn)
+                                                                    @Html.TextBoxFor(model => model.BalanceAsOn, "{0:dd-MMM-yyyy}", new { @id = "txtBankACBalAsOn", @class = "form-control  date-picker", @readonly = "true" })
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Banklocation)
+                                                                    @Html.TextBoxFor(model => model.Banklocation, htmlAttributes: new { @class = "form-control", @id = "txtBankACLocation" })
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.OpeningBalance)
+                                                                    @Html.TextBoxFor(model => model.OpeningBalance, htmlAttributes: new { @class = "form-control", @id = "txtBankACOpeningBalance", Value = "" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.NatureGroupName)
+                                                                    @Html.DropDownListFor(model => model.NatureGroupName, new SelectList(Model.BankNatureOfGroups, "NatureGroupId", "NatureGroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlBankNaturegroup", onchange = "NewBANKNatureofGrpChange()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.MinimumBalance)
+                                                                    @Html.TextBoxFor(model => model.MinimumBalance, htmlAttributes: new { @class = "form-control", @id = "txtBankACMinBal", Value = "" })  @*, onkeypress = "return ValidateAmount(this,event);"*@
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label>Master Group</label>
+                                                                    <select class="form-control dropdown-toggle" id="ddlNewBANKMastergroup" onchange="NewBANKMasterGrpChange()">
+                                                                        <option selected="selected" value="-Please Select-">-Please Select-</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6" id="divBankSubGroup">
+                                                                <div class="form-group">
+                                                                    <label>Sub Group</label>
+                                                                    <select class="form-control dropdown-toggle" id="ddlNewBANKSubgroup">
+                                                                        <option selected="selected" value="-Please Select-">-Please Select-</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="text-right">
+                                                                <input type="submit" class="btn btn1 btn-success" id="btnSubmitBankAc" onclick="SubmitBankDetails()" value="Submit" />
+                                                                <input type="button" class="btn btn1 btn-success" id="btnResetBankAc" onclick="ResetBankDetials()" value="Reset" />
+                                                                <input id='txtRegex' type='text' value="^-?[0-9]*[.]*[0-9]*$" style="display:none;" />
+                                                                <input type="text" hidden="hidden" value="0" id="txtsubgrpbnkexist" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="text-center">
+                                                                <br />
+                                                                <div id="divAddBankDetilsInfoMsg" class="alert alert-danger hidden row">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div id="EditBankModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Edit Bank Details</h4>
+                                                </div>
+                                                <div class="modal-body" style="overflow-x:hidden">
+                                                    <div class="col-md-12">
+                                                        <form onsubmit="return false">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.BankName)
+                                                                        @Html.TextBoxFor(model => model.BankName, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACName", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.AccountHolderName)
+                                                                        @Html.TextBoxFor(model => model.AccountHolderName, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACHolderName", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.Accountno)
+                                                                        @Html.TextBoxFor(model => model.Accountno, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACNo", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.AccountType)
+                                                                        @Html.TextBoxFor(model => model.Accountno, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACType", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.AccOpeningDate)
+                                                                        @Html.TextBoxFor(model => model.AccOpeningDate, "{0:dd-MMM-yyyy}", new { @id = "txtUpBankACOpeningDate", @class = "form-control  date-picker", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.BalanceAsOn)
+                                                                        @Html.TextBoxFor(model => model.BalanceAsOn, "{0:dd-MMM-yyyy}", new { @id = "txtUpBankACBalAsOn", @class = "form-control  date-picker", @readonly = "true" })
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.Banklocation)
+                                                                        @Html.TextBoxFor(model => model.Banklocation, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACLocation" })
+                                                                    </div>
+
+                                                                </div>
+                                                                <div class="col-md-6">
+
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.OpeningBalance)
+                                                                        @Html.TextBoxFor(model => model.OpeningBalance, htmlAttributes: new { @class = "form-control", @id = "txtUpBankACOpeningBalance", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.NatureGroupName)
+                                                                        @Html.TextBoxFor(model => model.NatureGroupName, htmlAttributes: new { @class = "form-control", @id = "txtUpNatureOfGroup", @readonly = "true" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6" id="divupminbal">
+                                                                    <div class="form-group">
+                                                                        @Html.LabelFor(model => model.MinimumBalance)
+                                                                        @Html.TextBoxFor(model => model.MinimumBalance, htmlAttributes: new { @class = "form-control", @id = "txtUpMinBalance" })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <div class="form-group">
+                                                                        <label>Group Name:</label>
+                                                                        <input type="text" class="form-control" readonly="readonly" id="txtUpbankgrpname" />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-3" id="divupbankSubgrp">
+                                                                    <div class="form-group">
+                                                                        <label>Sub Group Name:</label>
+                                                                        <input type="text" class="form-control" readonly="readonly" id="txtUpbanksubgrpname" />
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="text-right">
+                                                                    <input type="submit" class="btn btn1 btn-success" id="btnUpdateBankAc" onclick="UpdateBankDetails()" value="Submit" />
+                                                                    <input type="submit" class="btn btn1 btn-success" id="btnCloseBankAc" onclick="CloseBankAccounts()" value="Submit" />
+                                                                    <input id='txtRegex1' type='text' value="^-?[0-9]*[.]*[0-9]*$" style="display:none;" />
+                                                                    <input id='txtUpbankid' type='text' style="display:none;" />
+                                                                    <input type="hidden" id="txtbankGroupid" />
+                                                                    <input type="hidden" id="txtbankSubGroupid" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="text-center">
+                                                                    <br />
+                                                                    <div id="divUpBankDetilsInfoMsg" class="alert alert-danger hidden row">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div id="divCloseAccount"></div>*@
+                                    <div class="modal fade" id="divCloseAccountModel" role="dialog" data-backdrop="static" data-keyboard="false">
+
+                                    </div>
+
+                                    <div id="NotifyCloseMsgModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-lg">
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <br />
+                                                    <div id="NotBankMsg" style="text-align:center;font-size:20px;color:forestgreen"></div>
+                                                    <br />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtNBankCreatedby").val(Sessioncreated);
+        var SessionRole = '@Session["Role"]';
+        $("#txtUpRole").val(SessionRole);
+
+        $("#txtBankACOpeningDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtBankACBalAsOn").datepicker("option", "minDate", selectedDate);
+            }
+        }).datepicker("setDate", new Date());
+
+        $("#txtBankACBalAsOn").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday'
+        }).datepicker("setDate", new Date());
+
+        $("#txtBankACOpeningBalance").keypress(function (event) {
+            debugger;
+            var type = $("#BankACType option:selected").index();
+            if (type == 1 || type == 3) {
+                $("#divAddBankDetilsInfoMsg").text("");
+                $("#divAddBankDetilsInfoMsg").addClass("hidden");
+                if (event.keyCode != 8 && event.keyCode == 189) {
+                    var regex = new RegExp($('#txtRegex').val());
+                    var InputValue = String.fromCharCode(!event.keyCode ? event.which : event.keyCode);
+                    var key = $(this).val();
+                    key = key + InputValue;
+                    if (!regex.test(key)) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+            }
+            else if (type ==2) {
+                $("#divAddBankDetilsInfoMsg").text("");
+                $("#divAddBankDetilsInfoMsg").addClass("hidden");
+
+                var charCode = (event.which) ? event.which : event.keyCode
+                if (charCode == 46) {
+                    if (this.value.indexOf(".") < 0)
+                        return true;
+                    else
+                        return false;
+                }
+                if (this.value.indexOf(".") > 0) {
+                    var txtlen = this.value.length;
+                    var dotpos = this.value.indexOf(".");
+                    if ((txtlen - dotpos) > 2)
+                        return false;
+                }
+
+                if (charCode > 31 && (charCode < 48 || charCode > 57))
+                    return false;
+
+                return true;
+            }
+            else {
+                var finalerror = "<div style='align:center'><p>Please select Account Type</p>";
+                $("#divAddBankDetilsInfoMsg").text("");
+                $("#divAddBankDetilsInfoMsg").append(finalerror + "</div>");
+                $("#divAddBankDetilsInfoMsg").addClass("alert-danger");
+                $("#divAddBankDetilsInfoMsg").removeClass("hidden alert-success");
+                //alert("please select account type");
+                event.preventDefault();
+
+            }
+
+        });
+        $("#txtBankACOpeningBalance").on('keyup', function () {
+            var type = $("#BankACType option:selected").index();
+            if (type == 1) {
+                if (!isNumberKey(this.value)) {
+                    $(this).val(function (index, value) {
+                        return value.substr(0, value.length - 1);
+                    });
+                }
+            }
+        });
+
+        $("#txtBankACMinBal").keypress(function (event) {
+            var type = $("#BankACType option:selected").index();
+            if (type == 1 || type == 3) {
+                $("#divAddBankDetilsInfoMsg").text("");
+                $("#divAddBankDetilsInfoMsg").addClass("hidden");
+                if (event.keyCode != 8 && event.keyCode == 189) {
+                    var regex = new RegExp($('#txtRegex').val());
+                    var InputValue = String.fromCharCode(!event.keyCode ? event.which : event.keyCode);
+                    var key = $(this).val();
+                    key = key + InputValue;
+                    if (!regex.test(key)) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+            }
+            else if (type == 2) {
+                $("#divAddBankDetilsInfoMsg").text("");
+                $("#divAddBankDetilsInfoMsg").addClass("hidden");
+
+                var charCode = (event.which) ? event.which : event.keyCode
+                if (charCode == 46) {
+                    if (this.value.indexOf(".") < 0)
+                        return true;
+                    else
+                        return false;
+                }
+                if (this.value.indexOf(".") > 0) {
+                    var txtlen = this.value.length;
+                    var dotpos = this.value.indexOf(".");
+                    if ((txtlen - dotpos) > 2)
+                        return false;
+                }
+
+                if (charCode > 31 && (charCode < 48 || charCode > 57))
+                    return false;
+
+                return true;
+            }
+            else {
+                var finalerror = "<div style='align:center'><p>Please select Account Type</p>";
+                $("#divAddBankDetilsInfoMsg").text("");
+                $("#divAddBankDetilsInfoMsg").append(finalerror + "</div>");
+                $("#divAddBankDetilsInfoMsg").addClass("alert-danger");
+                $("#divAddBankDetilsInfoMsg").removeClass("hidden alert-success");
+                //alert("please select account type");
+                event.preventDefault();
+
+            }
+
+        });
+        $("#txtBankACMinBal").on('keyup', function () {
+            var type = $("#BankACType option:selected").index();
+            if (type == 1) {
+                if (!isNumberKey(this.value)) {
+                    $(this).val(function (index, value) {
+                        return value.substr(0, value.length - 1);
+                    });
+                }
+            }
+        });
+
+        $("#txtUpMinBalance").keypress(function (event) {
+            var type = $("#txtUpBankACType").val();
+            if (type == "Over Draft" || type == "Current") {
+                $("#divUpBankDetilsInfoMsg").text("");
+                $("#divUpBankDetilsInfoMsg").addClass("hidden");
+                if (event.keyCode != 8 && event.keyCode == 189) {
+                    var regex = new RegExp($('#txtRegex1').val());
+                    var InputValue = String.fromCharCode(!event.keyCode ? event.which : event.keyCode);
+                    var key = $(this).val();
+                    key = key + InputValue;
+                    if (!regex.test(key)) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+
+            }
+            else {
+                $("#divUpBankDetilsInfoMsg").text("");
+                $("#divUpBankDetilsInfoMsg").addClass("hidden");
+
+                var charCode = (event.which) ? event.which : event.keyCode
+                if (charCode == 46) {
+                    if (this.value.indexOf(".") < 0)
+                        return true;
+                    else
+                        return false;
+                }
+                if (this.value.indexOf(".") > 0) {
+                    var txtlen = this.value.length;
+                    var dotpos = this.value.indexOf(".");
+                    if ((txtlen - dotpos) > 2)
+                        return false;
+                }
+
+                if (charCode > 31 && (charCode < 48 || charCode > 57))
+                    return false;
+
+                return true;
+            }
+
+        });
+        $("#txtUpMinBalance").on('keyup', function () {
+            var type = $("#txtUpBankACType").val();
+            if (type == "Over Draft") {
+                if (!isNumberKey(this.value)) {
+                    $(this).val(function (index, value) {
+                        return value.substr(0, value.length - 1);
+                    });
+                }
+            }
+        });
+    });
+    function isNumberKey(value) {
+       //console.log(value);
+        var regex = /^[+-]?\d*\.?\d{0,2}$/;
+        if (regex.test(value)) {
+            // console.log("true");
+            return true;
+        } else {
+            // console.log("false");
+            return false;
+        }
+    }
+
+</script>

@@ -1,0 +1,475 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.ProfitAndLoss
+
+
+<style>
+    
+
+</style>
+<div class="container col-lg-12" style="background-color: #b7dee8;">
+    <div class="row well well-sm text-center Mainheader"><label style="color:white">ESSEL Projects Pvt Ltd</label></div>
+    <div class="row well well-sm rowgap text-center Mainheader2"><label style="color:white">PROFIT AND LOSS ACCOUNT</label></div>
+    <div class="row rowgap"><label>For the Period Ended @Model.PeriodEndDate </label></div>
+    <div class="well well-sm row " style=" background-color: #0a5ea7;color:#fff !important;">
+        <div class="col-lg-2 text-center"><label class="header2">EXPANDITURE </label></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center"><label class="header2">RS. </label></div>
+        <div class="col-lg-2 text-center"><label class="header2">INCOME </label></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center"><label class="header2">RS. </label></div>
+
+    </div>
+
+    @*<div class="well well-sm row" style=" background-color: #e6b9b8;"><table style="width:100%"><tr><td class="lefttd">EXPANDITURE</td><td class="righttd" style="text-align:left !important">RS.</td><td class="lefttd">INCOME</td><td class="righttd" style="text-align:center !important">RS.</td></tr></table></div>*@
+
+    <div class="row">
+        <div class="col-lg-6 small-box">
+            @*Direct Expense*@
+            <div id="jstreeDirectExpense" ></div>
+        </div>
+        <div class="col-lg-6 small-box">
+            @*Direct Income*@
+            <div id="jstreeDirectIncome" ></div>
+        </div>
+
+    </div>
+    <div class="row totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">
+        @Model.TotalExpense
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">@Model.TotalIncome</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2 text-center">
+            @if (Model.GrossProfit != 0)
+            {
+                <label>GROSS PROFIT</label>
+            }
+        </div>
+        <div class="col-lg-2 "></div>
+        <div class="col-lg-2 text-center">
+            @if (Model.GrossProfit != 0)
+            {@Model.GrossProfit
+
+        }
+        </div>
+        <div class="col-lg-2  text-center">
+            @if (Model.GrossLoss != 0)
+            {
+                <label>GROSS LOSS</label>
+            }
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">
+            @if (Model.GrossLoss != 0)
+            {
+                @Model.GrossLoss
+            }
+        </div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">  @Model.FinalTotalDirectExpense</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center"> @Model.FinalTotalDirectIncome</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+    <div class="row  totalcls" style="margin-bottom:20px;">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 small-box">
+            @*Direct Expense*@
+            <div id="jstreeInDirExpense" class="row"></div>
+        </div>
+        <div class="col-lg-6 small-box">
+            @*Direct Income*@
+            <div id="jstreeInDireIncome" class="row"></div>
+        </div>
+    </div>
+    <div class="row totalcls" >
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">@Model.TotalNetExpnse</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">@Model.TotalNetIncome</div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2  text-center">
+            @if (Model.NetProfit != 0)
+            {
+                <label>NET PROFIT</label>
+            }
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">
+            @if (Model.NetProfit != 0)
+            {@Model.NetProfit
+
+        }
+        </div>
+        <div class="col-lg-2  text-center">
+            @if (Model.NetLoss != 0)
+            {
+                <label>NET LOSS</label>
+            }
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">
+            @if (Model.NetLoss != 0)
+            {
+                @Model.NetLoss
+            }
+        </div>
+    </div>
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">  @Model.FinalTotalInDirectExpense</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center"> @Model.FinalTotalInDirectIncome</div>
+    </div>
+
+    <div class="row  totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">-------------------------</div>
+    </div>
+    <div class="row totalcls">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">--------------------------</div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 text-center">--------------------------</div>
+    </div>
+
+
+
+    <div class="modal fade" id="ModelPLLedgerDetails" role="dialog" data-backdrop="static" data-keyboard="false" >
+
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Ledger Details</h4>
+                </div>
+                <div class="modal-body" style="overflow-x:hidden">                   
+                        
+                            <div id="divLedgerRptDetails">
+                         
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+                <p>Some text in the modal.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+    <input type="hidden" id="txtPLfromdate" value="@Model.FromDate" />
+    <input type="hidden" id="txtPLtodate" value="@Model.ToDate" />
+    <input type="hidden" id="txtPLFromYear" value="@Model.FromYear" />
+    <input type="hidden" id="txtPLToYear" value="@Model.ToYear" />
+    <input type="hidden" id="txtPLYear" value="@Model.Year" />
+  
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        //************ Direct Expense**********************
+
+        $("#jstreeDirectExpense").jstree({
+            plugins: ["grid", "dnd", "contextmenu", "sort", "types"],
+            core: {
+                data: @Html.Raw(Json.Encode(Model.DirectExpenseTreeData)),
+                "themes": {
+                    "icons": false,
+                    'name': 'proton',
+                    'responsive': true
+                }
+            },
+            // configure tree table
+            grid: {
+                columns: [
+                    { width: '300px', },
+                    { width: '100px', value: "ChildPrice", cellClass: "Pricecls" },
+
+                    { width: '120px', value: "Price" },
+                ],
+                resizable: true,
+            },
+
+        });
+
+        //show popup for ledgers
+        $("#jstreeDirectExpense").on("select_node.jstree",
+            function (evt, data) {
+                //debugger;
+                //alert(data);
+               // console.log(data.node.original);
+                //console.log(data.node.original.ntype);
+                if (data.node.original.ntype == 'Ledger') {
+                    //console.log(data.node.original.LedgerID)
+                   
+                    var Ledger = data.node.original.text;
+                    var LId = data.node.original.LedgerID;
+                    var fromdate = $("#txtPLfromdate").val();
+                    var todate = $("#txtPLtodate").val();
+
+                    //var yearArr = Year.toString().split('-');
+                    var Currentyear = $("#txtPLFromYear").val();
+                    var Nextyear = $("#txtPLToYear").val();
+
+                    var year = $("#txtPLYear").val();
+                    
+
+                    ShowProfitLossLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year);
+                   
+                }
+
+                }
+
+
+        );
+
+        //************ inDirect Expense**********************
+        $("#jstreeInDirExpense").jstree({
+            plugins: ["grid", "dnd", "contextmenu", "sort", "types"],
+            core: {
+                data: @Html.Raw(Json.Encode(Model.InDirectExpenseTreeData)),
+                "themes": {
+                    "icons": false,
+                    'name': 'proton',
+                    'responsive': true
+                }
+            },
+            // configure tree table
+            grid: {
+                columns: [
+                    { width: '300px', },
+                    { width: '100px', value: "ChildPrice", cellClass: "Pricecls" },
+
+                    { width: '120px', value: "Price" },
+                ],
+                resizable: true,
+            },
+
+        });
+        //show popup for ledgers
+        $("#jstreeInDirExpense").on("select_node.jstree",
+            function (evt, data) {
+                //debugger;
+                //alert(data);
+                // console.log(data.node.original);
+                //console.log(data.node.original.ntype);
+                if (data.node.original.ntype == 'Ledger') {
+                    //console.log(data.node.original.LedgerID)
+
+                    var Ledger = data.node.original.text;
+                    var LId = data.node.original.LedgerID;
+                    var fromdate = $("#txtPLfromdate").val();
+                    var todate = $("#txtPLtodate").val();
+
+                    //var yearArr = Year.toString().split('-');
+                    var Currentyear = $("#txtPLFromYear").val();
+                    var Nextyear = $("#txtPLToYear").val();
+
+                    var year = $("#txtPLYear").val();
+
+
+                    ShowProfitLossLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year);
+
+                }
+
+            }
+        );
+
+        //************ Direct Income**********************
+        $("#jstreeDirectIncome").jstree({
+            plugins: ["grid", "dnd", "contextmenu", "sort", "types"],
+            core: {
+                data: @Html.Raw(Json.Encode(Model.DirectIncomeTreeData)),
+                "themes": {
+                    "icons": false,
+                    'name': 'proton',
+                    'responsive': true
+                }
+            },
+            // configure tree table
+            grid: {
+                columns: [
+                    { width: '300px', },
+                    { width: '100px', value: "ChildPrice", cellClass: "Pricecls" },
+
+                    { width: '120px', value: "Price" },
+                ],
+                resizable: true,
+            },
+
+        });
+
+        //show popup for ledgers
+        $("#jstreeDirectIncome").on("select_node.jstree",
+            function (evt, data) {
+                //debugger;
+                //alert(data);
+                // console.log(data.node.original);
+                //console.log(data.node.original.ntype);
+                if (data.node.original.ntype == 'Ledger') {
+                    //console.log(data.node.original.LedgerID)
+
+                    var Ledger = data.node.original.text;
+                    var LId = data.node.original.LedgerID;
+                    var fromdate = $("#txtPLfromdate").val();
+                    var todate = $("#txtPLtodate").val();
+
+                    //var yearArr = Year.toString().split('-');
+                    var Currentyear = $("#txtPLFromYear").val();
+                    var Nextyear = $("#txtPLToYear").val();
+
+                    var year = $("#txtPLYear").val();
+
+
+                    ShowProfitLossLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year);
+
+                }
+
+            }
+        );
+
+        //************InDirect Income**********************
+        $("#jstreeInDireIncome").jstree({
+            plugins: ["grid", "dnd", "contextmenu", "sort", "types"],
+            core: {
+                data: @Html.Raw(Json.Encode(Model.InDirectIncomeTreeData)),
+                "themes": {
+                    "icons": false,
+                    'name': 'proton',
+                    'responsive': true
+                }
+            },
+            // configure tree table
+            grid: {
+                columns: [
+                    { width: '300px', },
+                    { width: '100px', value: "ChildPrice", cellClass: "Pricecls" },
+
+                    { width: '120px', value: "Price" },
+                ],
+                resizable: true,
+            },
+
+        });
+
+
+        //show popup for ledgers
+        $("#jstreeInDireIncome").on("select_node.jstree",
+            function (evt, data) {
+                //debugger;
+                //alert(data);
+                // console.log(data.node.original);
+                //console.log(data.node.original.ntype);
+                if (data.node.original.ntype == 'Ledger') {
+                    //console.log(data.node.original.LedgerID)
+
+                    var Ledger = data.node.original.text;
+                    var LId = data.node.original.LedgerID;
+                    var fromdate = $("#txtPLfromdate").val();
+                    var todate = $("#txtPLtodate").val();
+
+                    //var yearArr = Year.toString().split('-');
+                    var Currentyear = $("#txtPLFromYear").val();
+                    var Nextyear = $("#txtPLToYear").val();
+
+                    var year = $("#txtPLYear").val();
+
+
+                    ShowProfitLossLedgerModel(LId, fromdate, todate, Currentyear, Nextyear, Ledger, year);
+
+                }
+
+            }
+        );
+
+    });
+
+
+    </script>

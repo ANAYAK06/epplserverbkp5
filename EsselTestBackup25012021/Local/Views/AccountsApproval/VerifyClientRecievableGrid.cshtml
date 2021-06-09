@@ -1,0 +1,167 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.ClientRecievables>
+<div class="table-responsive">
+    <table id="tblApproveClientRecGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">BankTransactionId</th>
+                <th>Purchase Order No</th>
+                <th>InvoiceNo</th>
+                @*<th>TransactionDate</th>*@
+                <th>Amount</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.BankTransactionId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PONo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InvoiceNo)
+                    </td>
+                    @*<td>
+                            @Html.DisplayFor(modelItem => item.TransactionDate)
+                        </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveclientrecGrid = null;
+            InitializeApprClientGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+              var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+            $("#txtAppClRecCreatedby").val(Sessioncreated);
+        });
+    function InitializeApprClientGrid() {
+        ApproveclientrecGrid = $('#tblApproveClientRecGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false, 
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(5)', row).html();
+               // alert(oldstatus.trim() === '0');
+                if (oldstatus.trim() === '0') {
+                  
+                    $('td:eq(5)', row).html("Return"); 
+                }
+                else { $('td:eq(5)', row).html("Verification Pending");}
+            },
+            pageLength: 10
+        });
+        $('#tblApproveClientRecGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveclientrecGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveclientrecGrid, tr);
+                // Open this row
+                row.child(formatApprClientRec(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+        function closeOpenedRows(table, selectedRow) {
+            $.each(openRows, function (index, openRow) {
+                // not the selected row!
+                if ($.data(selectedRow) !== $.data(openRow)) {
+                    var rowToCollapse = table.row(openRow);
+                    rowToCollapse.child.hide();
+                    openRow.removeClass('shown');
+                    // replace icon to expand
+                    //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                    // remove from list
+                    var index = $.inArray(selectedRow, openRows);
+                    openRows.splice(index, 1);
+                }
+            });
+        }
+    }
+    function formatApprClientRec(d) {
+        var htmltext;
+        var TransactionId,status;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    TransactionId = value;
+                if (index == 5)
+                    status = value;
+            });
+        var divid = "divapprclientrec" + TransactionId;
+        var divid1 = $("#" + divid + "");
+        $("#currentClRectransid").val(TransactionId);
+        
+        if (status != 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyClientRecievableView',
+                data: { TransId: TransactionId },
+                success: function (Data) {
+               
+                    var divid2 = "divapprclientrec" + TransactionId;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);        
+                  
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                }
+            });
+        }
+        if (status == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/UpdateClientRecievableView',
+                data: { TransId: TransactionId },
+                success: function (Data) {                
+                    var divid2 = "divapprclientrec" + TransactionId;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+               
+                   
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+
+        }
+        return '<div id="divapprclientrec' + TransactionId + '" ></div>';
+        }
+</script>
+

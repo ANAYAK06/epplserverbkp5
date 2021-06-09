@@ -1,0 +1,171 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.GSTReport
+@{
+    ViewBag.Title = "ViewGSTReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View GST Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.FromDate)
+                                        @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ToDate)
+                                        @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttoDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.GSTno)
+                                        @Html.DropDownListFor(model => model.GSTno, new SelectList(Model.GSTList, "GSTID", "GSTText"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgstnos" })
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Searchby)
+                                        @Html.DropDownListFor(model => model.Searchby, new SelectList(Model.GSTtypeList, "GSTTypeID", "GSTTypeText"), htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlgsttype" })
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    </br>
+                                    <input type="submit" value="View" class="btn btn1 btn-success" id="btnviewItems" onclick="SubmitViewItems()" /> @**@
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divGSTDetailsGrid" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divGSTDetailsGrid").addClass('hidden');      
+        $("#txtfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txttoDate").datepicker("option", "minDate", selectedDate);
+            },
+        }).datepicker("setDate", "");
+        $("#txttoDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", "");
+    });   
+    function SubmitViewItems() {
+        isValid = true;
+        var errorMsg = "";      
+        var GSTid = $("#ddlgstnos option:selected").index();
+        var Fromdate = $("#txtfromDate").val();
+        var Todate = $("#txttoDate").val();
+        var GSTtype = $("#ddlgsttype option:selected").index();
+        if (Fromdate == "") {
+            $("#divGSTDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (Todate == "") {
+            $("#divGSTDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }       
+        if (GSTid == 0) {
+            $("#divGSTDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select GST No</p>";
+            isValid = false;
+        }
+        if (GSTtype == 0) {
+            $("#divGSTDetailsGrid").addClass('hidden');
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Search By</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            debugger;
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+            var gstindex = $("#ddlgstnos option:selected").index();
+            var gstval = $("#ddlgstnos option:selected").val();
+            var gsttype = $("#ddlgsttype option:selected").val();
+            var FromDate = $("#txtfromDate").val();
+            var ToDate = $("#txttoDate").val();
+            var Type = "View";
+            if (gstindex != 0) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Reports/GSTDetailedReport",
+                    data: { FromDate: FromDate, ToDate: ToDate, Type: gsttype, Gst: gstval },
+                    dataType: 'html',
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divGSTDetailsGrid").html(response);
+                            var currentrowcount2 = $("#tblGSTItemsGrid tbody tr").length;
+                            if (currentrowcount2 > 0) {
+                                $("#divGSTDetailsGrid").removeClass('hidden');
+                            }
+                            else {
+                                $("#divGSTDetailsGrid").html('No Data Found');
+                                $("#divGSTDetailsGrid").removeClass('hidden');
+                            }
+                        }
+                        else {
+                            $("#divGSTDetailsGrid").html('No Data Found');
+                            $("#divGSTDetailsGrid").removeClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divGSTDetailsGrid").addClass("hidden");
+                //alert("Select Cost Center");
+                return false;
+            }
+        }
+
+    }
+</script>
+

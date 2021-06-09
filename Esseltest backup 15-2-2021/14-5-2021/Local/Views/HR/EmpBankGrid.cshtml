@@ -1,0 +1,199 @@
+﻿@model List<EsselTestLocalApplication.Models.BankDetails>
+@{
+    /**/
+
+    WebGrid webGrid = new WebGrid(source: Model, canPage: false, canSort: false);
+}
+<style type="text/css">
+    body {
+        font-family: Arial;
+        font-size: 10pt;
+    }
+
+    .Grid {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        .Grid th {
+            background-color: #F7F7F7;
+            font-weight: bold;
+            text-align: center
+        }
+
+        .Grid th, .Grid td {
+            padding: 5px;
+            width: 150px;
+            border: 1px solid #ccc;
+            text-align: center
+        }
+
+        .Grid, .Grid table td {
+            border: 0px solid #ccc;
+        }
+
+            .Grid th a, .Grid th a:visited {
+                color: #333;
+            }
+
+    a.btn {
+        border-radius: .25rem;
+        border: 1px solid gray;
+        padding: .5rem 1rem;
+        color: #fff;
+        background-color: #5cb85c;
+    }
+
+        a.btn:hover {
+            border-radius: .25rem;
+            color: #fff;
+        }
+
+    .hidden-column {
+        display: none;
+    }
+</style>
+<div class="col-md-12">
+    <br />
+    @webGrid.GetHtml(
+           htmlAttributes: new { @id = "WebGrid", @class = "Grid" },
+           columns: webGrid.Columns(
+                    webGrid.Column(format: @<span class="label" style="color:#000;display:none">@item.Bank_Id</span>, style: "hidden-column", canSort: true),
+                            webGrid.Column(header: "Bank", format: @<span>
+                                <span class="label" style="color:#000">@item.Bank_Name</span>
+                                <input class="text form-control" type="text" value="@item.Bank_Name" style="display:none" />
+                            </span>, style: "Bank"),
+                                    webGrid.Column(format:@<span class="link">
+                                        <a class="Edit btn" href="javascript:;">Edit</a>
+                                        <a class="Update btn" href="javascript:;" style="display:none">Update</a>
+                                        <a class="Cancel btn" href="javascript:;" style="display:none">Cancel</a>
+                                    </span>)
+                                                 )
+                                                 )
+</div>
+
+<script>
+    $(document).ready(function () {
+
+          });
+        //$($('#WebGrid tr:first th')[1]).addClass('hidden-sm');
+        (function () {
+            $('#WebGrid tbody tr:first').find('td.hidden-column').each(function (i, td) {
+                var indexOfHiddenColumn = $(td).index();
+                $('#WebGrid thead th').eq(indexOfHiddenColumn).addClass('hidden-column');
+            });
+        }());
+
+        $("body").on("click", "#WebGrid TBODY .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    $(this).find(".text").show();
+                    $(this).find(".label").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            $(this).hide();
+        });
+
+        //Update event handler.
+        $("body").on("click", "#WebGrid TBODY .Update", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    var span = $(this).find(".label");
+                    var input = $(this).find(".text");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").hide();
+            row.find(".Cancel").hide();
+            row.find(".Update").show();
+            isValid = true;
+            var errorMsg = "";
+
+            //let interest = row.find(".InterestRate").find(".label").html();
+            let BankName = row.find(".Bank").find(".label").html();
+
+            if (BankName === "" ) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Bank Name</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAddBankInfoMsg").text("");
+                $("#divAddBankInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAddBankInfoMsg").addClass("alert-danger");
+                $("#divAddBankInfoMsg").removeClass("hidden alert-success");
+
+
+            }
+            else {
+                $("#divAddBankInfoMsg").text("");
+                $("#divAddBankInfoMsg").addClass("hidden");
+                var NewBank = {};
+                NewBank.Bankid = row.find(".hidden-column").find(".label").html();
+                NewBank.BankName = row.find(".Bank").find(".label").html();
+                NewBank.Action = 'Update';
+                addFailMsg = "Error Occurred While Adding";
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/SaveEmployeeBank',
+                    data: JSON.stringify({ bank: NewBank  }),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (Data) {
+                        if (Data.saveStatus == "Submited") {
+                          
+                            RebindBindBankGridAfterupdate();
+                            $("#divAddBankInfoMsg").text("");
+                            $("#divAddBankInfoMsg").addClass("hidden");
+                            // ClearFields();
+                            RebindBanks();
+                        }
+                        else {
+                            $("#divAddBankInfoMsg").text(Data.saveStatus);
+                            $("#divAddBankInfoMsg").addClass("alert-danger");
+                            $("#divAddBankInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divAddBankInfoMsg").text(addFailMsg);
+                        $("#divAddBankInfoMsg").addClass("alert-danger");
+                        $("#divAddBankInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Home/UpdateCustomer",
+                //    data: '{customer:' + JSON.stringify(customer) + '}',
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (Data) {
+                //        alert(Data.saveStatus);
+                //    },
+                //});
+            }
+        });
+
+        //Cancel event handler.
+        $("body").on("click", "#WebGrid TBODY .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find(".text").length > 0) {
+                    var span = $(this).find(".label");
+                    var input = $(this).find(".text");
+                    input.val(span.html());
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+</script>

@@ -1,0 +1,160 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.Holidays>
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+@{
+    ViewBag.Title = "HolidaysGrid";
+    //Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@*<div>grid</div>*@
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblHolidayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th>Holiday Type</th>
+                    <th>Holiday Name</th>
+                    <th>Holiday Date</th>                   
+                    <th>States</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.HolidayType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.HolidayName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.HolidayDate)
+                    </td>
+
+                    <td>
+                        @if (item.SelectedState.Count > 0)
+                        {
+                            <ol>
+                                @foreach (var cc in item.SelectedstateDetails)
+                                {
+                                    <li>@Html.DisplayFor(CC => cc.State_Name)</li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <label>All</label>
+
+                        }
+
+                    </td>
+                    <td>
+                     @if (item.pastDate != 1)
+                     {
+
+                        <input type="button" class="deleteholiday btn btn-md btn-danger" value="Delete">
+                     }
+
+                    @*<select class="form-control dropdown-toggle" id="ddlHolidaygridaction" onchange="HolidayActionChange(@serializer.Serialize(item),this)">
+            <option selected="selected" value="Select">Select</option>
+
+            <option value="D">Delete</option>
+        </select>*@
+
+                    </td>
+
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            var holidayGrid = null;
+            InitializeHolidayGrid();
+
+            $("#tblHolidayGrid").on("click", ".deleteholiday", function (event) {           
+                var row = $(this).closest("tr");
+                var holidayname = $.trim(row.find("td").eq(1).html());  
+                var date = $.trim(row.find("td").eq(2).html());  
+                addFailMsg = "Error Occurred While Deleting.";          
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/DeleteHolidays',
+                    data: { Holidayname: holidayname, Holidaydate: date},
+                    success: function (Data) {
+                        //alert("Hi");
+                        if (Data.saveStatus === "Deleted") {
+                            row.remove();  
+                            ClearHolidayData();
+                        }
+                        else {
+                            $("#divHolidayInfoMsg").text(addFailMsg);
+                            $("#divHolidayInfoMsg").addClass("alert-danger");
+                            $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                        }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divHolidayInfoMsg").text(addFailMsg);
+                        $("#divHolidayInfoMsg").addClass("alert-danger");
+                        $("#divHolidayInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+               
+            });
+
+            $("#tblHolidayGrid").on("click", ".editholiday", function (event) {
+                var row = $(this).closest("tr");
+                var holidayname = $.trim(row.find("td").eq(1).html());
+                var holidayname = $.trim(row.find("td").eq(1).html());
+
+                $("#txtMinWageEffectiveDate").datepicker("setDate", 'dateToday');
+                $('#txtHolidayDate').val("");
+                $('#txtHolidayName').val("");
+                $("#ddlHolidayType").prop('selectedIndex', 0);
+                $('#ddlMultiStateName').multiselect("deselectAll", false).multiselect("refresh");
+            });
+
+        });
+        function InitializeHolidayGrid() {
+            holidayGrid = $('#tblHolidayGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Holidays Found"
+                },
+                "createdRow": function (row, data, index) {
+                    //debugger;
+                    //var currentdate = new Date().toDateString("dd-MM-yyyy");
+                    ////var currentdate1 = currentdate.toDateString("dd-M-yy");//G
+                    //var holidaydate = $('td:eq(2)', row).html();
+                    //var hdate = new Date(holidaydate).toDateString("dd-MM-yyyy");
+                   
+                    //console.log('holidaydate:' + hdate + '====currentdate:' + currentdate);      
+                   
+                    //if (hdate <currentdate) {
+                    //    console.log(hdate < currentdate);
+                    //    $('td:eq(4)', row).find("input").attr('disabled', true);
+
+                    //}
+                },
+                pageLength: 10
+            });
+        }
+    </script>
+}
+

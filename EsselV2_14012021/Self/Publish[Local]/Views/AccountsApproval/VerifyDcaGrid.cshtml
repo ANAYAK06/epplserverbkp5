@@ -1,0 +1,200 @@
+﻿@model List<EsselTestLocalApplication.Models.BasicDCADetails>
+@Scripts.Render("~/Scripts/bootstrap-multiselect.js")
+@Scripts.Render("~/Scripts/bootstrap.min.js")
+@Styles.Render("~/Content/bootstrap-multiselect/bootstrap-multiselect.css")
+<div class="table-responsive">
+    <table id="tblApproveDcaGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">DCAId</th>
+                <th>Account Head Code</th>
+                <th>Account Head Name</th>
+                <th class="hidden">IT Code Name</th>
+                <th>Type</th>
+                <th>Account Head Status</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.DCAID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DCACode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DCAName)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.ITCodeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DCATypeID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DCAStatus)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+       $(document).ready(function () {
+            var ApproveDcaGrid = null;
+            InitializeApprDcaGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprDcaCreatedby").val(Sessioncreated);
+            var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+      function InitializeApprDcaGrid() {
+        ApproveDcaGrid = $('#tblApproveDcaGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+                var typeId = $('td:eq(5)', row).html();
+                if (typeId == 1) {
+                    $('td:eq(5)', row).html("General");
+                }
+                else { $('td:eq(5)', row).html("Tax"); }
+                var oldstatus = $('td:eq(7)', row).html();
+                    if (oldstatus == 0) {
+                        $('td:eq(7)', row).html("Return ");
+                    }
+                    else { $('td:eq(7)', row).html("Verification Pending");}
+                },
+                pageLength: 10
+            });
+        $('#tblApproveDcaGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveDcaGrid.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // close all previously opened rows
+                    closeOpenedRows(ApproveDcaGrid, tr);
+                    // Open this row
+                    row.child(formatHoldPay(row.data())).show();
+                    tr.addClass('shown');
+                    // store current selection
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatHoldPay(d) {
+        var htmltext;
+        var Dcatypeid, status,Did;
+            $.each(d, function (index, value) {
+                if (index == 7)
+                    status = value;
+                if (index == 5)
+                    Dcatypeid = value;
+                if (index == 1)
+                    Did = value;
+        });
+      //  alert(Did + "--" + Dcatypeid + "---" + status);
+        var divid = "divapprDca" + Did;
+        var divid1 = $("#" + divid + "");
+        $("#currentDcaid").val(Did);
+        if (status == 0) {
+            if (Dcatypeid == 2) {
+                //Update DCaTax
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'html',
+                    url: '/AccountsApproval/EditTaxDCA',
+                    data: { DcaId: Did, Dcatypeid: Dcatypeid },
+                    success: function (Data) {
+                        var divid2 = "divapprDca" + Did;
+                        var divid3 = $("#" + divid2 + "");
+                        $(divid3).html(Data);
+                    
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'html',
+                    url: '/AccountsApproval/EditGeneralDCA',
+                    data: { DcaId: Did, Dcatypeid: Dcatypeid },
+                    success: function (Data) {
+                        var divid2 = "divapprDca" + Did;
+                        var divid3 = $("#" + divid2 + "");
+                        $(divid3).html(Data);
+
+                        $('#addGeneralDCACCtypeMLID').multiselect('rebuild');
+                        $('#addGeneralDCAPaymenttypeMLID').multiselect('rebuild');
+                      
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                        
+                    }
+                });
+            }
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyDcaView',
+                data: { DcaId: Did, Dcatypeid: Dcatypeid },
+                success: function (Data) {
+                    var divid2 = "divapprDca" + Did;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                 
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+
+        }
+        return '<div id="divapprDca' + Did + '" class="col-md-12"></div>';
+        }
+</script>
+

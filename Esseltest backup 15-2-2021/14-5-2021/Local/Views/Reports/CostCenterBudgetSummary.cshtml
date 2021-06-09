@@ -1,0 +1,46 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.CostCenterBudgetSummary
+@{
+    ViewBag.Title = "CostCenterBudgetSummary";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<h2>CostCenterBudgetSummary</h2>
+
+<div class="col-md-9">
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCType)
+                        @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "CCTypeddlID", onchange = "NewCCTypeChange()" })
+                    </div>
+                </div>
+                <div class="col-md-6" id="divNewCCSubType">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubType)
+                        @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "SubTypeddlID" })
+                    </div>
+                </div>
+                <div class="col-md-4" id="divCCYear">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Year)
+                        @*@Html.DropDownListFor(model => model.Year, new SelectList(Model.YearNameList, "CC_FinYear", "CC_FinYear"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Yearddl" })*@
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CostCenterCode)
+                        @Html.DropDownListFor(model => model.CostCenterCode, new SelectList(Model.CostCenterList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "CCCodeddl" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row form-group text-center">
+            <input type="submit" value="Search" class="btn btn-default firmbtns-hover" id="btnSerachCCBudget" />           
+        </div>
+    </form>
+</div>
+

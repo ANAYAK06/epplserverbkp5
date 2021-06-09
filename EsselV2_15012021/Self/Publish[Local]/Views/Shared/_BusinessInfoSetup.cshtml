@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+@{
+    ViewBag.Title = "Business Info Setup";
+}
+<html>
+<head>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/Jquery")
+    @Styles.Render("~/Content/EsselStyles/EsselMasterStyles.css")
+
+
+    <link href="~/Content/Spinner/Spinner.css" rel="stylesheet" />
+    <script src="~/Scripts/Spinner/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/Spinner/main.min.js"></script>
+    <script src="~/Scripts/Spinner/Spinner.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="navbar navbar-fixed-top nav-top-height">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 nav-top-height BusinessInfo-header">
+            <h4>Business Info Setup</h4>
+        </div>
+    </div>
+    <div class="BusinessInfoSidenav">
+        <ul class="nav">
+            <li class="nav-item">@Html.ActionLink("Firm Info", "BasicBusinessInfo", "Home", null, new { @class = "BusinessInfoMenuItems", @id = "businessMenuItemFirmInfo" })</li>
+            <li class="nav-item">@Html.ActionLink("Roles Design", "BusinessInfoRolesDesign", "Home", null, new { @class = "BusinessInfoMenuItems", @id = "businessMenuItemRoleDesign" })</li>
+            <li class="nav-item">@Html.ActionLink("Approval Hierarchy", "BusinessInfoApprovalHierarchy", "Home", null, new { @class = "BusinessInfoMenuItems", @id = "businessMenuItemApprovalHierarchy" })</li>
+            <li class="nav-item">@Html.ActionLink("Role Operations", "BusinessInfoRoleOperations", "Home", null, new { @class = "BusinessInfoMenuItems", @id = "businessMenuItemRoleOperation" })</li>
+            <li class="nav-item">@Html.ActionLink("Add Users", "AddBusinessUsers", "Home", null, new { @class = "BusinessInfoMenuItems", @id = "businessMenuItemAddBusinessUsers" })</li>
+        </ul>
+    </div>
+    <div class="container body-content main-content">
+        @RenderBody()
+    </div>
+    <div class="firm-footer">
+        <br />
+        <hr />
+        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+$(document).ready(function () {    
+    $("a").each(function () {
+        if ((window.location.pathname.indexOf($(this).attr('href'))) > -1) {
+            $(this).addClass('active right-arrow');
+        }
+    });
+ });
+</script>
+
+

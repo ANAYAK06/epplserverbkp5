@@ -1,0 +1,229 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralInvoiceCreation
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="col-md-12">
+    <div class="col-md-12" id="divmaindata">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CostCenter)
+                @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DCACode)
+                @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CreditSubDca)
+                @Html.TextBoxFor(model => model.CreditSubDCACodeName, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DebitSubDca)
+                @Html.TextBoxFor(model => model.DebitSubDCACodeName, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name)
+                @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.InvoiceDate)
+                @Html.TextBoxFor(model => model.InvoiceDate, new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.InvoiceAmount)
+                @Html.TextBoxFor(model => model.InvoiceAmount, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        @*<div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name)
+                @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @readonly = true })
+            </div>
+        </div>*@
+    </div>
+    <div class="col-md-12">
+        <br />
+        <table id="ApprInvtax" style="width:100%;border:1px solid gray">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                    <th style="text-align:center;color:#fff">Action </th>
+                    <th style="text-align:center;color:#fff">Role Name</th>
+                    <th style="text-align:center;color:#fff">Employee </th>
+                    <th style="text-align:center;color:#fff">Remarks </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count2 = 1; }
+                @foreach (var item in Model.ApprovalDatalst)
+                {
+                    <tr>
+                        <th style="text-align:center" class="hidden">count2</th>
+                        @if (count2 == 1)
+                        {
+                            <th style="text-align:center">Created By </th>
+                        }
+                        else
+                        {
+                            <th style="text-align:center">Verified By </th>
+                        }
+                        <th style="text-align:center">@item.Rolename</th>
+                        <th style="text-align:center">@item.Empname </th>
+                        <th style="text-align:center">@item.Remarks </th>
+                    </tr>
+                    count2++;
+                }
+            </tbody>
+        </table>
+        <br />
+    </div>
+    <div class="col-md-12">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                <label>Status</label>
+                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppStatus" })
+
+            </div>
+        </div>
+        <div class="col-md-6 ">
+            <div class="form-group">
+                <label>Notes:</label><br />
+                <textarea rows="3" cols="60" class="form-control" id="AppNote"></textarea>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <br /><br /><button onClick="ApproveGeneralInvoice(@serializer.Serialize(Model))">Submit</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprPayInfoMsg" class="alert alert-danger hidden"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppStatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type'] == 'Return' ) {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                        });
+                    }
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+    });
+
+    function ApproveGeneralInvoice(ModelData) {
+        isValid = true;
+        var errorMsg = "";
+        var desccheckcount = 0;
+
+        var appstatus = $("#AppStatus option:selected").text();
+        retnote = $("#AppNote").val();
+        msg = $("#divApprPayInfoMsg");
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divApprPayInfoMsg").text("");
+            $("#divApprPayInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divApprPayInfoMsg").addClass("alert-danger");
+            $("#divApprPayInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divApprPayInfoMsg").text("");
+            $("#divApprPayInfoMsg").addClass("hidden");
+            var apprData = {
+                InvoiceNo: ModelData.InvoiceNo,
+                CostCenter: ModelData.CostCenter,
+                DCACode: ModelData.DCACode,
+                InvoiceAmount: ModelData.InvoiceAmount,
+                InvoiceDate: ModelData.InvoiceDate,
+                Action: appstatus,
+                ApprovalNote: retnote
+
+            };
+            //debugger;
+            addFailMsg = "Error Occurred While Verification";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/ApproveGeneralInvoice",
+                data: JSON.stringify({ InvData: apprData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+                success: function (response) {
+                    if (response.saveStatus === "Submited") {
+                        $('#ApproveMsgModal').modal('show');
+                        var msg = "<div>" + finalmsg + "</div>";
+                        $("#AppMsg").html(msg);
+                    }
+
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#AppMsg").html(msg1);
+                        $('#ApproveMsgModal').modal('show');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + " </div>";
+                    $("#AppMsg").html(msg);
+                    $('#ApproveMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>
+

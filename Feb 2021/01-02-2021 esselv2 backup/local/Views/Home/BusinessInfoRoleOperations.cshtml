@@ -1,0 +1,186 @@
+﻿@model EsselTestLocalApplication.Models.RoleOperationPermission
+@{
+    ViewBag.Title = "BusinessInfoRoleOperations";
+   //Layout = "~/Views/Shared/_BusinessInfoSetup.cshtml";
+}
+@Scripts.Render("~/bundles/Accounts")
+
+<div class="row">
+    <div class="row">
+        <div class="col-md-3"> </div>
+        <div class="col-md-6">
+            <div class="form-horizontal form-group">
+                <div class="col-md-12 text-center">
+                    @Html.LabelFor(model => model.RoleOperationList, "Role Operations ", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-12 text-center">
+                    @Html.DropDownListFor(model => model.RoleOperationList, new SelectList(Model.RoleOperationList, "MasterOperationID", "MasterOperationDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", onchange = "RoleOperationMasterChange()", @id = "ddlRoleOperationMaster" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"> </div>
+    </div>
+    <br />
+    <div id="divroleoperaiondetails">
+        <div class="col-md-12">
+            <table id="tblRoleOperations" class="hover stripe nowrap example dataTable no-footer" align="center">
+                <thead>
+                    <tr>
+                        <td class="hidden" style="text-align:center">Rowno</td>
+                        <td class="hidden" style="text-align:center">Level</td>
+                        <td class="hidden" style="text-align:center">RoleID</td>
+                        <td class="col-md-2" style="text-align:center">Role</td>
+                        <td class="col-md-1" style="text-align:center">Create</td>
+                        <td class="col-md-1" style="text-align:center">Read</td>
+                        <td class="col-md-1" style="text-align:center">Update</td>
+                        <td class="col-md-1" style="text-align:center">Delete</td>
+                        @*<td class="col-md-1" style="text-align:center">NA</td>*@
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @*@foreach (var role in Model.RoleList)
+                        {
+                            <tr>
+                                <td class="col-md-2">
+                                    <label>@role.RoleDescription</label>
+                                </td>
+                                <td class="col-md-1" style="text-align:center">
+                                    <input type="checkbox" name="" value="">
+                                </td>
+                                <td class="col-md-1" style="text-align:center">
+                                    <input type="checkbox" name="" value="">
+                                </td>
+                                <td class="col-md-1" style="text-align:center">
+                                    <input type="checkbox" name="" value="">
+                                </td>
+                                <td class="col-md-1" style="text-align:center">
+                                    <input type="checkbox" name="" value="">
+                                </td>
+                                <td class="col-md-1" style="text-align:center">
+                                    <input type="checkbox" name="" value="">
+                                </td>
+                            </tr>
+                        }*@
+                </tbody>
+                <tfoot>
+                    <tr>
+                        @*<td></td><td></td><td></td><td></td><td></td>*@
+                    </tr>
+                   
+                </tfoot>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <br/>
+            <div class="col-md-4"></div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <input type="button" class="btn btn1 btn-success" id="AddRoleOperationBtn" value="Add Role Operations" onclick="SubmitRoleOperaion()" />
+                    <input type="button" value="Reset" class="btn btn1 btn-success" onclick="ClearRolePermission()" />
+                    <div id="roleoperation-container"></div>
+                    <input type="hidden" value="0" id="ismasterworkflow"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <br />
+                <div id="divRoleoperationInfoMsg" class="alert alert-danger hidden row">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divroleoperaiondetails").addClass("hidden");
+
+
+      
+        //$('#tblRoleOperations').on('change', '.na', function () {
+        //    var nastatus = $(this).is(":checked");
+        //    var row = $(this).closest('tr');
+        //    var level = row.find(".level").html();
+        //    if (nastatus == true && level != 0) {
+
+        //        row.find(".update").prop('checked', false);
+        //        row.find(".read").prop('checked', false);
+        //        row.find(".delete").prop('checked', false);
+
+
+        //        row.find(".update").prop('disabled', true);
+        //        row.find(".read").prop('disabled', true);
+        //        row.find(".delete").prop('disabled', true);
+        //    }
+        //    else {
+        //        row.find(".update").prop('disabled', false);
+        //        row.find(".read").prop('disabled', false);
+        //        row.find(".delete").prop('disabled', false);
+
+        //    }
+        //});
+        //$('#tblRoleOperations').on('change', '.create', function () {
+        //    var createstatus = $(this).is(":checked");
+        //    var row = $(this).closest('tr');
+        //    var readstaus = row.find(".read").is(":checked");
+        //    var updatestaus = row.find(".update").is(":checked");
+        //    var deletestaus = row.find(".delete").is(":checked");
+        //    if (createstatus == true) {
+        //        row.find(".na").prop('checked', false);
+        //    }
+        //    else if (readstaus == false && updatestaus == false && deletestaus == false ) {
+        //        row.find(".na").prop('checked', true);
+        //    }
+        //});
+        //$('#tblRoleOperations').on('change', '.read', function () {
+        //    var readstatus = $(this).is(":checked");
+        //    var row = $(this).closest('tr');
+        //    var createstaus = row.find(".create").is(":checked");
+        //    var updatestaus = row.find(".update").is(":checked");
+        //    var deletestaus = row.find(".delete").is(":checked");
+        //    if (readstatus == true) {
+        //        row.find(".na").prop('checked', false);
+        //    }
+        //    else if (createstaus == false && updatestaus == false && deletestaus == false) {
+        //        row.find(".na").prop('checked', true);
+        //        row.find(".update").prop('disabled', true);
+        //        row.find(".read").prop('disabled', true);
+        //        row.find(".delete").prop('disabled', true);
+        //    }
+        //});
+        //$('#tblRoleOperations').on('change', '.update', function () {
+        //    var updatestatus = $(this).is(":checked");
+        //    var row = $(this).closest('tr');
+        //    var createstaus = row.find(".create").is(":checked");
+        //    var readstaus = row.find(".read").is(":checked");
+        //    var deletestaus = row.find(".delete").is(":checked");
+        //    if (updatestatus == true) {
+        //        row.find(".na").prop('checked', false);
+        //    }
+        //    else if (createstaus == false && readstaus == false && deletestaus == false) {
+        //        row.find(".na").prop('checked', true);
+        //        row.find(".update").prop('disabled', true);
+        //        row.find(".read").prop('disabled', true);
+        //        row.find(".delete").prop('disabled', true);
+        //    }
+        //});
+        //$('#tblRoleOperations').on('change', '.delete', function () {
+        //    var deletestatus = $(this).is(":checked");
+        //    var row = $(this).closest('tr');
+        //    var createstaus = row.find(".create").is(":checked");
+        //    var readstaus = row.find(".read").is(":checked");
+        //    var updatestatus = row.find(".update").is(":checked");
+        //    if (deletestatus == true) {
+        //        row.find(".na").prop('checked', false);
+        //    }
+        //    else if (createstaus == false && readstaus == false && updatestatus == false) {
+        //        row.find(".na").prop('checked', true);
+        //        row.find(".update").prop('disabled', true);
+        //        row.find(".read").prop('disabled', true);
+        //        row.find(".delete").prop('disabled', true);
+        //    }
+        //});
+
+    });
+</script>

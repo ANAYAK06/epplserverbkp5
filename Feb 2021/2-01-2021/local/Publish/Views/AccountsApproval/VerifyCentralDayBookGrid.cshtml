@@ -1,0 +1,170 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.CentralDayBook>
+<div class="table-responsive w-100">
+    <table id="tblApprovecdbGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>To</th>
+                <th>Remarks</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Rowid)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VoucherDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<div id="ajax-containerC"></div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        //debugger;
+        var ApproveChequeGrid = null;
+            InitializeApprChequeGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprcdbCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtApprcdbRole").val(SessionRole);
+        });
+    function InitializeApprChequeGrid() {
+        ApproveChequeGrid = $('#tblApprovecdbGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+                //var oldstatus = $('td:eq(5)', row).html();
+                //if (oldstatus == 0) {
+                //    $('td:eq(5)', row).html("Return");
+                //}
+                //else { $('td:eq(5)', row).html("Verification Pending"); }
+            },
+                pageLength: 10
+            });
+        $('#tblApprovecdbGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveChequeGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApproveChequeGrid, tr);
+                // Open this row
+                    row.child(formatApprcheque(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+
+    function formatApprcheque(d) {
+        //debugger;
+        var htmltext;
+        var Rid, transstatus;;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Rid = value;
+            if (index == 6)
+                transstatus = value;
+        });
+        var divid = "divapprcdb" + Rid;
+        var divid1 = $("#" + divid + "");
+        $("#currentchequeid").val(Rid);
+        //debugger;
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/UpdatecdbView',
+                data: { Rowid: Rid },
+                success: function (Data) {
+                    removeSpinner($('#ajax-containerC'), function () {
+                        $('#ajax-containerC').html('');
+                    })
+                    var divid2 = "divapprcdb" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    removeSpinner($('#ajax-containerC'), function () {
+                        $('#ajax-containerC').html('');
+                    })
+                    alert("error");
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifycdbView',
+                data: { Rowid: Rid },
+                success: function (Data) {
+                    removeSpinner($('#ajax-containerC'), function () {
+                        $('#ajax-containerC').html('');
+                    })
+                    var divid2 = "divapprcdb" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    removeSpinner($('#ajax-containerC'), function () {
+                        $('#ajax-containerC').html('');
+                    })
+                    alert("error");
+                }
+            });
+        }
+        return '<div id="divapprcdb' + Rid + '"></div>';
+    }
+</script>

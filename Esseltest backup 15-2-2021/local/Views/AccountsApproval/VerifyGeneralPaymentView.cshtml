@@ -1,0 +1,133 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.GeneralPayment
+<div class="col-md-12 ">
+    <br /> 
+           <form onsubmit="return false" >
+               <div class="col-md-12" style="margin-bottom:20px !important">
+                   </div>
+
+                   <div class="col-md-12">
+
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Cost Center Code:</label>
+                               <input type="text" class="form-control" value="@Model.CCCodename" readOnly="readOnly" />
+                           </div>
+                       </div>
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Account Head:</label>
+                               <input type="text" class="form-control" value="@Model.DCACodename" readOnly="readOnly" />
+                           </div>
+                       </div>
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>SubAccount Head:</label>
+                               <input type="text" class="form-control" value="@Model.SubDcaname" readOnly="readOnly" />
+                           </div>
+                       </div>
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Name:</label>
+                               <input type="text" class="form-control" value="@Model.Name" readOnly="readOnly" />
+                           </div>
+                       </div>
+                   </div>
+                   <div class="col-md-12">
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Bank Name:</label>
+                               <input type="text" class="form-control" value="@Model.Bank" readOnly="readOnly" id="ApprholdBank" />
+                           </div>
+                       </div>
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Transaction Number:</label>
+                               <input type="text" class="form-control" value="@Model.Number" readOnly="readOnly" />
+                           </div>
+                       </div>
+
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Transaction Date:</label>
+                               <input type="text" class="form-control" value="@Model.TransactionDate" readOnly="readOnly" id="ApprGenTransDate-@Model.BankTransactionRefNo" />
+                           </div>
+                       </div>
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <label>Transaction Amount:</label>
+                               <input type="text" class="form-control" value="@Model.TransactionAmount" readOnly="readOnly" id="ApprGenCredit" />
+                           </div>
+                       </div>
+                   </div>
+                   <div class="col-md-12">
+                       <div class="col-md-3">
+                           <div class="form-group">
+                               <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                               <label>Status</label>
+                               @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppGenstatus" })
+                               @*<select class="form-control dropdown-toggle" id="AppGenstatus-@Model.BankTransactionRefNo">
+                        <option selected="selected" value="Select">Select</option>
+                        <option value="Verify">Verify</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Return">Return</option>
+                        <option value="Reject">Reject</option>
+                        </select>*@
+                           </div>
+                       </div>
+                       <div class="col-md-6 ">
+                           <div class="form-group">
+                               <label>Notes:</label><br />
+                               <textarea rows="3" cols="60" class="form-control" id="AppGenNote-@Model.BankTransactionRefNo"></textarea>
+                           </div>
+                       </div>
+                       <div class="col-md-1">
+                           <div class="form-group">
+                               <br /><br /><button onClick="ApproveGenPayment('@Model.BankTransactionRefNo')">Submit</button>
+                               <input type="text" style="display:none" id="ApprGenBankid" value="@Model.BankId" />
+
+
+                           </div>
+                       </div>
+                       <div class="col-md-1">
+                       </div>
+                   </div>
+                   <div class="col-md-12">
+                       <br />
+                       <div class="text-center">
+                           <div id="divApprgenPayInfoMsg-@Model.BankTransactionRefNo" class="alert alert-danger hidden"></div>
+                       </div>
+                   </div>
+
+           </form>
+   
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppGenstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                 
+                },
+                failure: function (response) {
+                  
+                },
+                error: function (response) {
+                 
+                }
+            });
+    });
+</script>

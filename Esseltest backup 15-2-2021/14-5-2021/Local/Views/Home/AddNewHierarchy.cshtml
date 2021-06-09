@@ -1,0 +1,345 @@
+﻿@model EsselTestLocalApplication.Models.BusinessApprovalHierarchy
+@Scripts.Render("~/bundles/Accounts")
+
+<div class="col-md-12" id="divaddnewHieracy">
+    <div class="row" style="text-align:center">
+        <div class="col-md-2"> </div>
+        <div class="col-md-8">
+            <div class="form-horizontal form-group text-center" style="text-align:center;">
+                <div class="col-md-12 text-center">
+                    @Html.LabelFor(model => model.MasterOperationList, "Master Operations", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-12 text-center">
+                    @Html.DropDownListFor(model => model.MasterOperationList, new SelectList(Model.MasterOperationList, "MasterOperationID", "MasterOperationDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", id = "ddlApprovalHierMasterOper", onchange = "MasterOperationChange()" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"> </div>
+    </div>
+    <br />
+    <div id="divapprovalHierachy" class="col-md-12">
+        <div class="row" style="text-align:center">
+            
+                <table id="tblapprovalHierachy" class="table order-list newhier hover stripe nowrap example dataTable no-footer">
+                    <thead>
+                        <tr>
+                            @*<td></td>*@
+                            <td class="hidden">Level No</td>
+                            <td style="text-align:center">Level Of Verification</td>
+                            <td style="text-align:center">Roles</td>
+                            <td class="hidden">Row No</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="hidden">0</td>
+                            <td style="text-align:center">
+                                @Html.LabelFor(model => model.LevelOfHierarchy, "Request Initiation", htmlAttributes: new { @class = "control-label" })
+                            </td>
+                            <td style="text-align:center">
+                                @Html.DropDownListFor(model => model.RoleList, new SelectList(Model.RoleList, "RoleID", "RoleCode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHirRole" })
+
+                            </td>
+                            <td class="hidden">1</td>
+                            <td>
+                                <a class="deleteRow"></a>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>                          
+                            <td></td>
+                            <td style="text-align: center;" colspan="2">
+                                <input type="button" class="btn btn-default  btn-block" id="LevelOfVerificationBtn" value="Add Next Level Of Verification" style="width:60%;text-wrap:normal" />
+                            </td>
+
+                        </tr>
+                        <tr></tr>
+                    </tfoot>
+                </table>
+           
+        </div>
+        <div class="row" style="margin-top:20px">
+            
+            <div class="col-md-4"></div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn btn1 btn-success" onclick="SubmitApprovalHierarchy()" />
+                    <input type="button" value="Reset" class="btn btn1 btn-success" onclick="ResetApprovalHierarchy()" />
+                    <input type="hidden" id="mdlcode" />                    
+                    <input type="hidden" id="txtcounter" />
+                    <div id="ajax-container1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="text-center">
+                <br />
+                <div id="divApprHierarchyInfoMsg" class="alert alert-danger hidden row">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/Spinner/Spinner.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divapprovalHierachy").addClass("hidden");       
+        $("#txtcounter").val(0);
+        $("#LevelOfVerificationBtn").on("click", function () {  
+
+            var duplicateroleexist = CheckDuplicateRole();
+            if (duplicateroleexist == 1) {
+                $("#divApprHierarchyInfoMsg").text("");
+                $("#divApprHierarchyInfoMsg").append("<div><p>Duplicate roles Selected</p></div>");
+                $("#divApprHierarchyInfoMsg").addClass("alert-danger");
+                $("#divApprHierarchyInfoMsg").removeClass("hidden alert-success");
+
+            }
+            else {
+                $("#divApprHierarchyInfoMsg").text("");
+                $("#divApprHierarchyInfoMsg").addClass("hidden");
+                //$('#ajax-container').html('');
+                //addSpinner($('#ajax-container'));
+                var selectedcount = 0;
+                $("#tblapprovalHierachy tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var selected = currentRow.find("td").eq(2).find("select option:selected").index();
+                    if (selected == 0) {
+                        selectedcount = selectedcount + 1;
+                    }
+                });
+                if (selectedcount > 0) {
+                    $("#divApprHierarchyInfoMsg").text("");
+                    $("#divApprHierarchyInfoMsg").append("<div>Select Role</div>");
+                    $("#divApprHierarchyInfoMsg").addClass("alert-danger");
+                    $("#divApprHierarchyInfoMsg").removeClass("hidden alert-success");
+                }
+                else {
+                    $("#divApprHierarchyInfoMsg").text("");
+                    $("#divApprHierarchyInfoMsg").addClass("hidden");
+
+                    var counter = $("#txtcounter").val();
+                    var selectedroles = [];
+                    var idvalues = '';
+                    $("#tblapprovalHierachy tbody tr").each(function () {
+                        var currentRow = $(this);
+                        var selected = currentRow.find("td").eq(2).find("select option:selected").val();
+                        idvalues += selected + ',';
+                    });
+
+                    if (idvalues != '') {
+                        var rowcount = $("#tblapprovalHierachy tbody tr").length;
+                        var rowno = rowcount - 1 + 1;
+                        var newrowno = rowcount + 1;
+                        $("#mdlcode").val("");
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'html',
+                            url: '/Home/ShowMultiselectView',
+                            data: { iddata: idvalues },
+                            success: function (Data) {
+                                //removeSpinner($('#ajax-container1'), function () {
+                                //    $('#ajax-container1').html('Content loaded.');
+                                //})
+                               // $("#mdlcode").val(Data);
+                                var newRow = $("<tr>");
+                                var cols = "";
+                                cols += '<td class="hidden">' + rowno + '</td>';
+                                if (counter == 0) {
+                                    cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'st Level of Verification</Label></td>';
+                                }
+                                else if (counter == 1) {
+                                    cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'nd Level of Verification</Label></td>';
+                                }
+                                else if (counter == 2) {
+                                    cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'rd Level of Verification</Label></td>';
+                                }
+                                else {
+                                    cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'th Level of Verification</Label></td>';
+                                }
+                                cols += '<td style="text-align:center">';
+                                //cols += $("#mdlcode").val();
+                                cols += Data;
+                                cols += '<td class="hidden">' + newrowno + '</td>';
+                                cols += '</td ><td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+
+                                newRow.append(cols);
+                                $("table.order-list.newhier").append(newRow);
+                                counter++;
+                                $("#txtcounter").val(counter);
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                //removeSpinner($('#ajax-container1'), function () {
+                                //    $('#ajax-container1').html('Content loaded.');
+                                //})
+                                alert("error");
+                            }
+                        });
+
+                        //$.ajax({
+                        //    type: "POST",
+                        //    url: "/Home/GetAllUserRoles",
+                        //    data: '',
+                        //    contentType: "application/json; charset=utf-8",
+                        //    dataType: "json",
+                        //    success: function (response) {
+                        //        var newRow = $("<tr>");
+                        //        var cols = "";
+                        //        cols += '<td class="hidden">' + rowno + '</td>';
+                        //        if (counter == 0) {
+                        //            cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'st Level of Verification</Label></td>';
+                        //        }
+                        //        else if (counter == 1) {
+                        //            cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'nd Level of Verification</Label></td>';
+                        //        }
+                        //        else if (counter == 2) {
+                        //            cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'rd Level of Verification</Label></td>';
+                        //        }
+                        //        else {
+                        //            cols += '<td style="text-align:center"><Label type="text" class="control-label" name="hierarchy' + counter + '">' + (parseInt(counter) + 1) + 'th Level of Verification</Label></td>';
+                        //        }
+                        //        cols += '<td style="text-align:center">';
+                        //        cols += $("#mdlcode").val();
+                        //        cols += '<td class="hidden">' + newrowno + '</td>';
+                        //        cols += '</td ><td ><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+
+                        //        newRow.append(cols);
+                        //        $("table.order-list.newhier").append(newRow);
+                        //        counter++;
+                        //        $("#txtcounter").val(counter);
+                        //        //removeSpinner($('#ajax-container1'), function () {
+                        //        //    $('#ajax-container1').html('Content loaded.');
+                        //        //})
+                        //    },
+                        //    failure: function (response) {
+                        //        //removeSpinner($('#ajax-container1'), function () {
+                        //        //    $('#ajax-container1').html('Content loaded.');
+                        //        //})
+                        //        alert(response.responseText);
+                        //    },
+                        //    error: function (response) {
+                        //        //removeSpinner($('#ajax-container1'), function () {
+                        //        //    $('#ajax-container1').html('Content loaded.');
+                        //        //})
+                        //        alert(response.responseText);
+                        //    }
+                        //});
+                    }
+
+                }
+            }
+      });
+        $("table.order-list").on("click", ".ibtnDel", function (event) {
+            
+            //add deleted role to all remaining below level ddl
+            var currentRow = $(this).closest("tr");
+            var rowid = $.trim(currentRow.find("td").eq(3).html());
+            let ddlrole = currentRow.find("td").eq(2).find("select  option:selected").text();
+            let ddlroleid = currentRow.find("td").eq(2).find("select  option:selected").val();
+            let ddlroleidindex = currentRow.find("td").eq(2).find("select  option:selected").index();
+            //alert(rowid + ' role:' + ddlrole + ' roleid:' + ddlroleid + ' roleindex:' + ddlroleidindex);
+            
+            if (ddlroleidindex != 0) {
+               
+
+                $("#tblapprovalHierachy tbody tr").each(function () {
+                    var currentRow1 = $(this);
+                    var looprowid1 = $.trim(currentRow1.find("td").eq(3).html());
+                  //  let loopddlrole = currentRow.find("td").eq(1).find("select");
+                    //debugger;
+                    if (looprowid1 > rowid) {//greater than current level then bind deleted role to ddl as option for selection
+                        currentRow1.find("td").eq(2).find("select").append('<option value="' + ddlroleid + '">' + ddlrole + '</option>');
+                    }
+            });
+            }
+
+            $(this).closest("tr").remove();
+            var counter = $("#txtcounter").val();
+            counter -= 1;
+            $("#txtcounter").val(counter);
+            AddnewReAssignLevels();
+
+        });
+    });
+    function AddnewReAssignLevels() {       
+        var levelno = 0;
+        var newrownoo = 1;
+        $("#tblapprovalHierachy tbody tr").each(function () {            
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html(levelno);
+            if (levelno === 0) {
+                currentRow.find("td").eq(3).html(newrownoo);
+                currentRow.find("td").eq(1).find('label').html("Request Initiation");
+            }
+            else if (levelno === 1) {
+
+                currentRow.find("td").eq(3).html(newrownoo);
+                currentRow.find("td").eq(1).find('label').html(levelno + "st Level of Verification");
+            }
+            else if (levelno === 2) {
+                currentRow.find("td").eq(3).html(newrownoo);
+                currentRow.find("td").eq(1).find('label').html(levelno + "nd Level of Verification");
+            }
+            else if (levelno === 3) {
+                currentRow.find("td").eq(3).html(newrownoo);
+                currentRow.find("td").eq(1).find('label').html(levelno + "rd Level of Verification");
+            }
+            else {
+                currentRow.find("td").eq(3).html(newrownoo);
+                currentRow.find("td").eq(1).find('label').html(levelno + "th Level of Verification");
+
+            }
+           
+            levelno++;
+            newrownoo++;
+
+        });
+    }
+
+    function CheckDuplicateRole() {
+        var duplicateexist = 0;
+        var selectedrolelist = [];
+        $("#tblapprovalHierachy tbody tr").each(function () {
+            var currentRow = $(this);
+            var role = currentRow.find("td").eq(2).find("select option:selected").val();
+            if (role !== 0) {
+                selectedrolelist.push(role);
+              
+            }
+        });
+        var duplicatelist = selectedrolelist.filter(i => selectedrolelist.filter(ii => ii === i).length > 1);
+        if (duplicatelist.length > 0) { duplicateexist = 1;}
+        else {
+
+            duplicateexist = 0;
+        }
+        return duplicateexist;
+
+
+    }
+
+    function ResetApprovalHierarchy() {
+        $("#ddlApprovalHierMasterOper").prop('selectedIndex', 0);
+        $("#divapprovalHierachy").addClass("hidden");
+        $("#txtcounter").val("");
+        $("#txtcounter").val(0);
+        $("#mdlcode").val("");
+        $("#tblapprovalHierachy tbody tr:not(:first)").remove();
+        //$('.listbox').multiselect("clearSelection");
+        $("#divApprHierarchyInfoMsg").text("");
+        $("#divApprHierarchyInfoMsg").addClass("hidden");
+
+        $("#tblapprovalHierachy tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(2).find("select").prop('selectedIndex', 0);
+
+        });
+        ResetMasterOperationddl();
+
+
+    }
+
+</script>

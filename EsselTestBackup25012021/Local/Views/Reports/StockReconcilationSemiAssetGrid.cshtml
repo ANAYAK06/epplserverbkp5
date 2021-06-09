@@ -1,0 +1,387 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.StockReconcilation
+<style>
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+
+    .tdalign {
+        text-align: center !important;
+        /*white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;*/
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+
+    .firstheaderborder {
+        border-left: 1px solid white;
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .startheaderborder {
+        border-left: 1px solid white;
+    }
+
+    .endheaderborder {
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .linkcls {
+        color: blue !important;
+        text-decoration: underline !important;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 0 0;
+        border-bottom: 1px solid #111;
+    }
+</style>
+@*<div>Semi Assets</div>*@
+<div align="right" class="col-md-12">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelSemiAssetGrid();" />
+    <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfSemiAssetGrid();" />
+
+</div>
+<div class="col-md-12">
+    <div class="table-responsive">
+        <table id="tblSemiAseetGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th colspan="4" class="firstheaderborder">Total Reciept At CC</th>
+                    <th colspan="4" class="firstheaderborder">Total Out From CC</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    @*<th></th>*@
+                </tr>
+                <tr>
+                    <th class="wrapcls">Item Code</th>
+                    <th class="wrapcls">Item Name</th>
+                    <th class="wrapcls">Specification</th>
+                    <th class="wrapcls">Sub DCA</th>
+                    <th class="wrapcls">Units</th>
+                    <th class="wrapcls">Recived From CentralStore</th>
+                    <th class="wrapcls">Recieved From OtherCC</th>
+                    <th class="wrapcls ">Purchase At CC</th>
+                    <th class="wrapcls">Total Recieved at CC</th>
+                    <th class="wrapcls">Transfer To CentralStore </th>
+                    <th class="wrapcls">Transfer To OtherCC</th>
+                    <th class="wrapcls ">Total Out From CC</th>
+                    <th class="wrapcls">Balance Stock At CC</th>
+                    <th class="wrapcls ">LostDamaged Accepted</th>
+                    <th class="wrapcls ">Basic Price</th>
+                    <th class="wrapcls ">Amount Against TotalRecieved</th>
+                    <th class="wrapcls ">Amt Against Total Returned/Transferd From CC</th>
+                    <th class="wrapcls ">Amt Of Balance Stock At CC</th>
+                    <th class="wrapcls ">Amt Of Lost&Damage</th>
+                    <th class="wrapcls ">Comments On Balance</th>
+                    <th class="wrapcls ">CC Store Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SemiAssetList)
+                {
+                    <tr>
+
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemCode)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.ItemName)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Specification)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Subdca)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.Units)
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls">@Html.DisplayFor(model => item.rcv_frm_central)</span>
+                            @*@Html.DisplayFor(modelItem => item.rcv_frm_central, new { @class = "linkcls" })*@
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.rcv_frm_othercc)</span>
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.purchased_at_cc)</span>
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TotalRecievedAtCC)
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls">@Html.DisplayFor(modelItem => item.Trans_to_central)</span>
+                        </td>
+                        <td class="tdalign">
+                            <span class="linkcls"> @Html.DisplayFor(modelItem => item.Trans_to_othercc)</span>
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.TotalOutFromCC)
+                        </td>
+                        <td class="tdalign">
+                            @Html.DisplayFor(modelItem => item.BalanceStockAtCC)
+                        </td>
+                        <td class="tdalign">  <span class="linkcls">@Html.DisplayFor(modelItem => item.lostdamaged_rep_accep)</span></td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmountAgainstTotalRecievedCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmountAgainstTotalReturnedCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmtOfBalanceStockAtCC)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.AmtOfLostDamage)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.Comments)</td>
+                        <td class="tdalign"> @Html.DisplayFor(modelItem => item.CCStatus)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @if (Model.SemiAssetList.Count > 0)
+                {
+                    <tr>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"> </td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign">@Model.Balancestockatccsemi</td>
+                        <td class="tdalign">@Model.RetTranssemi</td>
+                        <td class="tdalign">@Model.Balancestocksemi</td>
+                        <td class="tdalign">@Model.LostDamageamtsemi</td>
+                        <td class="tdalign"></td>
+                        <td class="tdalign"></td>
+
+                    </tr>
+                }
+            </tfoot>
+        </table>
+    </div>
+</div>
+@if (Model.SemiAssetList.Count > 0)
+{
+    <div class="col-md-12 text-center"><br />
+        <div class="col-lg-4">
+        </div>
+        <div class="col-lg-4 text-center">
+            <table runat="server" id="divGvsemiassets">
+                <tr style="border:1px solid gray">
+                    <th style="text-align:center">
+                        STATUS REMARK
+                    </th>
+                </tr>
+                <tr runat="server" style="border:1px solid gray;text-align:center">
+                    <td runat="server">
+                        <table id="header" runat="server" class="estbl" width="100%">
+                            <tr>
+                                <td width="100%" style="border:1px solid gray">
+                                    STOCK BALANCE
+                                    <asp:Label ID="Label6" runat="server" Text=""></asp:Label>
+                                </td>
+                                <td width="100%" style="border:1px solid gray">
+                                    @Model.Balancestocksemi
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100%" style="border:1px solid gray">
+                                    DAMAGED
+                                    <asp:Label ID="Label9" runat="server" Text="DAMAGED"></asp:Label>
+                                </td>
+                                <td width="100%" style="border:1px solid gray">
+                                    @Model.LostDamageamtsemi
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100%" style="border:1px solid gray">
+                                    NET BALANCE STOCK
+                                    <asp:Label ID="Label3" runat="server" Text="NET BALANCE STOCK"></asp:Label>
+                                </td>
+                                <td width="100%" style="border:1px solid gray">
+                                    @Model.SemiassetMsgAmt
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+}
+<div class="modal fade" id="ModalSemiAssetSummaryData" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        let semiassetGrid = null;
+        InitializsemiassetGridGridGrid();
+
+
+        //$('#tblSemiAseetGrid').on('click', 'td.linkcls', function (e) {
+        //    alert();
+        //    e.preventDefault();
+        //    var table = $('#tblSemiAseetGrid').DataTable();
+        //    var data = semiassetGrid.row($(this).closest('tr')).data();
+        //});
+
+
+        //$('#tblAseetGrid tbody').on('click', 'tr', function () {
+        //    console.log(assetGrid.row(this).data());
+        //});
+    });
+    function InitializsemiassetGridGridGrid() {
+        semiassetGrid = $('#tblSemiAseetGrid').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "initComplete": function () {
+                //$(document).on("click", "tr[role='row']", function () {
+                //    alert($(this).children('td:first-child').text());
+                //    let CC = $("#ddlSRRptCC option:selected").val();
+                //    let item =$.trim($(this).children('td:first-child').text());
+                //    $.ajax({
+                //        type: "POST",
+                //        url: "/Reports/StockReconcilationAssetSummary",
+                //        data: '{CCCode:"' + CC + '",Type:"1",For:"",ItemCode:"' + item+'"}',
+                //        contentType: "application/json; charset=utf-8",
+                //        dataType: 'html',
+                //        success: function (data) {
+                //            $('#ModalAssetSummaryData').html(data);
+                //            $('#ModalAssetSummaryData').modal();
+
+                //        }
+                //    });
+                //})
+            }
+
+
+        });
+        $('#tblSemiAseetGrid tbody').on('click', 'td', function () {
+            let tr = $(this).closest('tr');
+            let data = semiassetGrid.row(tr).data();
+            console.log(data);
+            let colno = semiassetGrid.cell(this).index().columnVisible;
+            console.log("Colno=" + colno);
+            let colvalue = data[colno].replace(/(<([^>]+)>)/ig, '');
+            //alert('Clicked on cell in visible column: ' + semiassetGrid.cell(this).index().columnVisible);
+
+           // console.log("ColValue=" + colvalue);
+            let type = "2";
+            let For = "";
+            if (colvalue != "0" && colno==5) {
+                For = "RecivedFromCentralStore";
+                // e.Row.Cells[5].Attributes.Add("onclick", "OpenNewPage('" + e.Row.Cells[0].Text + "','" + type.ToString() + "','" + For.ToString() + "','" + ddlcccode.SelectedValue + "')");
+            }
+            if (colvalue != "0" && colno == 6) {
+                For = "RECEIVEDFROMOTHERCC";
+                // e.Row.Cells[6].Attributes.Add("onclick", "OpenNewPage('" + e.Row.Cells[0].Text + "','" + type.ToString() + "','" + For.ToString() + "','" + ddlcccode.SelectedValue + "')");
+            }
+            if (colvalue != "0" && colno == 7) {
+                For = "PURCHASEDATCC";
+
+            }
+            if (colvalue != "0" && colno == 9) {
+                For = "TRANSFEREDTOCENTRALSTORE";
+
+            }
+            if (colvalue != "0" && colno == 10) {
+                For = "TRANSFERTOOTHERCC";
+
+            }
+            if (colvalue != "0" && colno == 13) {
+                For = "LOSTANDDAMAGESREPORTACCPETED";
+            }
+            //alert(For);
+            let CC = $("#ddlSRRptCC option:selected").val();
+            let item = data[0];
+            $.ajax({
+                type: "POST",
+                url: "/Reports/StockReconcilationAssetSummary",
+                data: '{CCCode:"' + CC + '",Type:"' + type+'",For:"' + For+'",ItemCode:"' + item + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#ModalSemiAssetSummaryData').html(data);
+                    $('#ModalSemiAssetSummaryData').modal();
+
+                }
+            });
+        });
+
+    }
+    function ExportpdfSemiAssetGrid() {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfSemiAssetGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download = "Reconcilation Of Stock Report.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+    }
+
+        function ExportExcelSemiAssetGrid() {
+            $.ajax({
+                type: 'POST',
+                url: '/Reports/ExportExcelStockSemiAssetGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                var CC = '@Session["ACCIntCC"]';
+                var From = '@Session["ACCIntCCFromDate"]';
+                var To = '@Session["ACCIntCCToDate"]';
+                link.download = "Reconcilation Of Stock Report.xlsx";
+
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+
+        }
+</script>
+

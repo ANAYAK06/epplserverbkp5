@@ -1,0 +1,49 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.CostCenterDayLimitConfig>
+<div class="table-responsive">
+    <table id="tblconfigccGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th>CC Code</th>
+                <th>CC Name</th>
+                <th>Day Limit</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.value)
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var configGrid = null;
+        InitializeconfigGrid();
+    });
+    function InitializeconfigGrid() {
+        configGrid = $('#tblconfigccGrid').DataTable({
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            language: {
+                "emptyTable": "No Records Found"
+            },
+        });
+    }
+
+</script>

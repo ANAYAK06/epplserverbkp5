@@ -1,0 +1,106 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.PFESIRules>
+@if (Model.Count > 0)
+{
+    <style>
+        .wrapcls {
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            text-align: center !important;
+            font-size: 11px;
+            font-weight: 100;
+            border-left: 1px solid white;
+            padding: 0 0 !important;
+        }
+    </style>
+    <div class="table-responsive">
+        <table id="tblPFESIGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr><td colspan="8" style="text-align:center;">PF</td>
+                    <td colspan="7" style="text-align:center;border-left:1px solid white">ESI</td>
+                </tr>
+                <tr>
+                    <th class="wrapcls">Effective Date</th>
+                    <th class="wrapcls">Employee Contribution</th>
+                    <th class="wrapcls">Employer Contribution</th>
+                    <th class="wrapcls">Admin Charge</th>
+                    <th class="wrapcls">Employeer DCA</th>
+                    <th class="wrapcls">Employeer SubDCA</th>
+                    <th class="wrapcls">Employee DCAName</th>
+                    <th class="wrapcls" style="border-right:1px solid #000">Employee SubDCA</th>
+
+
+                    <th class="wrapcls">Effective Date</th>
+                    <th class="wrapcls">Applicable Salary</th>
+                    <th class="wrapcls">Employee Contribution</th>
+                    <th class="wrapcls">Employer Contribution</th>
+                    <th class="wrapcls"> DCA</th>
+                    <th class="wrapcls"> SubDCA</th>
+                    @*<th class="wrapcls">Employee DCA</th>
+        <th class="wrapcls">Employee SubDCA</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td class="wrapcls">
+                        @Html.DisplayFor(modelItem => item.PFEffectDate)
+                    </td>
+                    <td class="wrapcls">
+                        @Html.DisplayFor(modelItem => item.EmployeeContribution)
+                    </td>
+                    <td class="wrapcls">
+                        @Html.DisplayFor(modelItem => item.EmployerContribution)
+                    </td>
+                    <td class="wrapcls">
+                        @Html.DisplayFor(modelItem => item.PFAdminCharge)
+                    </td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.PFDCAName)</td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.PFSubDCAName)</td>
+
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.PFEmployeeDCAName)</td>
+                    <td class="wrapcls" style="border-right:1px solid #000">  @Html.DisplayFor(modelItem => item.PFEmployeeSubDCAName)</td>
+
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESIEffectDate)</td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESISalaryLimit)</td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESIPercentage)</td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESIEmployerPercentage)</td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESIDCAName)</td>
+                    <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESISubDCAName)</td>
+                    @*<td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESIEmployeeDCAName)</td>
+        <td class="wrapcls">  @Html.DisplayFor(modelItem => item.ESIEmployeeSubDCAName)</td>*@
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+        $(document).ready(function () {
+
+            var tblPFESIGrid = null;
+            InitializetblPFESIGrid();          
+
+        });
+        function InitializetblPFESIGrid() {
+            tblPFESIGrid = $('#tblPFESIGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Data Found"
+                },
+                "createdRow": function (row, data, index) {
+                   
+                },
+                pageLength: 10
+            });
+        }
+    </script>
+}

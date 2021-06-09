@@ -1,0 +1,159 @@
+﻿
+@{
+    ViewBag.Title = "MasterGroups";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+@*<h2>MasterGroups</h2>*@
+<link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+@Scripts.Render("~/bundles/Ledger")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <h4 style="text-align:left;font-weight:bold">Master Groups</h4>
+                        </div>
+                        <div class="col-md-6" style="text-align:right">
+                            <a href="#" onclick="ShowGroupTreeModel()" style="font-size:15px;text-align:right;text-decoration:underline">Show All Groups</a>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <!-- Example Tabs Left-->
+                                <div class="card-inner">
+                                    <div class="col-md-12">
+                                        <div id="MasterGroup">
+                                            <button class="btn btn1 btn-success" id="btnewgroup" onclick="ViewAddNewGroupModel()">Add Group</button>
+                                            <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                            <div id="divMasterGroupGrid">
+                                                @Html.Action("ViewGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<div id="AddNewGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                @Html.Action("AddNewGroup", "Ledger")
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="EditMasterGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Nature Of Group</label>
+                            <input type="text" id="txtUpMasterGrpNature" class="form-control" readonly="readonly" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Enter Group Name</label>
+                        <input type="text" id="txtUpMasterGpName" class="form-control mgpupdatename" style="text-transform:uppercase" />
+
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnUpdatewMasterGroup" onclick="UpdateMasterGroup()" value="Submit" />
+                        <input type="text" id="txtUpMasterGpId" class="form-control" style="display:none;width:10px" />
+
+                    </div>
+                </div>
+                <div class="row col-md-12 text-center">
+                    <br />
+                    <div id="divUpdateMasterGroupInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>*@
+        </div>
+
+    </div>
+</div>
+<div id="deleteMasterGroup" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Group: </p><label id="lbldelMasterGroupname"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeleteMastergroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletegrp">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="DeleteMasterGroup()">Delete</button>
+                    <input type="text" id="txtdeleteGroupid" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="GrouptreeModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 class="modal-title">Groups and SubGroups</h5>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="col-md-10">
+                    @Html.Action("GroupsTreeView", "Ledger")
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+ $(document).ready(function () {
+     var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+     });
+</script>
+

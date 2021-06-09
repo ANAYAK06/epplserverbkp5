@@ -1,0 +1,156 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Purchase.SupplierPO>
+<div class="table-responsive">
+    <table id="tblApprovePOGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>PONO</th>
+                <th>IndentNo</th>
+                <th>RefNo</th>
+                <th>RefDate</th>
+                <th>Cost Center</th>
+                <th>VendorName</th>
+                <th class="hidden">Status</th>
+                <th class="hidden">ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PONo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IndentNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RefNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RefDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VendorName)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApprovePOGrid = null;
+        InitializeformatApprovePOGrid();
+        var Sessionroleid = '@Session["Roleid"]';
+        $("#roleid").val(Sessionroleid);
+    });
+    function InitializeformatApprovePOGrid() {
+        ApprovePOGrid = $('#tblApprovePOGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: true,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Service Providers Found"
+            },
+            "createdRow": function (row, data, index) {
+
+                var oldstatus = $.trim($('td:eq(7)', row).html());
+                //alert(oldstatus);
+
+                if (oldstatus === '0') {
+                    $('td:eq(7)', row).html("Return");
+
+                }
+                else { $('td:eq(7)', row).html("Verification Pending"); }
+            },
+            pageLength: 10
+        });
+        $('#tblApprovePOGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApprovePOGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApprovePOGrid, tr);
+                // Open this row
+                row.child(formatApprovePOGrid(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprovePOGrid(d) {
+            var id = 0;
+            var htmltext;
+        var pono, indentno,id;
+            $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 1)
+                    pono = value;
+                if (index == 2)
+                    indentno = value;
+                if (index == 8)
+                    id = value;
+        });
+        //debugger;
+        var divid = "divapprPO" + id;
+        var divid1 = $("#" + divid + "");
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/Reports/SupplierPOReportView',
+                data: { PONo: pono, IndentNo: indentno },
+                success: function (Data) {
+                    var divid2 = "divapprPO" + id;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        return '<div id="divapprPO' + id + '"></div>';
+    }
+</script>

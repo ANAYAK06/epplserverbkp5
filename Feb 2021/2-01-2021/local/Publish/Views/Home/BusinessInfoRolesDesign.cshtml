@@ -1,0 +1,174 @@
+﻿
+@{
+    /**/
+
+    ViewBag.Title = "BusinessInfoRolesDesign";
+    //Layout = "~/Views/Shared/_BusinessInfoSetup.cshtml";
+}
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables/media/js/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+@Scripts.Render("~/bundles/Accounts")
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn1 btn-success" id="btnewRole" data-dismiss="modal" onclick="ViewAddNewRoleModel()">New Role</button>    
+      
+        <div id="divRoledesigngrid">
+            @Html.Action("ViewUserRoleGrid", "Home")
+        </div>
+    </div>
+  
+    <div id="deleteRole" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="icon-box">
+                        <i class="fa fa-check"></i>
+                    </div>
+                    <div id="confirmms1role"> <h4 class="modal-title">Are you sure?</h4></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="confirmmsgrole">
+                        <p>Do you really want to delete Role </p><label id="lblRoleName"></label>
+                        <p>This process cannot be undone.</p>
+                    </div>
+                    <div id="divDeleteroleInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="confirmbtnrole">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="DeleteRole()">Delete</button>
+                        <input type="hidden" id="txtdeleteRoleid" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Styles.Render("~/Content/bootstrap-multiselect/rawgit.bootstrap-multiselect.css")
+@Scripts.Render("~/Scripts/Multiselectdropdown/rawgit.bootstrap-multiselect.js")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#UpdateRoleModal").on("hide.bs.modal", function () {
+            $("#divRoledesigngrid").load('/Home/ViewUserRoleGrid');
+        });
+        $("#deleteRole").on("hidden.bs.modal", function () {
+
+            $("#divRoledesigngrid").load('/Home/ViewUserRoleGrid');
+        });
+        $('#AddNewRoleModal').on('hidden.bs.modal', function () {
+            $(this).removeData();
+            $("#divRoledesigngrid").load('/Home/ViewUserRoleGrid');
+        });
+
+
+       
+    });
+
+    function ViewAddNewRoleModel() {
+        //$("#AddNewRoleModal").modal('show');
+
+
+        $.ajax({
+            type: "POST",
+            url: "/Home/ViewAddNewRole",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'html',
+            success: function (data) {
+
+                $('#AddNewRoleModal').html(data);
+                $('#AddNewRoleModal').modal();
+
+                $("#txtNRolecode").val("");
+                $("#divNewRoleInfoMsg").text("");
+                $("#divNewRoleInfoMsg").addClass("hidden");
+                $("#chkApplforCC").prop("checked", false);
+                //$("#divClsoeDcaInfoMsg").text("");
+                //$("#divClsoeDcaInfoMsg").addClass("hidden");
+            }
+        });
+    }
+</script>
+<div class="modal fade" id="AddNewRoleModal" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<div class="modal fade" id="UpdateRoleModal" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+
+
+@*<div class="">
+        <h4>Role Design</h4>
+        <hr />
+        <table id="myTable" class=" table order-list">
+            <thead>
+                <tr>
+                    <td style="text-align:center">Role Name</td>
+                    <td style="text-align:center">Functional Area</td>
+                    <td style="text-align:center">Reporting To</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="col-md-2">
+                        @Html.TextBoxFor(model => model.RoleName, htmlAttributes: new { @class = "form-control" })
+                    </td>
+                    <td class="col-md-2" style="text-align:center">
+                        <select name="FunctionalAreaIDs" class="listbox form-control" id="FunctionalAreaIDs" style="width: 580px; display: none;" multiple="multiple"><option value="100">Accounts</option><option value="102">Purchase</option><option value="104">WareHouse</option><option value="106">Sales</option><option value="108">HR</option></select>
+                    </td>
+                    <td class="col-md-2"></td>
+                    <td class="col-md-2">
+                        <a class="deleteRow"></a>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align: center;padding-left:20%" class="">
+                        <input type="button" class="btn btn-lg btn-block businessRoleBtn" id="addrole" value="Add Role" />
+                    </td>
+                </tr>
+                <tr></tr>
+            </tfoot>
+        </table>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-10 padding-20">
+                <input type="submit" value="Submit" class="btn btn-default firmbtns-hover" />
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //Adding Select all to list box
+            $('.listbox').multiselect({
+                includeSelectAllOption: true
+            });
+            var counter = 0;
+
+            $("#addrole").on("click", function () {
+                var newRow = $("<tr>");
+                var cols = "";
+
+                cols += '<td class="col-md-2"><input type="text" class="form-control" name="rolename' + counter + '"/></td>';
+                //cols += '<td class="col-md-2"><select name="FunctionalAreaIDs' + counter + '" class="listbox form-control" id="FunctionalAreaIDs" style="width: 580px; display: none;" multiple="multiple"><option value="100">Accounts</option><option value="102">Purchase</option><option value="104">WareHouse</option><option value="106">Sales</option><option value="108">HR</option></select></td>';
+                cols += '<td class="col-md-2" style="text-align:center"><select name="FunctionalAreaIDs" class="listbox form-control" id="FunctionalAreaIDs" style="width: 580px; display: none;" multiple="multiple"><option value="100">Accounts</option><option value="102">Purchase</option><option value="104">WareHouse</option><option value="106">Sales</option><option value="108">HR</option></select><div class="btn-group"><button title="None selected" class="multiselect dropdown-toggle btn btn-default" type="button" data-toggle="dropdown">None selected <b class="caret"></b></button><ul class="multiselect-container dropdown-menu"><li class="multiselect-item multiselect-all"><a class="multiselect-all" href="javascript:void(0);"><label class="checkbox"><input type="checkbox" value="multiselect-all">  Select all</label></a></li><li><a href="javascript:void(0);"><label class="checkbox"><input type="checkbox" value="100"> Accounts</label></a></li><li><a href="javascript:void(0);"><label class="checkbox"><input type="checkbox" value="102"> Purchase</label></a></li><li><a href="javascript:void(0);"><label class="checkbox"><input type="checkbox" value="104"> WareHouse</label></a></li><li><a href="javascript:void(0);"><label class="checkbox"><input type="checkbox" value="106"> Sales</label></a></li><li><a href="javascript:void(0);"><label class="checkbox"><input type="checkbox" value="108"> HR</label></a></li></ul></div></td>';
+                cols += '<td class="col-md-2"><input type="text" class="form-control" name="reportingTo' + counter + '"/></td>';
+
+                cols += '<td class="col-md-2"><input type="button" class="ibtnDel btn btn-md btn-danger" value="Delete"></td>';
+                newRow.append(cols);
+                $("table.order-list").append(newRow);
+                $('#FunctionalAreaIDs' + counter + '').multiselect('rebuild');
+                counter++;
+            });
+            $("table.order-list").on("click", ".ibtnDel", function (event) {
+                $(this).closest("tr").remove();
+                counter -= 1
+            });
+        });
+    </script>*@
+

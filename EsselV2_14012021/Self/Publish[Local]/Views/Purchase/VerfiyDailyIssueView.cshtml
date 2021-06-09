@@ -1,0 +1,189 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.DailyIssue
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div id="GriddailyissueData">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Apprdailyissuestatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprdailyissueNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApprovedailyissueDetails('@Model.Rid')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divAppritemstransferInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        var Tranno = '@Model.Tranno';
+        var CC = '@Model.CCCode';
+        $.ajax({
+            type: "POST",
+            url: "/AccountsApproval/GetApprovalstatus",
+            data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count = Object.keys(response).length;
+                if (count > 0) {
+                    var ddlaprovalstatus = $("#Apprdailyissuestatus");
+                    ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                    $.each(response, function () {                       
+                            if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type'])); }
+                    });
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Purchase/ViewDailyIssueDetailsGridView',
+            data: { Tranno: Tranno, CCCode: CC },
+            success: function (data) {
+                var count = Object.keys(data).length;
+                if (count > 0) {
+                    $("#GriddailyissueData").html(data);
+                }
+            },
+        });
+    });
+    function ApprovedailyissueDetails(Rid) {
+        var Roleid = '@Session["Roleid"]';
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtApprdailyissueCreatedby").val(Sessioncreated);
+        appstatusid = "Apprdailyissuestatus-" + Rid;
+        var appstatus = $("#Apprdailyissuestatus").val();
+        var ReturnText = $("#ApprdailyissueNotes").val();
+        var retnoteid = "ApprdailyissueNotes-" + Rid;
+        retnote = $("#" + retnoteid + "").val();
+        msg = $("#divAppritemstransferInfoMsg");
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (ReturnText == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAppritemstransferInfoMsg").text("");
+            $("#divAppritemstransferInfoMsg").addClass("hidden");
+            var chkcount = 0; currentrowcount = 0;
+            var currentrowcount = $("#ItemissueDataviewTable tbody tr").length;
+            $("#ItemissueDataviewTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                if (check == false) { chkcount = chkcount + 1; }
+            });
+            if (currentrowcount == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Invalid Submission</p > ";
+                isValid = false;
+            }
+            if (chkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Daily Issue Items</p > ";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAppritemstransferInfoMsg").text("");
+                $("#divAppritemstransferInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divAppritemstransferInfoMsg").addClass("alert-danger");
+                $("#divAppritemstransferInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                debugger;
+                var Tranno = '@Model.Tranno';
+                $("#divItemsTransferInfoMsg").text("");
+                $("#divItemsTransferInfoMsg").addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+                var finalmsg;
+                if (appstatus === 'Verify') {
+                    finalmsg = 'Verified Successfully';
+                }
+                else if (appstatus === 'Approve') { finalmsg = '  Approved  Successfully'; }
+                else if (appstatus === 'Return') { finalmsg = '  Returned for Update '; }
+                else if (appstatus === 'Reject') { finalmsg = '  Rejected  Successfully'; }
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/ApproveDailyIssue",
+                    data: '{Tranno:"' + Tranno + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprdailyissueCreatedby").val() + '",Remarks:"' + $("#ApprdailyissueNotes").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    processData: false,
+                    dataType: "json",
+                    success: function (response) {
+                        var msg = response.saveStatus;
+                        if (response.saveStatus == "Submitted") {
+                            var msg = '';
+                            $('#ApprovedailyissueMsgModal').modal('show');
+                            msg = "<div>Issue No  " + Tranno + '  ' + finalmsg + "  </div>";
+                            $("#ApprovedailyissueMsgModal").on("hide.bs.modal", function () {
+                                $("#divAppritemstransGrid").load('/Purchase/VerifyDailyIssueGrid');
+                            });
+                            $("#ApprdailyissueMsg").html(msg);
+                        }
+                        else {
+                            msg = "<div>" + response.saveStatus + "</div>";
+                            $("#ApprdailyissueMsg").html(msg);
+                            $('#ApprovedailyissueMsgModal').modal('show');
+                        }
+                    },
+                    failure: function (response) {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprdailyissueMsg").html(msg);
+                        $('#ApprovedailyissueMsgModal').modal('show');
+                    },
+                    error: function (response) {
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprdailyissueMsg").html(msg);
+                        $('#ApprovedailyissueMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+    }
+</script>

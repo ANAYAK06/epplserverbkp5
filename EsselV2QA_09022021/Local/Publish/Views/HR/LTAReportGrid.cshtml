@@ -1,0 +1,182 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.LongTermAdvance>
+<style>
+    .tdcls {
+    }
+</style>
+<div class="table-responsive  w-100">
+    <table id="tblGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="tdcls"></th>
+                <th class="tdcls hidden">LTAId</th>
+                <th class="tdcls">Employee ID</th>
+                <th class="tdcls">Employee Name</th>
+                <th class="tdcls">LTAAmount</th>
+                <th class="tdcls hidden">TransactionRefNo</th>
+                <th class="tdcls ">Cost Center</th>
+                <th class="tdcls hidden">Cost Center</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.LTAId)
+                    </td>
+                    <td class="txtcls">
+                        @Html.DisplayFor(modelItem => item.EmployeeID)
+                    </td>
+                    <td class="txtcls">
+                        @Html.DisplayFor(modelItem => item.EmployeName)
+                    </td>
+                    <td class="txtcls">
+                        @Html.DisplayFor(modelItem => item.LTAAmount)
+                    </td>
+
+                    <td class="txtcls hidden">@Html.DisplayFor(modelItem => item.TransactionRefNo)</td>
+
+                    <td class="txtcls ">
+                        @Html.DisplayFor(modelItem => item.CCName)
+                    </td>
+                    <td class="txtcls hidden">
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td>
+                        @if (item.LoanStatus != "PreClosed" && item.LoanStatus != "Closed")
+                        {
+                        <input type="button" class="precloseloan btn btn-md btn-danger" value="PreClose">
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<div class="modal fade" id="LTAPreCloseModel" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveGrid = null;
+        InitializeApprGrid();
+        $("#tblGrid").on("click", ".precloseloan", function (event) {
+
+            var row = $(this).closest("tr");
+            var transno = $.trim(row.find("td").eq(5).html());
+            //$(this).closest("tr").remove();
+
+
+            addFailMsg = "Error Occurred While Deleting.";
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/HR/ShowLTAPreCloseView',
+                data: { TransactionNo: transno },
+                success: function (data) {
+                    $('#LTAPreCloseModel').html(data);
+                    $('#LTAPreCloseModel').modal();
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    //$("#divOtherLeavesInfoMsg").text(addFailMsg);
+                    //$("#divOtherLeavesInfoMsg").addClass("alert-danger");
+                    //$("#divOtherLeavesInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+    });
+    function InitializeApprGrid() {
+        ApproveGrid = $('#tblGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+        $('#tblGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveGrid, tr);
+                // Open this row
+                row.child(formatApprLTA(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprLTA(d) {
+        var htmltext;
+        var LTAId = 0, EmployeeID = "";
+        let TransactionRefNo = "";
+        $.each(d, function (index, value) {
+            if (index == 1)
+                LTAId = value;
+            if (index == 2)
+                EmployeeID = value;
+            if (index == 5)
+                TransactionRefNo = value;
+        });
+        var empData = {
+            LTAId: LTAId,
+            EmployeeID: EmployeeID,
+            TransactionRefNo: TransactionRefNo
+        };
+        debugger;
+        var divid = "divapprStaff" + LTAId;
+        var divid1 = $("#" + divid + "");
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '/HR/LTAReportView',
+            data: { advance: empData },
+            success: function (Data) {
+                var divid2 = "divapprStaff" + LTAId;
+                var divid3 = $("#" + divid2 + "");
+                $(divid3).html(Data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+        return '<div id="divapprStaff' + LTAId + '" class="row" ></div>';
+    }
+</script>

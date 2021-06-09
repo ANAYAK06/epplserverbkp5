@@ -1,0 +1,552 @@
+﻿@model List<EsselTestLocalApplication.Models.MasterWorkFlowStatus>
+@{
+    //ViewBag.Title = "GroupAndSubGroup";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+
+<link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+@Scripts.Render("~/bundles/Ledger")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <h4 style="text-align:left;font-weight:bold;">Groups And Sub Groups</h4>
+                        </div>
+                        <div class="col-md-6" style="text-align:right">
+                            <a href="#" onclick="ShowGroupTreeModel()" style="font-size:15px;text-align:right;text-decoration:underline">Show All Groups</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <ul class="nav nav-tabs" id="tabGroups" role="tablist">
+                                    @foreach (var item in Model)
+                                    {
+                                        if (item.MID == 126 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#MasterGroup">Master Group</a></li>
+                                        }
+                                        if (item.MID == 128 && item.WorkflowExist == true)
+                                        {
+
+                                            <li><a data-toggle="tab" href="#SubGroup">Sub Group</a></li>
+                                        }
+                                        if (item.MID == 130 && item.WorkflowExist == true)
+                                        {
+                                            <li><a data-toggle="tab" href="#ChildGroup">Child Group</a></li>
+                                        }
+                                    }                                   
+                                </ul>
+                                <div class="tab-content">
+                                    @foreach (var item in Model)
+                                    {
+                                        if (item.MID == 126 && item.WorkflowExist == true)
+                                        {
+
+                                            <div id="MasterGroup" class="tab-pane fade">
+                                                <button class="btn btn1 btn-success" id="btnewgroup" onclick="ViewAddNewGroupModel()">New Group</button>
+                                                <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                                <div id="divMasterGroupGrid">
+                                                    @Html.Action("ViewGroupsGrid", "Ledger")
+                                                </div>
+                                            </div>
+                                        }
+                                        if (item.MID == 128 && item.WorkflowExist == true)
+                                        {
+
+                                            <div id="SubGroup" class="tab-pane fade in  active">
+                                                <button class="btn btn1 btn-success" id="btnewsubgroup" onclick="ViewAddNewSubGroupModel()">New Sub Group</button>
+                                                <div id="divSubGroupGrid">
+                                                    @Html.Action("ViewSubGroupsGrid", "Ledger")
+                                                </div>
+                                            </div>
+                                        }
+                                        if (item.MID == 130 && item.WorkflowExist == true)
+                                        {
+
+                                            <div id="ChildGroup" class="tab-pane fade">
+                                                <button class="btn btn1 btn-success" id="btnewChildbgroup" onclick="ViewAddNewChildGroupModel()">New Child Group</button>
+                                                <div id="divChildGroupGrid">
+                                                    @Html.Action("ViewChildGroupsGrid", "Ledger")
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+
+                                    @*@if (Model.ActiveTab == "Groups")
+                                    {
+                                        <div id="MasterGroup" class="tab-pane fade in  active">
+                                            <button class="btn btn1 btn-success" id="btnewgroup" onclick="ViewAddNewGroupModel()">New Group</button>
+                                            <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                            <div id="divMasterGroupGrid">
+                                                @Html.Action("ViewGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div id="MasterGroup" class="tab-pane fade">
+                                            <button class="btn btn1 btn-success" id="btnewgroup" onclick="ViewAddNewGroupModel()">New Group</button>
+                                            <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                            <div id="divMasterGroupGrid">
+                                                @Html.Action("ViewGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (Model.ActiveTab == "SubGroup")
+                                    {
+                                        <div id="SubGroup" class="tab-pane fade in  active">
+                                            <button class="btn btn1 btn-success" id="btnewsubgroup" onclick="ViewAddNewSubGroupModel()">New Sub Group</button>
+                                            <div id="divSubGroupGrid">
+                                                @Html.Action("ViewSubGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div id="SubGroup" class="tab-pane fade">
+                                            <button class="btn btn1 btn-success" id="btnewsubgroup" onclick="ViewAddNewSubGroupModel()">New Sub Group</button>
+                                            <div id="divSubGroupGrid">
+                                                @Html.Action("ViewSubGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (Model.ActiveTab == "ChildGroup")
+                                    {
+                                        <div id="ChildGroup" class="tab-pane fade in  active">
+                                            <button class="btn btn1 btn-success" id="btnewChildbgroup" onclick="ViewAddNewChildGroupModel()">New Child Group</button>
+                                            <div id="divChildGroupGrid">
+                                                @Html.Action("ViewChildGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div id="ChildGroup" class="tab-pane fade">
+                                            <button class="btn btn1 btn-success" id="btnewChildbgroup" onclick="ViewAddNewChildGroupModel()">New Child Group</button>
+                                            <div id="divChildGroupGrid">
+                                                @Html.Action("ViewChildGroupsGrid", "Ledger")
+                                            </div>
+                                        </div>
+                                    }*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="AddNewGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                @Html.Action("AddNewGroup", "Ledger")
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="EditMasterGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Nature Of Group</label>
+                            <input type="text" id="txtUpMasterGrpNature" class="form-control" readonly="readonly" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Enter Group Name</label>
+                        <input type="text" id="txtUpMasterGpName" class="form-control mgpupdatename" style="text-transform:uppercase" />
+
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnUpdatewMasterGroup" onclick="UpdateMasterGroup()" value="Submit" />
+                        <input type="text" id="txtUpMasterGpId" class="form-control" style="display:none;width:10px" />
+
+                    </div>
+                </div>
+                <div class="row col-md-12 text-center">
+                    <br />
+                    <div id="divUpdateMasterGroupInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>*@
+        </div>
+
+    </div>
+</div>
+<div id="deleteMasterGroup" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Group: </p><label id="lbldelMasterGroupname"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeleteMastergroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletegrp">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="DeleteMasterGroup()">Delete</button>
+                    <input type="text" id="txtdeleteGroupid" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AddNewSubGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Sub Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <label>Select Master Group</label>
+                                <select class="form-control dropdown-toggle" id="ddlNewSGMasterGroups" onchange="NewSGMasterGroupChange()">
+                                    <option selected="selected" value="-Please Select-">-Please Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="divaddsubgrpdetails">
+                            <div id="divAddSubGroupGrid">
+                                <div class="col-md-12 change-tab">
+                                    <div class="strike">
+                                        <span>Add SubGroups</span>
+                                    </div>
+                                    <div class="tabledynamic">
+                                        <br />
+                                        <table id="AddSubGroupTable" class="table order-list addsubgrptable">
+                                            <thead>
+                                                <tr>
+                                                    <td style="text-align:center;color:#fff !important">S.No</td>
+                                                    <td style="text-align:center;color:#fff !important">Sub Group Name</td>
+                                                    <td style="text-align:center;color:#fff !important"></td>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="text-align:center" class="addsubgroupno">1</td>
+                                                    <td style="text-align:center" class="addsubgrpname">
+                                                        <input type="text" class="form-control" style="text-transform:uppercase" />
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="button" class="btn btn-default  btn-block" value="Add New SubGroup" onclick="AddSubgroupgridnewrow();" />
+                                                    </td>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="text-right">
+                                    <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewSubGroup" onclick="SubmitNewSubGroup()" value="Submit" />
+                                    <input type="button" class="btn btn1 btn-success" id="btnResetNewSubGroup" onclick="ResetNewSubGroup()" value="Reset" />
+                                </div>
+                            </div>
+                            <div class="row col-md-12 text-center">
+                                <br />
+                                <div id="divNewSubGroupInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="EditSubGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Sub Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+                        <label>Enter Sub Group Name</label>
+                        <input type="text" id="txtUpSubGpName" class="form-control" style="text-transform:uppercase" />
+
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnUpdateSubGroup" onclick="UpdateSubGroup()" value="Submit" />
+                        <input type="text" id="txtUpSubGpId" class="form-control" style="display:none;width:10px" />
+
+                    </div>
+                </div>
+                <div class="row col-md-12 text-center">
+                    <br />
+                    <div id="divUpdateSubGroupInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>*@
+        </div>
+
+    </div>
+</div>
+<div id="deleteSubGroup" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Sub Group: </p><label id="lbldelSubGroupname"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeleteSubgroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletesubgrp">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btndeletersubgrp" onclick="DeleteSubGroup()">Delete</button>
+                    <input type="text" id="txtdeleteSubGroupid" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AddNewChildGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Child Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <form onsubmit="return false">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <label>Select Sub Group</label>
+                                <select class="form-control dropdown-toggle" id="ddlNewCGSubGroups" onchange="NewCGSubGroupChange()">
+                                    <option selected="selected" value="-Please Select-">-Please Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="divaddchildgrpdetails">
+                            <div id="divAddChildGroupGrid">
+                                <div class="col-md-12 change-tab">
+                                    <div class="strike">
+                                        <span>Add ChildGroups</span>
+                                    </div>
+                                    <div class="tabledynamic">
+                                        <br />
+                                        <table id="AddChildGroupTable" class="table order-list addchildgrptable">
+                                            <thead>
+                                                <tr>
+                                                    <td style="text-align:center;color:#fff !important">S.No</td>
+                                                    <td style="text-align:center;color:#fff !important">Child Group Name</td>
+                                                    <td style="text-align:center;color:#fff !important"></td>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="text-align:center">1</td>
+                                                    <td style="text-align:center">
+                                                        <input type="text" class="form-control" style="text-transform:uppercase" />
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="button" class="btn btn-default  btn-block" value="Add New ChildGroup" onclick="AddChildgroupgridnewrow();" />
+                                                    </td>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="text-right">
+                                    <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewChildGroup" onclick="SubmitNewChildGroup()" value="Submit" />
+                                    <input type="button" class="btn btn1 btn-success" id="btnResetNewChildGroup" onclick="ResetNewChildGroup()" value="Reset" />
+                                </div>
+                            </div>
+                            <div class="row col-md-12 text-center">
+                                <br />
+                                <div id="divNewChildGroupInfoMsg" class="alert alert-danger hidden">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div id="EditChildGroupModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Child Group</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+                        <label>Enter Child Group Name</label>
+                        <input type="text" id="txtUpChildGpName" class="form-control" style="text-transform:uppercase" />
+
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="text-right">
+                        <input type="submit" class="btn btn1 btn-success" id="btnUpdateChildGroup" onclick="UpdateChildGroup()" value="Submit" />
+                        <input type="text" id="txtUpChildGpId" class="form-control" style="display:none;width:10px" />
+                    </div>
+                </div>
+                <div class="row col-md-12 text-center">
+                    <br />
+                    <div id="divUpdateChildGroupInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<div id="deleteChildGroup" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Child Group: </p><label id="lbldelChildGroupname"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeletechildgroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletechigrp">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btndeletersubgrp" onclick="DeleteChildGroup()">Delete</button>
+                    <input type="text" id="txtdeleteChildGroupid" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="GrouptreeModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 class="modal-title">Groups and SubGroups</h5>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="col-md-10">
+                    @Html.Action("GroupsTreeView", "Ledger")
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+ $(document).ready(function () {
+     var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);
+     });
+</script>

@@ -1,0 +1,58 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.ItemCodeCreation>
+<div class="table-responsive">
+    <table id="tblitemcodeGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th>Item Code</th>
+                <th>Specification</th>
+                <th>Units</th>
+                <th>DCA</th>
+                <th>Basic Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ItemCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Specification)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Units)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ItemcodeDca)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Basicprice)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ItemCodeGrid = null;
+        InitializeAppritemcodeGrid();
+    });
+    function InitializeAppritemcodeGrid() {
+        ItemCodeGrid = $('#tblitemcodeGrid').DataTable({
+            //info: true,
+            //destroy: true,
+            //paging: true,
+            ////lengthChange: true,
+            //searching: false,
+            //ordering: true,
+            //pagingType: false,  
+            language: {
+                "emptyTable": "No Records Found"
+            },
+        });
+    }
+
+</script>

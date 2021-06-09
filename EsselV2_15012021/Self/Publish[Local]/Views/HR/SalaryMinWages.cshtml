@@ -1,0 +1,570 @@
+﻿@model EsselTestLocalApplication.Models.HR.SalaryMinWages
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.EffectiveDate)
+            @Html.TextBoxFor(model => model.EffectiveDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtSWEffectDate", @readOnly = "true" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(model => model.StaffType)
+        @Html.DropDownListFor(model => model.StaffType, new SelectList(Model.Stafftypelist, "StafftypeName", "StafftypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSWStafftype", onchange = "SWStafftypeChange()" })
+    </div>
+    <div id="divstaffCategory">
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.CategoryName)
+            @Html.DropDownListFor(model => model.CategoryName, new SelectList(Model.SWCategorysList, "CategoryId", "CategoryName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSWCategory" })
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.State)<br />
+                @Html.ListBoxFor(model => model.State, new SelectList(Model.SWStatesList, "State_ID", "State_Name"), new { @class = "listbox form-control", @id = "ddlMultiSWState" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3" id="divlabourstates">
+        <div class="form-group">
+            @Html.LabelFor(model => model.State)<br />
+            @Html.ListBoxFor(model => model.State, new SelectList(Model.SWLabourStatesList, "State_ID", "State_Name"), new { @class = "listbox form-control", @id = "ddlMultiSWLState" })
+        </div>
+    </div>
+
+</div>
+<div>
+    <hr/>
+</div>
+<div id="divSalary">
+    @*//Salary*@
+    <div class="row" id="divAddSalaryHead">
+        <div class="col-md-1"></div>
+        <div class="col-md-1">           
+            @Html.LabelFor(model => model.SalaryBasic)
+        </div>
+        <div class="col-md-3">
+            @Html.TextBoxFor(model => model.SalaryBasic, htmlAttributes: new { @class = "form-control", @id = "txtSalaryBasic", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+    </div>
+    <div class="row">
+        <br/>
+        <br/>
+        <div class="col-md-1"></div>
+        <div id="divSalHeads" class="col-md-7">
+            <div class="col-md-12 change-tab">
+                <div class="strike">
+                    <span style="width:25% !important ">Salary Heads</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="SalaryHeadTable" class="table order-list salheadtable">
+                        <thead>
+                            <tr>
+                                <td style="text-align:center;color:#fff !important">S.No</td>
+                                <td style="text-align:center;color:#fff !important">Head Name</td>
+                                <td style="text-align:center;color:#fff !important">Head Type</td>
+                                <td style="text-align:center;color:#fff !important">Percentage/Amount</td>
+                                <td style="text-align:center;color:#fff !important"><label>Percentage</label></td>
+
+                                <td style="text-align:center"></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center">1</td>
+                                <td style="text-align:center">
+                                    <input type="text" class="form-control headname" style="text-transform:uppercase" />
+                                </td>
+
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle headtype">
+                                        <option selected="selected" value="Select">Select</option>
+                                        <option value="Earning">Earning</option>
+                                        <option value="Deduction">Deduction</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle Peroramt">
+                                        <option value="Select">Select</option>
+                                        <option value="Percentage">Percentage</option>
+                                        <option value="Rs">Rs</option>
+                                        <option selected="selected" value="None">None</option>
+                                    </select>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="text" class="form-control Percentage" style="text-transform:uppercase" onkeypress="return IsNumeric(event)" disabled/>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" value="Add New" onclick="AddSalaryHeaddnewrow();" />
+                                </td>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+
+
+    </div>
+    <div class="row rowspace">
+        <div class="col-md-1"></div>
+        <div class="col-md-2"></div>
+        <div class="col-md-4 ">
+            <br />
+            <button class="btn btn1 btn-success" id="btnSalaryHeadSubmit" onclick="SubmitSalaryHeadData()">Submit</button>
+            <button class="btn btn1 btn-success" id="btnSalaryHeadReset" onclick="ResetSalaryHeadData()">Reset</button>
+        </div>
+    </div>
+    <div class="row rowspace">
+        <div class="text-center">
+            <br />
+            <div id="divSalaryHeadInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+    <div class="row" id="divGridSalaryHead">
+        @Html.Action("GetAllBasicSalaryHeads", "HR")
+    </div>
+</div>
+<div id="divLabour">
+    @*//labour*@    
+    <div class="row">
+          
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.Amount)
+            @Html.TextBoxFor(model => model.Amount, htmlAttributes: new { @class = "form-control", @id = "txtMinWageAmount", onkeypress = "return ValidateAmount(this,event);" })
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.SkillType)
+            @Html.DropDownListFor(model => model.SkillType, new SelectList(Model.SkillCategorylist, "SkillName", "SkillName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlMinWageSkillName" })
+        </div>
+    </div>
+    <div class="row rowspace">
+        <div class="col-md-12 text-right">
+            <br />
+            <button class="btn btn1 btn-success" id="btnMinWageSubmit" onclick="SubmitMinWageData()">Submit</button>
+            <button class="btn btn1 btn-success" id="btnMinWageReset" onclick="ResetMinWageData()">Reset</button>
+            <br />
+            <input type="hidden" id="txtActiontype" />
+        </div>
+    </div>
+    <div class="row rowspace">
+        <div class="text-center">
+            <br />
+            <div id="divMinWageInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+    <div id="MinWageGrid">
+        @Html.Action("GetAllMinWages", "HR")
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divSalary").addClass('hidden');
+        $("#divLabour").addClass('hidden');
+        $("#divstaffCategory").addClass('hidden');
+        $("#ddlSWCategory").prop("disabled", false);
+        $("#divlabourstates").addClass('hidden');
+        $('.listbox').multiselect({
+            includeSelectAllOption: true
+        });
+        $("#txtSWEffectDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",           
+            yearRange: "-100:+1",
+        });
+        $("table.order-list.salheadtable").on("click", ".ibtnSalHeadDel", function (event) {
+            var row = $(this).closest("tr");
+            row.remove();
+            $("#divSalaryHeadInfoMsg").text("");
+            $("#divSalaryHeadInfoMsg").addClass("hidden");
+        });
+        $('table.order-list.salheadtable').on('change', '.Peroramt', function () {
+            var index = $(this).find("option:selected").index();
+            var row = $(this).closest('tr'); // get the row
+            if (index == 0 || index == 3) {
+                row.find('.Percentage').prop('disabled', true);
+                row.find('.Percentage').val(""); // get the other select in the same row
+            }
+            else { row.find('.Percentage').prop('disabled', false);  }
+          
+        });
+    });
+    function SWStafftypeChange() {
+        let staffindex = $("#ddlSWStafftype option:selected").index();
+        let staff = $("#ddlSWStafftype option:selected").text();
+        if (staffindex == 0) {
+            $("#divSalary").addClass('hidden');
+            $("#divLabour").addClass('hidden');
+            $("#divlabourstates").addClass('hidden');
+        }
+        else {
+            $("#ddlSWCategory").prop("disabled", true);
+            if (staff === "Labour") {
+                $("#divSalary").addClass('hidden');
+                $("#divLabour").removeClass('hidden');
+                $("#divstaffCategory").addClass('hidden');
+                $("#divlabourstates").removeClass('hidden');
+                
+            }
+            else {
+                $("#divSalary").removeClass('hidden');
+                $("#divLabour").addClass('hidden');
+                $("#divstaffCategory").removeClass('hidden');
+                $("#ddlSWCategory").prop("disabled", false);
+                $("#divlabourstates").addClass('hidden');
+            }
+        }
+    }
+    function ResetSalaryHeadData() {
+        $('#SalMinWage').trigger('click');
+    }
+    function ResetMinWageData() {
+        $('#SalMinWage').trigger('click');
+    }
+    function AddSalaryHeaddnewrow() {
+        var list = [];
+        isValid = true;
+        var errorMsg = "";
+        let headcount = 0, headtypecount = 0,percount=0,amountcount=0;
+        $("#SalaryHeadTable tbody tr").each(function () {           
+            var currentRow = $(this);
+            var headname = currentRow.find("td").eq(1).find("input[type='text']").val();
+            var headtype = currentRow.find("td").eq(2).find("select option:selected").index();
+            var peroramtindex = currentRow.find("td").eq(3).find("select option:selected").index();
+            var amount = currentRow.find("td").eq(4).find("input[type='text']").val();
+            if (headname == 0) {
+                headcount = headcount + 1;
+            }
+            else {
+                list.push(headname);
+            }
+            if (headtype === 0) {
+                headtypecount = headtypecount + 1;
+            }
+            if (peroramtindex == 0) { percount = percount + 1; }
+            else if ((peroramtindex === 2 || peroramtindex === 1 ) && (amount === "" || amount === 0)) {
+            amountcount = amountcount + 1;
+            }
+        });
+        if (headcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Head Name</p>";
+            isValid = false;
+        }
+        else {
+            var duplicatelist = list.filter(i => list.filter(ii => ii === i).length > 1);
+            if (duplicatelist.length > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Salary Heads Entered</p>";
+                isValid = false;
+            }
+        }
+        if (headtypecount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Type</p>";
+            isValid = false;
+        }
+        if (percount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Percentage/Amount</p>";
+            isValid = false;
+        }
+        if (amountcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Percentage/Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSalaryHeadInfoMsg").text("");
+            $("#divSalaryHeadInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+            $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divSalaryHeadInfoMsg").text("");
+            $("#divSalaryHeadInfoMsg").addClass("hidden");
+            var count = $("#SalaryHeadTable tbody tr").length;
+            var rowno = count + 1;
+            var newRow = $("<tr>");
+            var cols = "";
+            cols += '<td style="text-align:center">' + rowno + '</td>';
+            cols += '<td style="text-align:center"><input type="text" class="form-control headname" style="text-transform:uppercase" /></td>';
+            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle headtype">';
+            cols += ' <option selected="selected" value="Select">Select</option> <option value="Earning">Earning</option><option value="Deduction">Deduction</option></select ></td>';
+           
+            cols += '<td style="text-align:center"><select class="form-control dropdown-toggle Peroramt"><option value="Select">Select</option>';
+            cols += '<option value="Percentage">Percentage</option><option value="Rs">Rs</option><option selected="selected" value="None">None</option></select></td>';
+            cols += '<td style="text-align:center"><input type="text" class="form-control Percentage" style="text-transform:uppercase" onkeypress="return IsNumeric(event)" disabled/></td>';
+            cols += '<td><input type="button" class="ibtnSalHeadDel btn btn-md btn-danger" value="Delete"></td>';
+            newRow.append(cols);
+            $("table.order-list.salheadtable").append(newRow);
+        }
+
+    }
+    function SubmitSalaryHeadData() {
+        var list = [];
+        isValid = true;
+        var errorMsg = "";
+        var effectivedate = $("#txtSWEffectDate").val();
+        var categoryindex = $("#ddlSWCategory option:selected").index();
+        var staffindex = $("#ddlSWStafftype option:selected").index();
+        var swstates = $('#ddlMultiSWState > option:selected');
+        var basicsal = $("#txtSalaryBasic").val();
+
+        if (staffindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select StaffType</p>";
+            isValid = false;
+        }
+        if (effectivedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+            isValid = false;
+        }
+        if (categoryindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+            isValid = false;
+        }
+        if (swstates.length === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select States</p>";
+            isValid = false;
+        }
+        if (basicsal === "" || basicsal === "0" || basicsal === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Basic Salary</p>";
+            isValid = false;
+        }
+        let headcount = 0, headtypecount = 0, percount = 0, amountcount = 0;
+        $("#SalaryHeadTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var headname = currentRow.find("td").eq(1).find("input[type='text']").val();
+            var headtype = currentRow.find("td").eq(2).find("select option:selected").index();
+            var peroramtindex = currentRow.find("td").eq(3).find("select option:selected").index();
+            var amount = currentRow.find("td").eq(4).find("input[type='text']").val();
+            if (headname == 0) {
+                headcount = headcount + 1;
+            }
+            else {
+                list.push(headname);
+            }
+            if (headtype === 0) {
+                headtypecount = headtypecount + 1;
+            }
+            if (peroramtindex == 0) { percount = percount + 1; }
+            else if ((peroramtindex === 2 || peroramtindex === 1) && (amount === "" || amount === 0)) { amountcount = amountcount + 1;}
+        });
+        if (headcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Head Name</p>";
+            isValid = false;
+        }
+        else {
+            var duplicatelist = list.filter(i => list.filter(ii => ii === i).length > 1);
+            if (duplicatelist.length > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Salary Heads Entered</p>";
+                isValid = false;
+            }
+        }
+        if (headtypecount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Head Type</p>";
+            isValid = false;
+        }
+        if (percount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Percentage/Amount</p>";
+            isValid = false;
+        }
+        if (amountcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Percentage/Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divSalaryHeadInfoMsg").text("");
+            $("#divSalaryHeadInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+            $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divSalaryHeadInfoMsg").text("");
+            $("#divSalaryHeadInfoMsg").addClass("hidden");
+
+            let heads = '', headtypes = '',percents='',Peroramt='';
+            $("#SalaryHeadTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var headname = currentRow.find("td").eq(1).find("input[type='text']").val();
+                var headtype = currentRow.find("td").eq(2).find("select option:selected").val();
+                var peroramtindex = currentRow.find("td").eq(3).find("select option:selected").index();
+                var peroramt = currentRow.find("td").eq(3).find("select option:selected").val();
+                var amount = currentRow.find("td").eq(4).find("input[type='text']").val();
+               
+                heads += headname + ',';                
+                headtypes += headtype + ',';                
+                //if (peroramtindex === 0 || peroramtindex === 3) {
+                //    percents += '0,';
+                //}
+                //else { percents += percent + ','; } 
+                if (peroramtindex === 0 || peroramtindex === 3) {
+                    percents += peroramt + ',';
+                    Peroramt += '0,';
+                }
+                else {
+                    percents += peroramt + ',';
+                    Peroramt += amount + ','; } 
+            });
+            let catid = 0;
+            if (categoryindex == 1) {
+                catid = 0;
+            }
+            else {
+                catid = $("#ddlSWCategory option:selected").val();
+            }
+            
+            var statecount = $('#ddlMultiSWState option').length;
+            var Selectedstatecount = $('#ddlMultiSWState option:selected').length;
+            var SelectedState = '';
+            if (Selectedstatecount === statecount) {
+                SelectedState = 0;//all selected
+            }
+            else {
+                SelectedState = $('#ddlMultiSWState option:selected').toArray().map(item => item.value).join() + ',';
+            }
+            var SalData = {
+                CategoryId: catid,
+                State: SelectedState,
+                EffectiveDate: $("#txtSWEffectDate").val(),
+                HeadNames: heads,
+                HeadTypes: headtypes,
+                PercentageorAmounts: Peroramt,
+                PercentageorAmountstypes: percents,
+                SalaryBasic: $("#txtSalaryBasic").val(),
+                StaffType:'Staff'
+            };
+          var  addFailMsg = "Error Occurred While Adding.";
+         
+                   $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/SaveHRSalaryRules',
+                    data: { objHRRules: SalData },
+                    success: function (Data) {
+                        if (Data.saveStatus === 'Submited') {                        
+                            //$("#divSalaryHeadInfoMsg").text("Rule Added Successfully");
+                            //$("#divSalaryHeadInfoMsg").removeClass("hidden alert-danger");
+                            //$("#divSalaryHeadInfoMsg").addClass("alert-success");
+                            //location.reload();
+                            //$('.nav-tabs li:eq(1) a').tab('show');
+                            //location.reload();
+                            //$('.nav-tabs li:eq(1) a').tab('show');
+                            $('#SalMinWage').trigger('click');
+                        }
+                        else {                           
+                            $("#divSalaryHeadInfoMsg").append("<div>" + Data.saveStatus + "</div>");
+                            $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+                            $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {                        
+                        $("#divSalaryHeadInfoMsg").append("<div>" + addFailMsg + "</div>");
+                        $("#divSalaryHeadInfoMsg").addClass("alert-danger");
+                        $("#divSalaryHeadInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+        }
+    }
+    function SubmitMinWageData() {
+        isValid = true;
+        var errorMsg = "";
+        var effectivedate = $("#txtSWEffectDate").val();
+        var skillindex = $("#ddlMinWageSkillName option:selected").index();
+        var swstates = $('#ddlMultiSWLState > option:selected');
+        var basicsal = $("#txtMinWageAmount").val();
+        var staffindex = $("#ddlSWStafftype option:selected").index();
+        if (effectivedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Effective Date</p>";
+            isValid = false;
+        }
+        if (skillindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Skill Type</p>";
+            isValid = false;
+        }
+        if (swstates.length === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select States</p>";
+            isValid = false;
+        }
+        if (basicsal === "" || basicsal === "0" || basicsal === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Min Wage</p>";
+            isValid = false;
+        }
+        if (staffindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select StaffType</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divMinWageInfoMsg").text("");
+            $("#divMinWageInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divMinWageInfoMsg").addClass("alert-danger");
+            $("#divMinWageInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divMinWageInfoMsg").text("");
+            $("#divMinWageInfoMsg").addClass("hidden");            
+           
+            debugger;
+            var statecount = $('#ddlMultiSWLState option').length;
+            var Selectedstatecount = $('#ddlMultiSWLState option:selected').length;
+            var SelectedState = '';
+            //if (Selectedstatecount === statecount) {
+            //    SelectedState = 0;//all selected
+            //}
+            //else {
+            SelectedState = $('#ddlMultiSWLState option:selected').toArray().map(item => item.value).join() + ',';
+           // }
+            var SalData = {                
+                State: SelectedState,
+                EffectiveDate: $("#txtSWEffectDate").val(),
+                SkillType: $("#ddlMinWageSkillName option:selected").val(),                
+                SalaryBasic: $("#txtMinWageAmount").val(),
+                StaffType: 'Labour'
+            };
+            var addFailMsg = "Error Occurred While Adding.";
+            debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/SaveHRSalaryRules',
+                data: { objHRRules: SalData },
+                success: function (Data) {
+                    if (Data.saveStatus === 'Submited') {
+                      
+                        location.reload();
+                        $('.nav-tabs li:eq(1) a').tab('show');
+                        $('#SalMinWage').trigger('click');
+                        //$("#divMinWageInfoMsg").text("Rule Added Successfully");
+                        //$("#divMinWageInfoMsg").removeClass("hidden alert-danger");
+                        //$("#divMinWageInfoMsg").addClass("alert-success");
+                    }
+                    else {
+
+                        $("#divMinWageInfoMsg").append("<div>" + Data.saveStatus  + "</div>");
+                        $("#divMinWageInfoMsg").addClass("alert-danger");
+                        $("#divMinWageInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divMinWageInfoMsg").append("<div>" + addFailMsg + "</div>");
+                    $("#divMinWageInfoMsg").addClass("alert-danger");
+                    $("#divMinWageInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    
+</script>

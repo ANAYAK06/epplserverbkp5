@@ -1,0 +1,105 @@
+﻿@model List<EsselTestLocalApplication.Models.AddTermLoan>
+<div class="table-responsive">
+    <table id="tblAgencycodesCRRGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="hidden">ID</th>
+                <th>Agency Code</th>
+                <th>Agency Name</th>
+                <th>Nature Of Group</th>
+                <th>Actions</th>
+              
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AgencyId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AgencyName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NatureGroupName)
+                    </td>
+                    
+                    <td>
+                        @if (item.AgencyStatus == "Approved" && (item.CloseStatus == "Rejected" || item.CloseStatus == null))
+                        {
+                            <select class="form-control dropdown-toggle" id="ddlAgencycodegridaction" onchange="TLAgencygridActionChange(@item.ID,'@item.AgencyId','@item.AgencyName','@item.AgencyAddress','@item.NatureGroupName','@item.GroupId','@item.GroupName',@item.SubGroupId,'@item.SubGroupName', this)">
+                                <option selected="selected" value="Select">Select</option>
+                            </select>
+                        }
+                        </td>
+                    
+                  
+
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<div class="modal fade" id="closeAgencycodeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+</div>
+
+<script src="~/Scripts/moment.js"></script>
+<script>
+    $(document).ready(function () {
+        var AgencyCRRGrid = null;
+        InitializeagencycodeAgencyCRRGrid();
+
+    });
+    function InitializeagencycodeAgencyCRRGrid() {
+        AgencyCRRGrid = $('#tblAgencycodesCRRGrid').DataTable({
+            info: false,
+            destroy: false,
+            retrieve: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,            
+            language: {
+                "emptyTable": "No Agency Found"
+            },
+            "createdRow": function (row, data, index) {
+                 var ddlAction1 = $('td:eq(4)', row).find("select");
+                ddlAction1.empty().append('<option selected="selected" value="0">-Select-</option>');
+                var Roleid = '@Session["Roleid"]';
+                var Mid = 'Agency';
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GetApprovalstatusIT",
+                    data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var count = Object.keys(response).length;                       
+                        if (count > 0) {
+                            $.each(response, function () {
+                                
+                                ddlAction1.append($("<option></option>").val(this['Value']).html(this['Text']));
+                            });
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            },
+            
+        });
+
+    }
+</script>

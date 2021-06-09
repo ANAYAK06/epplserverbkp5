@@ -1,0 +1,93 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.UserData
+@{
+    ViewBag.Title = "SPPOInvoiceReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Reports")
+@Styles.Render("~/bundles/Accounts/css")
+@Styles.Render("~/bundles/Reports/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">SPPO Invoice Report</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            @if (Model.ApplicableForCC == "Yes")
+                            {
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-2 text-center">
+                                        @Html.LabelFor(model => model.CostCenter)
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5">
+
+                                        <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewSPPOInvoiceReport" onclick="ShowSPPOInvoivceReport('@Model.ApplicableForCC')" />
+                                        <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetSPPOInvoiceReport" onclick="ResetSPPOInvoivceReport()" />
+
+                                    </div>
+                                </div>
+                            }
+                            <div id="divSppoInvRptGrid" class="col-md-12">
+                                <div id="divSppoInvRptDetails" class="col-md-12">
+                                </div>
+
+                            </div>
+                            <div class="col-md-12">
+                                <div class="text-center">
+                                    <br />
+                                    <div id="divInvReportInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        $(document).ready(function () {
+            //debugger;
+            $("#divSppoInvRptGrid").addClass("hidden");
+            var applicablecc = '@Model.ApplicableForCC';
+            if (applicablecc==="No") {
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'html',
+                    url: '/Reports/ViewInvoiceGrid',
+                    data: { CCCode: "", ApplicableCC: applicablecc },
+                    success: function (Data) {
+                        var count1 = Object.keys(Data).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divSppoInvRptDetails").html(Data);
+                            $("#divSppoInvRptGrid").removeClass('hidden');
+
+                        }
+                        else {
+                            $("#divSppoInvRptDetails").html('No Data Found');
+                            $("#divSppoInvRptGrid").removeClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                        alert("error");
+                    }
+                });
+
+            }
+        });
+    </script>
+
+

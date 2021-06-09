@@ -1,0 +1,123 @@
+﻿
+@model EsselTestLocalApplication.Models.ReportParameters.StockReconcilSummaryData
+<style>
+    .tdclass {
+        text-align: center;
+    }
+</style>
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                @if (Model.summaryList.Count > 0)
+                {
+              
+                    <div align="right" class="col-md-12">
+                        <span>Export to : </span>
+                        <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelPopupGrid();" />
+                        <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfPopupGrid();" />
+
+                    </div>
+               
+                    <div class="col-md-12">
+                        <br />
+                        <br />
+                        <div class="row change-tab text-right">
+                            <div class="tabledynamic">
+                                <br />
+                                <table style="width:100%;border:1px solid gray" class="table order-list">
+                                    <thead>
+                                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                            <th style="text-align:center;color:#fff"> Cost Center</th>
+                                            <th style="text-align:center;color:#fff"> Quantity</th>
+                                            <th style="text-align:center;color:#fff"> No</th>
+                                            <th style="text-align:center;color:#fff">Date </th>
+                                            <th style="text-align:center;color:#fff">PONo </th>
+                                            <th style="text-align:center;color:#fff">Remarks</th>
+                                            <th style="text-align:center;color:#fff">Item Code</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int count = 1; }
+                                        @foreach (var item in Model.summaryList)
+                                        {
+                                            <tr>
+                                                <td class="tdclass">@item.RecievedCC</td>
+                                                <td class="tdclass">@item.quantity</td>
+                                                <td class="tdclass">@item.No</td>
+                                                <td class="tdclass">@item.Date</td>
+                                                <td class="tdclass">@item.po_no</td>
+                                                <td class="tdclass">@item.remarks</td>
+                                                <td class="tdclass">@item.ItemCode</td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    </tbody>
+                                    <tfoot>
+
+                                    </tfoot>
+                                </table>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div>No Data Found</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function ExportExcelPopupGrid() {
+         var CC = '@Model.cccode';
+                var ItemCode = '@Model.itemcode';
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportExcelPopupGrid',
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+
+                link.download =  CC + " ,Itemcode:" + ItemCode+" ReconcilationReport.xlsx";
+
+                link.click();
+            },
+            error: function (err) {
+            }
+        });
+    }
+    function ExportpdfPopupGrid() {
+         var CC = '@Model.cccode';
+                var ItemCode = '@Model.itemcode';
+        $.ajax({
+            type: 'POST',
+            url: '/Reports/ExportpdfPopupGrid',
+            data: { CCCode: CC, ItemCode: ItemCode },
+            success: function (filedata) {
+                var bytes = new Uint8Array(filedata.FileContents);
+                var blob = new Blob([bytes], {
+                    type: "application/pdf"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+
+                link.download =  CC + " ,Itemcode:" + ItemCode +" ReconcilationReport.pdf";
+                link.click();
+            },
+            error: function (err) {
+            }
+        });}
+</script>

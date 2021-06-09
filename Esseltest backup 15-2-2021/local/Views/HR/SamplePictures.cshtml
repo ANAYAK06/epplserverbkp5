@@ -1,0 +1,172 @@
+﻿@model EsselTestLocalApplication.Models.SamplePictureData
+@{
+    ViewBag.Title = "SamplePictures";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@*<h2>SamplePictures</h2>*@
+
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            @Html.LabelFor(model => model.spdata.DocName)
+            @Html.TextBoxFor(model => model.spdata.DocName, htmlAttributes: new { @class = "form-control", @id = "txtDocName" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="control-label">Select File</label><span style="color:red">*</span>
+            <input type="file" class="form-control col-md-2" title="search image" id="DocumentId" name="file" onchange="show(this)" />
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="row">
+            <div class="form-group">
+                <img id="user_img" height="170" width="170" />
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row text-right">
+    <button class="btn btn1 btn-success" id="btnewDocSubmit" onclick="SubmitNewEmpDoumentData()">Submit</button>
+    <button class="btn btn1 btn-success" id="btnewnewDocReset" onclick="ClearNewClearNewDocumentModel()">Reset</button>
+    <input type="text" id="txturl"/>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divAddNewDocInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divData">
+        @*@Html.Action("SamplePictureGrid", "HR")*@
+    </div>
+@*<img id="user_img1" height="170" width="170" />*@
+<div id="image-placeholder"></div>
+<script>
+
+    function show(input) {
+        
+        if (input.files && input.files[0]) {
+            var numb = input.files[0].size/1024/1024;
+            numb = numb.toFixed(2);
+            if (numb > 2) {
+                alert('to big, maximum is 2MiB. You file size is: ' + numb + ' MiB');
+            } else {
+                alert('it okey, your file has ' + numb + 'MiB')
+            
+
+            var filerdr = new FileReader();
+            filerdr.onload = function (e) {
+                //$('#user_img').attr('src', e.target.result);
+                 $('#user_img').attr('src', e.target.result);
+                //alert(e.target.result);
+               
+                //$("#user_img").attr('src', URL.createObjectURL(e.target.result));
+                //console.log(URL.createObjectURL(event.target.files[0]));
+            }
+            filerdr.readAsDataURL(input.files[0]);
+            $("#txturl").val(URL.createObjectURL(input.files[0]));
+            }
+        }
+    }
+    function getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        var dataURL = canvas.toDataURL("image/png");
+        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+    function SubmitNewEmpDoumentData() {       
+        var base64 = getBase64Image(document.getElementById("user_img"));
+      //  console.log("base64:===" + base64);
+        //var imgpath = $("#DocumentId").val(); var imgbytes = "", imgbytes1 = "";
+        //if (imgpath !== null || imgpath !== "") {
+        //    var myCanvas = $('<canvas/>');
+        //    var myImageSrc = myCanvas.attr('src', imgpath);
+        //    myCanvas.attr('src', myImageSrc);
+        //    var dataInBase64 = $(myCanvas)[0].toDataURL('image/png').replace(/data\:image\/png;base64,/, '');
+        //    imgbytes = binEncode(dataInBase64);
+        //    imgbytes1 = "data:image/png;base64," + dataInBase64;
+        //   console.log(imgpath);
+        //}
+        //$('#user_img1').attr('src', 'data:image/png;base64,' + imgbytes1);
+        // image placeholder where the image will be displayed
+       // var imagePlaceholder = document.getElementById('image-placeholder');
+
+        // display the image in placeholder
+     //   displayBase64Image(imagePlaceholder, imgbytes);
+        var data = {
+            DocName: $("#txtDocName").val(),
+            DocBinaryData: base64,
+            Path: $("#txturl").val()
+        };
+        // debugger;
+        addFailMsg = "Error Occurred While Adding.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/HR/InsertSampleData',
+            data: { docData: data },
+            success: function (Data) {
+                // alert("Hi");
+                if (Data.saveStatus === "Submited") {
+                    $("#divData").load('/HR/SamplePictureGrid');
+                    $("#divAddNewDocInfoMsg").text("Added Successfully");
+                    $("#divAddNewDocInfoMsg").removeClass("hidden alert-danger");
+                    $("#divAddNewDocInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#divAddNewDocInfoMsg").text(Data.saveStatus);
+                    $("#divAddNewDocInfoMsg").addClass("alert-danger");
+                    $("#divAddNewDocInfoMsg").removeClass("hidden alert-success");
+                }
+                //$("#btnewDocSubmit").prop('disabled', true);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divAddNewDocInfoMsg").text(addFailMsg);
+                $("#divAddNewDocInfoMsg").addClass("alert-danger");
+                $("#divAddNewDocInfoMsg").removeClass("hidden alert-success");
+               // $("#btnewDocSubmit").prop('disabled', true);
+            }
+        });
+
+    }
+    function binEncode(data) {
+        var binArray = []
+        var datEncode = "";
+
+        for (i = 0; i < data.length; i++) {
+            binArray.push(data[i].charCodeAt(0).toString(2));
+        }
+        for (j = 0; j < binArray.length; j++) {
+            var pad = padding_left(binArray[j], '0', 8);
+            datEncode += pad + ' ';
+        }
+        function padding_left(s, c, n) {
+            if (!s || !c || s.length >= n) {
+                return s;
+            }
+            var max = (n - s.length) / c.length;
+            for (var i = 0; i < max; i++) {
+                s = c + s;
+            } return s;
+        }
+
+        return binArray;
+    }
+    function displayBase64Image(placeholder, base64Image) {
+        var image = document.createElement('img');
+        image.onload = function () {
+            placeholder.innerHTML = '';
+            placeholder.appendChild(this);
+        }
+        image.src = base64Image;
+    }
+</script>

@@ -1,0 +1,144 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.ItemCodeCreation>
+<div class="table-responsive w-100">
+    <table id="tblApproveicGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Item Code</th>
+                <th>Item Name</th>
+                <th>Basic Price</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Rowid)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ItemCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Itemname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Basicprice)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var ApproveicGrid = null;
+            InitializeAppricGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+        $("#txtAppricCreatedby").val(Sessioncreated);
+            var SessionRole = '@Session["Roleid"]';
+        $("#txtAppricRole").val(SessionRole);
+        });
+    function InitializeAppricGrid() {
+        ApproveicGrid = $('#tblApproveicGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row) {
+            },
+                pageLength: 10
+            });
+        $('#tblApproveicGrid tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+            var row = ApproveicGrid.row(tr);
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    closeOpenedRows(ApproveicGrid, tr);
+                // Open this row
+                    row.child(formatApprhsn(row.data())).show();
+                    tr.addClass('shown');
+                    openRows.push(tr);
+                }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprhsn(d) {
+        var htmltext;
+        var Rid, transstatus;;
+        $.each(d, function (index, value) {
+            if (index == 1)
+                Rid = value;
+            if (index == 5)
+                transstatus = value;
+        });
+        var divid = "divappric" + Rid;
+        var divid1 = $("#" + divid + "");
+        $("#currenticid").val(Rid);
+        if (transstatus == 0) {
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/UpdateItemCodeView',
+                data: { Rowid: Rid },
+                success: function (Data) {
+                    var divid2 = "divappric" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        else {            
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Purchase/VerifyitemcodeView',
+                data: { Rowid: Rid },
+                success: function (Data) {
+                    var divid2 = "divappric" + Rid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+        return '<div id="divappric' + Rid + '"></div>';
+    }
+</script>
+
+

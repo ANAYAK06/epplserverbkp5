@@ -1,0 +1,225 @@
+﻿@model EsselTestLocalApplication.Models.ReportParameters.AccruedInterest
+    @{
+        ViewBag.Title = "AccruedInterestReport";
+        Layout = "~/Views/Shared/EsselMaster.cshtml";
+    }
+    @Scripts.Render("~/bundles/datepicker/js")
+    @Styles.Render("~/bundles/datepicker/css")
+    @Scripts.Render("~/bundles/Reports")
+    @Styles.Render("~/bundles/Accounts/css")
+
+    @*<h2>AccruedInterestReport</h2>*@
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align:left;font-weight:bold">Accrued Interest</h4>
+                    </div>
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <div class="card-inner">
+                                    <div class="col-md-12">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.CostCenter)
+                                                @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAIRptCC",onchange = "RptCCChange()" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" id="divRptFromdate">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.FromDate)
+                                                @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtAIFromDate", @class = "form-control date-picker", type = "text", @readonly = true,value="" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3" id="divRptTodate">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.ToDate)
+                                                @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txtAIToDate", @class = "form-control date-picker", type = "text", @readonly = true, value = "" })
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-3" id="divAIRptBtns">
+                                            <div class="form-group">
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-md-3  text-center">
+                                                        <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnViewLedgerRpt" onclick="ShowAccruedInterestReport()" />
+                                                    </div>
+                                                    <div class="col-md-3  text-center">
+                                                        <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetLedgerRpt" onclick="ResetAccruedInterestReport()" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" id="divLedgerRptGrid">
+                                        <div class="col-md-12" id="greenmsg">
+                                            <span style="color:forestgreen;font-weight:bold;font-size:12px">*Note:Configuration Accrued Interest Percent for CC:<label id="lblCC"></label> is <label id="lblinterest"></label></span>
+                                        </div>
+                                        <div class="col-md-12" id="redmsg">
+                                            <span style="color:red;font-weight:bold;font-size:12px">*Note:Configuration Accrued Interest Percent Not Exist</span>
+                                        </div>
+                                        <div id="divMainGrid">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <div id="divAIRptInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#greenmsg").addClass("hidden");
+            $("#redmsg").addClass("hidden");
+            $("#txtAIFromDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtAIToDate").datepicker("option", "minDate", selectedDate);
+                }
+            });
+            $("#txtAIToDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                maxDate: 'dateToday'
+            });
+        });
+        function ResetAccruedInterestReport() {
+            location.reload();
+        }
+        function ShowAccruedInterestReport() {
+            isValid = true;
+            var errorMsg = "";
+            var CCindex = $("#ddlAIRptCC option:selected").index();
+            var CC = $("#ddlAIRptCC option:selected").val();
+            var fdate = $("#txtAIFromDate").val();
+            var todate = $("#txtAIToDate").val();
+            if (CCindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                isValid = false;
+            }
+            //if (fdate === 0) {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            //    isValid = false;
+            //}
+            //if (todate === 0) {
+            //    errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            //    isValid = false;
+            //}
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAIRptInfoMsg").text("");
+                $("#divAIRptInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAIRptInfoMsg").addClass("alert-danger");
+                $("#divAIRptInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAIRptInfoMsg").text("");
+                $("#divAIRptInfoMsg").addClass("hidden");
+                $("#divMainGrid").removeClass('hidden');
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'html',
+                    url: '/Reports/AccruedInterestReportGrid',
+                    data: { CCCode: CC, FromDate: fdate, ToDate: todate },                    
+                    success: function (Data) {
+                        var count1 = Object.keys(Data).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divMainGrid").html(Data);
+                            $("#divMainGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divMainGrid").html('No Data Found');
+                            $("#divMainGrid").removeClass('hidden');
+                        }                       
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                       
+                        alert("error");
+                    }
+                });
+            }
+           
+        }
+        function RptCCChange() {
+
+            isValid = true;
+            var errorMsg = "";
+            var CCindex = $("#ddlAIRptCC option:selected").index();
+            var CC = $("#ddlAIRptCC option:selected").val();
+           
+            if (CCindex === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAIRptInfoMsg").text("");
+                $("#divAIRptInfoMsg").append(finalerror + errorMsg + "</div>");
+                $("#divAIRptInfoMsg").addClass("alert-danger");
+                $("#divAIRptInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divAIRptInfoMsg").text("");
+                $("#divAIRptInfoMsg").addClass("hidden");
+                $("#divMainGrid").removeClass('hidden');
+                $.ajax({
+                    type: "POST",
+                    url: "/Reports/GetAccruedInterestbyCC",
+                    data: '{CCCode:"' + CC + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                      
+                        var amount = response.InterestRate;
+                        if (parseFloat(amount) !== 0) {
+                            $("#lblCC").html(CC);
+                            $("#lblinterest").html(parseFloat(amount));
+                            $("#greenmsg").removeClass("hidden");
+                            $("#redmsg").addClass("hidden");
+                        }
+                        else {                           
+                            $("#greenmsg").addClass("hidden");
+                            $("#redmsg").removeClass("hidden");
+                        }
+                        //$("#txtUnsLoanAdditionalAmount").val(parseFloat(amount).toFixed(2));
+                        //$("#txtUnsLoanFinalAmount").val(parseFloat(amount).toFixed(2));
+                        //$("#TotalLoanAmount").val(parseFloat(amount).toFixed(2));
+
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            }
+
+        }
+       
+    </script>
+   

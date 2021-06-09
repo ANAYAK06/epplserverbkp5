@@ -1,0 +1,157 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.ExperienceHistory
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Experience History</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.OrganisationName)
+                            @Html.TextBoxFor(model => model.OrganisationName, htmlAttributes: new { @class = "form-control", @id = "txtOrganisationName", onkeypress = "return isValidSpecialCharacters(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FromYear)
+                            @*@Html.TextBoxFor(model => model.FromYear, htmlAttributes: new { @class = "form-control", @id = "txtExpHistoryFromYear", onkeypress = "return IsNumeric(event)" })*@
+                            @Html.DropDownListFor(model => model.ToYear, new SelectList(Model.YearsList, "Year", "Year"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlExpHistoryFromYear" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ToYear)
+                            @*@Html.TextBoxFor(model => model.ToYear, htmlAttributes: new { @class = "form-control", @id = "txtExpHistoryToYear", onkeypress = "return isValidSpecialCharacters(event)" })*@
+                            @Html.DropDownListFor(model => model.ToYear, new SelectList(Model.YearsList, "Year", "Year"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlExpHistoryToYear" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Role)
+                            @Html.TextBoxFor(model => model.Role, htmlAttributes: new { @class = "form-control", @id = "txtExpHistoryRole", onkeypress = "return isValidSpecialCharacters(event)" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-right">
+                    <button class="btn btn1 btn-success" id="btnewEHSubmit" onclick="SubmitNewExpHistoryData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnewnewEHReset" onclick="ClearNewExperienceHistorynModel()">Reset</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddNewEHInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function SubmitNewExpHistoryData() {
+        isValid = true;
+        var errorMsg = "";
+        let Organisation = $("#txtOrganisationName").val();
+        let fromyearindex = $("#ddlExpHistoryFromYear option:selected").index();
+        let toyearindex = $("#ddlExpHistoryToYear option:selected").index();
+        let fromyear = $("#ddlExpHistoryFromYear option:selected").val();
+        let toyear = $("#ddlExpHistoryToYear option:selected").val();
+        let role = $("#txtExpHistoryRole").val();
+        var selectedorgnames = [];
+        // console.log(currentRow);
+        if (Organisation === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Experience Organisation</p>";
+            isValid = false;
+        } else { selectedorgnames.push(Organisation); }
+        if (fromyearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Experience From Year</p>";
+            isValid = false;
+        }
+        //else if (fromyear.length != 4) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Experience From Year</p>";
+        //    isValid = false;
+        //}
+        if (toyearindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Experience To Year</p>";
+            isValid = false;
+        }
+        //else if (toyear.length != 4) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Experience To Year</p>";
+        //    isValid = false;
+        //}
+        if (role === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Role</p>";
+            isValid = false;
+        }
+        if (fromyear > toyear) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid From and To Year</p>";
+            isValid = false;
+        }
+
+        //var duplicatelist = selectedorgnames.filter(i => selectedorgnames.filter(ii => ii === i).length > 1);
+        //if (duplicatelist.length > 0) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Organisation Entered</p>";
+        //    isValid = false;
+        //}
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewEHInfoMsg").text("");
+            $("#divAddNewEHInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAddNewEHInfoMsg").addClass("alert-danger");
+            $("#divAddNewEHInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewEHInfoMsg").text("");
+            $("#divAddNewEHInfoMsg").addClass("hidden");
+
+            var hData = {
+                OrganisationName: Organisation,
+                FromYear: fromyear,
+                ToYear: toyear,
+                Role: role
+
+            }
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+            $("#btnewEHSubmit").prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertExperienceHistoryData',
+                data: { historyData: hData },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                        $("#divAddNewEHInfoMsg").text("Added Successfully");
+                        $("#divAddNewEHInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddNewEHInfoMsg").addClass("alert-success");
+
+                    }
+                    else {
+                        $("#divAddNewEHInfoMsg").text("History Already Exist");
+                        $("#divAddNewEHInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEHInfoMsg").removeClass("hidden alert-success");
+                        $("#btnewEHSubmit").prop('disabled', false);
+                    }
+           
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEHInfoMsg").text(addFailMsg);
+                    $("#divAddNewEHInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEHInfoMsg").removeClass("hidden alert-success");
+                    $("#btnewEHSubmit").prop('disabled', false);
+                }
+            });
+        }
+    }
+</script>

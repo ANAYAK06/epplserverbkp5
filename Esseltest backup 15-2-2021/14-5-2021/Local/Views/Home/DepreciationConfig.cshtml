@@ -1,0 +1,395 @@
+﻿@model EsselTestLocalApplication.Models.CCOverheadDepreciation
+@{
+    ViewBag.Title = "DepreciationConfig";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Depriciation Percentage</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row" id="divtyped">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Otype)
+                                            @Html.DropDownListFor(model => model.Otype, new SelectList(Model.OperationtypeList, "OType", "OTypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlOperationType", onchange = "OTypeChange()" }) @*, onchange = "OTypeChange()"*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" id="divReportType">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ReportType)
+                                            @Html.DropDownListFor(model => model.ReportType, new SelectList(Model.DeptypeList, "Type", "TypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlReportType", onchange = "TypeChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divValue">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC", onchange = "ddlccChange()" }) @*, onchange = "ddlccChange()"*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Value)
+                                            @Html.TextBoxFor(model => model.Value, htmlAttributes: new { @class = "form-control", @id = "txtValue", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button class="btn btn1 btn-success" id="btnAdd" onclick="Submitdepvalue()">Submit</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="divpercent">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.wefdate)
+                                            @Html.TextBoxFor(model => model.wefdate, "{0:dd-MMM-yyyy}", new { @id = "txtdepdate", @class = "form-control date-picker", type = "text", @readonly = true })
+                                            @*@Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC" })*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.InterestRate, new { @id = "lblInterestRate" })
+                                            @Html.TextBoxFor(model => model.InterestRate, htmlAttributes: new { @class = "form-control", @id = "txtInterestRate", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" >
+                                        <div class="form-group">
+                                            @*@Html.LabelFor(model => model.Value)
+                                                @Html.TextBoxFor(model => model.Value, htmlAttributes: new { @class = "form-control", @id = "txtValue", onkeypress = "return ValidateAmount(this,event)" })*@
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnAdd" onclick="Submitdeppercentage()">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="row" id="divGrid">
+                                </div>
+                                <div class="row text-center" id="divMsg">
+                                    <div id="divCCAccurateInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#lblInterestRate").html("Depreciation %");
+        $("#divValue").addClass("hidden");
+        $("#divtype").removeClass("hidden");
+        $("#divpercent").addClass("hidden");
+        $("#divReportType").addClass("hidden");        
+        RebindBindGrid();
+    });
+    function OTypeChange() {
+        $("#divValue").addClass("hidden");
+        $("#divpercent").addClass("hidden");
+        $("#divReportType").addClass("hidden");
+        RebindBindGrid();
+        var otypeindex = $("#ddlOperationType option:selected").index();
+        if (otypeindex != 0) {
+            $("#divReportType").removeClass("hidden");
+            $("#ddlReportType").prop("selectedIndex", 0).val();                       
+        }
+    }
+    function TypeChange() {
+        var rtypeindex = $("#ddlReportType option:selected").index();
+        var rtype = $("#ddlReportType option:selected").val();
+        if (rtypeindex === 0) {
+            $("#divValue").addClass("hidden");
+            $("#divpercent").addClass("hidden");
+        }
+        else if (rtypeindex === 1) {
+            $("#divValue").removeClass("hidden");
+            $("#divpercent").addClass("hidden");
+            var CC = $("#ddlCC");
+            var otype = $("#ddlOperationType option:selected").val();
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetCCForODAccrued",
+                data: '{Otype:"' + otype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        CC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            CC.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                        });
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        else if (rtypeindex === 2) {
+            $("#divValue").addClass("hidden");
+            $("#divpercent").removeClass("hidden");
+            $.ajax({
+                type: "POST",
+                url: "/Home/Getwefdate",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txtdepdate").datepicker({
+                            dateFormat: 'dd-M-yy',
+                            changeMonth: true,
+                            showOn: "button",
+                            minDate: this['wefdate'],
+                            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                            maxDate: 'dateToday',
+                        });
+                        $("#txtdepdate").datepicker("option", "changeYear", true);
+                        //$("#txtdepdate").val(this['wefdate']);
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        else {
+            $("#divValue").addClass("hidden");
+            $("#divpercent").addClass("hidden");
+        }
+        //RebindCC();
+    }
+    //RebindBindGrid();
+    function ddlccChange() {
+        var rtypeindex = $("#ddlCC option:selected").index();
+        var rtype = $("#ddlCC option:selected").val();
+        if (rtypeindex != 0) {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetCCValue",
+                data: '{CCCvalue:"' + rtype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {                       
+                        $("#txtValue").val(this['ccvalue']);
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }       
+        else {
+            $("#divValue").addClass("hidden");
+            $("#divpercent").addClass("hidden");
+        }
+        //RebindCC();
+    }
+    function Submitdeppercentage() {
+        isValid = true;
+        var errorMsg = "";
+        var Date = $("#txtdepdate").val();
+        var interest = $("#txtInterestRate").val();
+
+        if (Date === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        if (interest === "" || interest === "0") {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Depricaition Percentage</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCCAccurateInfoMsg").addClass("alert-danger");
+            $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").addClass("hidden");
+            addFailMsg = "Error Occurred While Adding  Details.";
+            //addSuccessMsg = "Client Payment Details Added Successfully.";
+            var saveData = {
+                Id: 0,
+                ReportType: "Depreciation",
+                wefdate: $("#txtdepdate").val(),
+                InterestRate: $("#txtInterestRate").val(),
+                //Value: $("#txtValue").val(),
+                Action: 'Deppercent'
+            };
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/SaveCCDepValues',
+                data: { CCOD: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == "Submited") {
+                        $("#divCCAccurateInfoMsg").text("");
+                        $("#divCCAccurateInfoMsg").addClass("hidden");
+                        ClearFields();
+                        //RebindBindGrid();
+                    }
+                    else {
+                        $("#divCCAccurateInfoMsg").text(Data.saveStatus);
+                        $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                        $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCCAccurateInfoMsg").text(addFailMsg);
+                    $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                    $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    function ClearFields() {
+        location.reload();
+    }
+    function Submitdepvalue() {
+        isValid = true;
+        var errorMsg = "";
+        var ccindex = $("#ddlCC option:selected").index();
+        var value = $("#txtValue").val();
+
+        if (ccindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (value === "" || value === "0") {
+
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter value</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCCAccurateInfoMsg").addClass("alert-danger");
+            $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").addClass("hidden");
+            addFailMsg = "Error Occurred While Adding  Details.";
+            //addSuccessMsg = "Client Payment Details Added Successfully.";
+            var saveData = {
+                Id: 0,
+                ReportType: "Depreciation",
+                CostCenter: $("#ddlCC option:selected").val(),                
+                Value: $("#txtValue").val(),
+                Action: 'Depvalue'
+            };
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/SaveCCDepValues',
+                data: { CCOD: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == "Submited") {
+                        $("#divCCAccurateInfoMsg").text("");
+                        $("#divCCAccurateInfoMsg").addClass("hidden");
+                        ClearFields();
+                        //RebindBindGrid();
+                    }
+                    else {
+                        $("#divCCAccurateInfoMsg").text(Data.saveStatus);
+                        $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                        $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCCAccurateInfoMsg").text(addFailMsg);
+                    $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                    $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    function RebindBindGrid() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Home/DepriciationConfigGrid',          
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divGrid").html(Data);
+                }
+                else {
+                    $("#divGrid").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    }
+    function fillgrid(txt) {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Accounts/ViewConfiginfo',
+            data: { code: txt },
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divRptDetails").html(Data);
+                }
+                else {
+                    $("#divRptDetails").html('No Data Found');
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+
+        });
+        //Submitenable(txt);
+    }
+</script>
+

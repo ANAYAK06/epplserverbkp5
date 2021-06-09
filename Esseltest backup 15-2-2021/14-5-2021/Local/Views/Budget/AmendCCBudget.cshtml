@@ -1,0 +1,189 @@
+﻿@model EsselTestLocalApplication.Models.Budget.AmendCCBudget
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <label>Cost Center Type</label>
+            @Html.DropDownListFor(model => model.CCType, new SelectList(Model.CCTypesList, "CCTypeID", "CCTypeDescription"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendCCBType", onchange = "AmendCCBudgetCCTypesChange()" })
+
+        </div>
+
+        <div class="col-md-3" id="divAmendCCYear">
+            <div class="form-group">
+                <label>Year</label>
+                @Html.DropDownListFor(model => model.FYYear, new SelectList(Model.FnyearsList, "Year", "YearValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendCCYear", onchange = "AmendCCBudgetYear()" })
+            </div>
+        </div>
+        <div class="col-md-3" id="divAmendCCSubType">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SubType)
+                @Html.DropDownListFor(model => model.SubType, new SelectList(Model.SubTypesList, "CC_SubType", "CC_SubType"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlAmendCCSubType", onchange = "AmendCCSubType()" })
+            </div>
+        </div>
+
+        <div class="col-md-3" id="divAmendccgridbtn">
+            <br />
+            <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnAmendCCDetials" onclick="ShowAmendCCGrid()" />
+            <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetAmendCCDetials" onclick="ResetAmendCCGrid()" />
+        </div>
+    </div>
+        <div class="col-md-12">
+            <div class="text-center">
+                <br />
+                <div id="divAmendCCGridInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </div>
+        <div id="divAmendCCGrid"></div>
+    </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#divAmendCCGrid").addClass('hidden');    
+        $("#divAmendCCYear").addClass('hidden');    
+        $("#divAmendCCSubType").addClass('hidden');
+        $("#divAmendccgridbtn").addClass('hidden');
+       
+    });
+    function ShowAmendCCGrid() {
+        var cctype1 = $("#ddlAmendCCBType option:selected").text();
+        if (cctype1 === 'Performing') {
+            var SubType = $("#ddlAmendCCSubType option:selected").val();
+            var SubIndex = $("#ddlAmendCCSubType option:selected").index();
+            FnYear = '';
+            if (SubIndex !== 0) {
+                $("#divAmendCCGridInfoMsg").text("");
+                $("#divAmendCCGridInfoMsg").addClass("hidden");
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'html',
+                    url: '/Budget/ViewCCDetailsGrid',
+                    data: { CCSubType: SubType, Year: FnYear, CCType: cctype1 },
+                    success: function (Data) {
+                        var count1 = Object.keys(Data).length;
+                        if (count1 > 0) {
+                            $("#divAmendCCGrid").html(Data);
+                            $("#divAmendCCGrid").removeClass('hidden');
+                            $("#ddlAmendCCSubType").prop("disabled", false);
+                            $("#ddlAmendCCBType").prop("disabled", false);
+
+                        }
+                        else {
+                            $("#divAmendCCGrid").html('No Data Found');
+                            $("#divAmendCCGrid").removeClass('hidden');
+                            $("#ddlAmendCCSubType").prop("disabled", false);
+                            $("#ddlAmendCCBType").prop("disabled", false);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divAmendCCGridInfoMsg").text("");
+                $("#divAmendCCGridInfoMsg").append("<div>Select SubType</div>");
+                $("#divAmendCCGridInfoMsg").addClass("alert-danger");
+                $("#divAmendCCGridInfoMsg").removeClass("hidden alert-success");
+            }
+
+        }
+        else {
+            var FnYear1 = $("#ddlAmendCCYear option:selected").val();
+            var YearIndex = $("#ddlAmendCCYear option:selected").index();
+            var SubType1 = '';
+            if (YearIndex !== 0) {
+                $("#divAmendCCGridInfoMsg").text("");
+                $("#divAmendCCGridInfoMsg").addClass("hidden");
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'html',
+                    url: '/Budget/ViewCCDetailsGrid',
+                    data: { CCSubType: SubType1, Year: FnYear1, CCType: cctype1 },
+                    success: function (Data) {
+                        var count1 = Object.keys(Data).length;
+                        if (count1 > 0) {
+                            $("#divAmendCCGrid").html(Data);
+                            $("#divAmendCCGrid").removeClass('hidden');
+                            $("#ddlAmendCCYear").prop("disabled", false);
+                            $("#ddlAmendCCBType").prop("disabled", false);
+                        }
+                        else {
+                            $("#divAmendCCGrid").html('No Data Found');
+                            $("#divAmendCCGrid").removeClass('hidden');
+                            $("#ddlAmendCCYear").prop("disabled", false);
+                            $("#ddlAmendCCBType").prop("disabled", false);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divAmendCCGridInfoMsg").text("");
+                $("#divAmendCCGridInfoMsg").append("<div>Select Financial Year</div>");
+                $("#divAmendCCGridInfoMsg").addClass("alert-danger");
+                $("#divAmendCCGridInfoMsg").removeClass("hidden alert-success");
+            }
+        }
+    }
+    function AmendCCBudgetYear() {        
+        var ccyear = $("#ddlAmendCCYear option:selected").text();
+        var ccyearindex = $("#ddlAmendCCYear option:selected").index();
+        if (ccyearindex !== 0) {
+            $("#ddlAmendCCSubType").prop('selectedIndex', 0);
+            $("#divAmendCCGrid").addClass('hidden');
+        }
+    }
+    function AmendCCSubType() {
+         $.ajax({
+        type: "POST",
+        url: "/Budget/GetBudgetCCDetails",
+        data: '{}',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            var CCddl = $("#ddlCc");
+            CCddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            $.each(response, function () {
+                CCddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+            });
+        },
+        failure: function (response) {
+        },
+        error: function (response) {
+        }
+    });
+        $("#divAmendCCGrid").addClass('hidden');
+    }
+    function AmendCCBudgetCCTypesChange() {       
+        var cctype = $("#ddlAmendCCBType option:selected").text();
+        var cctypeindex = $("#ddlAmendCCBType option:selected").index();
+        $("#ddlAmendCCYear").prop('selectedIndex', 0);
+        $("#ddlAmendCCSubType").prop('selectedIndex', 0);        
+        if (cctypeindex !== 0) {
+            if (cctype === 'Performing') {
+                $("#divAmendCCGrid").addClass('hidden');
+                $("#divAmendCCYear").addClass('hidden');
+                $("#divAmendCCSubType").removeClass('hidden');
+                $("#divAmendccgridbtn").removeClass('hidden');               
+            }
+            else {
+
+                $("#divAmendCCGrid").addClass('hidden');
+                $("#divAmendCCYear").removeClass('hidden');
+                $("#divAmendCCSubType").addClass('hidden');
+                $("#divAmendccgridbtn").removeClass('hidden');
+            }
+
+        }
+        else {
+            $("#divAmendCCGrid").addClass('hidden');
+            $("#divAmendCCYear").addClass('hidden');
+            $("#divAmendCCSubType").addClass('hidden');
+            $("#divAmendccgridbtn").addClass('hidden');
+        }
+
+    }
+ </script>

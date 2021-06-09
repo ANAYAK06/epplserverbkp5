@@ -1,0 +1,147 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.ClientInvoiceCreation>
+<div class="table-responsive">
+    <table id="tblApproveInvGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Invoice Number</th>
+                <th>Purchase Order Number</th>
+                <th>Cost Center</th>
+                <th>Invoice Type</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientInvoiceNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PONumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InvoiceSubType)
+                    </td>
+                    <td  class="hidden">  @Html.DisplayFor(modelItem => item.Status)</td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    @**@
+</div>
+<script>
+    var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveInvGrid = null;
+            InitializeApprInvGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppInvCreatedby").val(Sessioncreated);
+             var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprInvGrid() {
+        ApproveInvGrid = $('#tblApproveInvGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Invoices Found"
+                },
+             "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(5)', row).html();
+
+                 if (oldstatus == 0) {
+                     $('td:eq(5)', row).html("Return");
+                 }
+                 else {
+
+                     $('td:eq(5)', row).html("Verification Pending");
+                 }
+                
+                },
+                pageLength: 10
+            });
+        $('#tblApproveInvGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveInvGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveInvGrid, tr);
+                // Open this row
+                row.child(formatApprInvoice(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprInvoice(d) {
+        var htmltext;
+        var invoiceno,Transtatus;
+
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    invoiceno = value;
+                if (index == 5)
+                    Transtatus = value;
+            });
+
+        var divid = "divapprInv";
+        var divid1 = $("#" + divid + "");
+        $("#currentInvno").val(invoiceno);
+       
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyClientInvoiceView',
+                data: { InvNo: invoiceno },
+               
+                success: function (Data) {
+                    var divid2 = "divapprInv";
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        
+      
+        return '<div id="divapprInv"></div>';
+        }
+</script>
+

@@ -1,0 +1,366 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.SPPO
+@Styles.Render("~/bundles/Accounts/css")
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.VendorName)
+                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CCName)
+                    @Html.TextBoxFor(model => model.CCName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DCAName)
+                    @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SubDCAName)
+                    @Html.TextBoxFor(model => model.SubDCAName, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOStartDate)
+                    @Html.TextBoxFor(model => model.SPPOStartDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SPPOEndDate)
+                    @Html.TextBoxFor(model => model.SPPOEndDate, htmlAttributes: new { @class = "form-control", @readOnly = "true" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <div class=" change-tab" id="divitemDescGrid">
+                <div class="strike">
+                    <span>Item Description</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="itemDescApprTable" class="table order-list appritemDesc" cellspacing="1" cellpadding="1">
+                        <thead style="height:250px!important;">
+                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                              
+                                <td class="tdcls"><label class="tdlabelcls">S.No</label></td>
+                                <td style="text-align:center;color:#fff !important;padding:0px!important;width:500px"><label class="tdlabelcls">Item Description</label></td>
+
+                                <td class="tdcls"><label class="tdlabelcls">Unit</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Quantity</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Our Rate</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">PRW Rate</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Rate</label></td>
+                                <td class="tdcls"><label class="tdlabelcls">Amount</label></td>
+                                <td class="tdcls"><label class="tdlabelcls"></label></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count = 1; }
+                            @foreach (var item in Model.ItemDescList)
+                            {
+                                <tr>
+                                   
+                                    <td class="tbodytdcls"><label>@count</label></td>
+                                    <td style="text-align:center;padding:1px!important;width:500px">
+                                        <textarea class="form-control txtitemdesc" rows="1" cols="30" onkeypress="return RestrictComma(this,event);" disabled>@item.Description</textarea>
+                                    </td>
+
+                                    <td class="tbodytdcls">
+                                        <input type="text" class="form-control txtUnit" value="@item.Unit" onkeypress="return RestrictComma(this,event);" disabled />
+                                    </td>
+                                    <td class="tbodytdcls">
+                                        <input type="text" class="form-control txtQuantity" value="@item.Quantity" onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()" disabled />
+
+                                    </td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtOurRate" value="@item.ClientRate" onkeypress="return ValidateAmount(this,event);" disabled /></td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtPRWRate" value="@item.PRWRate" onkeypress="return ValidateAmount(this,event);" onkeyup="ChangeRatecolor()" disabled /></td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtRate" value="@item.Rate" onkeypress="return ValidateAmount(this,event);" onkeyup="CountItemDescAmount()" disabled /></td>
+                                    <td class="tbodytdcls"><input type="text" class="form-control txtAmount" value="@item.Amount" disabled /></td>
+                                    <td class="tbodytdcls"> @*<input type="button" class="ibtnNsppoItemDescDel btn btn-md btn-danger" value="Delete">*@</td>
+                                </tr>
+                                count++;
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                               
+                                @*<td></td>*@
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                @*<td></td>*@
+                                <td></td>
+                                <td class="text-center;" colspan="2"><label style='float:right'>Total Amount:</label></td>
+                                <td>@Model.TotalValue</td>
+                                <td>
+                                    @*<input type="button" class="btn btn-default  btn-block" id="addRow" value="Add New" onclick="BindNewRowtoApprSPPOOItemDescGrid();" />*@
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-12">
+            <div class="change-tab" id="divApprTACGrid">
+                <div class="strike">
+                    <span>Terms & Conditions</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="ApprTACTable" class="table order-list apprtactable">
+                        <thead>
+                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                
+                                <td style="text-align:center;color:#fff !important;width:10px!important;"><label style="color:#fff !important">S.No</label></td>
+                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Terms & Conditions</label></td>
+                                <td style="text-align:center;color:#fff !important"><label style="color:#fff !important"></label></td>
+                                <td class="hidden"></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count1 = 1; }
+                            @foreach (var item in Model.TermsList)
+                            {
+                                <tr>
+                                    
+                                    <td style="text-align:center;width:10px!important;"><label style="margin-top:10%">@count1</label></td>
+                                    <td style="text-align:center;">
+                                        <textarea class="form-control txttac" rows="1" cols="50" onkeypress="return RestrictPipeSymbol(this,event);" disabled>@item.Term</textarea>
+                                    </td>
+                                    <td style="text-align:center">@*<input type="button" class="ibtnNsppoTACDel btn btn-md btn-danger" value="Delete">*@</td>
+                                    <td style="text-align:center" class="hidden">old</td>
+                                </tr>
+                                count1++;
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td class="text-center;"></td>
+                                <td></td>
+                                @*<td>
+                                   
+                                </td>*@
+
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <table style="width:100%;border:1px solid gray">
+                <thead>
+                    <tr style="background-color:rgba(255,255,255,0.1)!important">
+                        <th style="text-align:center;color:#fff" class="hidden">No.</th>
+                        <th style="text-align:center;color:#fff">Action </th>
+                        <th style="text-align:center;color:#fff">Role Name</th>
+                        <th style="text-align:center;color:#fff">Employee </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int count2 = 1; }
+                    @foreach (var item in Model.ApprUserList)
+                    {
+                        <tr>
+                            <th style="text-align:center" class="hidden">count2</th>
+                            @if (count2 == 1)
+                            {
+                                <th style="text-align:center">Created By </th>
+                            }
+                            else
+                            {
+                                <th style="text-align:center">Verified By </th>
+                            }
+                            <th style="text-align:center">@item.Rolename</th>
+                            <th style="text-align:center">@item.Empname </th>
+
+                        </tr>
+                        count2++;
+                    }
+                </tbody>
+            </table>
+            <br />
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appsppostatus" })
+
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppSPPONote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveSPPOclose('@Model.VendorCode','@Model.SPPONo','@Model.CCCode')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprSPPOInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appsppostatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                              @*if ('@Model.C' == "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else {*@
+                            if (this['Type'] == "Verify" ||this['Type'] == "Approve"  ) {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            }
+                        //}
+                        });
+                        //ddlaprovalstatus.append($("<option selected='selected'></option>").val(0000).html(chequeno));
+                    }
+
+
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+       
+    });
+    function ApproveSPPOclose(vcode, pono, cc) {
+
+        isValid = true;
+        var errorMsg = "";
+        var appstatus = $("#Appsppostatus option:selected").text();
+        retnote = $("#AppSPPONote").val();
+        msg = $("#divApprSPPOInfoMsg");
+        if (appstatus === "Select") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }
+        if (retnote === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divApprSPPOInfoMsg").text("");
+            $("#divApprSPPOInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divApprSPPOInfoMsg").addClass("alert-danger");
+            $("#divApprSPPOInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divApprSPPOInfoMsg").text("");
+            $("#divApprSPPOInfoMsg").addClass("hidden");
+           
+            var SpData = {
+                VendorCode: vcode,
+                CCCode: cc,
+                Action: appstatus,
+                SPPONo: pono,
+                ApprovalNote: retnote
+            };
+            //debugger;
+            addFailMsg = "Error Occurred While Serivice Provider Closing";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+            else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+            else if (appstatus === 'Insert') { finalmsg = 'Closed Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/CloseSPPO",
+                data: JSON.stringify({ clSPPO: SpData }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+
+                success: function (response) {
+                    if (response.saveStatus === "Submited") {
+                        $('#ApprovesppocloseMsgModal').modal('show');
+                        var msg = "Service Provider " + finalmsg + "";
+                        $("#AppcloseSPPOMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = response.saveStatus;                       
+                        //var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#AppcloseSPPOMsg").html(msg1);
+                        $('#ApprovesppocloseMsgModal').modal('show');
+                    }
+                   
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    var msg = "<div>" + addFailMsg + " </div>";
+                    $("#AppcloseSPPOMsg").html(msg);
+                    $('#ApprovesppocloseMsgModal').modal('show');
+                  
+                }
+            });
+        }
+    }
+</script>

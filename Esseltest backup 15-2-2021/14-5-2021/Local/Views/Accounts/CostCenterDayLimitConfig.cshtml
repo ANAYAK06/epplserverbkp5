@@ -1,0 +1,214 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.CostCenterDayLimitConfig
+@{
+    ViewBag.Title = "CostCenterDayLimitConfig";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Cost Center DayLimit Configuration</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="Pageconfig" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.CostCenter)
+                                                                @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.Codelist, "Codevalue", "CodeText"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_configcccodes", onchange = "CCchange()" })  @*, onchange = "paymenttypechange()"*@
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4" id="divCode">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.DayLimit)
+                                                                @Html.TextBoxFor(model => model.DayLimit, htmlAttributes: new { @class = "form-control", @id = "txtdaylimit", onkeypress = "return IsNumeric(event)" })
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row ">
+                                                            <div class="col-md-12">
+                                                                <div class="text-right">
+                                                                    <button class="btn btn1 btn-success" onclick="btnCCLimitSubmitData()" id="btnCCLimitSubmit">Submit</button>  @*onclick="btnPLCSubmitData()"*@
+                                                                    <input type="hidden" id="Type" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row ">
+                                                        </div>
+                                                        <div class="row" id="divgrid">
+                                                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                                                <div id="divCCCodeDetails">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row text-center">
+                                                            <div id="divccdaylimitInfoMsg" class="alert alert-danger hidden">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Accounts/ViewCCWithDayLimit',
+            data: {},
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divCCCodeDetails").html(Data);
+                }
+                else {
+                    $("#divCCCodeDetails").html('No Data Found');
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+
+            }
+        });
+    });
+    function IsNumeric(evt) {
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((iKeyCode < 48 || iKeyCode > 57))
+            return false;
+    }
+    function CCchange() {       
+        var configtypindex = $("#ddl_configcccodes option:selected").index();
+        var Code = $("#ddl_configcccodes");
+        if (configtypindex != 0) {
+            var configtypeval = $("#ddl_configcccodes option:selected").val();
+            $.ajax({
+                type: "POST",
+                url: "/Accounts/GetCClimitAmount",
+                data: '{code:"' + configtypeval + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    $.each(response, function () {
+                        $("#txtdaylimit").val(this['value']);                       
+                    });
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+
+        }
+        else {
+            $("#txtdaylimit").val("");
+
+        }
+    }
+    function btnCCLimitSubmitData() {
+        var errorMsg = "";
+        isValid = true;       
+        var Codes = $("#ddl_configcccodes option:selected").index();
+        var Amount = $("#txtdaylimit").val();
+        if (Codes == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (Amount == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid DayLimit</p>";
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divccdaylimitInfoMsg").text("");
+            $("#divccdaylimitInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divccdaylimitInfoMsg").addClass("alert-danger");
+            $("#divccdaylimitInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divccdaylimitInfoMsg").text("");
+            $("#divccdaylimitInfoMsg").addClass("hidden");
+            Savedata();
+        }
+    }
+    function Savedata() {
+        var PLCDetails = {
+            code: $("#ddl_configcccodes option:selected").val(),
+            value: $("#txtdaylimit").val()
+          };
+        addFailMsg = "Error Occurred While Submitting.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Accounts/SaveCCDayLimitDetails',
+            data: { newplcDetails: PLCDetails },
+            success: function (Data) {
+                if (Data.saveStatus == "Successfull") {
+                    $("#divccdaylimitInfoMsg").text(Data.saveStatus);
+                    $("#divccdaylimitInfoMsg").removeClass("hidden alert-danger");
+                    $("#divccdaylimitInfoMsg").addClass("alert-success");
+                    $.ajax({
+                        type: 'GET',
+                        dataType: 'html',
+                        url: '/Accounts/ViewCCWithDayLimit',
+                        data: {},
+                        success: function (Data) {
+                            var count1 = Object.keys(Data).length;
+                            var msg = "";
+                            if (count1 > 0) {
+                                $("#divCCCodeDetails").html(Data);
+                            }
+                            else {
+                                $("#divCCCodeDetails").html('No Data Found');
+                            }
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+
+                        }
+                    });                   
+                }
+                else {
+                    $("#divccdaylimitInfoMsg").text(Data.saveStatus);
+                    $("#divccdaylimitInfoMsg").addClass("alert-danger");
+                    $("#divccdaylimitInfoMsg").removeClass("hidden alert-success");
+                    //$("#btnPLCSubmit").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divccdaylimitInfoMsg").text(addFailMsg);
+                $("#divccdaylimitInfoMsg").addClass("alert-danger");
+                $("#divccdaylimitInfoMsg").removeClass("hidden alert-success");
+                //$("#btnPLCSubmit").prop("disabled", false);
+            }
+        });
+    }
+</script>

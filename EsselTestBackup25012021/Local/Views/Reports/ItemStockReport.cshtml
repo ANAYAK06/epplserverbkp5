@@ -1,0 +1,120 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ItemStockReport
+@{
+    ViewBag.Title = "ItemStockReport";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">View Item Stock </h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Costcenter)
+                                        @Html.DropDownListFor(model => model.Costcenter, new SelectList(Model.CCStockList, "CCID", "CCVAL"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlStockCC" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ItemCategoryCode)
+                                        @Html.DropDownListFor(model => model.ItemCategoryCode, new SelectList(Model.ItemCategoryListCCStock, "Categoryid", "CategoryValue"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_ItemCategory" })
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    </br>
+                                    <input type="submit" value="View" class="btn btn1 btn-success" id="btnviewItems" onclick="SubmitViewItems()" />
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divStockGrid" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divStockGrid").addClass('hidden');
+    });
+    function SubmitViewItems() {
+        isValid = true;
+        var errorMsg = "";
+        var CCCode = $("#ddlStockCC option:selected").index();
+        var Catid = $("#ddl_ItemCategory option:selected").index();       
+        if (CCCode == 0) {
+            $("#divStockGrid").addClass("hidden");
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (Catid == 0) {
+            $("#divStockGrid").addClass("hidden");
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Category</p>";
+            isValid = false;
+        }       
+        if (!isValid) {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+            $("#divReportInfoMsg").addClass("alert-danger");
+            $("#divReportInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+            var ccindex = $("#ddlStockCC option:selected").index();
+            var ccval = $("#ddlStockCC option:selected").val();
+            var Catid = $("#ddl_ItemCategory option:selected").val();           
+            if (ccindex != 0) {
+                $.ajax({
+                    type: "GET",
+                    url: "/Reports/ViewItemsGrid",
+                    data: { CCVal: ccval, Catid: Catid},
+                    dataType: 'html',
+                    success: function (response) {
+                        var count1 = Object.keys(response).length;
+                        var msg = "";
+                        if (count1 > 0) {
+                            $("#divStockGrid").html(response);
+                            $("#divStockGrid").removeClass('hidden');
+                        }
+                        else {
+                            $("#divStockGrid").html('No Data Found');
+                            $("#divStockGrid").removeClass('hidden');
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+            else {
+                $("#divStockGrid").addClass("hidden");
+                alert("Select Cost Center");
+                return false;
+            }
+        }
+
+    }
+</script>
+

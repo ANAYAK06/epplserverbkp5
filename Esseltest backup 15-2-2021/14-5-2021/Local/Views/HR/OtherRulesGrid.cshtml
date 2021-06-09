@@ -1,0 +1,122 @@
+﻿@model EsselTestLocalApplication.Models.HR.OtherConfigurationsData
+@if (Model.OtherConfigurationslst.Count > 0)
+{
+    <style>
+        .tdcls1 {
+            text-align:center;
+        }
+    </style>
+    <div class="table-responsive  w-100">
+        <table id="tblOthersGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th class="tdcls">Effective Date</th>
+                    <th class="tdcls">Rule Name</th>
+                    <th class="tdcls">PayRoll Generation Day</th>
+                    <th class="tdcls">Payment Day</th>
+                    @*<th class="tdcls">Year</th>*@
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OtherConfigurationslst)
+                {
+                <tr>
+                    <td class="tdcls1">
+                        @Html.DisplayFor(modelItem => item.EffectiveDate)
+                    </td>
+                    <td class="tdcls1">
+                        @Html.DisplayFor(modelItem => item.Key)
+                    </td>
+                    <td class="tdcls1">
+                        @Html.DisplayFor(modelItem => item.value)
+                    </td>
+
+                    <td class="tdcls1">
+                        @Html.DisplayFor(modelItem => item.PaymentDay)
+                    </td>
+                    @*<td class="tdcls1">
+                        @Html.DisplayFor(modelItem => item.Year)
+                    </td>*@
+                    <td class="tdcls1">
+                        <input type="button" class="otherruledelete btn btn-md btn-danger" value="Delete">
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            var OthersGrid = null;
+            InitializeOthersGrid();
+            $("#tblOthersGrid").on("click", ".otherruledelete", function (event) {
+
+                var row = $(this).closest("tr");
+                var rulekey = $.trim(row.find("td").eq(1).html());
+                var year = $.trim(row.find("td").eq(4).html());
+                //$(this).closest("tr").remove();
+                var otherdata = {
+                    Key: rulekey,
+                    //Year: year
+                };
+
+                addFailMsg = "Error Occurred While Deleting.";
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '/HR/DeleteOtherRules',
+                    data: { otherData: otherdata },
+                    success: function (Data) {
+                        //alert("Hi");
+                        if (Data.saveStatus === "Deleted") {
+                            //row.remove();
+                            //location.reload();
+                            $('#liOthers').trigger('click');
+                        }
+                        else {
+                            $("#divPayroleDateInfoMsg").text(addFailMsg);
+                            $("#divPayroleDateInfoMsg").addClass("alert-danger");
+                            $("#divPayroleDateInfoMsg").removeClass("hidden alert-success");
+                        }
+                        var shcount = $("#tblOthersGrid tbody tr").length;
+                        if (shcount > 0) {
+                            $("#divothergrid").removeClass('hidden');
+                        }
+                        else { $("#divothergrid").addClass('hidden'); }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $("#divPayroleDateInfoMsg").text(addFailMsg);
+                        $("#divPayroleDateInfoMsg").addClass("alert-danger");
+                        $("#divPayroleDateInfoMsg").removeClass("hidden alert-success");
+                    }
+                });
+            });
+        });
+        function InitializeOthersGrid() {
+            OthersGrid = $('#tblOthersGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Data Found"
+                },
+                "createdRow": function (row, data, index) {
+                },
+                pageLength: 10
+            });
+
+        }
+
+
+    </script>
+}

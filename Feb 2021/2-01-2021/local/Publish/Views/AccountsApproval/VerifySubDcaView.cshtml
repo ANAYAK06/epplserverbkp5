@@ -1,0 +1,202 @@
+﻿@model EsselTestLocalApplication.Models.SubDCA
+<div class="col-md-12 verifydiv">
+    <br />
+
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DCAName, htmlAttributes: new { @class = "control-label " })
+
+                        @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control ", @id = "SubDCAddlCodeID", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubDCACode, htmlAttributes: new { @class = "control-label" })
+
+                        @Html.TextBoxFor(model => model.SubDCACode, htmlAttributes: new { @class = "form-control", @id = "txtAddEditSubDCACode", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubDCAName, htmlAttributes: new { @class = "control-label" })
+
+                        @Html.TextBoxFor(model => model.SubDCAName, htmlAttributes: new { @class = "form-control", @id = "txtAddEditSubDCAName", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ITCodeDescription, htmlAttributes: new { @class = "control-label " })
+
+                        @Html.TextBoxFor(model => model.ITCodeDescription, htmlAttributes: new { @class = "form-control", @id = "SubDCAITCodeddlID", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubDcaStatus, htmlAttributes: new { @class = "control-label " })
+
+                        @Html.TextBoxFor(model => model.SubDcaStatus, htmlAttributes: new { @class = "form-control", @id = "SubDcaStatus", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => Model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppsDcastatus" })
+
+                            @*<label>Status</label>
+                                <select class="form-control dropdown-toggle" id="AppsDcastatus">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Verify">Verify</option>
+                                    <option value="Approve">Approve</option>
+                                    @if (Model.SubDcaStatus == "Open")
+                                    {
+                                        <option value="Return">Return</option>
+                                    }
+                                        <option value="Reject">Reject</option>
+                                    </select>*@
+                        </div>
+                    </div>
+                    <div class="col-md-6 ">
+                        <div class="form-group">
+                            <label>Notes:</label><br />
+                            <textarea rows="3" cols="60" class="form-control" id="AppsDcaNote"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <br /><br /><button onClick="ApprovesSubDCa('@Model.SubDCACodeID','@Model.DCACodeID','@Model.SubDcaStatus')">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApprsDcaInfoMsg" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+    }
+    else
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DCAName, htmlAttributes: new { @class = "control-label" })
+
+                        @Html.TextBoxFor(model => model.DCAName, htmlAttributes: new { @class = "form-control col-md-3", @id = "SubDCAddlCodeID", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubDCACode, htmlAttributes: new { @class = "control-label " })
+
+                        @Html.TextBoxFor(model => model.SubDCACode, htmlAttributes: new { @class = "form-control", @id = "txtAddEditSubDCACode", @readOnly = "true" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubDCAName, htmlAttributes: new { @class = "control-label" })
+
+                        @Html.TextBoxFor(model => model.SubDCAName, htmlAttributes: new { @class = "form-control", @id = "txtAddEditSubDCAName" })
+
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ITCodeID, htmlAttributes: new { @class = "control-label " })
+
+                        @Html.DropDownListFor(model => model.ITCodeID, new SelectList(Model.ITCodes, "ITCodeID", "ITCodename"), Model.ITCodeDescription, htmlAttributes: new { @class = "form-control col-md-3 dropdown-toggle", @id = "SubDCAITCodeddlID" })
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-10">
+                            <input type="submit" value="Submit" class="btn btn-default firmbtns-hover" onclick="UpdateSubDCA(@Model.SubDCACodeID,@Model.DCACodeID,'@Model.DCAName')" /> &nbsp;&nbsp;
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 text-center">
+                    <div id="divAddSubDCAInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+    }
+</div>
+    
+    <script>
+    $(document).ready(function () {
+        if (@Model.Status != "0") {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            //alert(Mid);
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppsDcastatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                              if ('@Model.SubDcaStatus' === "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+    });
+    </script>

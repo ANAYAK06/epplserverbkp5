@@ -1,0 +1,160 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.LeaveApplication>
+@foreach (var item in Model)
+{
+    <div class="col-md-12 verifydiv">
+        <br />
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <label>Employee Name:</label>
+                        <input type="text" class="form-control" value="@item.EmployeeName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Leave Type:</label>
+                        <input type="text" class="form-control" value="@item.LeaveType" readOnly="readOnly" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>From Date:</label>
+                        <input type="text" class="form-control" value="@item.FromDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>To Date:</label>
+                        <input type="text" class="form-control" value="@item.ToDate" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>No of Days:</label>
+                        <input type="text" class="form-control" value="@item.NoofDays" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="form-group">
+                        <label>Employee Remarks:</label>
+                        <input rows="3" cols="60" type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control dropdown-toggle" id="ddlstatus">
+                            <option selected="selected" value="Select">Select</option>
+                            <option value="Approve">Approve</option>
+                            <option value="Reject">Reject</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="form-group">
+                    </div>
+                </div>               
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <br /><br /><button onClick="ApproveLeave('@item.lid')">Submit</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprLeaveInfoMsg-@item.lid" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    break;
+}
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+
+    });
+    function ApproveLeave(lid) {
+        debugger;
+        var appstatus = $("#ddlstatus").val();  
+        Rid = "divApprLeaveInfoMsg-" + lid;
+        msg = $("#" + Rid + "");
+        isValid = true;
+        var errorMsg = "";
+        if (appstatus == "Select" || appstatus == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+            isValid = false;
+        }        
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $(msg).text("");
+            $(msg).append(finalerror1 + errorMsg + "</div>");
+            $(msg).addClass("alert-danger");
+            $(msg).removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            addFailMsg = "Error Occurred While Verification";
+            var finalmsg;
+            if (appstatus === 'Verify') {
+                finalmsg = 'Verified Successfully';
+            }
+            else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }           
+            else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+            $.ajax({
+                type: "POST",
+                url: "/HR/ApproveLeaveApplication",
+                data: '{Rowid:"' + lid + '",Appstatus:"' + appstatus + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    if (response.saveStatus === "Submitted") {
+                        $('#ApproveLeaveAppMsgModal').modal('show');
+                        var msg = "<div>Leave Application " + finalmsg + "</div>";
+                        $("#ApproveLeaveAppMsgModal").on("hide.bs.modal", function () {
+                            $("#divApprLeaveGrid").load('/HR/VerifyLeaveApplicationGrid');
+                        });
+                        $("#ApprLeaveappMsg").html(msg);
+                    }
+                    else {
+                        var msg1 = "<div>" + response.saveStatus + "</div>";
+                        $("#ApprLeaveappMsg").html(msg1);
+                        $('#ApproveLeaveAppMsgModal').modal('show');
+                    }                    
+                },
+                failure: function (response) {
+
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprLeaveappMsg").html(msg);
+                    $('#ApproveLeaveAppMsgModal').modal('show');
+                },
+                error: function (response) {
+
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcdbMsg").html(msg);
+                    $('#ApproveLeaveAppMsgModal').modal('show');
+                }
+            });
+        }
+    }
+</script>
+

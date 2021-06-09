@@ -1,0 +1,215 @@
+﻿@model List<EsselTestLocalApplication.Models.HR.EmployeeRegistration>
+@{
+    ViewBag.Title = "StaffDetailsView";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: left !important;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+    .txtcls {
+        font-weight: normal;
+        white-space: normal;
+        font-size: 11px
+    }
+</style>
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/AccountsApprovaljs")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Staff Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div id="divStaffGrid">
+                                    <div class="table-responsive  w-100">
+                                        <table id="tblStaffGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+                                            <thead>
+                                                <tr>
+                                                    <th class="tdcls"></th>
+                                                    <th class="hidden tdcls">Id</th>
+                                                    <th class="tdcls">EmployeeID</th>
+                                                    <th class="tdcls">FirstName</th>
+                                                    <th class="tdcls">Category</th>
+                                                    <th class="tdcls">DesignatedAs</th>
+                                                    <th class="tdcls">Department</th>
+                                                    <th class="tdcls">JoiningType</th>
+                                                    <th class="tdcls">JoiningDate</th>
+                                                    <th  class="tdcls">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model)
+                                                {
+                                                <tr>
+                                                    <td class="details-control"></td>
+                                                    <td class="hidden txtcls">
+                                                        @Html.DisplayFor(modelItem => item.Id)
+                                                    </td>
+                                                    <td class="txtcls">
+                                                        @Html.DisplayFor(modelItem => item.EmpRefNo)
+                                                    </td>
+                                                    <td class="txtcls">
+                                                        @Html.DisplayFor(modelItem => item.FirstName)
+                                                    </td>
+                                                    <td class="txtcls">
+                                                        @Html.DisplayFor(modelItem => item.Category)
+                                                    </td>
+                                                    <td class="txtcls">
+                                                        @Html.DisplayFor(modelItem => item.DesignatedAs)
+                                                    </td>
+                                                    <td class="txtcls">@Html.DisplayFor(modelItem => item.Department)</td>
+
+                                                    <td class="txtcls">@Html.DisplayFor(modelItem => item.JoiningType)</td>
+                                                    <td class="txtcls">
+                                                        @Html.DisplayFor(modelItem => item.JoiningDate)
+                                                    </td>
+                                                    @if (item.UpdateAcces == "Exist")
+                                                    {
+                                                    <td  class="editbtn">                                                        
+                                                        <button type="button" class="btn btn-info ">
+                                                            <i class="fa fa-pen" aria-hidden="false"></i>
+                                                        </button>
+
+                                                    </td>
+                                                    }
+                                                    else {
+                                                        <td></td>
+                                                    }
+                                                </tr>
+                                                }
+                                            </tbody>
+
+                                            <tfoot>
+                                                <tr></tr>
+                                            </tfoot>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ <script>
+var openRows = new Array();
+$(document).ready(function () {
+var ApproveStaffGrid = null;
+    InitializeApprStaffGrid();
+   
+});
+     function InitializeApprStaffGrid() {
+         ApproveStaffGrid = $('#tblStaffGrid').DataTable({
+             info: false,
+             destroy: false,
+             paging: false,
+             lengthChange: false,
+             searching: false,
+             ordering: false,
+             pagingType: false,
+             language: {
+                 "emptyTable": "No Staff Found"
+             },
+             "createdRow": function (row, data, index) {
+             },
+             pageLength: 10
+         });
+
+         $('#tblStaffGrid tbody').on('click', 'td.details-control', function () {
+             var tr = $(this).closest('tr');
+             var row = ApproveStaffGrid.row(tr);
+             if (row.child.isShown()) {
+                 // This row is already open - close it
+                 row.child.hide();
+                 tr.removeClass('shown');
+             }
+             else {
+                 // close all previously opened rows
+                 closeOpenedRows(ApproveStaffGrid, tr);
+                 // Open this row
+                 row.child(formatApprStaffAccounts(row.data())).show();
+                 tr.addClass('shown');
+                 // store current selection
+                 openRows.push(tr);
+             }
+         });
+         $('#tblStaffGrid tbody').on('click', 'td.editbtn', function () {
+             var tr = $(this).closest('tr');
+             var row = ApproveStaffGrid.row(tr);
+             var rowdata = row.data();
+             var empid = 0;
+             $.each(rowdata, function (index, value) {              
+                 if (index == 2)
+                     empid = value;
+             });
+             console.log(empid);
+             var url = "/HR/UpdateStaffFromView?EmpRefNo=" + empid;
+             window.location.href = url; 
+         });
+     }
+     function closeOpenedRows(table, selectedRow) {
+         $.each(openRows, function (index, openRow) {
+             // not the selected row!
+             if ($.data(selectedRow) !== $.data(openRow)) {
+                 var rowToCollapse = table.row(openRow);
+                 rowToCollapse.child.hide();
+                 openRow.removeClass('shown');
+                 // replace icon to expand
+                 //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                 // remove from list
+                 var index = $.inArray(selectedRow, openRows);
+                 openRows.splice(index, 1);
+             }
+         });
+     }
+     function formatApprStaffAccounts(d) {
+         var htmltext;
+         var EmpId, RefNo;
+         $.each(d, function (index, value) {
+             if (index == 1)
+                 EmpId = value;
+             if (index == 2)
+                 RefNo = value;
+         });
+
+         var divid = "divStaff" + EmpId;
+         var divid1 = $("#" + divid + "");
+         $.ajax({
+             type: 'POST',
+             dataType: 'html',
+             url: '/HR/StaffIndividualView',
+             data: { EmpRefNo: RefNo },
+             success: function (Data) {
+                 var divid2 = "divStaff" + EmpId;
+                 var divid3 = $("#" + divid2 + "");
+                 $(divid3).html(Data);
+             },
+             error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+             }
+         });
+         return '<div id="divStaff' + EmpId + '" class="row" ></div>';
+     }
+</script>
+
+
+                               

@@ -1,0 +1,18 @@
+﻿
+@model EsselTestLocalApplication.Models.Ledger.GroupsTree
+
+@foreach (var item in Model.Groups){
+    <ul>
+     @if(item != null)
+    {
+    <li>
+        <a href="#" class="usr">@item.Name</a>
+        @if (item.Groups.Count > 0)
+        {
+            @Html.Partial("ChildGroupTree", item)
+        }
+    </li>
+        }
+    </ul>
+
+        }

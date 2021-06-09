@@ -1,0 +1,78 @@
+﻿@model EsselTestLocalApplication.Models.UserInformation
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <link href="~/Content/EsselStyles/style.css" rel="stylesheet" />
+    <script src="~/Scripts/vendor/jquery-1.12.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
+    <title>User Login</title>
+</head>
+<body>
+    <div style="padding-left:30%;padding-top:10%;background-color:#4267b2">
+        <div style="">
+            @using (Html.BeginForm("AuthenticateLogin", "Home", FormMethod.Post))
+            {
+                <h4 style="font:bold;color:white">Login</h4>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="inputEmail" style="color:white" class="control-label col-xs-6">Email ID<span style="color:red">*</span></label>
+                            <div class="col-xs-9">
+                                @Html.TextBoxFor(m => m.Username)
+                                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "error" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="inputPassword" style="color:white" class="control-label col-xs-6">Password<span style="color:red">*</span></label>
+                            <div class="col-xs-9">
+                                @Html.PasswordFor(m => m.Password)
+                                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "error" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label col-xs-5" style="color:white">Remember Me</label>                            
+                                @Html.CheckBoxFor(m => m.RememberMe)                           
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-left:10%;padding-top:10px;padding-bottom:5px">
+                    <button type="submit" class="btn btn-default">Login</button>
+                    
+                </div>
+            }
+            @Scripts.Render("~/bundles/jquery")
+            @Scripts.Render("~/bundles/jqueryval")
+            @if (@ViewBag.Message != null)
+            {
+                <script type="text/javascript">
+            $(function () {
+                alert("@ViewBag.Message")
+            });
+                </script>
+            }
+        </div>
+    </div>
+</body>
+</html>

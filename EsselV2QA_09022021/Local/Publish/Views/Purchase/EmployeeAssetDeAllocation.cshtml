@@ -1,0 +1,282 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.EmployeeAssetAllocation
+@{
+    ViewBag.Title = "EmployeeAssetDeAllocation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Employee Asset DeAllocation</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <!-- Example Tabs Left-->
+                                    <div class="card-inner">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" id="New_PO" class="tab-pane fade in active">
+                                                <form onsubmit="return false">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                @Html.LabelFor(model => model.Employeeid)
+                                                                @Html.DropDownListFor(model => model.Employeeid, new SelectList(Model.EmployeeList, "Employeeid", "EmployeeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlemployee", onchange = "GetgridDetails();" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="divgriddata">
+                                                        <div><span style="color:red; align-items:center;">Please Select Atleast One Asset Item to DeAllocated For the Employee</span></div>
+                                                        <div id="GridData">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-2">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.Validupto)
+                                                                    @Html.TextBoxFor(model => model.Validupto, "{0:dd-MMM-yyyy}", new { @id = "txtvalidupToDate", @class = "form-control date-picker", type = "text", @readonly = true, onchange = "return dayscount()" })
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-10">
+                                                                <div class="form-group">
+                                                                    @Html.LabelFor(model => model.DeAllocationRemarks)
+                                                                    @Html.TextAreaFor(model => model.DeAllocationRemarks, htmlAttributes: new { @class = "form-control", @id = "txtremarks", @rows = "3" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="text-right" style="vertical-align:bottom">
+                                                                    <button class="btn btn1 btn-success" id="btnSubmit" onclick="btnSubmitIndentData()">Submit</button>
+                                                                    <button class="btn btn1 btn-success" id="btnreset" onclick="SubmitCleardata()">Clear</button>
+                                                                    <input type="text" id="txtAllocationRefno" style="display:none" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="col-md-12">
+                                                            <div class="text-center">
+                                                                <div id="divAssetInfoMsg" class="alert alert-danger hidden">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divgriddata").addClass("hidden");
+        var Sessioncreated = '@Session["Createdby"]';
+        $("#txtCreatedby").val(Sessioncreated);       
+    });
+    function btnSubmitIndentData() {
+        isValid = true;
+        var errorMsg = "";
+        var Employeename = $("#ddlemployee option:selected").index();
+        var Todate = $("#txtvalidupToDate").val();
+        var remarks = $("#txtremarks").val();
+        if (Employeename === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Employee Name/Employee Id</p>";
+            isValid = false;
+        }
+        if (Todate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Valid UpTo Date</p>";
+            isValid = false;
+        }
+        if (remarks == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAssetInfoMsg").text("");
+            $("#divAssetInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAssetInfoMsg").addClass("alert-danger");
+            $("#divAssetInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            debugger;
+            $("#divAssetInfoMsg").text("");
+            $("#divAssetInfoMsg").addClass("hidden");
+            var chkcount = 0;
+            var currentrowcount = $("#ItemEmpAssetDeDataTable tbody tr").length;
+            $("#ItemEmpAssetDeDataTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+                if (check == false) { chkcount = chkcount + 1; }
+
+            });
+            if (chkcount == 1) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item to DeAllocate</p > ";
+                isValid = false;
+            }
+            if (chkcount > 1) {
+                errorMsg += "<p style='margin-top:-5px!important;' >Please Verify Item to DeAllocate</p > ";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $("#divAssetInfoMsg").text("");
+                $("#divAssetInfoMsg").append(finalerror1 + errorMsg + "</div>");
+                $("#divAssetInfoMsg").addClass("alert-danger");
+                $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                var selectedledlist = [];
+                $("#ItemEmpAssetDeDataTable tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var Inedntid = currentRow.find("td").eq(6).html();
+                    if (Inedntid !== 0) {
+                        selectedledlist.push(currentRow.find("td").eq(6).html());
+                    }
+                });
+                var duplicatelist = selectedledlist.filter(i => selectedledlist.filter(ii => ii === i).length > 1);
+                if (duplicatelist.length > 0) {
+                    var finalerror2 = "<div style='align:center'><p>Duplicate ItemCode for Indent</p>";
+                    $("#divAssetInfoMsg").text("");
+                    $("#divAssetInfoMsg").append(finalerror2 + "</div>");
+                    $("#divAssetInfoMsg").addClass("alert-danger");
+                    $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                    return false;
+                }
+                else {
+                    $("#divAssetInfoMsg").text("");
+                    $("#divAssetInfoMsg").addClass("hidden");
+                    //alert("Call SaveEmployeeAssets()");
+                    SaveEmployeeAssetsDe();
+                }
+            }
+        }
+    }
+
+    function SaveEmployeeAssetsDe() {
+        var ccodeval = $("#ddlemployee option:selected").val();
+        var nameArr1 = ccodeval.split(',');
+        var CCCode = nameArr1[0];
+        var emprefno = nameArr1[1];
+        var Rowids = "";
+        $("#ItemEmpAssetDeDataTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            if (check == true) {
+                var Rowid = currentRow.find("td").eq(6).html();
+                Rowids += Rowid;
+                Rowids += ",";
+            }
+        });
+        var Itemdetails = {
+            Rid: Rowids,
+            Employeeid: emprefno,
+            EmpCCCode: CCCode,
+            Validupto: $("#txtvalidupToDate").val(),
+            DeAllocationRemarks: $("#txtremarks").val(),
+            AllocationRefno: $("#txtAllocationRefno").val()
+        };
+        addFailMsg = "Error Occurred While DeAllocating Asset Items.";
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveEmployeeAssetsDeAllocation',
+            data: { Ind: Itemdetails },
+            success: function (Data) {
+                var string = Data.saveStatus;
+                var nameArr1 = string.split(',');
+                var status = nameArr1[0];
+                var ICode = nameArr1[1];
+                if (status == "Submited") {
+                    $("#btnSubmit").prop("disabled", true);
+                    $("#divAssetInfoMsg").text(ICode + '   Reference No For Asset DeAllocation Successfully');
+                    $("#divAssetInfoMsg").removeClass("hidden alert-danger");
+                    $("#divAssetInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnSubmit").prop("disabled", false);
+                    $("#divAssetInfoMsg").text(Data.saveStatus);
+                    $("#divAssetInfoMsg").addClass("alert-danger");
+                    $("#divAssetInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnSubmit").prop("disabled", false);
+                $("#divAssetInfoMsg").text(addFailMsg);
+                $("#divAssetInfoMsg").addClass("alert-danger");
+                $("#divAssetInfoMsg").removeClass("hidden alert-success");
+
+            }
+        });
+    }
+    function SubmitCleardata() {
+        location.reload();
+    }
+    function GetgridDetails() {
+        var ccodeval = $("#ddlemployee option:selected").val();
+        var nameArr1 = ccodeval.split(',');
+        var emprefno = nameArr1[1];
+        var empAllocationrefno = nameArr1[2];
+        $("#txtAllocationRefno").val(empAllocationrefno);
+        var emp = $("#ddlemployee option:selected").index();
+        if (emp != 0) {
+
+            $.ajax({
+                type: 'GET',
+                url: "/Purchase/ViewemployeeAssetDeitemsDetails",
+                dataType: 'html',
+                data: { EmpRefno: emprefno },
+                success: function (data) {
+                    var count = Object.keys(data).length;
+                    if (count > 0) {
+                        $("#GridData").html(data);
+                        var currentrowcount2 = $("#ItemEmpAssetDeDataTable tbody tr").length;
+                        if (currentrowcount2 > 0) {
+                            $("#divgriddata").removeClass('hidden');
+                        }
+                        else {
+                            $("#divgriddata").addClass('hidden');
+                        }
+                    }
+                    else {
+                        $("#GridData").html();
+                        $("#divgriddata").addClass('hidden');
+                    }
+                },
+                error: function (data) {
+                },
+                failure: function (data) {
+                }
+            });
+            $("#txtvalidupToDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                minDate: -30,
+                maxDate: 0,
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            }).datepicker("setDate", new Date());
+            $("#txtvalidupToDate").datepicker('setDate', null);
+        }
+        else {
+            $("#divgriddata").addClass("hidden");
+        }
+    }
+</script>
+

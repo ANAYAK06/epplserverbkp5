@@ -1,0 +1,144 @@
+﻿@model List<EsselTestLocalApplication.Models.Ledger.LedgerDetails>
+<div class="table-responsive">
+    <table id="tblApproveLedgerGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Ledger Name</th>
+                <th>Group Name</th>
+                <th>Account Head</th>
+                <th class="hidden">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="details-control"></td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GroupName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccHead)
+                    </td>
+                    <td class="hidden">
+                        @Html.DisplayFor(modelItem => item.LStatus)
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+        var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveLedgerGrid = null;
+            InitializeApprLedgerGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtApprLedgerCreatedby").val(Sessioncreated);
+             var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprLedgerGrid() {
+        ApproveLedgerGrid = $('#tblApproveLedgerGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+                language: {
+                    "emptyTable": "No Ledgers Found"
+                },
+              "createdRow": function (row, data, index) {
+
+                var oldstatus = $('td:eq(5)', row).html();
+                if (oldstatus == 0) {
+                    $('td:eq(5)', row).html("Return"); 
+                }
+                else {
+                   $('td:eq(5)', row).html("Verification Pending");
+                }
+                },
+                pageLength: 10
+            });
+        $('#tblApproveLedgerGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveLedgerGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveLedgerGrid, tr);
+                // Open this row
+                row.child(formatApprLedger(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+            });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                // replace icon to expand
+                //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                // remove from list
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprLedger(d) {
+        var htmltext;
+        var Ledgerid;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    Ledgerid = value;
+            });
+        var divid = "divapprledger" + Ledgerid;
+        var divid1 = $("#" + divid + "");
+
+        $("#currentLedgerid").val(Ledgerid);
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/AccountsApproval/VerifyLedgerView',
+                data: { Id: Ledgerid },
+                success: function (Data) {
+                    var divid2 = "divapprledger" + Ledgerid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                }
+            });
+        return '<div id="divapprledger' + Ledgerid + '""></div>';
+
+
+        }
+</script>

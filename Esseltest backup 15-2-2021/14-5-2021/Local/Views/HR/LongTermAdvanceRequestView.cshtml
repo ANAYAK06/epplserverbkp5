@@ -1,0 +1,281 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.LongTermAdvance
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.EmpLTARuleData!=null) {
+        if (Model.EmpLTARuleData.RuleExist == "Exist")
+        {
+            <div id="divRuleStatus">
+                <div class="col-md-12 text-left">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+                        @if (Model.EmpLTARuleData.ExperienceRule == "PASS")
+                        {
+                            <span class="glyphicon glyphicon-ok-circle" style="color:green"></span><b style="color:green;margin-left:10px;">Experience Eligibility</b>
+                        }
+                        else if (Model.EmpLTARuleData.ExperienceRule == "FAIL")
+                        { <span class="glyphicon glyphicon-remove-circle" style="color:red"></span><b style="color:red;margin-left:10px;">Experience Eligibility</b>}
+                    </div>
+                </div>
+                <div class="col-md-12 text-left">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+
+                        @if (Model.EmpLTARuleData.AmountLimitRule == "PASS")
+                        {
+                            <span class="glyphicon glyphicon-ok-circle" style="color:green"></span><b style="color:green;margin-left:10px;">Not Exceed(MonthlySalary+Bonus+PaidLeaves)</b>
+                        }
+                        else if (Model.EmpLTARuleData.AmountLimitRule == "FAIL")
+                        { <span class="glyphicon glyphicon-remove-circle" style="color:red"></span><b style="color:red;margin-left:10px;">Not Exceed(MonthlySalary+Bonus+PaidLeaves)</b>}
+                    </div>
+                </div>
+                <div class="col-md-12 text-left">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+                        @if (Model.EmpLTARuleData.NoticePeriodRule == "PASS")
+                        {
+                            <span class="glyphicon glyphicon-ok-circle" style="color:green"></span><b style="color:green;margin-left:10px;">Not in Notice Period</b>
+                        }
+                        else if (Model.EmpLTARuleData.NoticePeriodRule == "FAIL")
+                        { <span class="glyphicon glyphicon-remove-circle" style="color:red"></span><b style="color:red;margin-left:10px;">Not in Notice Period</b>}
+                    </div>
+                    <br />
+                    <br />
+                </div>
+
+                <div class="row" style="margin-top:20px !important">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LTAAmount)
+                            @Html.TextBoxFor(model => model.LTAAmount, htmlAttributes: new { @class = "form-control", @id = "txtEmpLTAAmount", onkeypress = "return ValidateAmount(this,event);", @readOnly = true })
+                        </div>
+                    </div>
+                    @if (Model.AdvanceType == "LTA")
+                    {
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NoOfInstallments)
+                            @Html.TextBoxFor(model => model.NoOfInstallments, htmlAttributes: new
+                       {
+                           @class = "form-control",
+                           @readOnly = true
+                       })
+                        </div>
+                    </div>
+                    }
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.RequestedDate)
+                            @Html.TextBoxFor(model => model.RequestedDate, htmlAttributes: new
+                       {
+                           @class = "form-control",
+                           @readOnly = true
+                       })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.EmpRemarks)
+                            @Html.TextAreaFor(model => model.EmpRemarks, htmlAttributes: new
+                       {
+                           @class = "form-control",
+                           @readOnly = true,
+                           @rows = "2"
+                       })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PaymentRequestDate)
+                            @Html.TextBoxFor(model => model.PaymentRequestDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtMgrRequestDate", @value = "", @readOnly = true })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ReportToMgrStatus)
+                            <select class="form-control dropdown-toggle" id="ddlStatus">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Approve">Approve</option>
+                                <option value="Reject">Reject</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ReportingMgrRemarks)
+                            @Html.TextAreaFor(model => model.ReportingMgrRemarks, new { @id = "txtMGrRemarks", @class = "form-control", @type = "text", @rows = "2" })
+                        </div>
+                    </div>
+                </div>
+                <div id="divbtns">
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <br />
+                            <button class="btn btn1 btn-success" id="btnSubmit" onclick="SubmitLTAData(@serializer.Serialize(Model))">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12 rowspace">
+                        <div class="text-center">
+                            <br />
+                            <div id="divLTAInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<input id="txtEmpid" value="@Model.EmployeeID" type="hidden" />
+                    <input id="txtTransno" value="@Model.TransactionRefNo" type="hidden" />*@
+                <script>
+            $(document).ready(function () {
+                var noofmonths = '@Model.NoOfInstallments';
+                //debugger;
+                $("#ddlEmpNoofMonths").find("option:contains('" + noofmonths + "')").each(function () {
+                    if ($(this).text() == noofmonths) {
+                            $(this).attr("selected", "selected");
+                        }
+                    });
+                $("#txtMgrRequestDate").datepicker({
+                    dateFormat: 'dd-M-yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    showOn: "button",
+                    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                    minDate: 'dateToday',
+                    yearRange: "-100:+0",
+                    onClose: function (selectedDate) {
+                    }
+                });
+                    });
+                    function SubmitLTAData(Model) {
+                        var errorMsg = "";
+                        isValid = true;
+                        //var amount = $("#txtEmpLTAAmount").val();
+                        //var noofmonths = $("#ddlEmpNoofMonths option:selected").val();
+                        //var remarks = $("#txtEmpRemarks").val();
+                        var mgrremarks = $("#txtMGrRemarks").val();
+                        var requestdate = $("#txtMgrRequestDate").val();
+                        var statusindex = $("#ddlStatus option:selected").index();
+                        var status = $("#ddlStatus option:selected").val();
+                        //debugger;
+                        if (mgrremarks === "") {
+                            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+                            isValid = false;
+                        }
+                        if (requestdate === "") {
+                            errorMsg += "<p style='margin-top:-5px!important;'>Select Request Date</p>";
+                            isValid = false;
+                        }
+                        if (statusindex === 0) {
+                            errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                            isValid = false;
+                        }
+                        if (!isValid) {
+                            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+                            $("#divLTAInfoMsg").text("");
+                            $("#divLTAInfoMsg").append(finalerror + errorMsg + "</div>");
+                            $("#divLTAInfoMsg").addClass("alert-danger");
+                            $("#divLTAInfoMsg").removeClass("hidden alert-success");
+                        }
+                        else {
+                            $("#divLTAInfoMsg").text("");
+                            $("#divLTAInfoMsg").addClass("hidden");
+                            let savedata = {};
+                            if (Model.AdvanceType == "LTA") {
+                                savedata = {
+                                    LTAAmount: Model.LTAAmount,
+                                    NoOfInstallments: Model.NoOfInstallments,
+                                    ReportingMgrRemarks: mgrremarks,
+                                    PaymentRequestDate: requestdate,
+                                    EmployeeID: Model.EmployeeID,
+                                    TransactionRefNo: Model.TransactionRefNo,
+                                    ReportToMgrStatus: status,
+                                    AdvanceType: Model.AdvanceType
+                                };
+                            }
+                            else if (Model.AdvanceType == "SA"){
+
+                                savedata = {
+                                    LTAAmount: Model.LTAAmount,
+                                    NoOfInstallments: Model.NoOfInstallments,
+                                    ReportingMgrRemarks: mgrremarks,
+                                    PaymentRequestDate: requestdate,
+                                    EmployeeID: Model.EmployeeID,
+                                    TransactionRefNo: Model.TransactionRefNo,
+                                    ReportToMgrStatus: status,
+                                    AdvanceType: Model.AdvanceType
+                                };
+                            }
+                           //debugger;
+                            addFailMsg = "Error Occurred While Adding.";
+                            $.ajax({
+                                type: 'POST',
+                                dataType: 'json',
+                                url: '/HR/SaveReportToMgrLTARequest',
+                                data: { advance: savedata },
+                                success: function (Data) {
+                                    if (Data.saveStatus === "Submited") {
+                                        $('#ApproveMsgModal').modal('show');
+                                        var msg = "<div>Request Saved Successfully</div>";
+                                        $("#ApprMsg").html(msg);
+                                    }
+                                    else {
+                                        var msg1 = "<div>" + Data.saveStatus + "</div>";
+                                        $("#ApprMsg").html(msg1);
+                                        $('#ApproveMsgModal').modal('show');
+                                    }
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    var msg2 = "<div>" + addFailMsg + " </div>";
+                                    $("#ApprMsg").html(msg2);
+                                    $('#ApproveMsgModal').modal('show');
+                                }
+                                //    if (Data.saveStatus === "Submited") {
+                                //        // $("#btnSubmit").prop('disabled', true);
+                                //        $("#divLTAInfoMsg").text("Saved Successfully");
+                                //        $("#divLTAInfoMsg").removeClass("hidden alert-danger");
+                                //        $("#divLTAInfoMsg").addClass("alert-success");
+                                //    }
+                                //    else {
+                                //        $("#divLTAInfoMsg").text(Data.saveStatus);
+                                //        $("#divLTAInfoMsg").addClass("alert-danger");
+                                //        $("#divLTAInfoMsg").removeClass("hidden alert-success");
+                                //    }
+                                //    $("#btnSubmit").prop('disabled', true);
+                                //},
+                                //error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                //    $("#btnSubmit").prop('disabled', true);
+                                //    $("#divLTAInfoMsg").text(addFailMsg);
+                                //    $("#divLTAInfoMsg").addClass("alert-danger");
+                                //    $("#divLTAInfoMsg").removeClass("hidden alert-success");
+                                //}
+                            });
+                        }
+
+                    }
+                </script>
+            </div>
+
+        }
+    }
+    else
+    {
+        <div class="col-md-12 rowspace">
+            <div class="text-center">
+                <br />
+                <div id="divLTAInfoMsg" class="alert alert-danger">
+                    LTA Rules Does Not Exist
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+

@@ -1,0 +1,214 @@
+﻿@model EsselTestLocalApplication.Models.Accounts.CCCashTransfer
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SelfCCCodename)
+                        @*@Html.DropDownListFor(model => model.CashTransferCCCode, new SelectList(Model.CashtransferCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCashCCCode" })*@
+                        @Html.TextBoxFor(model => model.SelfCCCodename, htmlAttributes: new { @class = "form-control", @id = "txtCashCCCode", type = "text", @readonly = true })
+                        <input type="text" value="0" id="txtccodecash" style="display:none" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.OtherCCCodename)
+                        @*@Html.DropDownListFor(model => model.CashTransferCCCode, new SelectList(Model.CashtransferCostCenter, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCashCCCode" })*@
+                        @Html.TextBoxFor(model => model.OtherCCCodename, htmlAttributes: new { @class = "form-control", @id = "txtCashotherCCCode", type = "text", @readonly = true })
+                        <input type="text" value="0" id="txtccodecashtransfer" style="display:none" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="divcashinvoiceno">
+            <div class="col-md-12">
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCTransferDate)
+                        @Html.TextBoxFor(model => model.CCTransferDate, "{0:dd-MMM-yyyy}", new { @id = "txtCCCashdate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCTransferRemarks)
+                        @Html.TextBoxFor(model => model.CCTransferRemarks, new { @id = "txtCCCashRemarks", @class = "form-control", @type = "text" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="divremarksamt">
+            <div class="col-md-12">
+                <div class="col-md-9">
+                    <div class="form-group">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CCTransferAmount)
+                        @Html.TextBoxFor(model => model.CCTransferAmount, new { @id = "txtCCCashAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", @type = "text" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="divsubmitbtn">
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtGeneralSessionCCTransfer" style="display:none" />
+                    <button class="btn btn1 btn-success" id="btnupdatecccashtransfer" onclick="btnupdcccashtransfer('@Model.Voucherno')">Submit</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="row col-md-12 text-center">
+            <div id="divcccashtransferupdateInfoMsg" class="alert alert-danger hidden">
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#ApprovecccashtransferMsgModal").on("hide.bs.modal", function () {
+            $("#divApprcccashtransferGrid").load('/AccountsApproval/VerifyCCCashTransferGrid');
+        });
+         var Sessioncreated = '@Session["SessionCostCenter"]';
+        $("#txtGeneralSessionCCTransfer").val(Sessioncreated);
+         var InvoiceDate = '@Model.CCTransferDate';
+        $("#txtCCCashdate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtCCCashdate").val(selectedDate);
+            }
+        });
+        var CCValue = '@Model.GPSessionCCCode';
+        var CC = $("#ddlCashCCCode");
+        var ccname = '@Model.SelfCCCodename';
+        $("#txtCashCCCode").val(ccname);
+        $("#txtccodecash").val(CCValue);
+        var CCTransferCC = '@Model.CashTransferCCCode';
+        $("#txtccodecashtransfer").val(CCTransferCC);
+        
+        //$.ajax({
+        //    type: 'POST',
+        //    dataType: 'json',
+        //    url: '/Accounts/CCCashTransfer', 
+        //    beforeSend: function () {
+        //        $('#ajax-container').html('');
+        //        addSpinner($('#ajax-container'));
+        //    },
+        //    success: function (response) {
+        //        CC.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        //        $.each(response, function () {
+        //            CC.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+        //            $("#ddlCashCCCode").val(CCValue);
+        //        });
+        //        removeSpinner($('#ajax-container'), function () {
+        //            $('#ajax-container').html('Content loaded.');
+        //        })
+        //    },
+        //});
+    });
+    function btnupdcccashtransfer(Apprid) {
+        voucherid = "divcccashtransferupdateInfoMsg-" + Apprid;
+        msg = $("#" + voucherid + "");
+        isValid = true;
+        var errorMsg = "";
+        isValid = true;
+        var CashTransferCCCode = $("#ddlCashCCCode option:selected").index();
+        var CashTransferDate = $("#txtCCCashdate").val();
+        var CashTransferRemarks = $("#txtCCCashRemarks").val();
+        var CashTransferAmount = $("#txtCCCashAmount").val();
+        if (CashTransferCCCode == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (CashTransferDate == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Date</p>";
+            isValid = false;
+        }
+        if (CashTransferRemarks == "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Remarks</p>";
+            isValid = false;
+        }
+        if (CashTransferAmount == "" || CashTransferAmount == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Amount</p>";
+            isValid = false;
+        }
+        if (CashTransferAmount == "0") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Invalid Amount</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divcccashtransferupdateInfoMsg").text("");
+            $("#divcccashtransferupdateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divcccashtransferupdateInfoMsg").addClass("alert-danger");
+            $("#divcccashtransferupdateInfoMsg").removeClass("hidden alert-success");
+            return false;
+
+        }
+        else {
+            $("#divcccashtransferupdateInfoMsg").text("");
+            $("#divcccashtransferupdateInfoMsg").addClass("hidden");
+            $(msg).text("");
+            $(msg).addClass("hidden");
+            var Sessioncreated = '@Session["SessionCostCenter"]';
+            //var VerifyGeneralCC = {
+            var UpdateGeneralCC = {
+                Voucherno: Apprid,
+                CashTransferCCCode: $("#txtccodecashtransfer").val(),
+                CCTransferDate: $("#txtCCCashdate").val(),
+                CCTransferRemarks: $("#txtCCCashRemarks").val(),
+                CCTransferAmount: $("#txtCCCashAmount").val(),
+                Createdby: $("#txtApprcccashtransferCreatedby").val(),
+                RoleId: $("#txtApprcccashtransferRole").val(),
+                GPSessionCCCode: $("#txtccodecash").val(),
+            };
+            addFailMsg = "Error Occurred While CC Cash Transfer Updation";         
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/UpdateCCCashTransfer",
+                data: JSON.stringify({ apprgeneral: UpdateGeneralCC }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",               
+                success: function (response) {
+                    var msg = response.saveStatus;
+                    //alert(msg);
+                    if (msg == "Updated SuccessFully") {
+                        $('#ApprovecccashtransferMsgModal').modal('show');
+                        var msg = "<div>CC Cash Transfer: Updation Successfully</div>";
+                        $("#ApprcccashtransferMsg").html(msg);
+                    }
+                    else {
+
+                        var msg = "<div>" + msg + "</div>";
+                        $("#ApprcccashtransferMsg").html(msg);
+                        $('#ApprovecccashtransferMsgModal').modal('show');
+                    }
+                    
+                },
+                failure: function (response) {
+                    
+                    // alert(response.responseText);
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcccashtransferMsg").html(msg);
+                    $('#ApprovecccashtransferMsgModal').modal('show');
+                },
+                error: function (response) {
+                   
+                    var msg = "<div>" + addFailMsg + "</div>";
+                    $("#ApprcccashtransferMsg").html(msg);
+                    $('#ApprovecccashtransferMsgModal').modal('show');
+                }
+            });
+
+        }
+    }
+</script>

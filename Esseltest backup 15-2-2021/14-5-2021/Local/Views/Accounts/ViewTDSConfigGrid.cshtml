@@ -1,0 +1,64 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.TDSConfigure>
+<div class="table-responsive">
+    <table id="tblconfigccGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th>TDS Code</th>
+                <th>TDS Name</th>
+                <th>DCA</th>
+                <th>SubDCA</th>
+                <th>WEF Date</th>
+                <th>HUF Rate</th>
+                <th>Other Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TDSCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TdsNames)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DCACode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SDCACode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HUFRate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OtherRate)
+                </td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    var openRows = new Array();
+    $(document).ready(function () {
+        var configGrid = null;
+        InitializeconfigGrid();
+    });
+    function InitializeconfigGrid() {
+        configGrid = $('#tblconfigccGrid').DataTable({
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            language: {
+                "emptyTable": "No Records Found"
+            },
+        });
+    }
+
+</script>

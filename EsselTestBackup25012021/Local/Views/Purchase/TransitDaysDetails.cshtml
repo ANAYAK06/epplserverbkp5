@@ -1,0 +1,305 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.TransitDays
+    fsdjkkjfsd
+<div class="modal-dialog modal-confirm">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="icon-box">
+                <i class="fa fa-check"></i>
+            </div>
+            <div id="confirmms1"> <h4 class="modal-title"></h4></div>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="confirmmsg">
+                <p>DO YOU WANT TO EXTEND THE TRANSIT PERIOD FOR PO NO:-@Model.PONO</p>
+            </div>
+            <div id="confirmbtn" class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3"> <button type="button" class="btn btn-default" onclick="ShowExtendPODate('@Model.PONO','@Model.Transtype')" id="btnExtendDate">Yes</button></div>
+                    <div class="col-md-3"></div>
+                    <div class="col-md-3">  <button type="button" class="btn btn-default" onclick="ClosePO('@Model.PONO','@Model.Transtype')" id="btnClosePO">No</button></div>
+                </div>
+                <div class="row" style="margin-top:2px">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-4"> <button type="button" class="btn btn-default" onclick="ShowPoDetails()" id="btnShowDetail">View Details</button></div>
+                    <div class="col-md-3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-md-12">
+                <div class="text-center">
+                    <br />
+                    <div id="divClsoeInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="ModalExtend" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="height:50px">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Extend Expiry Date</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden;height:340px">
+                <br/><br /><br />
+                <div class="row" id="divExtend">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4 text-right">
+                        <label>
+                            Select No of Days:
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-control dropdown-toggle" id="ddlExtendDays">
+                            <option selected="selected" value="0">-Select-</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="row" style="margin-top:20px">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-3"> <button type="button" class="btn btn-default" onclick="SaveExtendDays()" id="btnSaveExtendDate">Ok</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="btnClosePO">Cancel</button></div>
+                    <div class="col-md-3"><label id="lblpono" class="hidden"></label><label id="lblTranstype" class="hidden"></label></div>
+                   
+                </div>
+                <div class="col-md-12"  style="margin-top:10px">
+                    <div class="text-center">
+                        <br />
+                        <div id="divExtendInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ModalPODetails" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="height:50px">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden;height:340px">
+                <div class="col-md-12">
+                    @if (Model.POData.Count > 0)
+                    {
+                        <div class="col-md-12">
+                            <div class="row change-tab text-right" id="divSPPOInvtaxtable">
+                                <div class="tabledynamic">
+                                    <br />
+                                    <table style="width:100%;border:1px solid gray" class="table order-list">
+                                        <thead>
+                                            <tr style="background-color:rgba(255,255,255,0.1)!important">
+                                                <th style="text-align:center;color:#fff">Item Code</th>
+                                                <th style="text-align:center;color:#fff">Item Name</th>
+                                                <th style="text-align:center;color:#fff">Specification </th>
+                                                <th style="text-align:center;color:#fff">quantity</th>
+                                                <th style="text-align:center;color:#fff">basicprice</th>
+                                                <th style="text-align:center;color:#fff">NewBasicprice </th>
+                                                <th style="text-align:center;color:#fff">QuotedPrice </th>
+                                                <th style="text-align:center;color:#fff">Amount </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @foreach (var item in Model.POData)
+                                            {
+                                                <tr>
+                                                    <td class="tdclass">@item.itemcode</td>
+                                                    <td class="tdclass">@item.itemname</td>
+                                                    <td class="tdclass">@item.specification</td>
+                                                    <td class="tdclass">@item.quantity</td>
+                                                    <td class="tdclass">@item.basicprice</td>
+                                                    <td class="tdclass">@item.NewBasicprice</td>
+                                                    <td class="tdclass">@item.QuotedPrice</td>
+                                                    <td class="tdclass">@item.Amount</td>
+                                                </tr>
+
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="tdclass"></td>
+                                                <td class="tdclass"></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>No Data Found</div>
+                    }
+                </div>
+
+            </div>
+            @*<div class="modal-footer">
+
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#divExtend").addClass("hidden");
+        $("#btnClosePO").prop('disabled', false);
+        $("#btnExtendDate").prop('disabled', false);
+        $('#ModalPODetails').on('click', '[data-dismiss="modal"]', function (e) { e.stopPropagation(); });
+        $('#ModalExtend').on('click', '[data-dismiss="modal"]', function (e) { e.stopPropagation(); });
+       // $('#ModalPODetails').on('click', '[data-dismiss="modal"]', function (e) { e.stopPropagation(); });
+        $("#divClsoeInfoMsg").text("");
+        $("#divClsoeInfoMsg").addClass("hidden");
+
+        $("#divExtendInfoMsg").text("");
+        $("#divExtendInfoMsg").addClass("hidden");
+    });
+    function ShowPoDetails() {
+        $('#ModalPODetails').modal();
+        //alert('ShowPoDetails');
+        $("#divClsoeInfoMsg").text("");
+        $("#divClsoeInfoMsg").addClass("hidden");
+    }
+    function ShowExtendPODate(pono, Transtype) {
+       // alert('ShowExtendPODate');
+        $('#ModalExtend').modal();
+        //$("#divExtend").removeClass("hidden");
+        $("#ddlExtendDays").prop('selectedIndex', 0);
+        $("#divExtendInfoMsg").text("");
+        $("#divExtendInfoMsg").addClass("hidden");
+        $("#lblpono").html(pono);
+        $("#lblTranstype").html(Transtype);
+        $("#btnSaveExtendDate").prop('disabled', false);
+        $("#divExtendInfoMsg").text("");
+        $("#divExtendInfoMsg").addClass("hidden");
+
+        $("#divClsoeInfoMsg").text("");
+        $("#divClsoeInfoMsg").addClass("hidden");
+
+        // $('#modal').modal('toggle');
+    }
+    function ClosePO(pono, Transtype) {
+       // alert(pono + '=====' + Transtype);
+        var saveData = {
+            PONO: $.trim(pono),
+            Transtype: $.trim(Transtype),
+            Action: 'Close',
+            NoofExtendDays: 0
+
+        };
+        debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveTransitDays',
+            data: { TD: saveData },
+            success: function (Data) {
+                if (Data.saveStatus == "Submited") {
+                    $("#btnClosePO").prop('disabled', true);
+                    $("#divClsoeInfoMsg").text("PO Expire Date Extended Successfully");
+                    $("#divClsoeInfoMsg").removeClass("hidden alert-danger");
+                    $("#divClsoeInfoMsg").addClass("alert-success");
+                }
+                else {
+                    $("#btnClosePO").prop('disabled', true);
+                    $("#divClsoeInfoMsg").text(Data.saveStatus);
+              
+                    $("#divClsoeInfoMsg").addClass("alert-danger");
+                    $("#divClsoeInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnClosePO").prop('disabled', true);
+                $("#divClsoeInfoMsg").text("Error Occured While Updating");
+                $("#divClsoeInfoMsg").addClass("alert-danger");
+                $("#divClsoeInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+    function SaveExtendDays() {
+        var errorMsg = "";
+        isValid = true;
+        var noofdaysindex = $("#ddlExtendDays option:selected").index();
+        if (noofdaysindex == 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select No Of Days To Extend</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divExtendInfoMsg").text("");
+            $("#divExtendInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divExtendInfoMsg").addClass("alert-danger");
+            $("#divExtendInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divExtendInfoMsg").text("");
+            $("#divExtendInfoMsg").addClass("hidden");
+
+            var saveData = {
+                PONO: $.trim($("#lblpono").html()),
+                Transtype: $.trim($("#lblTranstype").html()),
+                Action: 'Extend',
+                NoofExtendDays: $("#ddlExtendDays option:selected").val()
+            };
+            debugger;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/SaveTransitDays',
+                data: { TD: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == "Submited") {
+
+                        $("#btnSaveExtendDate").prop('disabled', true);
+                        $("#divExtendInfoMsg").text("PO Expire Date Extended Successfully");
+                        $("#divExtendInfoMsg").removeClass("hidden alert-danger");
+                        $("#divExtendInfoMsg").addClass("alert-success");
+                    }
+                    else {
+                        $("#btnSaveExtendDate").prop('disabled', true);
+                        $("#divExtendInfoMsg").text(Data.saveStatus);
+                   
+                        $("#divExtendInfoMsg").addClass("alert-danger");
+                        $("#divExtendInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#btnSaveExtendDate").prop('disabled', true);
+                    $("#divExtendInfoMsg").text("Error Occured While Updating");
+                    $("#divExtendInfoMsg").addClass("alert-danger");
+                    $("#divExtendInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    //function ClosePoDetails() {
+
+    //    $('#ModalPODetails').modal('hide');
+    //}
+</script>

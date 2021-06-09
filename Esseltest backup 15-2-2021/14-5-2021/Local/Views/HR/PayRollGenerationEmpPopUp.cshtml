@@ -1,0 +1,550 @@
+﻿@model EsselTestLocalApplication.Models.HR.GenaratedPayRollData
+@{
+    var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+}
+
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header" style="height:50px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div class="container col-md-12">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label>Employee Name:</label>
+                        <input type="text" class="form-control" value="@Model.SingleEmpSalaryData.EmpName" readonly="readonly"/>
+                    </div>
+                    <div class="col-lg-2"><label>Employee ID:</label>  <input type="text" class="form-control" value="@Model.SingleEmpSalaryData.EmpRefNo" id="txtempID"  readonly="readonly"/></div>
+                    <div class="col-lg-3"><label>No of Present Days</label> <input type="text" class="form-control" value="@Model.SingleEmpSalaryData.NoofPresentDays"  readonly="readonly"/></div>
+                    <div class="col-lg-3"><label>No of Paid Leaves</label> <input type="text" class="form-control" value="@Model.SingleEmpSalaryData.NoofPaidLeaves"  readonly="readonly"/></div>
+
+                </div>
+                <div class="row" style="margin-top:10px">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-10">
+                        <div class="col-md-6">
+                            <table id="EarningSalaryTable" class="table order-list eraningSaltable" style="border:1px solid black">
+                                <thead>
+                                    <tr>
+                                        <td style="text-align:center;background-color:#202447;color:#fff !important">EARNINGS</td>
+                                        <td style="text-align:center;background-color:#202447;color:#fff !important;border-right:1px solid #fff;">Rs</td>
+                                        <td class="hidden"></td>
+                                        <td class="hidden"></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.SingleEmpSalaryData.lstEarnings)
+                                    {
+
+                                    <tr>
+                                        <td style="text-align:left;font-size:11px;vertical-align:middle">
+
+                                            @Html.DisplayFor(modelItem => item.SalaryHead)
+
+                                        </td>
+                                        <td style="text-align:center;border-right:1px solid #000;">
+                                            @{
+                                                var formated = String.Format("{0:0.00}", item.HeadAmount);
+                                                @Html.DisplayFor(modelItem => item.HeadAmount, formated)
+                                                @*@Html.TextBoxFor(modelItem => item.HeadAmount, formated, htmlAttributes: new { @class = "form-control", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountTotal()" })*@
+                                            }
+                                        </td>
+                                        <td class="hidden"> @Html.DisplayFor(modelItem => item.HeadType)</td>
+                                        <td class="hidden"> @Html.DisplayFor(modelItem => item.IsEditable)</td>
+                                    </tr>
+
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6" style="margin-left:0px">
+                            <table id="DeductionSalaryTable" class="table order-list deductionSaltable" style="border:1px solid black">
+                                <thead>
+                                    <tr>
+                                        <td style="text-align:center;background-color:#202447;color:#fff !important">DEDUCTIONS</td>
+                                        <td style="text-align:center;background-color:#202447;color:#fff !important">Rs</td>
+                                        <td class="hidden"></td>
+                                        <td class="hidden"></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.SingleEmpSalaryData.lstDeductions)
+                                    {
+
+                                    <tr>
+                                        <td style="text-align:left;font-size:11px;vertical-align:middle">
+
+                                            @Html.DisplayFor(modelItem => item.SalaryHead)
+
+                                        </td>
+                                        <td style="text-align:center;border-right:1px solid #000;">
+                                            @{
+                                                var formated = String.Format("{0:0.00}", item.HeadAmount);
+                                                @Html.DisplayFor(modelItem => item.HeadAmount, formated)
+
+                                                @*@Html.TextBoxFor(modelItem => item.HeadAmount, formated, htmlAttributes: new { @class = "form-control", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountTotal()" })*@
+                                            }
+                                        </td>
+                                        <td class="hidden"> @Html.DisplayFor(modelItem => item.HeadType)</td>
+                                        <td class="hidden"> @Html.DisplayFor(modelItem => item.IsEditable)</td>
+                                    </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+               
+                <div class="row">
+                    <br />
+                    <div class="col-md-1"></div>
+                    <div class="col-md-10">
+                        <div class="col-md-4 text-left">
+                            <b style="font-size:15px;">GROSS SALARY:<label id="lblGross">@Model.SingleEmpSalaryData.Gross</label></b>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <b style="font-size:15px;">TOTAL DEDUCTIONS:<label id="lblDeduction">@Model.SingleEmpSalaryData.TotalDeduction</label></b>
+                        </div>
+                        <div class="col-md-4 text-right"> <b style="font-size:15px;">NET PAY:<label id="lblNetPay">@Model.SingleEmpSalaryData.NetAmount</label></b></div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Other Salary Heads</h5>
+                </div>
+                <div class="col-md-12" style="margin-top:-7px"><hr class="separationHr" /></div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.SingleEmpSalaryData.HeadType)
+                        @Html.DropDownListFor(model => model.SingleEmpSalaryData.HeadType, new SelectList(Model.SingleEmpSalaryData.lstHeadTypes, "HeadType", "HeadType"), "-Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHeadType", onchange = "OtherHeadsChange()" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.SingleEmpSalaryData.BonusHead)
+                        <select class="form-control dropdown-toggle" id="ddlHeadName"></select>
+                        @*@Html.DropDownListFor(model => model.SingleEmpSalaryData.BonusHead, new SelectList(Model.SingleEmpSalaryData.BonusSalaryHeads, "HeadName", "HeadName"), "-Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHeadName", onchange = "OtherHeadsChange()" })*@
+                    </div>
+                    <div class="col-md-3">
+                        @Html.LabelFor(model => model.SingleEmpSalaryData.BonusHeadValue)
+                        @Html.TextBoxFor(model => model.SingleEmpSalaryData.BonusHeadValue, htmlAttributes: new { @class = "form-control", @id = "txtBonusValue", onkeypress = "return ValidateAmount(this,event);" })
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <button class="btn btn1 btn-success" id="btnewPINext" onclick="AddBonusToEarningHedas(@serializer.Serialize(Model))" style="margin-top:15px">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-right">
+                <br />
+                <button class="btn btn1 btn-success" id="btnSingleEmployeePayRollSubmit" onclick="SubmitSingleEmployeePayRollData(@serializer.Serialize(Model))">Submit</button>
+            </div>
+            <div class="row rowspace">
+                <div class="text-center">
+                    <br />
+                    <div id="divEmpSalaryInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#btnSingleEmployeePayRollSubmit").addClass("hidden");
+    });
+    function AddBonusToEarningHedas(Model) {
+        var errorMsg = "";
+        isValid = true;
+        var Headindex = $("#ddlHeadName option:selected").index();
+        var Headname = $('#ddlHeadName option:selected').val();
+        var typeindex = $("#ddlHeadType option:selected").index();
+        var type = $('#ddlHeadType option:selected').val();
+        var Headval = $('#txtBonusValue').val();
+
+        if (Headindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Salary Head</p>";
+            isValid = false;
+        }
+        if (typeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Salary Head Type</p>";
+            isValid = false;
+        }
+        if (Headval === "" || Headval === "0" || Headval === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Amount of Other Salary Head</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divEmpSalaryInfoMsg").text("");
+            $("#divEmpSalaryInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divEmpSalaryInfoMsg").addClass("alert-danger");
+            $("#divEmpSalaryInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divEmpSalaryInfoMsg").text("");
+            $("#divEmpSalaryInfoMsg").addClass("hidden");
+            var validesi = 0;
+            //debugger;
+            if (Headname === 'ESIC' || Headname == 'ESI' || Headname === 'esic' || Headname == 'esi') {
+                $.ajax({
+                    type: "POST",
+                    url: "/HR/CheckifESIExistforCC",
+                    data: '{EmpRefno:"' + $("#txtempID").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var status = response;
+                        
+                        alert(status);
+                        if (status === "ESIExist") {
+                            $("#divEmpSalaryInfoMsg").text("");
+                            $("#divEmpSalaryInfoMsg").addClass("hidden");
+
+                            var newRow = $("<tr>");
+                            var cols = "";
+                            if (type == "Bonus" || type == "Earning") {
+                                cols += '<td style="text-align:left;font-size:11px;vertical-align:middle">' + Headname + '</td>';
+                                cols += '<td style="text-align:center;border-right:1px solid #000;">' + parseFloat(Headval).toFixed(2) + '</td>';
+                                cols += '<td class="hidden">' + type + '</td>';
+                                cols += '<td class="hidden">Yes</td>';
+                                newRow.append(cols);
+                                $("table.order-list.eraningSaltable").append(newRow);
+                            }
+                            else if (type == "Deduction") {
+                                cols += '<td style="text-align:left;font-size:11px;vertical-align:middle">' + Headname + '</td>';
+                                cols += '<td style="text-align:center;border-right:1px solid #000;">' + parseFloat(Headval).toFixed(2) + '</td>';
+                                cols += '<td class="hidden">' + type + '</td>';
+                                cols += '<td class="hidden">Yes</td>';
+                                newRow.append(cols);
+                                $("table.order-list.deductionSaltable").append(newRow);
+                            }
+                            CountTotal();
+                            RebindHeadTypes();
+                            $('#ddlHeadName').empty().append('<option selected="selected" value="Select">-Select-</option>');
+                            $('#txtBonusValue').val("");
+                            $("#btnSingleEmployeePayRollSubmit").removeClass("hidden");
+                        }
+                        else {
+                            $("#divEmpSalaryInfoMsg").text("");
+                            $("#divEmpSalaryInfoMsg").append( "<div>ESI Does not exist for current employee CC</div>");
+                            $("#divEmpSalaryInfoMsg").addClass("alert-danger");
+                            $("#divEmpSalaryInfoMsg").removeClass("hidden alert-success");
+
+
+                        }
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+
+            }
+            else {
+                var newRow = $("<tr>");
+                var cols = "";
+                if (type == "Bonus" || type == "Earning") {
+                    cols += '<td style="text-align:left;font-size:11px;vertical-align:middle">' + Headname + '</td>';
+                    cols += '<td style="text-align:center;border-right:1px solid #000;">' + parseFloat(Headval).toFixed(2) + '</td>';
+                    cols += '<td class="hidden">' + type + '</td>';
+                    cols += '<td class="hidden">Yes</td>';
+                    newRow.append(cols);
+                    $("table.order-list.eraningSaltable").append(newRow);
+                }
+                else if (type == "Deduction") {
+                    cols += '<td style="text-align:left;font-size:11px;vertical-align:middle">' + Headname + '</td>';
+                    cols += '<td style="text-align:center;border-right:1px solid #000;">' + parseFloat(Headval).toFixed(2) + '</td>';
+                    cols += '<td class="hidden">' + type + '</td>';
+                    cols += '<td class="hidden">Yes</td>';
+                    newRow.append(cols);
+                    $("table.order-list.deductionSaltable").append(newRow);
+                }
+                CountTotal();
+                RebindHeadTypes();
+                $('#ddlHeadName').empty().append('<option selected="selected" value="Select">-Select-</option>');
+                $('#txtBonusValue').val("");
+                $("#btnSingleEmployeePayRollSubmit").removeClass("hidden");
+            }
+            //let Gross = $("#lblGross").html();
+            //let Deductions = $("#lblDeduction").html();
+            //let Net = $("#lblNetPay").html();
+            //let empid = $("#txtempID").val();
+            //let addData = {
+            //    EmpReno: empid,
+            //    SalaryHeads: Headname,
+            //    HeadTypes: type,
+            //    HeadAmounts: parseFloat(Headval).toFixed(2) ,
+            //    TransactionRefNo: Model.CurrentTransactionNo,
+            //    Gross: Gross,
+            //    Deduction: Deductions,
+            //    NetAmount: Net,
+            //    IsEditable:'Yes'
+            //};
+            ////debugger;
+            //$.ajax({
+            //    type: 'POST',
+            //    dataType: 'json',
+            //    url: '/HR/SaveNewHeadToEmp',
+            //    data: { headData: addData },
+            //    success: function (Data) {
+            //    },                  
+            //});
+
+        }
+    }
+    //function OtherHeadsChange() {
+    //    var Headindex = $("#ddlHeadName option:selected").index();
+    //    var Headname = $('#ddlHeadName option:selected').val();
+    //    if (Headindex == 0) {
+    //        $('#txtBonusValue').val("");
+    //        $('#txtHeadType').val("");
+    //    }
+    //    else {
+    //        let HeadType = Headname.toString().split('||');
+    //        let name = HeadType[0];
+    //        let type = HeadType[1];
+    //        $('#txtHeadType').val(type);
+    //    }
+    //}
+    function CountTotal() {
+        let earningtotal = 0;
+        let deductiontotal = 0;
+        let net = 0;
+        let gross = 0;
+        $("#EarningSalaryTable tbody tr").each(function () {
+            var currentRow = $(this);
+            earning = $.trim(currentRow.find("td").eq(1).html());
+            if (earning != "" && earning != "0") {
+                earningtotal = parseFloat(earningtotal) + parseFloat(earning);
+            }
+            else {
+                earningtotal = parseFloat(earningtotal) + parseFloat(0);
+            }
+        });
+        $("#DeductionSalaryTable tbody tr").each(function () {
+            var currentRow = $(this);
+            deduction = $.trim(currentRow.find("td").eq(1).html());
+            if (deduction != "" && deduction != "0") {
+                deductiontotal = parseFloat(deductiontotal) + parseFloat(deduction);
+            }
+            else {
+                deductiontotal = parseFloat(deductiontotal) + parseFloat(0);
+            }
+        });
+        if (!isNaN(earningtotal) && !isNaN(deductiontotal)) {
+            gross = parseFloat(earningtotal);
+            $("#lblGross").html(parseFloat(gross).toFixed(2));
+            $("#lblDeduction").html(parseFloat(deductiontotal).toFixed(2));
+        }
+        else {
+            gross = 0;
+            $("#lblGross").html(parseFloat(gross).toFixed(2));
+            $("#lblDeduction").html(parseFloat(deductiontotal).toFixed(2));
+        }
+        if (!isNaN(earningtotal) && !isNaN(deductiontotal)) {
+            net = parseFloat(earningtotal) - parseFloat(deductiontotal);
+            $("#lblNetPay").html(parseFloat(net).toFixed(2));
+        }
+        else {
+            net = 0;
+            $("#lblNetPay").html(net);
+        }
+
+
+    }
+
+    function OtherHeadsChange() {
+        var typeindex = $("#ddlHeadType option:selected").index();
+        var type = $('#ddlHeadType option:selected').val();
+        var name = $('#ddlHeadName');
+        let empid = $("#txtempID").val();
+        if (typeindex == 0) {
+            name.empty().append('<option selected="selected" value="Select">-Select-</option>');
+        }
+        else {
+            var list = [];
+            $("#EarningSalaryTable tbody tr").each(function () {
+                var currentRow = $(this);
+                headname = $.trim(currentRow.find("td").eq(0).html());
+                list.push(headname);
+            });
+            $("#DeductionSalaryTable tbody tr").each(function () {
+                var currentRow = $(this);
+                headname = $.trim(currentRow.find("td").eq(0).html());
+                list.push(headname);
+            });
+            $.ajax({
+                type: "POST",
+                url: "/HR/GetBonusHeadsForEmployee",
+                data: '{Employeeid:"' + empid + '",Type:"' + type + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    name.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                    $.each(response, function () {
+                        var status = checkValueInArray(this['HeadName'], list);
+                        if (status == false) {
+                            name.append($("<option></option>").val(this['HeadName']).html(this['HeadName']));
+                        }
+                       
+                    });
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    }
+    function checkValueInArray(value, arr) {
+        var status = false;//Not Exist in array
+        for (var i = 0; i < arr.length; i++) {
+            var name = arr[i];
+            if (name == value) {
+                status = true;//Exist  in array
+                break;
+            }
+        }
+        return status;
+    }
+    function RebindHeadTypes() {
+        let empid = $("#txtempID").val();
+        $.ajax({
+            type: "POST",
+            url: "/HR/GetBonusHeadTypesForEmployee",
+            data: '{Employeeid:"' + empid + '"}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                typeddl = $("#ddlHeadType");
+                typeddl.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                $.each(response, function () {
+                    typeddl.append($("<option></option>").val(this['HeadType']).html(this['HeadType']));
+                });
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+    function SubmitSingleEmployeePayRollData(Model) {
+        console.log(Model);
+        let NewlyAddedlist = [];
+        let Gross = $("#lblGross").html();
+        let Deductions = $("#lblDeduction").html();
+        let Net = $("#lblNetPay").html();
+        //let Date = new Date();
+        let EmpRefno = $("#txtempID").val();
+        let Heads = '', Types = '', Amounts = '';
+        $("#EarningSalaryTable tbody tr").each(function () {
+            var currentRow = $(this);
+            let head = $.trim(currentRow.find("td").eq(0).html());
+            let Amt = $.trim(currentRow.find("td").eq(1).html());
+            let type = $.trim(currentRow.find("td").eq(2).html());
+            let iseditable = $.trim(currentRow.find("td").eq(3).html());
+            if (iseditable === 'Yes') {
+                Heads += head + ",";
+                Types += type + ",";
+                Amounts += Amt + ",";
+                var newdata = {
+                    EmpReno: EmpRefno,
+                    SalaryHead: head, 
+                    HeadType: type,
+                    HeadAmount: Amt,                  
+                    TransactionRefno: Model.CurrentTransactionNo,
+                    IsEditable: iseditable
+                };
+                NewlyAddedlist.push(newdata);
+            }
+        });
+        $("#DeductionSalaryTable tbody tr").each(function () {
+            var currentRow = $(this);
+            let head = $.trim(currentRow.find("td").eq(0).html());
+            let Amt = $.trim(currentRow.find("td").eq(1).html());
+            let type = $.trim(currentRow.find("td").eq(2).html());
+            let iseditable = $.trim(currentRow.find("td").eq(3).html());
+            if (iseditable === 'Yes') {
+                Heads += head + ",";
+                Types += type + ",";
+                Amounts += Amt + ",";
+                var newdata = {
+                    EmpReno: EmpRefno,
+                    SalaryHead: head,
+                    HeadType: type,
+                    HeadAmount: Amt,
+                    TransactionRefno: Model.CurrentTransactionNo,
+                    IsEditable: iseditable
+                };
+                NewlyAddedlist.push(newdata);
+            }
+        });
+
+        let saveData = {            
+            EmpReno: EmpRefno,
+            SalaryHeads: Heads,
+            HeadTypes: Types,
+            HeadAmounts: Amounts,
+            TransactionRefNo: Model.CurrentTransactionNo,
+            Gross: Gross,
+            Deduction: Deductions,
+            NetAmount: Net, 
+            NewlyAddelistData: NewlyAddedlist
+        };
+        addFailMsg = "Error Occurred";
+        addSuccessMsg = "Saved Successfully.";
+        //debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/HR/SavePayRollForSingleEmp',
+            data: { payRoll: saveData },
+            success: function (Data) {
+                if (Data.saveStatus === 'Submitted') {
+                    $("#btnSingleEmployeePayRollSubmit").prop('disabled', true);
+                    $("#divEmpSalaryInfoMsg").text(addSuccessMsg);
+                    $("#divEmpSalaryInfoMsg").removeClass("hidden alert-danger");
+                    $("#divEmpSalaryInfoMsg").addClass("alert-success");
+                }
+                else {
+                    if (Data.saveStatus === 'Next Level Verification User Does Not Exist') {
+                        $("#divEmpSalaryInfoMsg").append("<div>" + addFailMsg + "</div>");
+                    }
+                    else {
+                        var ErrorMsg = Data.saveStatus;
+                        let ErrorMsglist = ErrorMsg.toString().split('|');
+                        console.log(ErrorMsglist);
+                        $.each(ErrorMsglist, function (element, value) {
+                            var msg = value;
+                            console.log(msg);
+                            $("#divPayRollInfoMsg").append("<div>" + msg + "</div>");
+                        });
+                    }
+                    $("#btnSingleEmployeePayRollSubmit").prop('disabled', true);
+                   
+                    $("#divEmpSalaryInfoMsg").addClass("alert-danger");
+                    $("#divEmpSalaryInfoMsg").removeClass("hidden alert-success");
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#btnSingleEmployeePayRollSubmit").prop('disabled', true);
+                $("#divEmpSalaryInfoMsg").append("<div>" + addFailMsg + "</div>");
+                $("#divEmpSalaryInfoMsg").addClass("alert-danger");
+                $("#divEmpSalaryInfoMsg").removeClass("hidden alert-success");
+            }
+        });
+    }
+</script>
+

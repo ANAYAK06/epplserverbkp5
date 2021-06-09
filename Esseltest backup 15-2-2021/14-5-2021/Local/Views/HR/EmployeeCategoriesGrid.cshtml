@@ -1,0 +1,120 @@
+﻿
+@model List<EsselTestLocalApplication.Models.HR.EmpCategorys>
+@if (Model.Count > 0)
+{
+    <div class="table-responsive">
+        <table id="tblEmpCategoriesGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+            <thead>
+                <tr>
+                    <th style="text-align:center">Category Name</th>
+                    <th style="text-align:center">Report To</th>
+                    <th style="text-align:center">Category Code</th>
+                    <th style="text-align:center" class="hidden">Report ToId</th>
+                    <th style="text-align:center" class="hidden">CategoryId</th>
+                    <th style="text-align:center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.CategoryName)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.ReportTo)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(modelItem => item.CategoryCode)
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.ReportToId)
+                    </td>
+                    <td style="text-align:center" class="hidden">
+                        @Html.DisplayFor(modelItem => item.CategoryId)
+                    </td>
+                    @*<td><input type="button" class="deletesalhead btn btn-md btn-danger" value="Delete"></td>*@
+                    <td><a href="javascript:void(0)" class="editCategory">Edit</a></td>
+                </tr>
+                }
+            </tbody>          
+        </table>
+    </div>
+    <script>
+    $(document).ready(function () {
+        var catGrid = null;
+        InitializeCategoryGrid();
+
+        $("#tblEmpCategoriesGrid").on("click", ".editCategory", function (event) {
+            var row = $(this).closest("tr");
+            //var name = $.trim(row.find("td").eq(0).html());
+            //var reportto = $.trim(row.find("td").eq(1).html());
+            //var reporttoid = $.trim(row.find("td").eq(3).html());
+            var Id = $.trim(row.find("td").eq(4).html());
+            //var code = $.trim(row.find("td").eq(2).html());          
+            //debugger;
+            $.ajax({
+                type: "POST",
+                url: "/HR/EditEmployeeCategory",
+                data: '{CategoryId: "'+Id+'"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (data) {
+                    $('#EditCategoryModel').html(data);
+                    $('#EditCategoryModel').modal();
+                }
+            });
+
+            @*$.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/DeleteExperienceHistoryData',
+                data: { OrganisationName: organisation },
+                success: function (Data) {
+                    //alert("Hi");
+                    if (Data.saveStatus === "Deleted") {
+                          var Action1 = '@Session["EmpAction"]';
+                        if (Action1 !== "") {
+                            if (Action1 === "New") {
+                                $("#divExperienceHistory").load('/HR/ExperienceHistoryGrid');
+                            }
+                            else {
+                                $("#divUpdateExperienceHistory").load('/HR/ExperienceHistoryGrid');
+                            }
+                        }
+                     
+                        
+                    }
+                    else {
+                        $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                        $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                        $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewEmpInfoMsg").text(addFailMsg);
+                    $("#divAddNewEmpInfoMsg").addClass("alert-danger");
+                    $("#divAddNewEmpInfoMsg").removeClass("hidden alert-success");
+                }
+            });*@
+        });
+    });
+        function InitializeCategoryGrid() {
+            catGrid = $('#tblEmpCategoriesGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Categories Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+            pageLength: 10
+        });
+    }
+    </script>
+}

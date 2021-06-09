@@ -1,0 +1,47 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.ViewIndents
+
+<div class="col-md-12" id="divIndentItemsDetailsGrid"></div>
+<div class="col-md-12" id="divIndentItemstransferDetailsGrid"></div>
+<div class="col-md-12" id="divIndentRemarks"></div>
+
+<script>
+    $(document).ready(function () {
+        var Indno = '@Model.Indentno'
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewIndentItemsDetails',
+            data: { Indent: Indno },
+            success: function (data) {
+                $("#divIndentItemsDetailsGrid").html(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewIndentItemstransferDetails',
+            data: { Indent: Indno },
+            success: function (data) {
+                $("#divIndentItemstransferDetailsGrid").html(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Reports/ViewIndentRemarks',
+            data: { Indent: Indno },
+            success: function (data) {
+                $("#divIndentRemarks").html(data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            }
+        });
+    });
+</script>

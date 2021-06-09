@@ -1,0 +1,211 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.GSTReport>
+    <style>
+        .firstheaderborder {
+            border-left: 1px solid white;
+            border-right: 1px solid white;
+            text-align: center !important;
+        }
+
+        .startheaderborder {
+            border-left: 1px solid white;
+        }
+    </style>
+<div class="table-responsive">
+    <table id="tblGSTItemsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        
+        <thead>
+            <tr style="height:6px!important" ><td colspan="22" style="border-top: 1px solid white;border-left: 1px solid white;  border-right: 1px solid white;border-color:black; text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:15px;">GST Report</td></tr>
+            <tr style="height:6px!important"><td colspan="2" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black; text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px"></td><td colspan="7" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px">Claimed GST</td><td colspan="12" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px">Paid GST</td><td colspan="1" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px"></td></tr>
+            <tr style="height:6px!important"><td colspan="2" style="border-left: 1px solid white;  border-right: 1px solid white; border-color:black; text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px"></td><td colspan="7" style="border-left: 1px solid white;  border-right: 1px solid white; border-color:black; text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px"></td><td colspan="7" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px">To Vendor</td><td colspan="4" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px">To Govt</td><td colspan="1" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:8px"></td><td colspan="1" style="border-left: 1px solid white;  border-right: 1px solid white;border-color:black;text-align:center;color:#fff !important;background-color:#4682B4 !important;font-weight:normal; white-space: normal;font-size:12px"></td></tr>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Entry Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice No</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Client Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Client GST No</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Value</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">CGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">SGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice No</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Vendor Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Vendor GST No</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Value</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">CGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">SGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">CGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">SGST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Total GST</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Penal Intrest</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                   
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Invoice_date)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Modifieddate)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientInvoiceNo)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientName)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientBasic)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientIGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientCGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ClientSGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorInvoiceNo)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorName)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorGSTNo)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorBasicValue)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorIGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorCGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorSGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.GovtIGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.GovtCGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.GovtSGST)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Total)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.PenalInterest)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px"></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+
+    $(document).ready(function () {
+        var ApprovePOGrid = null;
+        InitializeformatApprovePOGrid();
+        var ClientGST = 0;
+        var VendorGST = 0;
+        var GovtGST = 0;
+        $("#tblGSTItemsGrid tbody tr").each(function () {
+            var currentRow = $(this);
+            var CIGST = currentRow.find("td").eq(6).html();
+            var CCGST = currentRow.find("td").eq(7).html();
+            var CSGST = currentRow.find("td").eq(8).html();
+            var VIGST = currentRow.find("td").eq(13).html();
+            var VCGST = currentRow.find("td").eq(14).html();
+            var VSGST = currentRow.find("td").eq(15).html();
+            var GIGST = currentRow.find("td").eq(16).html();
+            var GCGST = currentRow.find("td").eq(17).html();
+            var GSGST = currentRow.find("td").eq(18).html();
+            var CsumIGST = isNaN(parseFloat(CIGST)) ? 0 : parseFloat(CIGST)
+            var CsumCGST = isNaN(parseFloat(CCGST)) ? 0 : parseFloat(CCGST)
+            var CsumSGST = isNaN(parseFloat(CSGST)) ? 0 : parseFloat(CSGST)
+            var VsumIGST = isNaN(parseFloat(VIGST)) ? 0 : parseFloat(VIGST)
+            var VsumCGST = isNaN(parseFloat(VCGST)) ? 0 : parseFloat(VCGST)
+            var VsumSGST = isNaN(parseFloat(VSGST)) ? 0 : parseFloat(VSGST)
+            var GsumIGST = isNaN(parseFloat(GIGST)) ? 0 : parseFloat(GIGST)
+            var GsumCGST = isNaN(parseFloat(GCGST)) ? 0 : parseFloat(GCGST)
+            var GsumSGST = isNaN(parseFloat(GSGST)) ? 0 : parseFloat(GSGST)
+            ClientGST = parseFloat(CsumIGST) + parseFloat(CsumCGST) + parseFloat(CsumSGST);
+            VendorGST = parseFloat(VsumIGST) + parseFloat(VsumCGST) + parseFloat(VsumSGST);
+            GovtGST = parseFloat(GsumIGST) + parseFloat(GsumCGST) + parseFloat(GsumSGST);
+            currentRow.find("td").eq(21).html(parseFloat(ClientGST) - (parseFloat(VendorGST) + parseFloat(GovtGST)));            
+        });
+        $("#tblGSTItemsGrid tfoot tr").each(function () {
+            //var footerRow = $(this);
+            //if (!isNaN(totalBasic)) {
+            //    footerRow.find("td").eq(7).html("<b>" + totalBasic + "</b>");
+            //    footerRow.find("td").eq(8).html("<b>" + totaltds + "</b>");
+            //    footerRow.find("td").eq(9).html("<b>" + totaltdsbalance + "</b>");
+            //}
+            //else {
+            //    footerRow.find("td").eq(7).html("");
+            //    footerRow.find("td").eq(8).html("");
+            //    footerRow.find("td").eq(9).html("");
+            //}
+        });
+
+    });
+    function InitializeformatApprovePOGrid() {
+        ApprovePOGrid = $('#tblGSTItemsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: true,
+            ordering: true,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+    }
+</script>

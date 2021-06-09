@@ -1,0 +1,102 @@
+﻿
+@model List<EsselTestLocalApplication.Models.BudgetReportDCASummary>
+@if (Model.Count == 0)
+{
+    <div style="text-align:center;font-weight:600">No Data Found</div>
+    @*<script type="text/javascript">
+            alert("Model empty");
+        </script>*@
+}
+else
+{
+    <div class="table-responsive col-md-12">
+        <table class="hover stripe nowrap example dataTable no-footer" id="tblIndividualDcaDetails">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Credit</th>
+                    <th>CashDebit</th>
+                    <th>indent</th>
+                    <th>PO</th>
+                    <th>Invoice Debit</th> @*Previous ChequeDebit*@
+                    <th>Internal Debit</th> @*Previous ICF*@
+                    <th>Bank Debit</th>
+                    <th>Total Debit</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.paydate)</td>
+                    <td style="white-space: pre-wrap !important;word-wrap: break-word !important; font-size:smaller; width:50%"> @Html.DisplayFor(modelItem => item.Description)</td>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.credit)</td>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.cashdebit)</td>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.indent)</td>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.PO)</td>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.InvoiceDebit)</td>@*Previous chequedebit*@
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.InternalDebit)</td> @*Previous ICF*@
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.BankDebit)</td>
+                    <td style="font-size:smaller"> @Html.DisplayFor(modelItem => item.TotalDebit)</td>
+                    <td style="font-size:smaller" class="hidden"> @Html.DisplayFor(modelItem => item.DCACode)</td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var InddcaGrid = null;
+        InitializeIndDCABudgetReportGrid();
+    });
+
+
+    function InitializeIndDCABudgetReportGrid() {
+        InddcaGrid = $('#tblIndividualDcaDetails').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            lengthChange: false,
+            info: false,
+            paging: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+
+            "initComplete": function (settings, json) {
+
+            },
+            "createdRow": function (row, data, index) {
+                //var date = $('td:eq(0)', row).html();
+                //var trimStr = $.trim(date);
+                //var typeArr = trimStr.split(' ');
+                //var d3 = typeArr[0];
+                //var t1 = "'" + d3 + "'";
+                //var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');
+                //$('td:eq(0)', row).html(bldate1);
+                //alert(date);
+            },
+        });
+    }
+    
+</script>

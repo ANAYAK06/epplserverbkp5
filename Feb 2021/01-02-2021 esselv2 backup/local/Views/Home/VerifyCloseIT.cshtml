@@ -1,0 +1,124 @@
+﻿@model List<EsselTestLocalApplication.Models.ITCode>
+@{
+    /**/
+
+    /**/
+
+    ViewBag.Title = "VerifyCloseIT";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table id="tblItcodesGrid" style="width:100%" class="hover stripe nowrap example">
+                        <thead>
+                            <tr>
+                                <th class="hidden">ID</th>
+                                <th>IT Code</th>
+                                <th>IT Name</th>
+                                <th>Nature Of Group</th>
+                                <th>Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td class="hidden">
+                                        @Html.DisplayFor(modelItem => item.Itid)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ItCode)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ItName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NatureGroupName)
+                                    </td>
+                                    <td>
+                                        @*<a onclick="ViewITCloseDetails(@item.Itid)" href="#">View</a>*@
+                                        <button onClick="ViewITCloseDetails(@item.Itid,'@item.ItCode','@item.ItName')">View</button>
+                                    </td>
+
+
+                                </tr>
+                            }
+                        </tbody>
+
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="modal fade" id="closeITcodeConfirmation" role="dialog" data-backdrop="static" data-keyboard="false">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<div class="modal fade" id="closeITcodeConfirmationVerification" role="dialog" data-backdrop="static" data-keyboard="false">
+
+</div>
+<script src="~/Scripts/moment.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var ItcodeGrid = null;
+        InitializeItcodeGrid();
+
+    });
+    function InitializeItcodeGrid() {
+        ItcodeGrid = $('#tblItcodesGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No IT Codes Found"
+            },
+            "createdRow": function (row, data, index) {
+                 var ddlAction = $('td:eq(4)', row).find("select");
+                ddlAction.empty().append('<option selected="selected" value="0">-Select-</option>');
+                var Roleid = '@Session["Roleid"]';
+                var Mid = 'IT Code';
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Home/GetApprovalstatusIT",
+                //    data: '{Checktype:"' + Mid + '",Rid:"' + Roleid + '"}',
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (response) {
+                //        var count = Object.keys(response).length;
+                //        if (count > 0) {
+                //            $.each(response, function () {
+                //                ddlAction.append($("<option></option>").val(this['Value']).html(this['Text']));
+                //            });
+                //        }
+                //    },
+                //    failure: function (response) {
+                //        alert(response.responseText);
+                //    },
+                //    error: function (response) {
+                //        alert(response.responseText);
+                //    }
+                //});
+            },
+            pageLength: 10
+        });
+
+    }
+</script>

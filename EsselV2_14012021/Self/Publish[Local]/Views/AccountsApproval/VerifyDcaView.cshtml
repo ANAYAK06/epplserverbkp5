@@ -1,0 +1,184 @@
+﻿
+@model EsselTestLocalApplication.Models.DCAdetails
+<div class="col-md-12 verifydiv">
+    <br/>
+    @*@if (Model.BasicDCAInfo.DCATypeID == 1)
+        {*@
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-3 hidden">
+                <div class="form-group">
+                    <label>DCAID:</label>
+                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCAID" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Account Head Code:</label>
+                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCACode" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Account Head Name:</label>
+                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCAName" readOnly="readOnly" />
+                </div>
+            </div>
+            @*<div class="col-md-3">
+                <div class="form-group">
+                    <label>IT Code Name:</label>
+                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.ITCodeName" readOnly="readOnly" />
+                </div>
+            </div>*@
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Status:</label>
+                    <input type="text" class="form-control" value="@Model.BasicDCAInfo.DCAStatus" readOnly="readOnly" />
+                </div>
+            </div>
+            @if (Model.BasicDCAInfo.DCATypeID == 2)
+            {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>TypeOf Tax Name:</label>
+                        <input type="text" class="form-control" value="@Model.BasicDCAInfo.TypeOfTaxName" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nature Of Tax Name:</label>
+                        <input type="text" class="form-control" value="@Model.BasicDCAInfo.NatureOfTaxName" readOnly="readOnly" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <label>Cost Center Types:</label>
+
+                @{ var ccname = ""; }
+
+                @foreach (var item in Model.CCTypeNames)
+                {
+                    if (ccname == "")
+                    {
+                        ccname = @item;
+                    }
+                    else { ccname = ccname + ", " + @item; }
+                }
+                <label>@ccname</label>
+            </div>
+        </div>
+        @*<div class="col-md-12">
+            <div class="col-md-12">
+
+                <label>Payment Types:</label>
+
+                @{ var payname = ""; }
+
+                @foreach (var item in Model.PaymentNames)
+                {
+                    if (payname == "")
+                    {
+                        payname = @item;
+                    }
+                    else { payname = payname + ", " + @item; }
+                }
+                <label>@payname</label>
+            </div>
+        </div>*@
+        @*@if (Model.BasicDCAInfo.DCATypeID == 2)
+        {
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <label>Taxes:</label>
+                    @{ var taxname = ""; }
+
+                    @foreach (var item in Model.TaxNames)
+                    {
+                        if (taxname == "")
+                        {
+                            taxname = @item;
+                        }
+                        else { taxname = taxname + ", " + @item; }
+                    }
+                    <label>@taxname</label>
+                </div>
+            </div>
+        }*@
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="hidden" value="@Model.MOID" id="txtMOID"  />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => Model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppDcastatus" })
+                  
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="AppDcaNote"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApproveDCa('@Model.BasicDCAInfo.DCAID','@Model.BasicDCAInfo.DCACode','@Model.BasicDCAInfo.DCATypeID','@Model.BasicDCAInfo.DCAStatus')">Submit</button>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprDcaInfoMsg" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+    @**@
+</div>
+<script>
+    $(document).ready(function () {
+       
+            var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+       
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        
+                        var ddlaprovalstatus = $("#AppDcastatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () { 
+                            
+                            if ('@Model.BasicDCAInfo.DCAStatus' == "Closed") {
+                                if (this['Type'] == 'Return' || this['Type'] == 'Reject') {
+                                }
+                                else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                            }
+                            else { ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));}
+                                
+                            
+                          
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });     
+    });
+</script>
+
+
+

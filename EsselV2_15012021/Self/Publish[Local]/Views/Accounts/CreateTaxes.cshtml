@@ -1,0 +1,357 @@
+﻿@model List<EsselTestLocalApplication.Models.MasterWorkFlowStatus>
+@{
+    /**/
+
+    //ViewBag.Title = "CreateTaxes";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Accounts")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 style="font-weight:bold">GST Creation</h5>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="card-inner">
+                                    @*<ul class="nav nav-tabs" id="tabTaxes" role="tablist">
+                                        @foreach (var item in Model)
+                                        {
+                                            if (item.MID == 120 && item.WorkflowExist == true)
+                                            {
+
+                                                <li><a data-toggle="tab" href="#Gsttax">GST</a></li>
+                                            }
+                                            if (item.MID == 118 && item.WorkflowExist == true)
+                                            {
+
+                                                <li><a data-toggle="tab" href="#Othertax">Other Taxes</a></li>
+                                            }
+                                        }
+
+                                        </ul>
+                                    <div class="tab-content">
+
+                                        @foreach (var item in Model)
+                                        {
+                                            if (item.MID == 120 && item.WorkflowExist == true)
+                                            {
+
+                                                <div id="Gsttax" class="tab-pane fade">
+                                                    <button class="btn btn1 btn-success" id="btnewGstTax" onclick="ViewAddNewGstTaxModel()">New Tax</button>
+                                                    <div id="divGstTaxGrid">
+                                                        @Html.Action("ViewGstTaxesGrid", "Accounts")
+                                                    </div>
+                                                </div>
+                                            }
+                                            if (item.MID == 118 && item.WorkflowExist == true)
+                                            {
+                                                <div id="Othertax" class="tab-pane fade">
+                                                    <button class="btn btn1 btn-success" id="btnewGenTax" onclick="ViewAddNewGeneralTaxModel()">New Tax</button>
+                                                    <input type="text" value="0" id="txtCreatedby" style="display:none" />
+                                                    <div id="divGaneralTaxGrid">
+                                                        @Html.Action("ViewGeneralTaxesGrid", "Accounts")
+                                                    </div>
+                                                </div>
+                                            }                                        
+                                     
+                                        }
+                                    </div>*@
+                                    <div class="row">
+                                        <div id="Gsttax">
+                                            <button class="btn btn1 btn-success" id="btnewGstTax" onclick="ViewAddNewGstTaxModel()">New Tax</button>
+                                            <div id="divGstTaxGrid">
+                                                @Html.Action("ViewGstTaxesGrid", "Accounts")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="AddNewGenTaxModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New Tax</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                @Html.Action("AddNewGeneralTax", "Accounts")
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="EditGenTaxModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit Tax</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Tax Number</label>
+                            <input type="text" id="txtUpgtaxTaxNo" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Applicable From</label>
+                            <input type="text" id="txtUpgtaxTaxAppFrm" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Account Head</label>
+                            <input type="text" id="txtUpgtaxTaxDca" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Sub Account Head</label>
+                            <input type="text" id="txtUpgtaxTaxsdca" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Tax Name</label>
+                            <input type="text" id="txtUpgtaxTaxName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea type="text" id="txtUpgtaxTaxRemarks" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <button class="btn btn1 btn-success" id="btnUpGentax" onclick="UpdateGeneralTaxes()">Submit</button>
+                            <input type="hidden" id="txtUpgtaxTaxId" style="display:none" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <br />
+                        <div id="divUpGenTaxInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="DeleteGenTaxModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Tax No: </p><label id="lbldelGenTaxNo"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeleteGenTaxInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletegentax">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btndeleteGenTax" onclick="DeleteGeneralTax()">Delete</button>
+                    <input type="text" id="txtdeleteGenTaxid" style="display:none" />
+                    <input type="text" id="txtdelgtaxTaxAppFrm" style="display:none" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="AddNewGstTaxModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add New GST</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                @Html.Action("AddNewGstTax", "Accounts")
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="EditGstTaxModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit GST</h4>
+            </div>
+            <div class="modal-body" style="overflow-x:hidden">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>GST Number</label>
+                            <input type="text" id="txtUpgstaxTaxNo" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Applicable From</label>
+                            <input type="text" id="txtUpgstaxTaxAppFrm" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Account Head</label>
+                            <input type="text" id="txtUpgstaxTaxDca" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+                    @*<div class="col-md-3">
+                        <div class="form-group">
+                            <label>Sub Account Head</label>
+                            <input type="text" id="txtUpgsTaxsdca" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>*@
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="txtUpgstaxTaxState" readonly="readonly" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Tax Name</label>
+                            <input type="text" id="txtUpgsTaxName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Remarks</label>
+                            <textarea type="text" id="txtUpgsTaxRemarks" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="text-right">
+                            <button class="btn btn1 btn-success" id="btnUpGsttax" onclick="UpdateGstTaxes()">Submit</button>
+                            <input type="hidden" id="txtUpgstaxTaxId" />
+
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <br />
+                        <div id="divUpGstTaxInfoMsg" class="alert alert-danger hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="DeleteGstTaxModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div id="confirmms1"> <h4 class="modal-title">Are you sure?</h4></div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="confirmmsg">
+                    <p>Do you really want to delete Tax No: </p><label id="lbldelGstTaxNo"></label>
+                    <p>This process cannot be undone.</p>
+                </div>
+                <div id="divDeleteGstTaxInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="confirmbtndeletegsttax">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btndeleteGstTax" onclick="DeleteGstTax()">Delete</button>
+                    <input type="text" id="txtdeleteGstTaxid" style="display:none" />
+                    <input type="text" id="txtdelgstTaxAppFrm" style="display:none" />
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var Sessioncreated = '@Session["Createdby"]';
+            $("#txtCreatedby").val(Sessioncreated);
+            $("#txtgTaxdate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                }
+            }).datepicker("setDate", new Date());
+            $("#txtgsTaxdate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                }
+            }).datepicker("setDate", new Date());
+
+            $("#EditGstTaxModal").on("hide.bs.modal", function () {
+                $("#divGstTaxGrid").load('/Accounts/ViewGstTaxesGrid');
+            });
+            $("#DeleteGstTaxModel").on("hide.bs.modal", function () {
+                $("#divGstTaxGrid").load('/Accounts/ViewGstTaxesGrid');
+            });
+            $("#AddNewGstTaxModal").on("hide.bs.modal", function () {
+                $("#divGstTaxGrid").load('/Accounts/ViewGstTaxesGrid');
+            });
+            $("#DeleteGenTaxModel").on("hide.bs.modal", function () {
+                $("#divGaneralTaxGrid").load('/Accounts/ViewGeneralTaxesGrid');
+            });
+            $("#AddNewGenTaxModal").on("hide.bs.modal", function () {
+                $("#divGaneralTaxGrid").load('/Accounts/ViewGeneralTaxesGrid');
+            });
+            $("#EditGenTaxModal").on("hide.bs.modal", function () {
+                $("#divGaneralTaxGrid").load('/Accounts/ViewGeneralTaxesGrid');
+            });
+            $('.nav-tabs li:eq(0) a').tab('show');
+        });
+</script>
+

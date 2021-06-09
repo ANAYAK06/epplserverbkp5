@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "AddDCAView";
+    //Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/AccountsScripts/Accounts.js"></script>
+@*<h3>Add/Edit DCA</h3>*@
+<div class="row">
+    <div class="col-md-12 col-lg-12">
+
+        <div class="col-lg-3"> <label for="DCAType" class="col-sm-12 no-padding">DCA Type</label></div>
+        <div class="col-lg-9">
+            <div class="form-group form-inline">
+                <fieldset>
+                    <input class="padding-20 AddDCARd" id="rdGeneralDCA" type="radio" name="AddDCARd" value="1">  General DCA &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input class="padding-20 AddDCARd" id="rdTaxDCA" type="radio" name="AddDCARd" value="2">  Tax DCA &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input class="padding-20 AddDCARd" id="rdSubDCA" type="radio" name="AddDCARd" value="3">  Sub DCA
+                </fieldset>
+            </div>
+        </div>
+
+    </div>
+    <div id="divDCATypeForm" class="col-md-12 col-lg-12">
+    </div>
+</div>
+<div id="divDCAFormLoader">
+</div>
+
+
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    debugger;
+    //    var selectedDCAType = $("input[name='AddDCARd']:checked").val();
+    //    if (selectedDCAType == 1) {
+    //        ResetEditGeneralDCA();
+    //    }
+    //    else if (selectedDCAType == 2) {
+    //        ResetAddTaxDCA();
+    //    }
+    //    else if (selectedDCAType == 3) {
+    //        ResetSubDCA();
+    //    }
+    //});
+</script>
+

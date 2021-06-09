@@ -1,0 +1,376 @@
+﻿@model EsselTestLocalApplication.Models.ClientNewAndAmendPO
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.Status != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Purchase Order Number:</label>
+                        <input type="text" class="form-control" value="@Model.pono" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Cost Center:</label>
+                        <input type="text" class="form-control" value="@Model.CostCenter" readOnly="readOnly" id="poCCCode" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Start Date:</label>
+                        <input type="text" class="form-control" value="@Model.postartdate" readOnly="readOnly" id="postartdate" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Completion Date:</label>
+                        <input type="text" class="form-control" value="@Model.pocompletiondate" readOnly="readOnly" id="poendate" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input type="text" class="form-control" value="@Model.povalue" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Total Amount:</label>
+                        <input type="text" class="form-control" value="@Model.total" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>GST:</label>
+                        <input type="text" class="form-control" value="@Model.gst" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Client:</label>
+                        <input type="text" class="form-control" value="@Model.clientid" readOnly="readOnly" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Sub Client:</label>
+                        <input type="text" class="form-control" value=@Model.subclientid readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Mobilization Advance:</label>
+                        <input type="text" class="form-control" value=@Model.Mobilizeadvance readOnly="readOnly" id="poMobilize" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>RA Bill:</label>
+                        <input type="text" class="form-control" value=@Model.rabill readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Pay due of RABill:</label>
+                        <input type="text" class="form-control" value=@Model.rabilldues readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3" id="poadvance">
+                    <div class="form-group">
+                        <label>Advance Settlement:</label>
+                        <input type="text" class="form-control" value=@Model.advancesettelment readOnly="readOnly" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                        <label>Status</label>
+                        @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "AppClientPostatus" })
+                        @*<select class="form-control dropdown-toggle" id="AppClientPostatus">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Verify">Verify</option>
+                                <option value="Approve">Approve</option>
+                                <option value="Return">Return</option>
+                                <option value="Reject">Reject</option>
+                            </select>*@
+                    </div>
+                </div>
+                <div class="col-md-6 ">
+                    <div class="form-group">
+                        <label>Notes:</label><br />
+                        <textarea rows="3" cols="60" class="form-control" id="AppClientPoNote"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <br /><br /><button class="btn btn1 btn-success" onClick="ApproveClientPO('@Model.pono','@Model.CostCenter')">Submit</button>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <div class="text-center">
+                    <div id="divApprclientPoInfoMsg" class="alert alert-danger hidden"></div>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <form onsubmit="return false">
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CostCenter)
+                        @Html.TextBoxFor(model => model.CostCenter, htmlAttributes: new { @class = "form-control", @id = "txtpocc", @readonly = true })
+                    </div>
+
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.clientid)
+                        @Html.TextBoxFor(model => model.clientid, htmlAttributes: new { @class = "form-control", @id = "txtpoclient", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.subclientid)
+                        @Html.TextBoxFor(model => model.subclientid, htmlAttributes: new { @class = "form-control", @id = "txtposubclient", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.pono)
+                        @Html.TextBoxFor(model => model.pono, htmlAttributes: new { @class = "form-control", @id = "txtpono", @readonly = true })
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.postartdate)
+                        @Html.TextBoxFor(model => model.postartdate, "{0:dd-MMM-yyyy}", new { @id = "txtpostartdate", @class = "form-control date-picker", type = "text", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.pocompletiondate)
+                        @Html.TextBoxFor(model => model.pocompletiondate, "{0:dd-MMM-yyyy}", new { @id = "txtpocompletiondate", @class = "form-control date-picker", type = "text", @readonly = true })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.povalue)
+                        @Html.TextBoxFor(model => model.povalue, htmlAttributes: new { @class = "form-control", @id = "txtpovalue", onkeypress = "return ValidateAmount(this,event)", onkeyup = "CalculateTotal()" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.gst)
+                        @Html.TextBoxFor(model => model.gst, htmlAttributes: new { @class = "form-control", @id = "txtgst", onkeypress = "return ValidateAmount(this,event)", onkeyup = "CalculateTotal()" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.total)
+                        @Html.TextBoxFor(model => model.total, htmlAttributes: new { @class = "form-control", @id = "txttotal", @readonly = "true" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <h5 style="font-weight:bold">Payment Term</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Madvance)
+                        @Html.DropDownListFor(model => model.Madvance, new SelectList(Model.Mobadvance, "movadvid", "movadvname"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlmobadv", onchange = "Checkmovadv()" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.rabill)
+                        @Html.TextBoxFor(model => model.rabill, htmlAttributes: new { @class = "form-control", @id = "txtrabill" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.rabilldues)
+                        @Html.TextBoxFor(model => model.rabilldues, htmlAttributes: new { @class = "form-control", @id = "txtrabilldues" })
+                    </div>
+                </div>
+                <div class="col-md-3" id="divAdvSettle">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.advancesettelment)
+                        @Html.TextBoxFor(model => model.advancesettelment, htmlAttributes: new { @class = "form-control", @id = "txtadvsettelment" })
+                    </div>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="col-md-12">
+                    <div class="text-right">
+                        <button class="btn btn1 btn-success" id="btnClientPOSubmit" onclick="UpdatePOData('@Model.pono','@Model.CostCenter')">Submit</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div id="divpoInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+        </form>
+    }
+    @**@
+</div>
+
+<script>
+    $(document).ready(function () {
+        //var pono = $("#currentPoNo").val();
+        var Roleid = '@Session["Roleid"]';
+        var Mid = $("#txtMOID").val();
+        if (@Model.Status != "0") {
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#AppClientPostatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+                    }
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        var status = '@Model.Status';
+        if (status == "1") {
+            startdate = $("#postartdate").val();
+            var sdate = "'" + startdate + "'";
+            var sdate1 = moment(sdate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            $("#postartdate").val(sdate1);
+
+            enddate = $("#poendate").val();
+            var edate = "'" + enddate + "'";
+            var edate1 = moment(edate, "DD-MM-YYYY").format('DD-MMM-YYYY');
+            $("#poendate").val(edate1);
+
+            mobilize = $("#poMobilize").val();
+
+            if (mobilize == 'YES') {
+                $("#poadvance").removeClass("hidden");
+            }
+            else {
+                $("#poadvance").addClass("hidden");
+            }
+        }
+        else {
+            $('#txtpostartdate').css('background-color', 'transparent');
+            $('#txtpocompletiondate').css('background-color', 'transparent');
+            $("#txtpostartdate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtpocompletiondate").datepicker("option", "minDate", selectedDate);
+                }
+            });
+
+            $("#txtpocompletiondate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                minDate: $("#txtpostartdate").val(),
+                maxDate: "+1y",
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                }
+            });
+
+            var mobi = '@Model.Mobilizeadvance';
+            if (mobi == 'YES') {
+                $("#ddlmobadv").find("option:contains('Yes')").each(function () {
+                    if ($(this).text() == 'Yes') {
+                        $(this).attr("selected", "selected");
+                    }
+                });
+
+
+                $("#divAdvSettle").removeClass("hidden");
+            }
+            else {
+                $("#ddlmobadv").find("option:contains('No')").each(function () {
+                    if ($(this).text() == 'No') {
+                        $(this).attr("selected", "selected");
+                    }
+                });
+                $("#divAdvSettle").addClass("hidden");
+            }
+        }
+
+    });
+    function CalculateTotal() {
+        total = 0;
+        var PoValue = $("#txtpovalue").val();
+        //var exciseduty = $("#txtexduty").val();
+        var GST = $("#txtgst").val();
+        if (PoValue == "" && PoValue == 0) {
+            PoValue = 0;
+        }
+        //if (exciseduty == "" && exciseduty == 0) {
+        //    exciseduty = 0;
+        //}
+        if (GST == "" && GST == 0) {
+            GST = 0;
+        }
+        total = eval((parseFloat(PoValue) + parseFloat(GST)));
+        $("#txttotal").val(total);
+    }
+    function Checkmovadv() {
+        var mobilize = $("#ddlmobadv option:selected").index();
+        var madv;
+        if (mobilize == 1) {
+            $("#divAdvSettle").removeClass('hidden');
+        }
+        else {
+            $("#divAdvSettle").addClass('hidden');
+        }
+
+    }
+</script>

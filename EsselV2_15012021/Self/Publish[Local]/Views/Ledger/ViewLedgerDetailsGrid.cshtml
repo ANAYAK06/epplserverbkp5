@@ -1,0 +1,174 @@
+﻿
+@model List<EsselTestLocalApplication.Models.Ledger.LedgerDetails>
+<style>
+    td.details-control {
+        background: url('../../Content/EsselImages/details_open.png') no-repeat center center;
+        /*background-image: url('../../Content/EsselImages/details_close.png');*/
+        /*background-image: url('../../Content/EsselImages/details_open.png');*/
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../../Content/EsselImages/details_close.png' no-repeat center center;
+    }
+</style>
+  
+<div class="table-responsive w-100">
+    <table id="tblLedgerDetailsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Ledger Name</th>
+                <th>Nature of Group</th>
+                <th>Account Head</th>
+                <th>Ledger Value Type</th>
+                <th class="hidden"> Group </th>
+                <th class="hidden">Sub Group</th>
+                <th class="hidden">Account Head Ref</th>
+                <th class="hidden">Opening Balance</th>
+                <th class="hidden">Balance As On Date</th>
+                @*<th>Actions</th>*@
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GroupNature)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccHead)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValueType)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.GroupName)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.SubGroup)
+                </td>
+
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.AccHeadRef)
+                </td>
+
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Balance)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                @*<td>
+                    <select class="form-control dropdown-toggle" id="ddlLedgerGridActions" onchange="LedgerActionschange(@item.Id,'@item.Name','@item.GroupNature','@item.AccHead','@item.GroupName', '@item.SubGroup','@item.AccHeadRef','@item.ValueType','@item.Balance','@item.Date',this)">
+                        <option selected="selected" value="-Select-">-Select-</option>
+                        <option value="Edit">Edit</option>
+                        <option value="Delete">Delete</option>
+                    </select>
+
+                </td>*@
+
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        var LedgerGrid = null;
+        InitializeLedgerGrid();
+
+    });
+    function InitializeLedgerGrid() {
+        LedgerGrid = $('#tblLedgerDetailsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Ledgers Found"
+            },
+            "createdRow": function (row, data, index) {
+                var bldate = $('td:eq(10)', row).html();  
+                var trimStr = $.trim(bldate);              
+                var typeArr = trimStr.split(' ');               
+                var d3 = typeArr[0];              
+                var t1 = "'" + d3 + "'";
+                var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');              
+                $('td:eq(10)', row).html(bldate1);
+            },
+            pageLength: 10
+        });
+
+        $('#tblLedgerDetailsGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = LedgerGrid.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(formatLedger(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+    }
+    function formatLedger(d) {
+        var Group, SubGroup, Balance, BalanceDate;
+        $.each(d, function (index, value) {
+            // Get value in alert
+            if (index == 6)
+                Group = value;
+            if (index == 7)
+                SubGroup = value;
+            if (index == 9)
+                Balance = value;
+            if (index == 10)
+              
+                 
+            BalanceDate = value;
+        });
+        var sg = "";
+
+        if (SubGroup == 0)
+            sg = "";
+        else
+            sg = SubGroup;
+        var typeArr = BalanceDate.toString().split(' ');
+        //alert(typeArr[0]);
+       // var d3 = typeArr[0];
+       // var t1 = "'" + d3 + "'";
+       // var bldate1 = moment(t1, "DDMMYYYY").format('DD-MMM-YYYY');   
+         
+        return '<div><table cellpadding="5" cellspacing="0" border="1px" style="padding-left:50px;width:100%">' +
+            '<tr><td>Group:&nbsp;<b>' + Group + '</b></td>' +
+            '<td>Sub Group:&nbsp;<b>' + sg + '</b></td></tr>' +
+            '<tr><td>Balance:&nbsp;<b>' + Balance + '</b></td>' +           
+            '<td>Balance Date:&nbsp;<b>' + BalanceDate + '</b></td></tr>' +           
+            '</table></div>';
+    }
+
+
+</script>

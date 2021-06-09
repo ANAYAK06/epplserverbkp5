@@ -1,0 +1,159 @@
+﻿
+@model EsselTestLocalApplication.Models.ReportParameters.ClientInvoiceReport
+<style>
+    
+    .wrapcls {
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;
+        font-size: 11px;
+        border-left: 1px solid white;
+    }
+
+    .tdalign {
+        text-align: center !important;
+        /*white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+        text-align: center !important;*/
+        font-size: 11px;
+        border-left: 1px solid white;
+        padding: 0 0 !important;
+    }
+
+    .firstheaderborder {
+        border-left: 1px solid white;
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .startheaderborder {
+        border-left: 1px solid white;
+    }
+
+    .endheaderborder {
+        border-right: 1px solid white;
+        text-align: center !important;
+    }
+
+    .linkcls {
+        color: blue !important;
+        text-decoration: underline !important;
+    }
+
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 0 0;
+        border-bottom: 1px solid #111;
+    }
+</style>
+@*<div align="right">
+    <span>Export to : </span>
+    <img src="~/Content/EsselImages/ExcelImage.jpg" onclick="ExportExcelACCInterest();" />
+    <img src="~/Content/EsselImages/pdf1.png" onclick="ExportpdfACCInterest();" />
+    <img src="~/Content/EsselImages/word.png" onclick="Exportword();" />
+</div>*@
+<div></div>
+<div  class="table-responsive">
+    <table id="tblCIMainGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>                
+                <th class="wrapcls">Client Code</th>
+                <th class="wrapcls">Sub Client Code</th>
+                <th class="wrapcls">Invoice No</th>
+                <th class="wrapcls">Po No</th>
+                <th class="wrapcls">RA NO</th>
+                <th class="wrapcls">Invoice Date</th>
+                <th class="wrapcls">Date</th>
+                <th class="wrapcls">CC Code</th>
+                <th class="wrapcls">Basic Value</th>
+                <th class="wrapcls">Tax Amt</th>
+                <th class="wrapcls">Total</th>
+                <th class="wrapcls">Retention</th>
+                <th class="wrapcls">Advance</th>
+                <th class="wrapcls">Hold</th>
+                <th class="wrapcls">Cleint Deduction</th>
+                <th class="wrapcls">Any Other</th>
+                <th class="wrapcls">Net Amount</th>
+                <th class="wrapcls">Payment type</th>
+                <th class="wrapcls">status</th>
+                <th class="wrapcls">Transaction Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ClientInvoiceDataList)
+            {
+            <tr>
+                
+                <td  class="tdalign">
+                    @Html.DisplayFor(modelItem => item.ClientCode)
+                </td>
+                <td  class="tdalign">
+                    @Html.DisplayFor(modelItem => item.SubClientCode)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.ClientInvoiceNo)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.PoNumber)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.RANO)
+                </td>
+
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.InvoiceDate)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.date)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.BasicValue)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.txtamt)
+                </td>
+                <td class="tdalign">
+                    @Html.DisplayFor(modelItem => item.Total)
+                </td>
+                <td  class="tdalign">@Html.DisplayFor(modelItem => item.Retention)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.Advance)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.Hold)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.ClientDed)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.AnyOther)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.credit)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.paymenttype)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.status)</td>
+                <td class="tdalign">@Html.DisplayFor(modelItem => item.TransactionStatus)</td>
+            </tr>
+            }
+        </tbody>
+
+
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var CIMainGrid = null;
+        InitializeCIMainGrid();
+    });
+    function InitializeCIMainGrid() {
+        CIMainGrid = $('#tblCIMainGrid').DataTable({
+            destroy: true,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            pageLength: 100,
+            "initComplete": function (settings, json) {
+
+
+            }
+        });
+    }
+        </script>

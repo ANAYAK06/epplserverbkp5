@@ -1,0 +1,276 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.LostDamagedData
+<style>
+    .tdlabelcls {
+        color: #fff !important;
+        margin-top: 10px
+    }
+
+    .tdcls {
+        text-align: center;
+        color: #fff !important;
+        padding: 0px !important;
+    }
+
+    .tbodytdcls {
+        text-align: center;
+        padding: 1px !important;
+    }
+
+  
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: center;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+</style>
+<div class="col-md-12 verifydiv">
+    <br />  <form onsubmit="return false">
+    <br />
+    <div class="row">
+        @if (Model.itemlist.Count > 0)
+        {
+            <div class="tabledynamic">
+                <table id="ItemLostDamageDataTable" class="table order-list ItemLostDamageDataTable">
+                    <thead>
+                        <tr style="background-color:rgba(255,255,255,0.1)!important">
+                            <td class="tdcls" style="color:#fff !important"><label style="color:#fff !important">Chk</label></td>
+
+                            <td class="tdcls"><label style="color:#fff !important">Item Code</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Item Name</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Specification</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">DCA</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Sub DCA</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Units</label></td>
+
+                            <td class="tdcls"><label style="color:#fff !important">Issued Quantity</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Item Type</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Lost Quantity</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Damaged Quantity</label></td>
+                            <td class="tdcls"><label style="color:#fff !important">Remarks</label></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.itemlist)
+                        {
+                            <tr>
+                                <td style="text-align:center;width:10px!important;">
+                                    <ul class="list-inline">
+                                        <li class="eagle-checkbox">
+                                            <label class="eagle-check custom-checkbox">
+                                                <input type="checkbox" class="eagle-check-input">
+                                                <span class="eagle-check-indicator"></span>
+                                                <span class="eagle-check-description"></span>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.itemcode, new { @Class = "griditemcode" })</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.itemname)</td>
+                                <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.specification</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.dcacode)</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.subdcacode)</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.units)</td>
+
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.quantity)</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px">
+                                    @Html.DisplayFor(modelItem => item.itemstatus)
+                                </td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Lost)</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Damaged)</td>
+                                <td style="font-weight:normal; white-space: normal;font-size:11px">@Html.DisplayFor(modelItem => item.Remarks)</td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        }
+    </div>
+    <br />
+    <div class="row">
+        <table style="width:100%;border:1px solid gray">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <th class="hidden tdcls">No.</th>
+                    <th class="tdcls">Action </th>
+                    <th class="tdcls">Role Name</th>
+                    <th class="tdcls">Employee </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count2 = 1; }
+                @foreach (var item in Model.ApprUserList)
+                {
+                    <tr>
+                        <th style="font-weight:normal; white-space: normal;font-size:11px" class="hidden">count2</th>
+                        @if (count2 == 1)
+                        {
+                            <th s style="font-weight:normal; white-space: normal;font-size:11px;text-align:center">Created By </th>
+                        }
+                        else
+                        {
+                            <th style="font-weight:normal; white-space: normal;font-size:11px;text-align:center">Verified By </th>
+                        }
+                        <th style="font-weight:normal; white-space: normal;font-size:11px;text-align:center">@item.Rolename</th>
+                        <th style="font-weight:normal; white-space: normal;font-size:11px">@item.Empname </th>
+
+                    </tr>
+                    count2++;
+                }
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div class="col-md-12">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                <label>Status</label>
+                @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "Appvldstatus" })
+
+            </div>
+        </div>
+        <div class="col-md-6 ">
+            <div class="form-group">
+                <label>Notes:</label><br />
+                <textarea rows="3" cols="60" class="form-control" id="AppLdNote"></textarea>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="form-group">
+                <br /><br /><button onClick="ApproveLostOrDamagedItems('@Model.Refno','@Model.CCCode')">Submit</button>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <br />
+    <div class="col-md-12">
+        <br />
+        <div class="text-center">
+            <div id="divApprLDInfoMsg" class="alert alert-danger hidden"></div>
+        </div>
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#Appvldstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            if (this['Type']!=="Return") {
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            }
+                        });
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+
+                }
+            });
+
+    });
+  function ApproveLostOrDamagedItems(refno,CC) {
+    var appstatus = $("#Appvldstatus option:selected").text();
+    retnote = $("#AppLdNote").val();
+    msg = $("#divApprLDInfoMsg");
+
+    isValid = true;
+    var errorMsg = "";
+    if (appstatus === "Select") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+        isValid = false;
+    }
+    if (retnote === "") {
+        errorMsg += "<p style='margin-top:-5px!important;'>Enter Note</p>";
+        isValid = false;
+    }
+      var  checkcount = 0;
+      $("#ItemLostDamageDataTable tbody tr").each(function () {
+          var currentRow = $(this);
+          var check = currentRow.find('input[type="checkbox"]').is(':checked');
+         
+          if (check === false) { checkcount += 1; }
+      });
+      if (checkcount > 0) {
+          errorMsg += "<p style='margin-top:-5px!important;'>Verify Items</p>";
+          isValid = false;
+      }
+    if (!isValid) {
+        var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+        $(msg).text("");
+        $(msg).append(finalerror1 + errorMsg + "</div>");
+        $(msg).addClass("alert-danger");
+        $(msg).removeClass("hidden alert-success");
+        return false;
+    }
+    else {
+        $(msg).text("");
+        $(msg).addClass("hidden");
+    
+        var ApproveLD = {
+            Refno: refno,
+            Action: appstatus,
+            ApprovalNote: retnote,
+            CCCode: CC 
+        };
+        debugger;
+        addFailMsg = "Error Occurred";
+
+        var finalmsg;
+        if (appstatus === 'Verify') {
+            finalmsg = 'Verified Successfully';
+        }
+        else if (appstatus === 'Approve') { finalmsg = 'Approved  Successfully'; }
+        else if (appstatus === 'Return') { finalmsg = 'Returned for Update '; }
+        else if (appstatus === 'Reject') { finalmsg = 'Rejected  Successfully'; }
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/ApproveLostDamagedItems",
+            data: JSON.stringify({ LDdata: ApproveLD }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.saveStatus === "Submited") {
+                    $('#ApproveItemsMsgModal').modal('show');
+                    var msg = "<div>Item " + finalmsg + "</div>";
+                    $("#AppItemMsg").html(msg);
+                }
+                else {
+                    var msg1 = "<div>" + response.saveStatus + "</div>";
+                    $("#AppItemMsg").html(msg);
+                    $('#ApproveItemsMsgModal').modal('show');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                var msg = "<div>" + addFailMsg + " </div>";
+                $("#AppItemMsg").html(msg);
+                $('#ApproveItemsMsgModal').modal('show');
+            }
+        });
+    }
+
+    }
+</script>

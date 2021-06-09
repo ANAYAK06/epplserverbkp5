@@ -1,0 +1,238 @@
+﻿
+@model EsselTestLocalApplication.Models.HR.FamilyMember
+<div class="modal-dialog modal-lg">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add Family Member</h4>
+        </div>
+        <div class="modal-body" style="overflow-x:hidden">
+            <div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMName)
+                            @Html.TextBoxFor(model => model.FMName, htmlAttributes: new { @class = "form-control", @id = "txtfamilymembername", onkeypress = "return isValidSpecialCharacters(event)" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMDateofBirth)
+                            @Html.TextBoxFor(model => model.FMDateofBirth, htmlAttributes: new { @class = "form-control", @id = "txtfamilymemberdob", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMAge)
+                            @Html.TextBoxFor(model => model.FMAge, htmlAttributes: new { @class = "form-control", @id = "txtfamilymemberage", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMGender)
+                            <select class="form-control dropdown-toggle " id="ddlfamilymembergender" onchange="FamilyMemnerGenderChange()">
+                                <option selected="selected" value="Select">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMRelation)
+                            <select class="form-control dropdown-toggle " id="ddlfamilymemberrelation"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMWork)
+                            @Html.TextBoxFor(model => model.FMWork, htmlAttributes: new { @class = "form-control", @id = "txtfamilymemberwork" })
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FMMobileNo)
+                            @Html.TextBoxFor(model => model.FMMobileNo, htmlAttributes: new { @class = "form-control", @id = "txtfamilymembermobileno", maxlength = "10", onkeypress = "return IsNumeric(event)" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-right">
+                    <button class="btn btn1 btn-success" id="btnewFMSubmit" onclick="SubmitNewFamilyMemberData()">Submit</button>
+                    <button class="btn btn1 btn-success" id="btnewnewFMReset" onclick="ClearNewFamilyMemberModel()">Reset</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <div class="text-center">
+                            <div id="divAddNewFMInfoMsg" class="alert alert-danger hidden">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#txtfamilymemberdob").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            maxDate: 'dateToday',
+            yearRange: "-100:+0",
+            onClose: function (selectedDate) {
+                CalculateFamilyMemberAge();
+            }
+        });
+    });
+    
+    function CalculateFamilyMemberAge() {
+        var fmemberdob = $("#txtfamilymemberdob").val();
+
+        var From_date = new Date(fmemberdob);
+        var To_date = new Date();
+        var diff_date = To_date - From_date;
+        var years = Math.floor(diff_date / 31536000000);
+        $('#txtfamilymemberage').val(years);
+    }
+    function FamilyMemnerGenderChange() {
+        
+        var genderindex = $("#ddlfamilymembergender option:selected").index();
+        var gender = $("#ddlfamilymembergender option:selected").val();
+        var empgender = $("#ddlNEmpSex option:selected").val();
+
+        var ddlrelation = $('#ddlfamilymemberrelation'); // get the other select in the same row
+        if (genderindex != 0) {
+            ddlrelation.empty().append(' <option selected="selected" value="Select">Select</option>');
+            if (gender === 'Male') {
+                ddlrelation.append($("<option></option>").val('Father').html('Father'));
+                if (empgender === 'Female') {
+                    ddlrelation.append($("<option></option>").val('Husband').html('Husband'));
+                }
+                ddlrelation.append($("<option></option>").val('Brother').html('Brother'));
+            }
+            else if (gender === 'Female') {
+                ddlrelation.append($("<option></option>").val('Mother').html('Mother'));
+                if (empgender === 'Male') {
+                    ddlrelation.append($("<option></option>").val('Wife').html('Wife'));
+                }
+                ddlrelation.append($("<option></option>").val('Sister').html('Sister'));
+            }
+        }
+        else {
+            var ddlr = $("#ddlfamilymemberrelation");
+            ddlr.empty().append(' <option selected="selected" value="Select">Select</option>');
+        }
+
+    }
+    function SubmitNewFamilyMemberData() {
+
+        isValid = true;
+        var errorMsg = "";
+        let name = $("#txtfamilymembername").val();
+        let dob = $("#txtfamilymemberdob").val();
+        let age = $('#txtfamilymemberage').val();
+        var gender = $("#ddlfamilymembergender option:selected").index();
+        var relation = $("#ddlfamilymemberrelation  option:selected").index();
+        var work = $("#txtfamilymemberwork").val();
+        var mbno = $("#txtfamilymembermobileno").val();
+        if (name === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Name</p>";
+            isValid = false;
+        }
+        if (dob === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Family Member Date of Birth</p>";
+            isValid = false;
+        }
+        if (gender === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Gender</p>";
+            isValid = false;
+        }
+        else if (relation === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Relation</p>";
+            isValid = false;
+        }
+        if (work === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Work of Family Member</p>";
+            isValid = false;
+        }
+        if (mbno === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Family Member Mobile No</p>";
+            isValid = false;
+        }
+        else if (mbno.length > 10) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid Mobile No</p>";
+            isValid = false;
+        }
+        //var duplicatelist = selectedfnames.filter(i => selectedfnames.filter(ii => ii === i).length > 1);
+        //if (duplicatelist.length > 0) {
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Family Member Entered</p>";
+        //    isValid = false;
+        //}
+        if (age === "0" || age === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Valid DateOfBirth</p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divAddNewFMInfoMsg").text("");
+            $("#divAddNewFMInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divAddNewFMInfoMsg").addClass("alert-danger");
+            $("#divAddNewFMInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            $("#divAddNewFMInfoMsg").text("");
+            $("#divAddNewFMInfoMsg").addClass("hidden");
+
+            var memberData = {
+                FMName: name,
+                FMDateofBirth: dob,
+                FMAge: age,
+                FMGender: $("#ddlfamilymembergender option:selected").val(),
+                FMRelation: $("#ddlfamilymemberrelation  option:selected").val(),
+                FMWork: work,
+                FMMobileNo: mbno,
+
+            }
+            addFailMsg = "Error Occurred While Adding.";
+            //alert('submit');
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/HR/InsertFamilyMemberData',
+                data: { fmData: memberData },
+                success: function (Data) {
+                    // alert("Hi");
+                    if (Data.saveStatus === "Submited") {
+                    
+                        $("#divAddNewFMInfoMsg").text("Member Added Successfully");
+                        $("#divAddNewFMInfoMsg").removeClass("hidden alert-danger");
+                        $("#divAddNewFMInfoMsg").addClass("alert-success");
+                       
+                    }
+                    else {
+                        $("#divAddNewFMInfoMsg").text(Data.saveStatus);
+                        $("#divAddNewFMInfoMsg").addClass("alert-danger");
+                        $("#divAddNewFMInfoMsg").removeClass("hidden alert-success");
+                    }
+                    $("#btnewFMSubmit").prop('disabled', true);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divAddNewFMInfoMsg").text(addFailMsg);
+                    $("#divAddNewFMInfoMsg").addClass("alert-danger");
+                    $("#divAddNewFMInfoMsg").removeClass("hidden alert-success");
+                    $("#btnewFMSubmit").prop('disabled', true);
+                }
+            });
+        }
+    }
+
+
+</script>

@@ -1,0 +1,228 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.LostOrDamageItem>
+
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+        text-align: center;
+        color: #fff !important;
+        background-color: #004d99 !important;
+        font-weight: normal;
+        white-space: normal;
+        font-size: 10px
+    }
+</style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGrid">
+    @*<div class="strike">
+        <span>Items Details</span>
+    </div>*@
+    <div class="tabledynamic">
+        <table id="ItemLostDamageDataTable" class="table order-list ItemLostDamageDataTable">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td class="tdcls" style="color:#fff !important"><label style="color:#fff !important">Chk</label></td>
+                    <td class="tdcls hidden"><label style="color:#fff !important">Sending CC</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Item Code</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Item Name</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Specification</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">DCA</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Sub DCA</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Units</label></td>
+                    <td class="tdcls hidden"><label style="color:#fff !important">Amount</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Issued Quantity</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Item Type</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Lost Quantity</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Damaged Quantity</label></td>
+                    <td class="tdcls"><label style="color:#fff !important">Remarks</label></td>
+
+                    <td class="tdcls"></td>
+                    <td class="tdcls"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td style="text-align:center;width:10px!important;">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    <input type="checkbox" class="eagle-check-input">
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.CCCode)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.itemcode, new { @Class = "griditemcode" })</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.itemname)</td>
+                    <td style="text-align:left;font-weight:normal; white-space: normal;font-size:11px">@item.specification</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.dcacode)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.subdcacode)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.units)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.avlqty)</td>
+                    <td>
+                        <select class="form-control dropdown-toggle">
+                            <option value="">-Select-</option>
+                            <option value="New Stock">New Stock</option>
+                            <option value="Stock">Stock</option>
+                        </select>
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> <input type="text" class="form-control countcheck1" value="" onkeypress="return IsNumericdecimal(this)" /></td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> <input type="text" class="form-control countcheck2" value="" onkeypress="return IsNumericdecimal(this)" /></td>
+                    <td><textarea class="form-control txtitemdesc" rows="1" cols="50" onkeypress="return RestrictComma(this,event);"></textarea></td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px" class="hidden"> @Html.DisplayFor(modelItem => item.id)</td>
+                    <td style="text-align:center"><input type="button" class="ibtnLDDel btn btn-md btn-danger" value="Delete"></td>
+                </tr>
+                }
+            </tbody>
+            @*<tfoot>
+
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-center" colspan="2"><label>SubTotal: @item.TotalAmount</label></td>
+                        </tr>
+
+                </tfoot>*@
+        </table>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+
+        return true;
+
+    }
+    $(document).ready(function () {
+        //Lost
+        $("table.order-list.ItemLostDamageDataTable").on("keyup", ".countcheck1", function (event) {
+            var currentRow = $(this).closest("tr");
+            var itemcode = currentRow.find("td").eq(2).html();
+            var issuedQty = currentRow.find("td").eq(9).html();
+            var Lostnum = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+            var Damagednum = isNaN(parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())
+
+            //alert(parseFloat(issuedQty) + "====" + parseFloat(Lostnum) + "====" + parseFloat(Damagednum));
+            if (parseFloat(issuedQty) < (parseFloat(Lostnum) + parseFloat(Damagednum))) {
+               // alert("Invalid Lost Quantity for " + itemcode);
+                var msg = "Invalid Lost Quantity for " + itemcode
+                $("#divIndentLDInfoMsg").text("");
+                $("#divIndentLDInfoMsg").append("<div>" + msg + "</div>");
+                $("#divIndentLDInfoMsg").addClass("alert-danger");
+                $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                
+                currentRow.find("td").eq(10).find("input[type='text']").val("0");
+                return false;
+            }
+            else {
+                $("#divIndentLDInfoMsg").text("");
+                $("#divIndentLDInfoMsg").addClass("hidden");
+            }
+        });
+        //Damaged
+        $("table.order-list.ItemLostDamageDataTable").on("keyup", ".countcheck2", function (event) {
+            var currentRow = $(this).closest("tr");
+            var itemcode = currentRow.find("td").eq(2).html();
+            var issuedQty = currentRow.find("td").eq(9).html();
+            var Lostnum = isNaN(parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(11).find("input[type='text']").val())
+            var Damagednum = isNaN(parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())) ? 0 : parseFloat(currentRow.find("td").eq(12).find("input[type='text']").val())
+            //alert(parseFloat(issuedQty) + "====" + parseFloat(Lostnum) + "====" + parseFloat(Damagednum));
+            if (parseFloat(issuedQty) < (parseFloat(Lostnum) + parseFloat(Damagednum))) {
+                //alert("Invalid Damaged Quantity for " + itemcode);
+                var msg = "Invalid Damaged Quantity for " + itemcode
+                $("#divIndentLDInfoMsg").text("");
+                $("#divIndentLDInfoMsg").append("<div>" + msg + "</div>");
+                $("#divIndentLDInfoMsg").addClass("alert-danger");
+                $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                currentRow.find("td").eq(11).find("input[type='text']").val("0");
+                return false;
+            }
+            else {
+                $("#divIndentLDInfoMsg").text("");
+                $("#divIndentLDInfoMsg").addClass("hidden");}
+        });
+
+        $("table.order-list.ItemLostDamageDataTable").on("click", ".ibtnLDDel", function (event) {
+            var tablerowcount = $("#ItemLostDamageDataTable tbody tr").length;
+            var currentRow = $(this).closest("tr");
+            var rowid =$.trim(currentRow.find("td").eq(14).html());
+            if (tablerowcount > 1) {               
+                $(this).closest("tr").remove();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();        
+                }
+                else {
+                    $(this).closest("tr").remove();
+                   
+                }
+
+            }
+            var lddata = {
+                id: rowid
+            };
+            addFailMsg = "Error Occurred While Adding Items";
+              $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                  url: '/Purchase/DeleteLostDamagedItem',
+                  data: { LDdata: lddata },
+                success: function (Data) {
+                    if (Data.saveStatus === 'Deleted') {
+                        RebindGrid();
+                       // $("#divIndentLDInfoMsg").text(addSuccessMsg);
+                       // $("#divIndentLDInfoMsg").removeClass("hidden alert-danger");
+                       // $("#divIndentLDInfoMsg").addClass("alert-success");
+                       ////$("#btnSubmitNewVendor").prop("disabled", true);
+                    }
+                    else {
+                        $("#divIndentLDInfoMsg").text(Data.saveStatus);
+                        $("#divIndentLDInfoMsg").addClass("alert-danger");
+                        $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                        //$("#btnSubmitNewVendor").prop("disabled", true);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divIndentLDInfoMsg").text(addFailMsg);
+                    $("#divIndentLDInfoMsg").addClass("alert-danger");
+                    $("#divIndentLDInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        });
+
+    });
+    function RestrictComma(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode === 44) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    
+</script>

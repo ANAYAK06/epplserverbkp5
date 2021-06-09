@@ -1,0 +1,199 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.TDSReport>
+<div class="table-responsive">
+    <table id="tblTDSItemsGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Date of Payment/Credit</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice Date</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Invoice No</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Vendor Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">PAN</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Cost Center</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IT Code</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Amount</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Total TDS</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">TDS Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.PaymentDate)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.date)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.InvoiceNo)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.VendorName)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.panno)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.CCCode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.ITCode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.Basicvalue)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TdsAmount)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.TdsAmountBal)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>
+            </tr>
+        </tfoot>
+    </table>
+    <table id="tblTDSItemsConsolidateGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IT Code</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">IT Name</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">Basic Amount</th>
+                <th style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px">TDS Balance/IT</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.MITCode)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.MITName)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.MBasicvalue)
+                    </td>
+                    <td style="text-align:center;font-weight:normal; white-space: normal;font-size:11px">
+                        @Html.DisplayFor(modelItem => item.MTdsAmountBal)
+                    </td>                    
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td style="text-align:center;"></td>
+                <td style="text-align:center;"></td>                
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<script>
+
+    $(document).ready(function () {
+        var ApprovePOGrid = null;
+        InitializeformatApprovePOGrid();
+        var totalBasic = 0;
+        var totaltds = 0;
+        var totaltdsbalance = 0;
+        var MtotalBasic = 0;
+        var Mtotaltdsbalance = 0;
+        $("#tblTDSItemsGrid tbody tr").each(function () {
+            var currentRow = $(this);
+            var Basic = currentRow.find("td").eq(7).html();
+            var tds = currentRow.find("td").eq(8).html();
+            var tdsbal = currentRow.find("td").eq(9).html();
+            var sumbasic = isNaN(parseFloat(Basic)) ? 0 : parseFloat(Basic)
+            var sumtds = isNaN(parseFloat(tds)) ? 0 : parseFloat(tds)
+            var sumtdsbal = isNaN(parseFloat(tdsbal)) ? 0 : parseFloat(tdsbal)
+            if (Basic != "") {
+                totalBasic = parseFloat(totalBasic) + parseFloat(sumbasic);
+            }
+            if (tds != "") {
+                totaltds = parseFloat(totaltds) + parseFloat(sumtds);
+            }
+            if (tdsbal != "") {
+                totaltdsbalance = parseFloat(totaltdsbalance) + parseFloat(sumtdsbal);
+            }
+
+        });
+        $("#tblTDSItemsGrid tfoot tr").each(function () {
+            var footerRow = $(this);
+            if (!isNaN(totalBasic)) {
+                footerRow.find("td").eq(7).html("<b>" + totalBasic + "</b>");
+                footerRow.find("td").eq(8).html("<b>" + totaltds + "</b>");
+                footerRow.find("td").eq(9).html("<b>" + totaltdsbalance + "</b>");
+            }
+            else {
+                footerRow.find("td").eq(7).html("");
+                footerRow.find("td").eq(8).html("");
+                footerRow.find("td").eq(9).html("");
+            }
+
+        });
+        $("#tblTDSItemsConsolidateGrid tbody tr").each(function () {
+            var currentRow = $(this);
+            var MBasic = currentRow.find("td").eq(2).html();           
+            var Mtdsbal = currentRow.find("td").eq(3).html();
+            var Msumbasic = isNaN(parseFloat(MBasic)) ? 0 : parseFloat(MBasic)           
+            var Msumtdsbal = isNaN(parseFloat(Mtdsbal)) ? 0 : parseFloat(Mtdsbal)
+            if (MBasic != "") {
+                MtotalBasic = parseFloat(MtotalBasic) + parseFloat(Msumbasic);
+            }            
+            if (Mtdsbal != "") {
+                Mtotaltdsbalance = parseFloat(Mtotaltdsbalance) + parseFloat(Msumtdsbal);
+            }
+
+        });
+        $("#tblTDSItemsConsolidateGrid tfoot tr").each(function () {
+            var footerRow = $(this);
+            if (!isNaN(totalBasic)) {
+                footerRow.find("td").eq(2).html("<b>" + MtotalBasic + "</b>");
+                footerRow.find("td").eq(3).html("<b>" + Mtotaltdsbalance + "</b>");
+            }
+            else {
+                footerRow.find("td").eq(2).html("");
+                footerRow.find("td").eq(3).html("");
+            }
+
+        });
+
+    });
+    function InitializeformatApprovePOGrid() {
+        ApprovePOGrid = $('#tblTDSItemsGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Data Found"
+            },
+            "createdRow": function (row, data, index) {
+
+            },
+            pageLength: 10
+        });
+    }   
+</script>

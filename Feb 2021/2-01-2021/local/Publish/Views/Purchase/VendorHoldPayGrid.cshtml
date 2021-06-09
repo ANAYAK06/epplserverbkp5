@@ -1,0 +1,314 @@
+﻿
+@model EsselTestLocalApplication.Models.Purchase.SPPOInvoicePayment
+<div class="table-responsive">
+    <table id="tblHoldPayGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th class="hidden">RowNo</th>
+                <th style="text-align:center;font-weight:bold" class="Holdhdcheckall">
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox">
+                                <input type="checkbox" class="eagle-check-input chkHoldselectall" name="chkhdHoldselectall">
+                                <span class="eagle-check-indicator"></span>
+                                <span class="eagle-check-description"></span>
+                            </label>
+                        </li>
+                    </ul>
+                </th>
+                <th>Invoice No</th>
+                <th>Invoice Date</th>
+                <th>Cost Center</th>
+                <th>Account Head</th>
+                <th>Vendor Id</th>
+                <th class="hidden">Basic</th>
+                <th>Hold</th>
+                <th class="hidden"> Net Amount</th>
+                <th>Hold Balance</th>
+                <th>PONO</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int count = 1; }
+            @foreach (var item in Model.InvoiceData)
+            {
+            <tr>
+
+                <td class="hidden">
+                    @count
+                </td>
+                <td style="text-align:center">
+                    <ul class="list-inline">
+                        <li class="eagle-checkbox">
+                            <label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input chkHoldpaysingle" name="chkholdpaysingle"><span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label>
+                        </li>
+                    </ul>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InvoiceNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SPPOInvoiceDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CCCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DCACode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VendorCode)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.SPPOBasicValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Hold)
+                </td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.NetAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HoldBalance)
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.SPPONo)</td>
+            </tr>
+                count++;
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+</div>
+<div class="col-md-12" id="divGPPaymentDetails" style="margin-top:10px">
+    <div class="row">
+        <div class="col-md-12">
+            <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Payment Details</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12"><hr class="separationHr" /></div>
+    </div>
+    <div class="row">
+        @Html.Action("VendorPayDetailsGrid", "Purchase", new { VendorName = Model.Name, VendorType = Model.VendorType, Paymenttype = Model.Paytype, Maxinvdate = Model.MaxInvoiceDate })
+
+    </div>
+    @*<div class="col-md-12">
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.Name, htmlAttributes: new { @class = "form-control", @id = "txtHoldPayName" })
+                </div>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BankId)
+                    @Html.DropDownListFor(model => model.BankId, new SelectList(Model.BankNamesList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPayBank", onchange = "VendorHoldPayModeChange()" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ModeofPay)
+                    @Html.DropDownListFor(model => model.ModeofPay, new SelectList(Model.GenPayModeList, "Mode", "ModeDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlHoldPayMode", onchange = "VendorHoldPayModeChange()" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Number)
+                    @Html.TextBoxFor(model => model.Number, htmlAttributes: new { @class = "form-control", @id = "txtHoldPayPaymentNo" })
+                    <select class="form-control dropdown-toggle" id="ddlHoldPaymentNo">
+                        <option selected="selected" value="Select">-Select-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionDate)
+                    @Html.TextBoxFor(model => model.TransactionDate, new { @id = "txtHoldPayDate", @class = "form-control date-picker", @type = "text", @readOnly = "true" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remarks)
+                    @Html.TextAreaFor(model => model.Remarks, new { @id = "txtHoldPayReamarks", @class = "form-control", @type = "text", @rows = "3" })
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TransactionAmount)
+                    @Html.TextBoxFor(model => model.TransactionAmount, new { @id = "txtHoldPayFinalAmount", @class = "form-control", @type = "text", onkeypress = "return ValidateAmount(this,event);",
+                   onkeyup = "CheckHoldAmount()"
+               })
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <button class="btn btn1 btn-success" id="btnHoldPaySubmit" onclick="SubmitVendorHoldPayData()">Submit</button>
+
+        </div>*@
+</div>
+@*<div class="col-md-12">
+    <div class="text-center">
+        <br />
+        <div id="divHoldPayInfoMsg" class="alert alert-danger hidden">
+        </div>
+    </div>
+</div>*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var InvGrid = null;
+        InitializeInvGrid();
+        //$("#txtHoldPayDate").datepicker({
+        //    dateFormat: 'dd-M-yy',
+        //    changeMonth: true,
+        //    changeYear: true,
+        //    showOn: "button",
+        //    maxDate: 'dateToday',
+        //    buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+        //    onClose: function (selectedDate) {
+        //        HoldPaymentDateValidation();
+        //    }
+        //}).datepicker("setDate", new Date());
+        $('#tblHoldPayGrid thead tr').on('change', '.chkHoldselectall', function () {
+            var row = $(this).closest('tr'); // get the row
+            var headcheckbox = row.find("th").eq(1).find("input[type='checkbox']").is(":checked");
+           // alert(headcheckbox);
+            if (headcheckbox == true) {
+                $("#tblHoldPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', true);
+                });
+            }
+            else {
+                $("#tblHoldPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("td").eq(1).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            CountPayTotal();
+        });
+        $('#tblHoldPayGrid').on('change', '.chkHoldpaysingle', function () {
+            var row = $(this).closest('tr'); // get the row
+            var checkbox = row.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+            if (checkbox == false) {
+                $("#tblHoldPayGrid thead tr").each(function () {
+                    var currentRow = $(this);
+                    currentRow.find("th").eq(1).find("input[type='checkbox']").prop('checked', false);
+                });
+            }
+            else {
+                var noofrows = $("#tblHoldPayGrid tbody tr").length;
+                var checkedrows = 0;
+                $("#tblHoldPayGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var checkbox = currentRow.find("td").eq(1).find("input[type='checkbox']").is(":checked");
+                    if (checkbox == true) {
+                        checkedrows = parseInt(checkedrows) + 1;
+                    }
+                });
+                if (parseInt(noofrows) == parseInt(checkedrows)) {
+                    $("#tblHoldPayGrid thead tr").each(function () {
+                        var currentRow = $(this);
+                        currentRow.find("th").eq(1).find("input[type='checkbox']").prop('checked', true);
+                    });
+                }
+            }
+            //CountVendorHoldPayTotal();
+            CountPayTotal();
+        });
+
+    });
+    //function CountVendorHoldPayTotal() {
+    //    var invtotalamount = 0;
+    //    $("#tblHoldPayGrid tbody tr").each(function () {
+    //        var currentRow = $(this);
+
+    //        var checkbox = currentRow.find("td").eq(10).find("input[type='checkbox']").is(":checked");
+    //        var rowamount = currentRow.find("td").eq(9).html();
+    //        if (checkbox == true) {
+    //            invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+    //        }
+    //    });
+    //    //$("#txtinvtotal").val(parseFloat(invtotalamount).toFixed(2));
+    //    $("#txtHoldPayFinalAmount").val(parseFloat(invtotalamount).toFixed(2));
+    //}
+    //function CheckHoldAmount() {
+    //    var finalAmount = $("#txtHoldPayFinalAmount").val();
+    //    var invtotalamount = 0;
+    //    $("#tblHoldPayGrid tbody tr").each(function () {
+    //        var currentRow = $(this);
+    //        var checkbox = currentRow.find("td").eq(10).find("input[type='checkbox']").is(":checked");
+    //        var rowamount = currentRow.find("td").eq(9).html();
+    //        if (checkbox == true) {
+    //            invtotalamount = parseFloat(invtotalamount) + parseFloat(rowamount);
+    //        }
+    //    });
+    //    if (parseFloat(finalAmount) > parseFloat(invtotalamount)) {
+    //        $("#divHoldPayInfoMsg").text("");
+    //        $("#divHoldPayInfoMsg").append("<div>You are excessing the Invoice Amount</div>");
+    //        $("#divHoldPayInfoMsg").addClass("alert-danger");
+    //        $("#divHoldPayInfoMsg").removeClass("hidden alert-success");
+    //        return false;
+    //    }
+    //    else {
+    //        $("#divHoldPayInfoMsg").text("");
+    //        $("#divHoldPayInfoMsg").addClass("hidden");
+    //    }
+    //}
+    //function HoldPaymentDateValidation() {
+    //    var paydate = $("#txtHoldPayDate").val();
+    //    //  alert(paydate + "--" + $("#RetPayInvTable tbody tr").length);
+    //    $("#tblHoldPayGrid tbody tr").each(function () {
+
+    //        var currentRow = $(this);
+    //        var checkbox = currentRow.find("td").eq(10).find("input[type='checkbox']").is(":checked");
+    //        var invdate = currentRow.find("td").eq(2).html();
+    //        if (checkbox == true) {
+    //            if (new Date(paydate) < new Date(invdate)) {
+    //                // alert('invdate:' + invdate + "...." + "paydate:" + paydate);
+    //                $("#divHoldPayInfoMsg").text("");
+    //                $("#divHoldPayInfoMsg").append("<div>Payment Date must be greater than Invoice Date</div>");
+    //                $("#divHoldPayInfoMsg").addClass("alert-danger");
+    //                $("#divHoldPayInfoMsg").removeClass("hidden alert-success");
+    //                $("#divHoldPayInfoMsg").datepicker("setDate", 'dateToday');
+    //            }
+    //            else {
+    //                $("#divHoldPayInfoMsg").text("");
+    //                $("#divHoldPayInfoMsg").addClass("hidden");
+    //            }
+    //        }
+    //    });
+    //}
+    function InitializeInvGrid() {
+        InvGrid = $('#tblHoldPayGrid').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,
+            language: {
+                "emptyTable": "No Invoices Found"
+            },
+            "createdRow": function (row, data, index) {
+            },
+        });       
+
+    }
+    
+
+</script>

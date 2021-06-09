@@ -1,0 +1,285 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.Miscellaneous
+@{
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Misc Taxable Receipt</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <form onsubmit="return false">
+                                            <div class="col-md-12">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Date)
+                                                        @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", new { @id = "txtMiscDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Intrest_type)
+                                                        @Html.DropDownListFor(model => model.Intrest_type, new SelectList(Model.MiscIntrestTypesList, "Type", "Type_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestType", onchange = "MiscIntrestttypechange()" })
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4"></div>
+                                            </div>
+                                            <div class="col-md-12" id="divclientandsunclient">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.clientid)
+                                                        @Html.DropDownListFor(model => model.clientid, new SelectList(Model.Clientlist, "ClientCode", "ClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_Miscclient", onchange = "GetMiscSubClient()" })
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Subclient)
+                                                        @Html.DropDownListFor(model => model.Subclient, new SelectList(Model.Subclientlist, "SubClientCode", "SubClientName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscSubclient" })
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Misc_CC_Code)
+                                                        @Html.DropDownListFor(model => model.Misc_CC_Code, new SelectList(Model.MiscCcCodesList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscCcCode", onchange = "GetMiscDca()" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Misc_DCA_Code)
+                                                        @Html.DropDownListFor(model => model.Misc_DCA_Code, new SelectList(Model.MiscDcaCodesList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscDCACode", onchange = "GetMiscSDca()" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Misc_Sub_DCA_Code)
+                                                        @Html.DropDownListFor(model => model.Misc_Sub_DCA_Code, new SelectList(Model.MiscSdcaCodesList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscSDCACode" })
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.MiscAmount)
+                                                        @Html.TextBoxFor(model => model.MiscAmount, new { @id = "txtMiscAmount", @class = "form-control", @type = "text", Value = "", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountMiscTotal()" })
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 change-tab" id="divIntrestTable">
+                                                <div class="strike">
+                                                    <span>Add Deduction</span>
+                                                </div>
+                                                <div class="tabledynamic">
+                                                    <br />
+                                                    <table id="IntrestTable" class="table order-list" style="width:100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDed_CC_Code)</td>
+                                                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDed_DCA_Code)</td>
+                                                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDed_Sub_DCA_Code)</td>
+                                                                <td style="text-align:center">@Html.LabelFor(model => model.MiscDedAmount)</td>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr style="text-align:center">
+                                                                <td>
+                                                                    @Html.DropDownListFor(model => model.MiscDed_CC_Code, new SelectList(Model.MiscDedCcCodesList, "CC_Id", "CC_Code"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestCcCode", onchange = "GetMiscDedDca()" })
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DropDownListFor(model => model.MiscDed_DCA_Code, new SelectList(Model.MiscDcaCodesList, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestDCACode", onchange = "GetMiscDedSDca()" })
+                                                                </td>
+
+                                                                <td>
+                                                                    @Html.DropDownListFor(model => model.MiscDed_Sub_DCA_Code, new SelectList(Model.MiscSdcaCodesList, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscIntrestSDCACode" })
+                                                                </td>
+                                                                <td>
+                                                                    @Html.TextBoxFor(model => model.MiscDedAmount, new { @id = "txtMiscIntrestAmount", @class = "form-control", @type = "text", Value = "", onkeypress = "return ValidateAmount(this,event);", onKeyup = "CountMiscTotal()" })
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 change-tab">
+                                                <div class="col-md-12" style="text-align:left;margin-bottom:0px;">
+                                                    <h5 style="font-weight:bold;">Payment Details</h5>
+                                                    <hr style="margin-top:0%;margin-bottom:0%" />
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Misc_Name)
+                                                            @Html.TextBoxFor(model => model.Misc_Name, htmlAttributes: new { @class = "form-control", @id = "txtMiscName" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.MiscBank)
+                                                            @Html.DropDownListFor(model => model.MiscBank, new SelectList(Model.MiscBanksList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlMiscBank" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Mode_of_Pay)
+                                                            @Html.DropDownListFor(model => model.Mode_of_Pay, new SelectList(Model.MiscPayModeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddl_MiscPayMode" })
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Misc_No)
+                                                            @Html.TextBoxFor(model => model.Misc_No, htmlAttributes: new { @class = "form-control", @id = "txtMiscNo" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Remarks)
+                                                            @Html.TextAreaFor(model => model.Remarks, new { @id = "txtMiscReamarks", @class = "form-control", @type = "text", @rows = "3" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Misc_Date)
+                                                            @Html.TextBoxFor(model => model.Misc_Date, new { @id = "txtMiscPayDate", @class = "form-control date-picker", @type = "text" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            @Html.LabelFor(model => model.Misc_final_Amount)
+                                                            @Html.TextBoxFor(model => model.Misc_final_Amount, new { @id = "txtMiscFinalAmount", @class = "form-control", @type = "text", Value = "", @readonly = "true" })
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="text-right">
+                                                        <input type="text" value="0" id="txtMiscRoleId" style="display:none" />
+                                                        <button class="btn btn1 btn-success" id="btnMiscSubmit" onclick="SubmitMiscData()">Submit</button>
+                                                        <button class="btn btn1 btn-success" id="btnMiscReset" onclick="ResetMiscData()">Reset</button>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="text-center">
+                                                        <div id="divMiscInfoMsg1" class="alert alert-danger hidden">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div id="MiscIntrestConfirmModel" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-confirm">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <div class="icon-box">
+                                                        <i class="fa fa-check"></i>
+                                                    </div>
+                                                    <div id="confirmms1"> <h4 class="modal-title">Intrest is Required or Not?</h4></div>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="confirmmsg">
+                                                        @*<p>Do you really want to delete Cost Center: </p><label id="lbldelCCCode"></label>
+                                                            <p>This process cannot be undone.</p>*@
+                                                    </div>
+                                                    @*<div id="divDeleteCostCenterInfoMsg" class="alert alert-danger hidden">
+                                                        </div>*@
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <div id="confirmbtn">
+                                                        <button type="button" class="btn btn-info" onclick="ContinueSubmitData()">Cancel</button>
+                                                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="CancelSubmitData()">ok</button>
+                                                        @Html.TextBoxFor(m => m.MiscDed_CC_Code, new { style = "display: none;", @id = "txtclickcheck" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+          var RoleID = '@Session["Roleid"]';
+        $("#txtMiscRoleId").val(RoleID);
+        $("#txtMiscDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtMiscPayDate").datepicker("option", "minDate", selectedDate);
+            },
+        }).datepicker("setDate", "");
+        $("#txtMiscPayDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+        }).datepicker("setDate", "");
+    });
+    function ValidateAmount(txt, event) {
+        var charCode = (event.which) ? event.which : event.keyCode
+        if (charCode == 46) {
+            if (txt.value.indexOf(".") < 0)
+                return true;
+            else
+                return false;
+        }
+        if (txt.value.indexOf(".") > 0) {
+            var txtlen = txt.value.length;
+            var dotpos = txt.value.indexOf(".");
+            if ((txtlen - dotpos) > 2)
+                return false;
+        }
+
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+
+
+</script>

@@ -1,0 +1,176 @@
+﻿@model List<EsselTestLocalApplication.Models.Accounts.CentralDayBook>
+@foreach (var item in Model)
+{
+<div class="col-md-12 verifydiv">
+    <br />
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Voucher Date:</label>
+                    <input type="text" class="form-control" value="@item.VoucherDate" readOnly="readOnly" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Transfer Type:</label>
+                    <input type="text" class="form-control" value="@item.Category" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Transfer To:</label>
+                    <input type="text" class="form-control" value="@item.Name" readOnly="readOnly" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Remarks:</label>
+                    <input type="text" class="form-control" value="@item.Remarks" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Amount:</label>
+                    <input type="text" class="form-control" value="@item.Amount" readOnly="readOnly" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <input type="text" value="@item.MOID" id="txtMOID" style="display:none" />
+                    <label>Status</label>
+                    @Html.DropDownListFor(model => item.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprCDBstatus" })
+                </div>
+            </div>
+            <div class="col-md-6 ">
+                <div class="form-group">
+                    <label>Notes:</label><br />
+                    <textarea rows="3" cols="60" class="form-control" id="ApprcdbNotes"></textarea>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="form-group">
+                    <br /><br /><button onClick="ApprovecdbDetails('@item.Rowid')">Submit</button>
+
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            <div class="text-center">
+                <div id="divApprcdbInfoMsg-@item.Rowid" class="alert alert-danger hidden"></div>
+            </div>
+        </div>
+    </form>
+</div>
+}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var Roleid = '@Session["Roleid"]';
+            var Mid = $("#txtMOID").val();
+            $.ajax({
+                type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count = Object.keys(response).length;
+                    if (count > 0) {
+                        var ddlaprovalstatus = $("#ApprCDBstatus");
+                        ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                        $.each(response, function () {
+                            ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                        });
+
+                    }
+                  
+                },
+                failure: function (response) {
+  
+                },
+                error: function (response) {
+
+                }
+            });
+        });
+        function ApprovecdbDetails(Rowid) {
+            debugger;
+            appstatusid = "ApprCDBstatus-" + Rowid;
+            var appstatus = $("#ApprCDBstatus").val();
+            var ReturnText = $("#ApprcdbNotes").val();
+            var retnoteid = "ApprcdbNotes-" + Rowid;
+            retnote = $("#" + retnoteid + "").val();
+            Rid = "divApprcdbInfoMsg-" + Rowid;
+            msg = $("#" + Rid + "");
+            isValid = true;
+            var errorMsg = "";
+            if (appstatus == "Select" || appstatus == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Status</p>";
+                isValid = false;
+            }
+            if (ReturnText == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Return Note</p>";
+                isValid = false;
+            }
+            if (!isValid) {
+                var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+                $(msg).text("");
+                $(msg).append(finalerror1 + errorMsg + "</div>");
+                $(msg).addClass("alert-danger");
+                $(msg).removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $(msg).text("");
+                $(msg).addClass("hidden");
+                addFailMsg = "Error Occurred While Verification";
+                addSuccessMsg = "Verified Successfully.";
+                $.ajax({
+                    type: "POST",
+                    url: "/AccountsApproval/Approvecenrtaldaybook",
+                    data: '{Rowid:"' + Rowid + '",Appstatus:"' + appstatus + '",Crtdby:"' + $("#txtApprcdbCreatedby").val() + '",Remarks:"' + $("#ApprcdbNotes").val() + '"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var msg = response.saveStatus;
+                        if (msg == "Submitted") {
+                            $('#ApprovecdbMsgModal').modal('show');
+                            var msg = "<div>CentralDayBook: Verified Successfully</div>";
+                            $("#ApprovecdbMsgModal").on("hide.bs.modal", function () {
+                                $("#divApprcdbGrid").load('/AccountsApproval/VerifyCentralDayBookGrid');
+                            });
+                            $("#ApprcdbMsg").html(msg);
+                        }
+                        else {
+                            var msg = "<div>" + addFailMsg + "</div>";
+                            $("#ApprcdbMsg").html(msg);
+                            $('#ApprovecdbMsgModal').modal('show');
+                        }
+                      
+                    },
+                    failure: function (response) {
+                       
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprcdbMsg").html(msg);
+                        $('#ApprovecdbMsgModal').modal('show');
+                    },
+                    error: function (response) {
+                      
+                        var msg = "<div>" + addFailMsg + "</div>";
+                        $("#ApprcdbMsg").html(msg);
+                        $('#ApprovecdbMsgModal').modal('show');
+                    }
+                });
+            }
+        }
+    </script>

@@ -1,0 +1,5 @@
+GetCashDetailhead(string cccode)
+
+new proc:-spGetCCCashbalance
+
+ ApproveWithdraw(Apprid)

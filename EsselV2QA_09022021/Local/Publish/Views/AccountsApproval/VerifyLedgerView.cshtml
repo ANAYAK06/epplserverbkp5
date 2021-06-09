@@ -1,0 +1,253 @@
+﻿@model EsselTestLocalApplication.Models.Ledger.LedgerDetails
+<div class="col-md-12 verifydiv">
+    <br />
+    @if (Model.LStatus != "0")
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Ledger Name:</label>
+                        <input type="text" class="form-control" value="@Model.Name" readOnly="readOnly" id="Apprledgername" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Group Name:</label>
+                        <input type="text" class="form-control" value="@Model.GroupName" readOnly="readOnly" />
+                    </div>
+                </div>
+                @if (Model.SubGroup != "0")
+                {
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Sub Group:</label>
+                            <input type="text" class="form-control" value="@Model.SubGroup" readOnly="readOnly" />
+                        </div>
+                    </div>
+                }
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Nature of Group:</label>
+                        <input type="text" class="form-control" value="@Model.GroupNature" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Account Head:</label>
+                        <input type="text" class="form-control" value="@Model.AccHead" readOnly="readOnly" />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Balance:</label>
+                        <input type="text" class="form-control" value="@Model.Balance" readOnly="readOnly" id="Apprmgroupname" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="text" class="form-control" value="@Model.Date" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Value Type:</label>
+                        <input type="text" class="form-control" value="@Model.ValueType" readOnly="readOnly" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Ledger Type:</label>
+                        <input type="text" class="form-control" value="@Model.LedgerTypeName" readOnly="readOnly" />
+                    </div>
+                </div>
+            </div>
+                <div class="col-md-12">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" value="@Model.MOID" id="txtMOID" style="display:none" />
+                            <label>Status</label>
+                            @Html.DropDownListFor(model => model.MOID, new SelectList("Type", "Type"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ApprLedgerstatus" })
+                            @*<select class="form-control dropdown-toggle" id="ApprLedgerstatus">
+                                    <option selected="selected" value="Select">Select</option>
+                                    <option value="Verify">Verify</option>
+                                    <option value="Approve">Approve</option>
+                                    <option value="Return">Return</option>
+                                    <option value="Reject">Reject</option>
+                                </select>*@
+                        </div>
+                    </div>
+                    <div class="col-md-6 ">
+                        <div class="form-group">
+                            <label>Notes:</label><br />
+                            <textarea rows="3" cols="60" class="form-control" id="ApprLedgerNote"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <br /><br /><button onClick="ApproveLedger('@Model.Id')">Submit</button>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <br />
+                    <div class="text-center">
+                        <div id="divApprLedgerInfoMsg" class="alert alert-danger hidden"></div>
+                    </div>
+                </div>
+            
+        </form>
+    }
+    else
+    {
+        <form onsubmit="return false">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Group</label>
+                        <input type="text" id="txtUpledgGroup" class="form-control" readonly="readonly" value="@Model.GroupName" />
+                    </div>
+                </div>
+                @if (Model.SubGroup != "0")
+                {
+                    <div class="col-md-4">
+                        <label>Sub Group Name</label>
+                        <input type="text" id="txtUpledgSubGroup" class="form-control" readonly="readonly" value="@Model.SubGroup" />
+
+                    </div>
+                }
+                <div class="col-md-4">
+                    <label>Account Head</label>
+                    <input type="text" id="txtUpledgAccHead" class="form-control" readonly="readonly" value="@Model.AccHead" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <label>Ledger Name</label>
+                    <input type="text" id="txtUpledgName" class="form-control" value="@Model.Name" />
+                </div>
+                <div class="col-md-4">
+                    <label>Opening Balance</label>
+                    <input type="text" id="txtUpledgBal" class="form-control" onkeypress="return ValidateAmount(this,event);" value="@Model.Balance" />
+                </div>
+                <div class="col-md-4">
+                    <label>Balance As On Date</label>
+                    @Html.TextBoxFor(model => model.Date, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control", @id = "txtUpledgBalDate", @type = "text" })
+                    @*<input type="text" id="txtUpledgBalDate" class="form-control date-picker" readonly="readonly" />*@
+                </div>
+                <div class="col-md-4">
+                    <label>Ledger Type</label>
+                    <input type="text" id="txtUpledgertype" class="form-control" value="@Model.LedgerTypeName" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Ledger Value Type</label>
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    @if (Model.ValueType == "Credit")
+                                    {
+                                        <input type="checkbox" class="eagle-check-input" name="UpLedgerValueType" value="Yes" id="chkUpCredit" onclick="UpdateLedgerValueType(this)" checked>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" class="eagle-check-input" name="UpLedgerValueType" value="Yes" id="chkUpCredit" onclick="UpdateLedgerValueType(this)">
+                                    }
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description">Credit</span>
+                                </label>
+                            </li>
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    @if (Model.ValueType == "Debit")
+                                    {
+                                        <input type="checkbox" class="eagle-check-input" name="UpLedgerValueType" value="No" id="chkUpDebit" onclick="UpdateLedgerValueType(this)" checked>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" class="eagle-check-input" name="UpLedgerValueType" value="No" id="chkUpDebit" onclick="UpdateLedgerValueType(this)">
+                                    }<span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description">Debit</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="submit" class="btn btn1 btn-success" id="btnUpLedger" onclick="UpdateApprLedger(@Model.Id)" value="Submit" />
+
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                <br />
+                <div id="divUpdateLedgerInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+
+        </form>
+    }
+
+</div>
+<script>
+    $(document).ready(function () {
+        $("#txtUpledgBalDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+
+            }
+        });
+        if ('@Model.LStatus' != "0") {
+                var Roleid = '@Session["Roleid"]';
+                var Mid = $("#txtMOID").val();
+            $.ajax({
+                    type: "POST",
+                url: "/AccountsApproval/GetApprovalstatus",
+                data: '{Mid:"' + Mid + '",Rid:"' + Roleid + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                        var count = Object.keys(response).length;
+                        if (count > 0) {
+                            var ddlaprovalstatus = $("#ApprLedgerstatus");
+                            ddlaprovalstatus.empty().append('<option selected="selected" value="Select">Select</option>');
+                            $.each(response, function () {
+                                if (this['Type']!=='Return')
+                                ddlaprovalstatus.append($("<option></option>").val(this['Type']).html(this['Type']));
+                            });
+                        }
+                    },
+                failure: function(response) {
+                        alert(response.responseText);
+                    },
+                error: function(response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+        });
+    function UpdateLedgerValueType(checkbox) {
+        var selectedIds = [];
+        var checkboxes = document.getElementsByName('UpLedgerValueType');
+        for (var i in checkboxes)
+            checkboxes[i].checked = checkbox.checked;
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+    }
+</script>

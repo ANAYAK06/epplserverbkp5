@@ -1,0 +1,221 @@
+﻿@model EsselTestLocalApplication.Models.IndentData
+<style>
+    .tdcls {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: normal;
+    }
+</style>
+<div class="col-md-12 change-tab " id="divIndentDetailsGrid">
+    <div class="strike">
+        <span>Indent Items</span>
+    </div>
+    <div class="tabledynamic">
+        <table id="ItemIndentDetailsDataTable1" class="table order-list itemIndentDetaillist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Chk</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Code</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Item Name</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Specification</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">DCA</label></td>
+                    @*<td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Sub DCA</label></td>*@
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Basic Price</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Units</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Quantity</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Amount</label></td>
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Data)
+                {
+                <tr>
+                    <td style="text-align:center;width:10px!important;">
+                        <ul class="list-inline">
+                            <li class="eagle-checkbox">
+                                <label class="eagle-check custom-checkbox">
+                                    <input type="checkbox" class="eagle-check-input">
+                                    <span class="eagle-check-indicator"></span>
+                                    <span class="eagle-check-description"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemCode, new { @Class = "griditemcode" })</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.ItemName)</td>
+                    <td style="text-align:left;font-weight:normal; white-space: normal; width: 200px">@item.Specification</td>
+                    @*<td> @Html.DisplayFor(modelItem => item.Specification, new { htmlAttributes = new { @class = "tdcls" }  })</td>*@
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.DcaCode)</td>
+                    @*<td> @Html.DisplayFor(modelItem => item.SubDcaCode)</td>*@
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.BasicPrice)</td>
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Units)</td>
+                    <td style="font-weight:normal; white-space: normal; width:50px"><input type="text" class="form-control countcheck1" value="@item.Quantity" onkeypress="return IsNumericdecimal(this)" onkeyup="CountItemTotalAmount()" /></td>
+                    @*<td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Quantity)</td>*@
+                    <td style="font-weight:normal; white-space: normal;font-size:11px"> @Html.DisplayFor(modelItem => item.Amount)</td>
+                    <td> <input type="button" class="btnIndentDel btn btn-md btn-danger" value="Delete" /></td>
+                    <td class="hidden"> @Html.DisplayFor(modelItem => item.IndentListId)</td>
+                    <td class="hidden"> @Html.DisplayFor(modelItem => item.Costcenter)</td>
+                    <td class="hidden"> @Html.DisplayFor(modelItem => item.Indentno)</td>
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                @foreach (var item in Model.Total)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        @*<td></td>*@
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center" colspan="2"><label>SubTotal: @item.TotalAmount</label></td>
+                    </tr>
+                }
+            </tfoot>
+
+        </table>
+        <table id="ItemIndentDetailsRemDataTable" class="table order-list itemIndentDetailRemlist">
+            <thead>
+                <tr style="background-color:rgba(255,255,255,0.1)!important">
+                    <td style="text-align:center;color:#fff !important;background-color:#004d99 !important;font-weight:normal; white-space: normal;font-size:10px"><label style="color:#fff !important">Remarks</label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Remarks)
+                {
+                    <tr>
+                        <td> @Html.DisplayFor(modelItem => item.Remarks)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function IsNumericdecimal(e) {
+        var keyCode = (event.which) ? event.which : (window.event.keyCode) ? window.event.keyCode : -1;
+        var str = e.value;
+        if ((str.length == 0) && (event.keyCode == 46)) return false; // checking that length ==0 than not allow to enter '.'
+        if ((str.indexOf('.') >= 0) && (event.keyCode == 46)) return false; // checking that if user already entered '.' than not allow to enter '.'
+
+        if (keyCode != 46 && keyCode > 31
+            && (keyCode < 48 || keyCode > 57))
+            return false;
+        return true;
+    }
+    $(document).ready(function () {
+        $("table.order-list.itemIndentDetaillist").on("keyup", ".countcheck1", function (event) {
+            ////debugger;
+            var currentRow = $(this).closest("tr");
+            var rowtotal = "";
+            var subtotal = 0;
+            var Basic = currentRow.find("td").eq(5).html();
+            //var Qty = currentRow.find(".countcheck1");
+            var Qty = currentRow.find("td").eq(7).find("input[type='text']").val();
+            var Amt = currentRow.find("td").eq(8).html();
+            if (Qty == "" || Qty == "0") {
+                alert("Invalid Quantity")
+                currentRow.find("td").eq(7).find("input[type='text']").val("");
+                currentRow.find("td").eq(8).html("");
+                return false;
+            }
+            if (parseFloat(Qty) != "" || parseFloat(Qty) != "0") {
+                //currentRow.find("td").eq(10).find("input[type='text']").val("");
+                rowtotal = parseFloat(Basic) * parseFloat(Qty);
+                currentRow.find("td").eq(8).html(parseFloat(rowtotal));
+                subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+                return false;
+            }
+
+        });
+        $("table.order-list.itemIndentDetaillist").on("click", ".btnIndentDel", function (event) {
+            //$(this).closest("tr").remove();
+            var currentRow = $(this).closest("tr");
+            var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');
+            var IndListid = currentRow.find("td").eq(10).html().split(" ").join("");
+            var CCCode = currentRow.find("td").eq(11).html().split(" ").join("");
+            var Indno = currentRow.find("td").eq(12).html().split(" ").join("");
+            if (check == true) {
+                var Items = {
+                    IndentListId: IndListid,
+                    Costcenter: CCCode
+                };
+                addFailMsg = "Error Occurred While Deleting Item";
+                addSuccessMsg = "Deleted Successfully.";
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/DeleteReturnIndentItem",
+                    data: JSON.stringify({ Ind: Items }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.saveStatus == "Submited") {
+                            alert("Deleted Successfully");
+                            $.ajax({
+                                type: 'GET',
+                                dataType: 'html',
+                                url: '/Purchase/ViewIndentDetailsReturnGrid',
+                                data: { Indentno: Indno },
+                                success: function (data) {
+                                    var count = Object.keys(data).length;
+                                    if (count > 0) {
+                                        $("#GridData").html(data);
+                                        $("#divgriddata").removeClass('hidden');
+                                        CountItemTotalAmount();
+                                    }
+                                    else {
+                                        $("#divgriddata").addClass('hidden');
+                                    }
+                                },
+                            });
+                        }
+                        else {
+                            alert(response.saveStatus);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    }
+                });
+            }
+            else {
+                alert("Please Check for Delete");
+                return false;
+            }
+        });
+
+    });
+    function CountItemTotalAmount() {
+        ////debugger;
+        var Basic = 0;
+        var price = 0;
+        var rowtotal = 0;
+        var subtotal = 0;
+        $("#ItemIndentDetailsDataTable1 tbody tr").each(function () {
+            var currentRow = $(this);
+            Basic = currentRow.find("td").eq(5).html();
+            price = currentRow.find("td").eq(7).find("input[type='text']").val();
+            if (Basic != "" && price != "") {
+                rowtotal = parseFloat(Basic) * parseFloat(price);
+                currentRow.find("td").eq(8).find("input[type='text']").val(rowtotal);
+                subtotal = parseFloat(subtotal) + parseFloat(rowtotal);
+            }
+            else {
+                currentRow.find("td").eq(8).find("input[type='text']").val(0);
+            }
+        });
+        $("#ItemIndentDetailsDataTable1 tfoot tr").each(function () {
+            var footerRow = $(this);
+            if (!isNaN(subtotal)) {
+                footerRow.find("td").eq(7).html("<b>" + parseFloat(subtotal).toFixed(2) + "</b>");
+            }
+            else {
+                footerRow.find("td").eq(7).html("");
+            }
+        });
+
+    }
+</script>

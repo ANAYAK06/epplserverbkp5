@@ -1,0 +1,125 @@
+﻿@model List<EsselTestLocalApplication.Models.Purchase.ViewIndents>
+
+<div class="table-responsive">
+    <table id="tblIndentGrid" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th class="hidden">Id</th>
+                <th>Indent No</th>
+                <th>Cost Center</th>
+                <th>Date</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td class="hidden">
+                    @Html.DisplayFor(modelItem => item.Indid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Indentno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Costcenter)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+            </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveIndGrid = null;
+            InitializeApprIndGrid();          
+        });
+    function InitializeApprIndGrid() {
+        ApproveIndGrid = $('#tblIndentGrid').DataTable({
+                info: false,
+                destroy: false,
+                paging: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                pagingType: false,
+                language: {
+                    "emptyTable": "No Records Found"
+                },
+            "createdRow": function (row, data, index) {
+            }
+            });
+        $('#tblIndentGrid tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveIndGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveIndGrid, tr);
+                // Open this row
+                row.child(formatApprIndAccounts(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+    }
+    function closeOpenedRows(table, selectedRow) {
+        $.each(openRows, function (index, openRow) {
+            // not the selected row!
+            if ($.data(selectedRow) !== $.data(openRow)) {
+                var rowToCollapse = table.row(openRow);
+                rowToCollapse.child.hide();
+                openRow.removeClass('shown');
+                var index = $.inArray(selectedRow, openRows);
+                openRows.splice(index, 1);
+            }
+        });
+    }
+    function formatApprIndAccounts(d) {
+        var htmltext;
+        var Indnid,Indentno;
+            $.each(d, function (index, value) {
+                if (index == 1)
+                    Indnid = value;
+                if (index == 2)
+                    Indentno = value;                
+            });
+
+        var divid = "divapprInd" + Indnid;
+        var divid1 = $("#" + divid + "");
+        $("#currentInd").val(Indnid);
+            $.ajax({
+                type: 'POST',
+                dataType: 'html',
+                url: '/Reports/ViewAllIndentDetails',
+                data: { Indent:  Indentno },
+                success: function (Data) {
+                    var divid2 = "divapprInd" + Indnid;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                }
+            });
+        return '<div id="divapprInd' + Indnid + '" ></div>';
+        }
+</script>

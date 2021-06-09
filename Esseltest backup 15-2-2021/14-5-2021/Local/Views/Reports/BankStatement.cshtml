@@ -1,0 +1,250 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.BankStatement
+@{
+    ViewBag.Title = "BankStatement";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Styles.Render("~/bundles/Accounts/css")
+@Scripts.Render("~/bundles/Purchase")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Bank Statement</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="card-inner">
+                                <div class="row">
+                                    @*<div class="col-md-3">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.ReportSearchby)
+                                                @Html.DropDownListFor(model => model.ReportSearchby, new SelectList(Model.SearchOptionlist, "Option", "OptionDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlSearchby", onchange = "SearchByChange()" })
+                                            </div>
+                                        </div>*@
+                                    <div class="col-md-3" id="divBank">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Bankname)
+                                            @Html.DropDownListFor(model => model.Bankname, new SelectList(Model.BankList, "Bankid", "BankVal"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlbanknames" })  @*, onchange = "GetgridDetails();"*@
+                                        </div>
+                                    </div>
+                                    <div id="divDates">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.FromDate)
+                                                @Html.TextBoxFor(model => model.FromDate, "{0:dd-MMM-yyyy}", new { @id = "txtfromDate", @class = "form-control  date-picker", @readonly = "true", @type = "text" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.ToDate)
+                                                @Html.TextBoxFor(model => model.ToDate, "{0:dd-MMM-yyyy}", new { @id = "txttoDate", @class = "form-control date-picker", @readonly = "true", @type = "text" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4" id="divviewbtn">
+                                        <br />
+                                        <input type="submit" value="View" class="btn btn-default firmbtns-hover" id="btnviewbankstatement" onclick="SubmitViewItems()" /> @**@
+                                        <input type="submit" value="Reset" class="btn btn-default firmbtns-hover" id="btnResetRpt" onclick="ResetReport()" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <br />
+                                        <div id="divReportInfoMsg" class="alert alert-danger hidden">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divBankStatementGrid" class="col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#divBankStatementGrid").addClass('hidden');
+        //$("#divBank").addClass('hidden');
+        //$("#divDates").addClass('hidden');
+        //$("#divviewbtn").addClass('hidden');
+        $("#txtfromDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {             
+
+                FromdateChange();
+
+            },
+        }).datepicker("setDate", "");
+        $("#txttoDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>"
+
+        }).datepicker("setDate", "");
+    });
+    function SubmitViewItems() {
+        //debugger;
+        isValid = true;
+        var errorMsg = "";
+        //var searchindex = $("#ddlSearchby option:selected").index();
+        //var search = $("#ddlSearchby option:selected").val();
+        var Catid = $("#ddlbanknames option:selected").index();
+        var Fromdate = $("#txtfromDate").val();
+        var Todate = $("#txttoDate").val();
+        //if (searchindex == 0) {
+        //    $("#divBankStatementGrid").addClass("hidden");
+        //    errorMsg += "<p style='margin-top:-5px!important;'>Select Search Type</p>";
+        //    isValid = false;
+        //}
+        //else {
+        //if (search == 'Bank') {
+        //    if (Catid == 0) {
+        //        $("#divBankStatementGrid").addClass("hidden");
+        //        errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+        //        isValid = false;
+        //    }
+        //}
+        //else {
+        //    if (Fromdate == "" || Fromdate == null) {
+        //        errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+        //        isValid = false;
+        //    }
+        //    if (Todate == "" || Todate == null) {
+        //        errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+        //        isValid = false;
+        //    }
+        //}
+
+        if (Catid == 0) {
+            $("#divBankStatementGrid").addClass("hidden");
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Bank Name</p>";
+            isValid = false;
+        }
+        if (Fromdate == "" || Fromdate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select From Date</p>";
+            isValid = false;
+        }
+        if (Todate == "" || Todate == null) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select To Date</p>";
+            isValid = false;
+        }
+    //}
+    if (!isValid) {
+        $("#divReportInfoMsg").text("");
+        $("#divReportInfoMsg").append("<div>" + errorMsg + "</div>");
+        $("#divReportInfoMsg").addClass("alert-danger");
+        $("#divReportInfoMsg").removeClass("hidden alert-success");
+        $("#divBankStatementGrid").addClass("hidden");
+        return false;
+    }
+    else {
+        $("#divReportInfoMsg").text("");
+        $("#divReportInfoMsg").addClass("hidden");
+        var ccindex = $("#ddlbanknames option:selected").index();
+        var bankval = $("#ddlbanknames option:selected").val();
+        var fromdate = $("#txtfromDate").val();
+        var todate = $("#txttoDate").val();
+        //if (ccindex != 0) {
+        $.ajax({
+            type: "GET",
+            url: "/Reports/ViewBankStatementGrid",
+            data: { BankVal: bankval, FromDate: fromdate, ToDate: todate },
+            dataType: 'html',
+            success: function (response) {
+                var count1 = Object.keys(response).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divBankStatementGrid").html(response);
+                    $("#divBankStatementGrid").removeClass('hidden');
+                }
+                else {
+                    $("#divBankStatementGrid").html('No Data Found');
+                    $("#divBankStatementGrid").removeClass('hidden');
+                }
+                $('#ddlbanknames').prop('disabled', true);
+                $("#txtfromDate").datepicker("option", "disabled", true);
+                $("#txttoDate").datepicker("option", "disabled", true);
+                $('#btnviewbankstatement').prop('disabled', true);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+        //}
+        //else {
+        //    $("#divBankStatementGrid").addClass("hidden");
+        //    alert("Select Bank Name");
+        //    return false;
+        //}
+    }
+    }
+    function SearchByChange() {
+        var searchindex = $("#ddlSearchby option:selected").index();
+        var search = $("#ddlSearchby option:selected").val();
+        if (searchindex === 0) {
+            $("#divBankStatementGrid").addClass('hidden');
+            $("#divBank").addClass('hidden');
+            $("#divDates").addClass('hidden');
+            $("#divviewbtn").addClass('hidden');
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+        }
+        else {
+
+            if (search === "Bank") {
+                $("#divBank").removeClass('hidden');
+                $("#divDates").addClass('hidden');
+                $("#divBankStatementGrid").addClass('hidden');
+            }
+            else {
+                $("#divBank").addClass('hidden');
+                $("#divDates").removeClass('hidden');
+                $("#divBankStatementGrid").addClass('hidden');
+            }
+            $("#divviewbtn").removeClass('hidden');
+            $("#divReportInfoMsg").text("");
+            $("#divReportInfoMsg").addClass("hidden");
+        }
+    }
+    function ResetReport() { location.reload(); }
+
+    function FromdateChange() {
+
+        
+        var date = new Date($("#txtfromDate").val());
+        var y = date.getFullYear();
+        var m = date.getMonth();
+        var aftersixmonths = parseInt(m) + 5;
+        var year = y;
+        if (parseInt(aftersixmonths) <= 5) {
+            year = parseInt(y) + 1;            
+        }
+        var currentdate = new Date();
+        var firstDay = new Date(year, aftersixmonths, 1);
+        var lastDay = new Date(year, aftersixmonths+1, 0);     
+        $("#txttoDate").datepicker('setDate', lastDay);
+        if (lastDay > currentdate) {
+            $("#txttoDate").datepicker("option", "maxDate", currentdate);
+        }
+        else {
+            $("#txttoDate").datepicker("option", "maxDate", lastDay);
+        }
+    
+        $("#txttoDate").datepicker("option", "minDate", date);
+    }
+   
+</script>

@@ -1,0 +1,468 @@
+﻿
+@model EsselTestLocalApplication.Models.Accounts.FDPayments
+<div class="col-md-12">
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FDRNo)
+            @if (@Model.Action == "New")
+            {
+                @Html.DropDownListFor(model => model.FDRNo, new SelectList(Model.FDRNosList, "FdID", "FdNo"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlIntFdNos", onchange = "IntFDNochnage()" })
+            }
+            else
+            { @Html.TextBoxFor(model => model.FDRNo, new { @id = "txtIntFdNos", @class = "form-control", @readonly = "true" })}
+        </div>
+    </div>
+    <div id="divfdinterest">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.IntDate)
+                @Html.TextBoxFor(model => model.IntDate, "{0:dd-MMM-yyyy}", htmlAttributes: new { @class = "form-control date-picker", @id = "txtFdIntdate", @type = "text" })
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.IntAmount)
+                @Html.TextBoxFor(model => model.IntAmount, new { @id = "txtFDIntAmount", @class = "form-control", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountFdIntTotal()" })
+            </div>
+        </div>
+    </div>
+    <div id="divfdinterestDed">
+        <div class="col-md-12" style="margin-top:15px">
+            <hr />
+        </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-2 text-right" style="margin-top:5px"><label>Deductions</label></div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-4 text-center">
+                        <div class="form-group">
+                            <input id="chkDedFDIntY" name="FDIntDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                            <input id="chkDedFDIntN" name="FDIntDeduction" value="No" type="radio" checked>No
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <div id="divfdinterestDedGrid" class="col-md-12">
+        <div class="strike">
+            <span>Deduction Amount</span>
+        </div>
+        <div class="tabledynamic">
+            <br />
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <label style="font-size:12px;font-weight:bold;text-align:center">Cost Center</label>
+                    <input type="text" class="form-control" value="" id="txtDedCC" style="font-size:12px" disabled />
+                </div>
+                <div class="col-md-3">
+                    <label style="font-size:12px;font-weight:bold;text-align:center">Account Head</label>
+                    <input type="text" class="form-control" value="" id="txtDedDca" style="font-size:12px" disabled />
+                </div>
+                <div class="col-md-3">
+                    <label style="font-size:12px;font-weight:bold;text-align:center">Sub Account Head</label>
+                    <input type="text" class="form-control" value="" id="txtDedSdca" style="font-size:12px" disabled />
+                </div>
+                <div class="col-md-3">
+                    <label style="font-size:12px;font-weight:bold;text-align:center">Deduction Amount</label>
+                    <input type="text" class="form-control" value="" id="txtDedAmt" style="font-size:12px"  onkeypress="return ValidateAmount(this,event);" onkeyup="CountFdIntTotal()"/>
+                </div>
+            </div>
+            <div class="row text-center">
+                <br />
+                </div>
+                @*<table id="FDIntDedTable" class="table order-list fdintdedgrid">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important" class="hidden">Row No</td>
+                        <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Cost Center</td>
+                        <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Account Head</td>
+                        <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Sub Account Head</td>
+                        <td style="text-align:center;font-weight:bold;width:20%;color:#fff !important">Amount</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Action == "New")
+                    {
+                        <tr>
+                            <td style="text-align:center;width:20%" class="hidden">1</td>
+                            <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdICC"><option selected="selected" value="Select">Select</option></select></td>
+                            <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdIDCA"><option selected="selected" value="Select">Select</option></select></td>
+                            <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdISubDCA"><option selected="selected" value="Select">Select</option></select></td>
+                            <td style="text-align:center;width:20%"><input type="text" value="" class="form-control fdIDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountFdIntTotal()" /></td>
+
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>*@
+            </div>
+        </div>
+        <div id="divIntfdpayment">
+            <div class="col-md-3">
+                @Html.LabelFor(model => model.PaymentBankName)
+                @Html.DropDownListFor(model => model.PaymentBankName, new SelectList(Model.PaymentBankList, "Bank_Id", "Bank_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlfdIntpaymentbank" })
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentModeofPay)
+                    @Html.DropDownListFor(model => model.PaymentModeofPay, new SelectList(Model.FDPaymentmodeList, "Mode", "Mode_Desc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlFdIntPayMode" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentNo)
+                    @Html.TextBoxFor(model => model.PaymentNo, htmlAttributes: new { @class = "form-control", @id = "txtfdIntchqNo" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FDRPaymentDate)
+                    @Html.TextBoxFor(model => model.FDRPaymentDate, "{0:dd-MMM-yyyy}", new { @id = "txtFDIPayDate", @class = "form-control  date-picker", @readonly = "true" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentRemarks)
+                    @Html.TextAreaFor(model => model.PaymentRemarks, new { @id = "txtFDIntRemarks", @class = "form-control", @rows = "3" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentAmount)
+                    @Html.TextBoxFor(model => model.PaymentAmount, new { @id = "txtFDIPayAmount", @class = "form-control", @readOnly = "readOnly" })
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="text" value="0" id="txtFDIntrestRoleId" style="display:none" />
+                    @if (Model.Action == "New")
+                    {
+                        <button class="btn btn1 btn-success" id="btnFDIntSubmit" onclick="SubmitFDIntData()">Submit</button>
+                        <button class="btn btn1 btn-success" id="btnFDIntRest" onclick="ResetFDIntData()">Reset</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn1 btn-success" id="btnFDIntUpdate" onclick="UpdateFDIntData('@Model.BankTransactionRefNo')">Submit</button>
+                        <input type="hidden" id="txtupdatefdiCreatedby" />
+                    }
+                    <input id="txtIntCC" type="hidden" />
+                    <input id="txtIntDCA" type="hidden" />
+                    
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-center">
+                    <br />
+                    <div id="divFDIntInfoMsg" class="alert alert-danger hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+</div>
+<script>
+    function ClearDeductionTable() {
+
+        $("#FDIntDedTable tbody tr").each(function () {
+            var row = $(this);
+            var ddlcc = row.find('.fdICC');
+            var ddlDCA = row.find('.fdIDCA');
+            var ddlSubDCA = row.find('.fdISubDCA'); // get the other select in the same row
+            var amount = row.find('.fdIDcaAmount');
+            ddlcc.prop('selectedIndex', 0);
+            ddlDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            ddlSubDCA.empty().append('<option selected="selected" value="Select">-Select-</option>');
+            amount.val("");
+        });
+        $("#FDIntDedTable tfoot tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(2).html(parseFloat(0));
+        });
+        $("#txtFDIPayAmount").val(parseFloat($("#txtFDIntAmount").val()).toFixed(2));
+    }
+
+    function GetIntAppSettings() {
+        $.ajax({
+            type: "POST",
+            url: "/Accounts/GetAppSetting",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                var count1 = Object.keys(response).length;
+                if (count1 > 0) {
+                    $("#divFDIntInfoMsg").text("");
+                    $("#divFDIntInfoMsg").addClass("hidden");
+                    $("#txtDedCC").val(response.CC);
+                    $("#txtDedDca").val(response.DCA);
+                    $("#txtDedSdca").val(response.SubDCA);
+
+                }
+                else {
+                    $("#divFDIntInfoMsg").text("FD Interest Deduction Not Configured");
+                    $("#divFDIntInfoMsg").addClass("alert-danger");
+                    $("#divFDIntInfoMsg").removeClass("hidden alert-success");
+                    $("#txtDedCC").val("");
+                    $("#txtDedDca").val("");
+                    $("#txtDedSdca").val("");
+
+                }
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+    $(document).ready(function () {
+        var RoleID = '@Session["Roleid"]';
+        $("#txtFDIntrestRoleId").val(RoleID);
+        $("#divfdinterestDedGrid").addClass("hidden");
+        $("input:radio[name='FDIntDeduction']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var DedExist = _val;
+
+            if (DedExist == "Yes") {
+                // BindEmptyrowtoDeductionFDPer();
+
+                GetIntAppSettings();
+                //$.ajax({
+                //    type: "POST",
+                //    url: "/Accounts/GetFDIntCC",
+                //    data: '{}',
+                //    contentType: "application/json; charset=utf-8",
+                //    dataType: "json",
+                //    success: function (response) {
+                //        ClearFDInt();
+                //        $("#FDIntDedTable tbody tr").each(function () {
+                //            var currentRow = $(this);
+                //            var ccddl = currentRow.find("td").eq(1).find("select");
+                //            ccddl.empty().append('<option selected="selected" value="Select">-Select-</option>');
+                //            $.each(response, function () {
+                //                ccddl.append($("<option></option>").val(this['CC_Id']).html(this['CC_Code']));
+                //            });
+                //        });
+                //        $("#ddlIntFdNos").prop('disabled', true);
+                //        $("#divFDIntInfoMsg").text("");
+                //        $("#divFDIntInfoMsg").addClass("hidden");
+                //    },
+                //    failure: function (response) {
+                //    },
+                //    error: function (response) {
+                //    }
+                //});
+
+                $("#divfdinterestDedGrid").removeClass("hidden");
+            }
+            else if (DedExist == "No") {
+                $("#divparfdDedGrid").addClass("hidden");
+                //ClearDeductionTable();
+                $("#divfdinterestDedGrid").addClass("hidden");
+                $("#txtDedCC").val("");
+                $("#txtDedDca").val("");
+                $("#txtDedSdca").val("");
+            }
+            CountFdIntTotal();
+        });
+
+
+        // alert('@Model.Action');
+        if ('@Model.Action' == 'Update') {
+
+            var Sessioncreated = '@Session["Createdby"]';
+            $("#txtupdatefdiCreatedby").val(Sessioncreated);
+            $("#txtFdIntdate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtFDIPayDate").datepicker("option", "minDate", selectedDate);
+                    if (selectedDate != "") {
+                        $("#txtFdIntdate").datepicker("option", "disabled", true);
+                    }
+                    ClearDeductionTable();
+                },
+            });
+            $("#txtFDIPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                },
+            });
+            var bank = '@Model.PaymentBankName';
+            $("#ddlfdIntpaymentbank").find("option:contains('" + bank + "')").each(function () {
+                if ($(this).text() == bank) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+
+            var intdate = $("#txtFdIntdate").val();
+            var Deductions = @Html.Raw(Json.Encode(Model.FDDeductionList));
+            var count = Deductions.length;
+            var deductiontotal = 0;
+            if (count > 0) {
+               
+                $("#chkDedFDIntY").prop("checked", true);
+                $("#chkDedFDIntN").prop("checked", false);
+
+                $("#divparfdDedGrid").removeClass("hidden");               
+                $("#divfdinterestDedGrid").removeClass("hidden");
+              
+                //for (var i = 0; i < Deductions.length; i++) {
+                //    var rowno = i + 1;
+                //    var newRow = $("<tr>");
+                //    var cols = "";
+                //    cols += '<td style="text-align:center;width:20%" class="hidden">' + rowno + '</td>';
+                //    cols += '<td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdICC"><option selected="selected" value="Select">Select</option></select></td>';
+
+                //    cols += '<td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdIDCA"><option selected="selected" value="Select">Select</option></select></td>';
+                //    cols += ' <td style="text-align:center;width:20%"><select class="form-control dropdown-toggle fdISubDCA"><option selected="selected" value="Select">Select</option></select></td>';
+                //    cols += ' <td style="text-align:center;width:20%"><input type="text" value="" class="form-control fdIDcaAmount" onkeypress="return ValidateAmount(this,event);" onkeyup="CountFdIntTotal()" /></td>';
+
+                //    newRow.append(cols);
+                //    $("#FDIntDedTable").append(newRow);
+                //}
+             
+                for (var i = 0; i < Deductions.length; i++) {
+                    var Deduction = Deductions[i];
+                    $("#txtDedCC").val(Deduction.CCCode);
+                    $("#txtDedDca").val(Deduction.DCACode);
+                    $("#txtDedSdca").val(Deduction.SubDCACode);
+                    $("#txtDedAmt").val(Deduction.DeductionValue);
+                    deductiontotal = Deduction.DeductionValue;
+                    //var currentcc = Deduction.CCCode;
+                    //var currentdca = Deduction.DCACode;
+                    //var currensdca = Deduction.SubDCACode;
+                    //var currentamount = Deduction.DeductionValue;
+                    //$("#FDIntDedTable tbody tr").each(function () {
+                    //    var currentRow = $(this);
+                    //    var rowno = currentRow.find("td").eq(0).html();
+                    //    var ddlcc = currentRow.find("td").eq(1).find("select");
+                    //    var ddlDCA = currentRow.find('.fdIDCA');
+                    //    var ddlSubDCA = currentRow.find('.fdISubDCA'); // get the other select in the same row
+                    //    var amount = currentRow.find('.fdIDcaAmount');
+                    //    ddlcc.append($("<option selected='selected'></option>").val(currentcc).html(currentcc));
+                    //    //  ddlDCA.append($("<option  selected='selected'></option>").val(currentdca).html(currentdca));
+                    //    $.ajax({
+                    //        type: "POST",
+                    //        url: "/Accounts/GetNamebyCode",
+                    //        data: '{Code:"' + currentdca + '",Type:"DCA"}',
+                    //        contentType: "application/json; charset=utf-8",
+                    //        dataType: "json",
+                    //        success: function (response) {
+                    //            //alert(response.Name);
+                    //            ddlDCA.append($("<option  selected='selected'></option>").val(currentdca).html(currentdca + ' , ' + response.Name));
+
+                    //        },
+                    //        failure: function (response) {
+
+                    //        },
+                    //        error: function (response) {
+
+                    //        }
+                    //    });
+
+                    //    $.ajax({
+                    //        type: "POST",
+                    //        url: "/Accounts/GetSubDCAbyDCA",
+                    //        data: '{ DCACode:"' + currentdca + '"}',
+                    //        contentType: "application/json; charset=utf-8",
+                    //        dataType: "json",
+                    //        success: function (response) {
+                    //            $.each(response, function () {
+                    //                var dbsdcacode = this['SubDCACode'];
+                    //                if (currensdca == dbsdcacode) {
+                    //                    ddlSubDCA.append($("<option selected='selected'></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                    //                }
+                    //                else { ddlSubDCA.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR'])); }
+                    //            });
+
+                    //        },
+                    //        failure: function (response) {
+
+                    //        },
+                    //        error: function (response) {
+
+                    //        }
+                    //    });
+                    //    amount.val(currentamount);
+                    //    deductiontotal = parseFloat(deductiontotal) + parseFloat(currentamount)
+                    //});
+                }
+                //$("#FDIntDedTable tfoot tr").each(function () {
+                //    var currentRow = $(this);
+                //    currentRow.find("td").eq(2).html(parseFloat(deductiontotal).toFixed(2));
+                //});
+                //debugger;
+                var intamt = '@Model.IntAmount';
+                var total = parseFloat(intamt) + parseFloat(deductiontotal);
+                $("#txtfdParcloseMaturityAmount").val(total);
+                $("#txtFDIPayAmount").val(parseFloat('@Model.IntAmount').toFixed(2));
+                $("#txtFDIntAmount").val(total);
+               // alert(total);
+
+                // var FinalAmount = parseFloat($("#txtFDIntAmount").val()) - parseFloat(deductiontotal);
+                // $("#txtFDIPayAmount").val(parseFloat(FinalAmount).toFixed(2));
+            }
+
+            else {
+                $("#divfdinterestDedGrid").addClass("hidden");
+                $("#txtFDIPayAmount").val(parseFloat($("#txtFDIntAmount").val()).toFixed(2));
+            }
+            $("#btnFDIntRest").addClass('hidden');
+        }
+        else {
+            //alert('new');
+            $("#txtFdIntdate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+                    $("#txtFDIPayDate").datepicker("option", "minDate", selectedDate);
+                    if (selectedDate != "") {
+                        $("#txtFdIntdate").datepicker("option", "disabled", true);
+                    }
+                    ClearDeductionTable();
+                },
+            }).datepicker("setDate", "");
+            $("#txtFDIPayDate").datepicker({
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                showOn: "button",
+                maxDate: 'dateToday',
+                buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+                onClose: function (selectedDate) {
+
+                },
+            }).datepicker("setDate", "");
+
+        }
+    });
+
+
+      
+
+   
+    
+    
+</script>
+

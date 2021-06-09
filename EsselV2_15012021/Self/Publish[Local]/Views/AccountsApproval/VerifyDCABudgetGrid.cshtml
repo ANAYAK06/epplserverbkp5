@@ -1,0 +1,180 @@
+﻿@model List<EsselTestLocalApplication.Models.CCDetails>
+<div class="table-responsive">
+    <table id="tblApprDCABudgetDetails" style="width:100%" class="hover stripe nowrap example dataTable no-footer">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Cost Center Code</th>
+                <th>Cost Center Name</th>
+                <th>Budget Value</th>
+                <th>Budget Balance</th>
+                <th>Financial Year</th>
+                <th class="hidden">Status</th>
+                <th>Cost Center Type</th>
+               
+</thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="details-control"></td>
+                <td style="text-align:center">
+                    @Html.DisplayFor(modelItem => item.CC_Code)
+                </td>
+                <td style="text-align:center">
+                    @Html.DisplayFor(modelItem => item.CC_Name)
+                </td>
+                <td style="text-align:center">
+                    @Html.DisplayFor(modelItem => item.BudgetValue)
+                </td>
+                <td style="text-align:center">
+                    @Html.DisplayFor(modelItem => item.BalanceBudget)
+                </td>
+                <td style="text-align:center">
+                    @Html.DisplayFor(modelItem => item.FYyear)
+                </td>
+                <td style="text-align:center" class="hidden">
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td style="text-align:center">
+                    @Html.DisplayFor(modelItem => item.CC_Type)
+                </td>
+               
+
+            </tr>
+            }
+        </tbody>
+
+        <tfoot>
+            <tr></tr>
+        </tfoot>
+    </table>
+    
+</div>
+<script>
+       var openRows = new Array();
+        $(document).ready(function () {
+            var ApproveDCABudgetGrid = null;
+            InitializeApprDCABudgetGrid();
+              var Sessioncreated = '@Session["Createdby"]';
+            $("#txtAppDcaBudCreatedby").val(Sessioncreated);
+             var Sessionroleid = '@Session["Roleid"]';
+            $("#roleid").val(Sessionroleid);
+        });
+    function InitializeApprDCABudgetGrid() {
+        ApproveDCABudgetGrid = $('#tblApprDCABudgetDetails').DataTable({
+            info: false,
+            destroy: false,
+            paging: false,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            pagingType: false,  
+            language: {
+                "emptyTable": "No Records Found"
+            },
+            "createdRow": function (row, data, index) {
+                var oldstatus = $('td:eq(6)', row).html();
+
+                if (oldstatus == 1) {
+                    $('td:eq(6)', row).html("Verification Pending");
+                }
+                else { $('td:eq(6)', row).html("Return"); }
+            },
+            pageLength: 10
+        });
+    }
+        $('#tblApprDCABudgetDetails tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = ApproveDCABudgetGrid.row(tr);
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // close all previously opened rows
+                closeOpenedRows(ApproveDCABudgetGrid, tr);
+                // Open this row
+                row.child(formatApprDcaBudget(row.data())).show();
+                tr.addClass('shown');
+                // store current selection
+                openRows.push(tr);
+            }
+        });
+             function closeOpenedRows(table, selectedRow) {
+                $.each(openRows, function (index, openRow) {
+                    // not the selected row!
+                    if ($.data(selectedRow) !== $.data(openRow)) {
+                        var rowToCollapse = table.row(openRow);
+                        rowToCollapse.child.hide();
+                        openRow.removeClass('shown');
+                        // replace icon to expand
+                        //$(openRow).find('td.details-control').html('<span class="glyphicon glyphicon-plus"></span>');
+                        // remove from list
+                        var index = $.inArray(selectedRow, openRows);
+                        openRows.splice(index, 1);
+                    }
+                });
+            }
+    function formatApprDcaBudget(d) {
+        
+        var htmltext;
+        var year,code,status,cctype;       
+            $.each(d, function (index, value) {
+                // Get value in alert
+                if (index == 6)
+                    status = value;               
+                if (index == 5)
+                    year = value;
+                if (index == 1)
+                    code = value;
+                if (index == 7)
+                    cctype = value;
+            });
+            //debugger;
+        var divid = "divapprdcab" + code;
+        var divid1 = $("#" + divid + "");
+        //alert(code);
+        $("#currentcc").val(code);
+
+        if (status !=='0') {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/GetVerificationDCABudgetbyCC',
+                data: { CCCode: code, Year: year, CCType: cctype },
+                success: function (Data) {
+                    var divid2 = "divapprdcab" + code;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                  
+                    // $(divid3).append('<input type="text" value="' + code+'" id="apprdcabudcc-' + code +'"/>');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: 'GET',
+                dataType: 'html',
+                url: '/AccountsApproval/GetUpdationDCABudgetbyCC',
+                data: { CCCode: code, Year: year, CCType: cctype },
+                success: function (Data) {
+                    var divid2 = "divapprdcab" + code;
+                    var divid3 = $("#" + divid2 + "");
+                    $(divid3).html(Data);
+                 
+                    // $(divid3).append('<input type="text" value="' + code+'" id="apprdcabudcc-' + code +'"/>');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                   
+                }
+            });
+
+        }
+        return '<div id="divapprdcab' + code + '" class="col-md-10"></div>';
+        }
+</script>

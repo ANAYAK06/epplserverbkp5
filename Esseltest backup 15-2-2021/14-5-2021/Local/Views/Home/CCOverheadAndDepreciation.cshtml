@@ -1,0 +1,265 @@
+﻿@model EsselTestLocalApplication.Models.CCOverheadDepreciation
+@{
+    ViewBag.Title = "CCOverheadAndDepreciation";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+@*<h2>CCOverheadAndDepreciation</h2>*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">CC Accrued Interest And OverHead Percentage and Depreciation Details</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="row" id="divAdd">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.ReportType)
+                                            @Html.DropDownListFor(model => model.ReportType, new SelectList(Model.TypesList, "Type", "TypeName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlReportType", onchange = "TypeChange()" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.CostCenter)
+                                            @Html.DropDownListFor(model => model.CostCenter, new SelectList(Model.CCCodesList, "CC_Code", "CC_Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlCC" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.InterestRate, new { @id = "lblInterestRate" })
+                                            @Html.TextBoxFor(model => model.InterestRate, htmlAttributes: new { @class = "form-control", @id = "txtInterestRate", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" id="divvalue">
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Value)
+                                            @Html.TextBoxFor(model => model.Value, htmlAttributes: new { @class = "form-control", @id = "txtValue", onkeypress = "return ValidateAmount(this,event)" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <br />
+                                        <button class="btn btn1 btn-success" id="btnAdd" onclick="SubmitCCAccurate()">Submit</button>
+                                    </div>
+                                </div>
+                                <div class="row" id="divBtns">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="ViewAccrued" class="btn btn-default firmbtns-hover" id="btnViewAccurate" onclick="BindAccurate()" />
+                                            <input type="submit" value="ViewDepreciation" class="btn btn-default firmbtns-hover" id="btnViewDepreciation" onclick="BindDepreciation()" />
+                                            <input type="submit" value="ViewOverhead" class="btn btn-default firmbtns-hover" id="btnViewOverhead" onclick="BindOverhead()" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="divGrid">
+
+                                </div>
+                                <div class="row text-center" id="divMsg">
+                                    <div id="divCCAccurateInfoMsg" class="alert alert-danger hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="txtcurrenttype" value="" />
+<script>
+    $(document).ready(function () {
+        RebindBindGrid();
+        $("#txtcurrenttype").val("None");
+    });
+    function SubmitCCAccurate() {       
+        isValid = true;
+        var errorMsg = "";
+        var rtypeindex = $("#ddlReportType option:selected").index();
+        var ccindex = $("#ddlCC option:selected").index();
+        var interest = $("#txtInterestRate").val();
+        var amount = $("#txtValue").val();
+        if (rtypeindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select ReportType</p>";
+            isValid = false;
+        }
+        if (ccindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Cost Center</p>";
+            isValid = false;
+        }
+        if (interest === "" || interest === "0") {
+            if (rtypeindex == 3) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Overhead Percentage</p>";
+            }
+            else {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Interest Rate</p>";
+            }
+            isValid = false;
+        }
+        if (rtypeindex != 3 || rtypeindex != 0) {
+            if (amount === "" || amount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Value</p>";
+                isValid = false;
+            }
+        }
+        if (!isValid) {
+            var finalerror = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").append(finalerror + errorMsg + "</div>");
+            $("#divCCAccurateInfoMsg").addClass("alert-danger");
+            $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divCCAccurateInfoMsg").text("");
+            $("#divCCAccurateInfoMsg").addClass("hidden");
+            addFailMsg = "Error Occurred While Adding  Details.";
+            //addSuccessMsg = "Client Payment Details Added Successfully.";
+            var saveData = {
+                Id: 0,
+                ReportType: $("#ddlReportType option:selected").val(),
+                CostCenter: $("#ddlCC option:selected").val(),
+                InterestRate: $("#txtInterestRate").val(),
+                Value: $("#txtValue").val(),
+                Action: 'Add'
+            };
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Home/SaveCCAccurateValues',
+                data: { CCOD: saveData },
+                success: function (Data) {
+                    if (Data.saveStatus == "Submited") {
+
+                        //$("#btnaddnewit").prop('disabled', true);
+                        //$("#divAddItCodeInfoMsg").text(addSuccessMsg);
+                        //$("#divAddItCodeInfoMsg").removeClass("hidden alert-danger");
+                        //$("#divAddItCodeInfoMsg").addClass("alert-success");
+
+                        $("#divCCAccurateInfoMsg").text("");
+                        $("#divCCAccurateInfoMsg").addClass("hidden");
+                        ClearFields();
+                        RebindBindGridAfterupdate();
+                    }
+                    else {
+                        $("#divCCAccurateInfoMsg").text(Data.saveStatus);
+                        $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                        $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divCCAccurateInfoMsg").text(addFailMsg);
+                    $("#divCCAccurateInfoMsg").addClass("alert-danger");
+                    $("#divCCAccurateInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+        }
+    }
+    function ClearFields() {
+        $("#ddlReportType").prop('selectedIndex', 0);
+        $("#txtInterestRate").val("");
+        $("#txtValue").val("");
+        $("#ddlCC").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        // RebindCC();
+    }
+
+    function RebindCC() {
+        $.ajax({
+            type: "POST",
+            url: "/Home/GetAccurateDepreciationCC",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var CostCenterddl = $("#ddlCC");
+                CostCenterddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                $.each(response, function () {
+                    CostCenterddl.append($("<option></option>").val(this['CC_Code']).html(this['CC_Name']));
+                });
+            },
+            failure: function (response) {
+            },
+            error: function (response) {
+            }
+        });
+    }
+    function RebindBindGrid() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Home/CCOverheadAndDepreciationGrid',
+            data: { Type: "None" },
+
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divGrid").html(Data);
+                }
+                else {
+                    $("#divGrid").html('No Data Found');
+                }
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                alert("error");
+            }
+        });
+
+    }
+    function TypeChange() {
+        //debugger;
+        var rtypeindex = $("#ddlReportType option:selected").index();
+        var rtype = $("#ddlReportType option:selected").val();
+        if (rtypeindex === 1) {
+            $("#divvalue").removeClass("hidden");
+            $("#lblInterestRate").html("Accrued Interest");
+        }
+        else if (rtypeindex === 2) {
+            $("#divvalue").removeClass("hidden");
+            $("#lblInterestRate").html("Depreciation Percentage");
+        }
+        else if (rtypeindex === 3) {
+            $("#divvalue").addClass("hidden");
+            $("#lblInterestRate").html("OverHead Percentage");
+        }
+        else {
+            $("#divvalue").removeClass("hidden");
+            $("#lblInterestRate").html("Interest Rate");
+        }
+        RebindCC();
+    }
+    function BindOverhead() {
+        $("#txtcurrenttype").val("Depreciation");
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '/Home/CCOverheadAndDepreciationGrid',
+            data: { Type: "Overhead" },
+            success: function (Data) {
+                var count1 = Object.keys(Data).length;
+                var msg = "";
+                if (count1 > 0) {
+                    $("#divGrid").html(Data);
+                }
+                else {
+                    $("#divGrid").html('No Data Found');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+                alert("error");
+            }
+        });
+
+    }
+</script>

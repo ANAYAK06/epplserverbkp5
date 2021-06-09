@@ -1,0 +1,2263 @@
+﻿@model EsselTestLocalApplication.Models.Purchase.SupplierPOInvoice
+@{
+    ViewBag.Title = "SupplierPOInvoice";
+    Layout = "~/Views/Shared/EsselMaster.cshtml";
+}
+@Scripts.Render("~/bundles/Purchase")
+@Scripts.Render("~/bundles/datepicker/js")
+@Styles.Render("~/bundles/datepicker/css")
+@Scripts.Render("~/bundles/Accounts")
+@Styles.Render("~/bundles/Accounts/css")
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="text-align:left;font-weight:bold">Supplier PO Invoice</h4>
+                </div>
+                <div class="body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <!-- Example Tabs Left-->
+                            <div class="card-inner">
+                                <div class="col-md-12">
+                                    <form onsubmit="return false">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorType)
+                                                    @Html.DropDownListFor(model => model.VendorType, new SelectList(Model.VendorTypeList, "Type", "Name"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlspVendorType" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.MRR)
+                                                    @Html.DropDownListFor(model => model.MRR, new SelectList(Model.MrrList, "MRRNo", "MRRNoDesc"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlspMrr", onchange = "POMRRChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorId)
+                                                    @Html.TextBoxFor(model => model.VendorId, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorCode", @readOnly = true })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorName)
+                                                    @Html.TextBoxFor(model => model.VendorName, htmlAttributes: new { @class = "form-control", @id = "txtPOVendorName", @readOnly = true })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.AccountHead)
+                                                    @Html.TextBoxFor(model => model.AccountHead, htmlAttributes: new { @class = "form-control", @id = "txtPODCA", @readOnly = true })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.VendorGST)
+                                                    @Html.DropDownListFor(model => model.VendorGST, new SelectList(Model.vendorTaxlist, "TaxNoID", "TaxNoName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPOVendorGST", onchange = "POVendorGSTChange()" })
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.GSTType)<br />
+                                                    <input id="rGSTTypeY" name="GSTType" value="Creditable" type="radio" style="font-weight:bold;">Creditable
+                                                    <input id="rGSTTypeN" name="GSTType" value="Non-Creditable" type="radio">Non-Creditable
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.CompanyGST)
+                                                    @Html.DropDownListFor(model => model.CompanyGST, new SelectList(Model.CompanyGSTlist, "GSTNo", "TaxNoName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPOCompanyGST", onchange = "POCompanyGSTChange()" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="divItemgrid">
+
+                                        </div>
+                                        <div class="row" id="divtransport">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Transportation</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12"><hr class="separationHr" /></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4"></div>
+                                                <div class="col-md-4 text-center">
+                                                    <div class="form-group">
+                                                        <input id="rTransportY" name="Transport" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                                        <input id="rTransportN" name="Transport" value="No" type="radio" checked>No
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4"></div>
+                                            </div>
+                                            <div id="divShowTransport" class="row">
+
+                                                <div class="col-lg-2">
+                                                    @Html.LabelFor(model => model.TransportDCA)
+                                                    @Html.DropDownListFor(model => model.TransportDCA, new SelectList(Model.lstTransportDCA, "DCACode", "DCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPOTransportDCA" })
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    @Html.LabelFor(model => model.TransportSubDCA)
+                                                    @Html.DropDownListFor(model => model.TransportSubDCA, new SelectList(Model.listTransportSubDCA, "SubDCACode", "SubDCAIDSTR"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlPOTransportSubDCA" })
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    @Html.LabelFor(model => model.TransportAmount)
+                                                    @Html.TextBoxFor(model => model.TransportAmount, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportAmount", value = "0", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountTransportTotal()" })
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    @Html.LabelFor(model => model.TransportCGSTpercent)
+                                                    @Html.TextBoxFor(model => model.TransportCGSTpercent, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportCGSTpercent", value = "0", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountTransportTotal()" })
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    @Html.LabelFor(model => model.TransportCGSTAmt)
+                                                    @Html.TextBoxFor(model => model.TransportCGSTAmt, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportCGSTAmt", @readOnly = true, value = "0" })
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    @Html.LabelFor(model => model.TransportSGSTpercent)
+                                                    @Html.TextBoxFor(model => model.TransportSGSTpercent, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportSGSTpercent", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountTransportTotal()" })
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    @Html.LabelFor(model => model.TransportSGSTAmt)
+                                                    @Html.TextBoxFor(model => model.TransportSGSTAmt, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportSGSTAmt", @readOnly = true, value = "0" })
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    @Html.LabelFor(model => model.TransportIGSTpercent)
+                                                    @Html.TextBoxFor(model => model.TransportIGSTpercent, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportIGSTPercent", value = "0", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountTransportTotal()" })
+                                                </div>
+                                                <div class="col-lg-1">
+                                                    @Html.LabelFor(model => model.TransportIGSTAmt)
+                                                    @Html.TextBoxFor(model => model.TransportIGSTAmt, htmlAttributes: new { @class = "form-control", @id = "txtPOTransportIGSTAmount", @readOnly = true, value = "0" })
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="row" id="divnvinfo">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Invoice Info</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12"><hr class="separationHr" /></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.PONo)
+                                                        @Html.TextBoxFor(model => model.PONo, new { @id = "txtPONo", @class = "form-control", type = "text", @readOnly = true, })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceNo)
+                                                        @Html.TextBoxFor(model => model.InvoiceNo, new { @id = "txtInvNo", @class = "form-control", type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceDate)
+                                                        @Html.TextBoxFor(model => model.InvoiceDate, "{0:dd/MM/yyyy}", new { @id = "txtInvDate", @class = "form-control  date-picker", type = "text" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceMakingDate)
+                                                        @Html.TextBoxFor(model => model.InvoiceMakingDate, "{0:dd/MM/yyyy}", new { @id = "txtInvMakingDate", @class = "form-control  date-picker", type = "text" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.BasicValue)
+                                                        @Html.TextBoxFor(model => model.BasicValue, new { @id = "txtBasicValue", @class = "form-control", type = "text", @readOnly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvTotalCGSTAmt)
+                                                        @Html.TextBoxFor(model => model.InvTotalCGSTAmt, new { @id = "txtInvTotalCGSTAmt", @class = "form-control", type = "text", @readOnly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvTotalSGSTAmt)
+                                                        @Html.TextBoxFor(model => model.InvTotalSGSTAmt, new { @id = "txtInvTotalSGSTAmt", @class = "form-control", type = "text", @readOnly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvTotalIGSTAmt)
+                                                        @Html.TextBoxFor(model => model.InvTotalIGSTAmt, new { @id = "txtInvTotalIGSTAmt", @class = "form-control", type = "text", @readOnly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvGSTTotal)
+                                                        @Html.TextBoxFor(model => model.InvGSTTotal, new { @id = "InvGSTTotal", @class = "form-control", type = "text", @readOnly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.InvoiceValue)
+                                                        @Html.TextBoxFor(model => model.InvoiceValue, new { @id = "txtInvoiceValue", @class = "form-control", type = "text", @readOnly = true })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        @Html.LabelFor(model => model.Advance)
+                                                        @Html.TextBoxFor(model => model.Advance, new { @id = "txtNSpAdvance", @class = "form-control", type = "text", onkeyup = "CheckAdvance()", onkeypress = "return ValidateAmount(this,event);", })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                        <div class="row" id="divAssetExchange">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Asset Exchange</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12"><hr class="separationHr" /></div>
+                                                <div class="col-md-12" style="margin-top:-25px !important">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-6">
+                                                        <ul class="list-inline">
+                                                            <li class="eagle-checkbox">
+                                                                <label class="eagle-check custom-checkbox">
+                                                                    <input type="checkbox" class="eagle-check-input" id="chkExchange">
+                                                                    <span class="eagle-check-indicator"></span>
+                                                                    <span class="eagle-check-description">Do you have any exchange asset on this invoice</span>
+                                                                </label>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-2"></div>
+                                                </div>
+                                                </div>
+                                            <div class="row" style="margin-top:-10px !important">                                              
+                                               
+                                            </div>
+                                            <div class="row" id="divExchangeddl">
+                                                <div class="col-md-2">
+
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @Html.LabelFor(model => model.ExchangeItem)
+                                                    @Html.DropDownListFor(model => model.ExchangeItem, new SelectList(Model.ExchangeITemslist, "itemcode", "itemcode"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlitemcode" })
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @Html.LabelFor(model => model.ExItemAmount)
+                                                    @Html.TextBoxFor(model => model.ExItemAmount, htmlAttributes: new { @class = "form-control", @id = "txtExItemAmount", value = "0", onkeypress = "return ValidateAmount(this,event);", onkeyup = "CountNetAndInvoiceAmount()" })
+                                                </div>
+
+                                            </div>
+                                            <br/>
+                                        </div>
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Other Charges</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12"><hr class="separationHr" /></div>
+                                            </div>
+                                            <div id="divSPInvOtherChargeGrid">
+                                                <div class="row">
+                                                    <div class="col-md-4"></div>
+
+                                                    <div class="col-md-4 text-center">
+                                                        <div class="form-group">
+                                                            <input id="Otheryes" name="Other" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                                            <input id="OtherNo" name="Other" value="No" type="radio" checked>No
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1"></div>
+                                                </div>
+                                                <div class="row change-tab" id="OtherGrid">
+                                                    <div class="tabledynamic">
+                                                        <br />
+                                                        <table id="InvOtherChargeTable" class="table order-list InvOtherChargeTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">No</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Check</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">AccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">SubAccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Amount</label></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td class="text-center"><label>SubTotal</label></td>
+                                                                    <td></td>
+                                                                    <td><input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Charge" onclick="BindNewRowToOtherGrid();" /></td>
+
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5 style="text-align:left;font-weight:bold;margin-bottom:-1%">Any Deduction</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12"><hr class="separationHr" /></div>
+                                            </div>
+                                            <div id="divDeductionGrid">
+                                                <div class="row">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-4 text-center">
+                                                        <div class="form-group">
+                                                            <input id="rDeductionY" name="rDeduction" value="Yes" type="radio" style="font-weight:bold;">Yes
+                                                            <input id="rDeductionN" name="rDeduction" value="No" type="radio" checked>No
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1"></div>
+                                                </div>
+                                                <div class="row change-tab" id="DeductionGrid">
+                                                    <div class="tabledynamic">
+                                                        <br />
+                                                        <table id="DeductionTable" class="table order-list SPInvDeductionTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">No</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Check</label></td>
+
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">AccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">SubAccountHead</label></td>
+                                                                    <td style="text-align:center;color:#fff !important"><label style="color:#fff !important">Amount</label></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td class="text-center"><label>SubTotal</label></td>
+                                                                    <td></td>
+                                                                    <td><input type="button" class="btn btn-default  btn-block" id="addTax" value="Add New Deduction" onclick="BindNewRowtoDeductionGrid();" /></td>
+
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    @Html.LabelFor(model => model.NetAmount)
+                                                    @Html.TextBoxFor(model => model.NetAmount, new { @id = "txtNetAmount", @class = "form-control", type = "text", @readOnly = true })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-top:10px" id="divbtns">
+                                            <div class="text-right" style="margin-right:12px">
+                                                <input type="submit" class="btn btn1 btn-success" id="btnSubmitSupplierpoInvoice" onclick="SubmitSupplierpoInvoice()" value="Submit" />
+                                                <input type="reset" value="Reset" class="btn btn1 btn-success" onclick="ResetInvoice()" id="btnResetInvoiced" />
+                                            </div>
+                                            <input type="hidden" id="txtPOCC" />
+                                            <input type="hidden" id="txtisAssetExchange" />
+                                            <input type="hidden" id="txtOriginalAdvance" />
+                                        </div>
+                                        <div class="row text-center" style="margin-top:10px">
+                                            <div id="divPOInvInfoMsg" class="alert alert-danger hidden">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        if (@Model.MrrList.Count> 0) {
+            $("#ddlspMrr").prop('disabled', false);           
+        }
+        else { $("#ddlspMrr").prop('disabled', true); }
+
+        $("#ddlPOVendorGST").prop('disabled', false);
+        $("#ddlPOCompanyGST").prop('disabled', false);
+        $("#GSTType input:radio").attr('disabled', true);
+        $("#divShowTransport").addClass("hidden");
+        $("#OtherGrid").addClass("hidden");
+        $("#DeductionGrid").addClass("hidden");
+        $("#divbtns").addClass("hidden");
+        $("#divAssetExchange").addClass("hidden");
+        $("input:radio[name='GSTType']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var taxtype = _val;
+            var cgstddl = $("#ddlPOCompanyGST");
+            clearforGST();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetCompanyGSTNos",
+                data: '{Taxtype:"' + taxtype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+
+                        cgstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response, function () {
+                            cgstddl.append($("<option></option>").val(this['GSTNo']).html(this['TaxNoName']));
+                        });
+                        //$("#txtPOVendorCode").val(response.VendorCode);
+                        //$("#txtPOVendorName").val(response.VendorName);
+                        //$("#txtPODCA").val(response.DcaCode);
+                        //$("#txtPONo").val(response.PONo);
+                        //$("#txtPOCC").val(response.CCCode);
+
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").addClass("hidden");
+                        //$("#txtsubgrpexist").val('0');
+                        //$("#divnvsubgrp").addClass("hidden");
+                    }
+                    else {
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").append("<div>GSTs Not Exist</div>");
+                        $("#divPOInvInfoMsg").addClass("alert-danger");
+                        $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                        cgstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        });
+
+
+        $("input:radio[name='Transport']").change(function () {
+            var _val = $(this).val();
+            console.log(_val);
+            var Transexist = _val;
+            var vgstindex = $("#ddlPOVendorGST option:selected").index();
+            var cgstindex = $("#ddlPOCompanyGST option:selected").index();
+
+            if (vgstindex === 0) {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append("<div>Select Vendor GST</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");}
+            else if (cgstindex === 0) {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append("<div>Select  GST</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");}
+            else {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").addClass("hidden");
+                if (Transexist === "Yes") {
+
+                    var dcaddl = $("#ddlPOTransportDCA");
+                    var sdcaddl = $("#ddlPOTransportSubDCA");
+                    $.ajax({
+                        type: "POST",
+                        url: "/Purchase/GetSupplierPOTransportDCA",
+                        data: '{}',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            var count1 = Object.keys(response).length;
+                            if (count1 > 0) {
+                                dcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $.each(response.lstDCA, function () {
+                                    dcaddl.append($("<option></option>").val(this['DCACode']).html(this['DCAIDSTR']));
+                                });
+                                sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $.each(response.lstSubDCA, function () {
+                                    sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                                });
+                                $("#divShowTransport").removeClass("hidden");
+                              
+                                var statecheck = $("#txtGSTApplicable").val();
+                                if (statecheck === "false") {
+                                    $("#txtPOTransportCGSTpercent").prop("disabled", true);
+                                    //$("#txtPOTransportCGSTAmt").prop("disabled", true);
+                                    $("#txtPOTransportSGSTpercent").prop("disabled", true);
+                                    //$("#txtPOTransportSGSTAmt").prop("disabled", true);
+                                    $("#txtPOTransportIGSTPercent").prop("disabled", false);
+                                    //$("#txtPOTransportIGSTAmount").prop("disabled", false);
+                                }
+                                else {
+                                    $("#txtPOTransportCGSTpercent").prop("disabled", false);
+                                    //$("#txtPOTransportCGSTAmt").prop("disabled", false);
+                                    $("#txtPOTransportSGSTpercent").prop("disabled", false);
+                                   // $("#txtPOTransportSGSTAmt").prop("disabled", true);
+                                    $("#txtPOTransportIGSTPercent").prop("disabled", true);
+                                    // $("#txtPOTransportIGSTAmount").prop("disabled", true);
+                                }
+                            }
+                            else {
+                                $("#divPOInvInfoMsg").text("");
+                                $("#divPOInvInfoMsg").append("<div> Transport Account Head Does Not Exist</div>");
+                                $("#divPOInvInfoMsg").addClass("alert-danger");
+                                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                                dcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                                $("#divShowTransport").addClass("hidden");
+                                $("#txtPOTransportAmount").val("");
+                                $("#txtPOTransportCGSTpercent").val("0");
+                                $("#txtPOTransportCGSTAmt").val("0");
+                                $("#txtPOTransportSGSTpercent").val("0");
+                                $("#txtPOTransportSGSTAmt").val("0");
+                                $("#txtPOTransportIGSTPercent").val("0");
+                                $("#txtPOTransportIGSTAmount").val("0");
+                            }
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+                else {
+                    $("#divShowTransport").addClass("hidden");
+                    $("#txtPOTransportCGSTpercent").val("0");
+                    $("#txtPOTransportCGSTAmt").val("0");
+                    $("#txtPOTransportSGSTpercent").val("0");
+                    $("#txtPOTransportSGSTAmt").val("0");
+                    $("#txtPOTransportIGSTPercent").val("0");
+                    $("#txtPOTransportIGSTAmount").val("0");     
+                }
+            }
+        });
+        $("input:radio[name='Other']").change(function () {
+            let otherval = $(this).val();
+            console.log(otherval);
+            var vgstindex = $("#ddlPOVendorGST option:selected").index();
+            var cgstindex = $("#ddlPOCompanyGST option:selected").index();
+
+            if (vgstindex === 0) {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append("<div>Select Vendor GST</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else if (cgstindex === 0) {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append("<div>Select  GST</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").addClass("hidden");
+                if (otherval == "Yes") {
+                    BindEmptyRowToOtherGrid();
+                }
+                else {
+                    $("#InvOtherChargeTable tbody tr").remove();
+                    $("#OtherGrid").addClass("hidden");
+                    $("#InvOtherChargeTable tfoot tr").each(function () {
+                        var footerRow = $(this);
+                        footerRow.find("td").eq(4).html("");
+                    });
+                    $("#Otheryes").prop("checked", false);
+                    $("#OtherNo").prop("checked", true);
+                   
+
+                   
+
+                
+                }
+            }
+        });
+        $("input:radio[name='rDeduction']").change(function () {
+            let dedval = $(this).val();
+            console.log(dedval);
+            var vgstindex = $("#ddlPOVendorGST option:selected").index();
+            var cgstindex = $("#ddlPOCompanyGST option:selected").index();
+
+            if (vgstindex === 0) {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append("<div>Select Vendor GST</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else if (cgstindex === 0) {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append("<div>Select  GST</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            }
+            else {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").addClass("hidden");
+                if (dedval == "Yes") {
+                    ShowDeductionGrid();
+                }
+                else {
+                    $("#DeductionTable tbody tr").remove();
+                    $("#DeductionGrid").addClass("hidden");
+                    HideDeductionGrid();
+                    $("#DeductionTable tfoot tr").each(function () {
+                        var footerRow = $(this);
+                        footerRow.find("td").eq(4).html("");
+                    });
+                   
+                    $("#rDeductionY").prop("checked", false);
+                    $("#rDeductionN").prop("checked", true);
+
+                    
+                }
+
+            }
+        });
+
+
+        $("table.order-list.InvOtherChargeTable").on("change", ".sppoOtherChargedca", function (event) {
+            var currentRow = $(this).closest("tr");
+
+            var dcaddlIndex = currentRow.find(".sppoOtherChargedca option:selected").index();
+            var sdcaddl = currentRow.find(".sppoOtherChargesdca");
+
+            var otherchargeamount = currentRow.find(".sppoOtherChargeamount");
+         
+                if (dcaddlIndex === 0) {
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    otherchargeamount.val(0);
+                }
+                else {
+
+                    $("#divPOInvInfoMsg").text("");
+                    $("#divPOInvInfoMsg").addClass("hidden");
+                    var dca = currentRow.find(".sppoOtherChargedca option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetSubDCAbyDCA",
+                        data: "{DCACode:'" + dca + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(data, function () {
+                                sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+         
+            CountNetAndInvoiceAmount();
+        });
+        $("table.order-list.SPInvDeductionTable").on("change", ".sppoDeddca", function (event) {
+            var currentRow = $(this).closest("tr");
+
+            var dcaddlIndex = currentRow.find(".sppoDeddca option:selected").index();
+            var sdcaddl = currentRow.find(".sppoDedsdca");
+
+            var otherchargeamount = currentRow.find(".sppoDedamount");          
+          
+                if (dcaddlIndex === 0) {
+                    sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                    otherchargeamount.val(0);
+                }
+                else {
+
+                    $("#divNewSppoInvInfoMsg").text("");
+                    $("#divNewSppoInvInfoMsg").addClass("hidden");
+                    var dca = currentRow.find(".sppoDeddca option:selected").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Accounts/GetSubDCAbyDCA",
+                        data: "{DCACode:'" + dca + "'}",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+
+                            sdcaddl.empty().append('<option selected="selected" value="0">-Select-</option>');
+                            $.each(data, function () {
+                                sdcaddl.append($("<option></option>").val(this['SubDCACode']).html(this['SubDCAIDSTR']));
+                            });
+                        },
+                        failure: function (response) {
+                        },
+                        error: function (response) {
+                        }
+                    });
+                }
+         
+            CountNetAndInvoiceAmount();
+        });
+        $("table.order-list.InvOtherChargeTable").on("click", ".ibtnOtherChargedelete", function (event) {
+            var tablerowcount = $("#InvOtherChargeTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoOtherCharge();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    $("#OtherGrid").addClass('hidden');
+                    $("#Otheryes").prop("checked", false);
+                    $("#OtherNo").prop("checked", false);            //    $("#chkSPPOInvOtherchargeY").prop("checked", false);
+                    //    $("#chkSPPOInvOtherchargeN").prop("checked", true);
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoOtherCharge();
+                }
+            }
+            CountNetAndInvoiceAmount();
+        });
+        $("table.order-list.SPInvDeductionTable").on("click", ".ibtnsppoInvDeddelete", function (event) {
+            var tablerowcount = $("#DeductionTable tbody tr").length;
+            if (tablerowcount > 1) {
+                $(this).closest("tr").remove();
+                ReassignRowNoSPPOInvDeduction();
+            }
+            else {
+                if (tablerowcount == 1) {
+                    $(this).closest("tr").remove();
+                    $("#DeductionGrid").addClass('hidden');
+                    $("#rDeductionY").prop("checked", false);
+                    $("#rDeductionN").prop("checked", true);
+                }
+                else {
+                    $(this).closest("tr").remove();
+                    ReassignRowNoSPPOInvDeduction();
+                }
+            }
+            CountNetAndInvoiceAmount();
+        });
+
+        $("#txtInvDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+                $("#txtInvMakingDate").datepicker("option", "minDate", selectedDate);
+                $("#txtInvDate").datepicker("option", "disabled", true);
+            }
+        }).datepicker("setDate", new Date());
+        $("#txtInvMakingDate").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            showOn: "button",
+            maxDate: 'dateToday',
+            buttonText: "<i class ='glyphicon glyphicon-calendar'></i>",
+            onClose: function (selectedDate) {
+            }
+        }).datepicker("setDate", new Date());
+        $('#chkExchange').change(function () {
+           // alert(this.checked);
+            if (this.checked) {
+                var pono = $("#txtPONo").val();
+                $("#divExchangeddl").removeClass('hidden');
+                //var returnVal = confirm("Are you sure?");
+                //$(this).prop("checked", returnVal);
+                $.ajax({
+                    type: "POST",
+                    url: "/Purchase/GetPOExchangeITems",
+                    data: '{PONo:"' + pono+'"}',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        //var count1 = Object.keys(response).length;
+                        //if (count1 > 0) {
+                            var itemddl = $("#ddlitemcode")
+                            itemddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                            $.each(response, function () {
+                                itemddl.append($("<option></option>").val(this['itemcode']).html(this['itemcodeDesc']));
+                            });
+                        //}
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+                        }
+                    });
+            }
+            else {
+                $("#divExchangeddl").addClass('hidden');
+                CountNetAndInvoiceAmount();
+                $("#txtExItemAmount").val("");
+                $("#ddlitemcode").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+            }
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").addClass("hidden");
+           // $('#textbox1').val(this.checked);
+        });
+    });
+    function ReassignRowNoSPPOInvDeduction() {
+        var rowno = 1;
+        $("#DeductionTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html('<label style="margin-top:10%">' + rowno + '<label>');
+            rowno++;
+        });
+    }
+    function POMRRChange() {
+        var mrrindex = $("#ddlspMrr option:selected").index();
+        var mrrno = $("#ddlspMrr option:selected").val();
+        var vendorgstddl = $("#ddlPOVendorGST");
+       
+        if (mrrindex !== 0) {
+            clearforMRRR();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetVendorDetailsbyMRR",
+                data: '{MRRNo:"' + mrrno + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        vendorgstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        $.each(response.vendorTaxlist, function () {
+
+                            vendorgstddl.append($("<option></option>").val(this['TaxNoID']).html(this['TaxNoName']));
+                        });
+                        $("#txtPOVendorCode").val(response.VendorCode);
+                        $("#txtPOVendorName").val(response.VendorName);
+                        $("#txtPODCA").val(response.DcaCode);
+                        $("#txtPONo").val(response.PONo);
+                        $("#txtPOCC").val(response.CCCode);
+                        $("#txtPOCC").val(response.CCCode);
+                        $("#divbtns").removeClass("hidden");
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").addClass("hidden");
+                        //$("#txtsubgrpexist").val('0');                       
+                        let isassetpo = response.isAssetPO;
+                        if (isassetpo == true) {
+                            $("#divAssetExchange").removeClass("hidden");
+                            $("#divExchangeddl").addClass("hidden");
+                            
+                        }
+                        else {
+                            $("#divAssetExchange").addClass("hidden");
+                            $("#divExchangeddl").addClass("hidden");
+                        }
+                        $("#txtisAssetExchange").val(isassetpo);
+                        debugger;
+                        let advance = response.Advance;                       
+                        if (advance == 0 || advance == '0') {
+                            $("#txtNSpAdvance").val(0);
+                            $("#txtNSpAdvance").prop("disabled", true);                           
+                            $("#txtNSpAdvance").css("background-color", "transparent");                            
+                            $("#txtNSpAdvance").attr('title', 'Advance Have Not Taken For This PO');                          
+                        }
+                        else {
+                            $("#txtNSpAdvance").val(parseFloat(advance));
+                            $("#txtOriginalAdvance").val(parseFloat(advance));                         
+                        }
+                    }
+                    else {
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").append("<div>Items Does Not Exist</div>");
+                        $("#divPOInvInfoMsg").addClass("alert-danger");
+                        $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                        vendorgstddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+                        //$("#txtsubgrpexist").val('0');
+                        //$("#divnvsubgrp").addClass("hidden");
+                        $("#divbtns").addClass("hidden");
+                        $("#ddlPOVendorGST").prop('disabled', false);
+                        $("#ddlPOCompanyGST").prop('disabled', false);
+                        $("#GSTType input:radio").attr('disabled', true);
+                        $("#divShowTransport").addClass("hidden");
+                        $("#OtherGrid").addClass("hidden");
+                        $("#divbtns").addClass("hidden");
+                        $("#divExchangeddl").addClass("hidden");
+                        $("#txtNSpAdvance").val(0);
+                        $("#txtOriginalAdvance").val(0);        
+                    }
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+
+
+        }
+        else { clearforMRRR();}
+
+    }
+    function POCompanyGSTChange() {
+        var vgstindex = $("#ddlPOVendorGST option:selected").index();
+        var vendorgstno = $("#ddlPOVendorGST option:selected").text();
+        var cgstindex = $("#ddlPOCompanyGST option:selected").index();
+        var cgstno = $("#ddlPOCompanyGST option:selected").val();
+        var mrrindex = $("#ddlspMrr option:selected").index();
+        var mrrno = $("#ddlspMrr option:selected").val();
+        var vendortypeIndex = $("#ddlspVendorType option:selected").index();
+        if (vgstindex === 0) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Select Vendor GST</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            $("#ddlPOCompanyGST").prop('selectedIndex', 0);
+        }
+        else if (cgstindex === 0) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Select GST</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (mrrindex === 0) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Select MRR No</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if (vendortypeIndex === 0) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Select Vendor Type</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if ($("#rGSTTypeY").is(':checked') == false && $("#rGSTTypeN").is(':checked') == false) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Select GST Type</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").addClass("hidden");
+            clearforGST();
+            var vendortype = $("#ddlspVendorType option:selected").text();
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetItemsbyMRRNo",
+                data: '{Gstno:"' + cgstno + '",Vendorgstno:"' + vendorgstno + '",Mrrno:"' + mrrno + '",VendorType:"' + vendortype + '"}',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'html',
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        $("#divItemgrid").html(response);
+                        $("#divItemgrid").removeClass("hidden");
+                        $("#divbtns").removeClass("hidden");
+                    }
+                    else {
+                        $("#divItemgrid").html("No Items Found");
+                        $("#divItemgrid").removeClass("hidden");
+                    }
+
+                    
+                    
+                },
+                failure: function (response) {
+
+                },
+                error: function (response) {
+                }
+            });
+        }
+    }
+
+    function CountNetAndInvoiceAmount() {
+
+       // alert('CountNetAndInvoiceAmount');
+        var statecheck = $("#txtGSTApplicable").val();
+        var Advance = $("#txtNSpAdvance").val();
+        //var cgstamt= $("#txtInvTotalCGSTAmt").val();
+        //var sgstamt =$("#txtInvTotalSGSTAmt").val();
+        //var igstamt =$("#txtInvTotalIGSTAmt").val();
+        var cgstamt = 0;
+        var sgstamt = 0;
+        var igstamt =0;
+        var itemtotal = $("#txtBasicValue").val();
+        var finalinvtotal = 0;
+        var finalnetamout = 0;
+        var gsttotal = 0;
+        var Othercharge = 0;
+        var Deduction = 0;
+        let cgsttotal = 0;
+        let sgsttotal = 0;
+        let igsttotal = 0;
+        if ($("#rTransportY").is(':checked')) {
+            //alert("it's checked");
+            var transportamt = $("#txtPOTransportAmount").val();
+            if (!isNaN(transportamt) && transportamt !== "") {
+                finalinvtotal = parseFloat(finalinvtotal) + parseFloat(transportamt);
+                finalnetamout = parseFloat(finalnetamout) + parseFloat(transportamt);
+            }
+            var tcgstamt = $("#txtPOTransportCGSTAmt").val();
+            var tsgstamt = $("#txtPOTransportSGSTAmt").val();
+            var tigstamt = $("#txtPOTransportIGSTAmount").val();          
+            if (statecheck == "true" && parseFloat(tcgstamt) !== "" && parseFloat(tcgstamt) !== 0 ) {
+               // gsttotal = parseFloat(gsttotal) + parseFloat(tcgstamt);
+                cgsttotal = parseFloat(cgsttotal) + parseFloat(tcgstamt);
+            }
+            if (statecheck == "true" && parseFloat(tsgstamt) !== "" && parseFloat(tsgstamt) !== 0 ) {
+              //  gsttotal = parseFloat(gsttotal) + parseFloat(tsgstamt);
+                sgsttotal = parseFloat(sgsttotal) + parseFloat(tsgstamt);
+            }
+            if (statecheck == "false" && parseFloat(tigstamt) !== "" && parseFloat(tigstamt) !== 0 ) {
+               // gsttotal = parseFloat(gsttotal) + parseFloat(tigstamt);
+                igsttotal = parseFloat(igsttotal) + parseFloat(tigstamt);
+            }
+        }
+        $("#tblPOGrid tfoot tr").each(function () {
+            var footerRow = $(this);         
+            let ifcgsttotal = footerRow.find("td").eq(11).html();
+            if (!isNaN(ifcgsttotal)) {
+                cgsttotal = parseFloat(cgsttotal) + parseFloat(ifcgsttotal);
+
+            }
+            let ifsgsttotal = footerRow.find("td").eq(13).html();
+            if (!isNaN(ifsgsttotal)) {
+                sgsttotal = parseFloat(sgsttotal) + parseFloat(ifsgsttotal);
+            }
+            let ifigsttotal = footerRow.find("td").eq(15).html();
+            if (!isNaN(ifigsttotal)) {
+                igsttotal = parseFloat(igsttotal) + parseFloat(ifigsttotal);
+            }
+        });
+
+        if ($('#Otheryes').is(":checked")) {
+            var otherchargesubtotal = 0;
+            var otherchargerowtotal = 0;
+            $("#InvOtherChargeTable tbody tr").each(function () {
+                var currentRow = $(this);
+                otherchargerowtotal = currentRow.find("td").eq(4).find("input[type='text']").val();
+                if (otherchargerowtotal != "") {
+                    otherchargesubtotal = parseFloat(otherchargesubtotal) + parseFloat(otherchargerowtotal);
+                }
+
+            });
+            $("#InvOtherChargeTable tfoot tr").each(function () {
+                var footerRow = $(this);
+                foottotal = footerRow.find("td").eq(4).find("input[type='text']").val();
+                if (!isNaN(otherchargesubtotal)) {
+                    footerRow.find("td").eq(4).html("<b>" + otherchargesubtotal + "</b>");
+                }
+                else {
+                    footerRow.find("td").eq(4).html("");
+                }
+                if (!isNaN(otherchargesubtotal)) {
+                    Othercharge = parseFloat(Othercharge) + parseFloat(otherchargesubtotal);
+                }
+            });
+        }
+        if ($('#rDeductionY').is(":checked")) {
+            var otherchargesubtotal = 0;
+            var otherchargerowtotal = 0;
+            $("#DeductionTable tbody tr").each(function () {
+                var currentRow = $(this);
+                otherchargerowtotal = currentRow.find("td").eq(4).find("input[type='text']").val();
+                if (otherchargerowtotal != "") {
+                    otherchargesubtotal = parseFloat(otherchargesubtotal) + parseFloat(otherchargerowtotal);
+                }
+            });
+            $("#DeductionTable tfoot tr").each(function () {
+                var footerRow = $(this);
+                foottotal = footerRow.find("td").eq(4).find("input[type='text']").val();
+                if (!isNaN(otherchargesubtotal)) {
+                    footerRow.find("td").eq(4).html("<b>" + otherchargesubtotal + "</b>");
+                }
+                else {
+                    footerRow.find("td").eq(4).html("");
+                }
+                if (!isNaN(otherchargesubtotal)) {
+                    Deduction = parseFloat(Deduction) + parseFloat(otherchargesubtotal);
+                }
+            });
+        }
+
+        $("#txtInvTotalCGSTAmt").val(parseFloat(cgsttotal).toFixed(2));
+        $("#txtInvTotalSGSTAmt").val(parseFloat(sgsttotal).toFixed(2));
+        $("#txtInvTotalIGSTAmt").val(parseFloat(igsttotal).toFixed(2));
+
+        if (!isNaN(cgsttotal) && cgsttotal !== "") {
+            gsttotal = parseFloat(cgsttotal) + parseFloat(gsttotal)
+        }
+        if (!isNaN(sgsttotal) && sgsttotal !== "") { gsttotal = parseFloat(sgsttotal) + parseFloat(gsttotal)}
+        if (!isNaN(igsttotal) && igsttotal !== "") { gsttotal = parseFloat(igsttotal) + parseFloat(gsttotal) }
+      
+        if (!isNaN(itemtotal) && !isNaN(gsttotal) ) {
+            finalinvtotal = parseFloat(gsttotal) + parseFloat(finalinvtotal) + parseFloat(itemtotal);
+            finalnetamout = parseFloat(gsttotal) + parseFloat(finalnetamout) + parseFloat(itemtotal);
+        }
+        if (!isNaN(Othercharge)) {
+            finalnetamout = parseFloat(Othercharge) + parseFloat(finalnetamout) ;
+        }
+
+        if (!isNaN(Deduction)) {
+            finalnetamout = parseFloat(finalnetamout)-parseFloat( Deduction);
+        }
+        //debugger;
+        var isassetpo = $("#txtisAssetExchange").val();
+        let exchangeamount = 0;
+        if (isassetpo == "true") {
+            exchangeamount = $("#txtExItemAmount").val();
+            if (exchangeamount !="") {
+                if (!isNaN(exchangeamount) && $("#chkExchange").is(':checked') === true) {
+                    finalnetamout = parseFloat(finalnetamout) - parseFloat(exchangeamount);
+                }
+            }
+        }
+        if (!isNaN(gsttotal)) {
+            $("#InvGSTTotal").val(parseFloat(gsttotal).toFixed(2));
+        }
+        else {
+            $("#InvGSTTotal").val(0);          
+        }
+
+        if (Advance !== "" && Advance>0) {
+           
+            if (!isNaN(finalnetamout)) {
+                finalnetamout = parseFloat(finalnetamout) - parseFloat(Advance);
+            }
+        }
+        if (!isNaN(finalnetamout)) {
+            $("#txtNetAmount").val(parseFloat(finalnetamout).toFixed(2));
+        }
+        else {
+            
+            $("#txtNetAmount").val(0);
+        }
+        debugger;
+        if (!isNaN(finalinvtotal)) {           
+            $("#txtInvoiceValue").val(parseFloat(finalinvtotal).toFixed(2));           
+        }
+        else {        
+            $("#txtInvoiceValue").val(0);          
+        }
+        if (parseFloat(finalinvtotal) < parseFloat(Advance)) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Advance Amount Should Not Be Greater Than Invoice Value</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+    }
+    function CountTransportTotal() {
+        var tramount = $("#txtPOTransportAmount").val();
+        var statecheck = $("#txtGSTApplicable").val();
+        var trcgstper = $("#txtPOTransportCGSTpercent").val();
+        var trsgstper = $("#txtPOTransportSGSTpercent").val();
+        var trigstper = $("#txtPOTransportIGSTPercent").val();
+
+        var CGSTTotal = $("#txtInvTotalCGSTAmt").val();
+        var SGSTTotal = $("#txtInvTotalSGSTAmt").val();
+        var IGSTTotal = $("#txtInvTotalIGSTAmt").val();
+        if (tramount !== "" && tramount !== 0 && tramount !== "0") {
+           
+            if (!isNaN(parseFloat(tramount))) {
+                if (statecheck == "true" && parseFloat(trcgstper) !== "" && parseFloat(trcgstper) !== 0 && parseFloat(trcgstper) !== 0) {
+                    var cgstamt = (parseFloat(tramount) / 100) * parseFloat(trcgstper);
+                   
+                    if (!isNaN(cgstamt)) {
+                        $("#txtPOTransportCGSTAmt").val(parseFloat(cgstamt).toFixed(2));
+                        //if (!isNaN(CGSTTotal)) {
+                        //    CGSTTotal == parseFloat(CGSTTotal) + parseFloat(cgstamt);
+                        //    $("#txtInvTotalCGSTAmt").val(parseFloat(CGSTTotal).toFixed(2));
+                        //}
+                       
+                        
+                    }
+                    else { $("#txtPOTransportCGSTAmt").val(0); }
+                }
+                if (statecheck == "true" && parseFloat(trsgstper) !== "" && parseFloat(trsgstper) !== 0 && parseFloat(trsgstper) !== 0) {
+                    var sgstamt = (parseFloat(tramount) / 100) * parseFloat(trsgstper);
+                   
+                   
+                    if (!isNaN(sgstamt)) {
+                        $("#txtPOTransportSGSTAmt").val(parseFloat(sgstamt).toFixed(2));
+                        //if (!isNaN(SGSTTotal)) {
+                        //    SGSTTotal == parseFloat(SGSTTotal) + parseFloat(sgstamt);
+                        //    $("#txtInvTotalSGSTAmt").val(parseFloat(SGSTTotal).toFixed(2));
+                        //}
+
+                        
+                    }
+                    else { $("#txtPOTransportSGSTAmt").val(0); }
+                }
+                if (statecheck == "false" && parseFloat(trigstper) !== "" && parseFloat(trigstper) !== 0 && parseFloat(trigstper) !== 0) {
+                    var igstamt = (parseFloat(tramount) / 100) * parseFloat(trigstper);
+                    
+                   
+                    if (!isNaN(igstamt)) {
+                        $("#txtPOTransportIGSTAmount").val(parseFloat(igstamt).toFixed(2));
+                        //if (!isNaN(IGSTTotal)) {
+                        //    IGSTTotal == parseFloat(IGSTTotal) + parseFloat(igstamt);
+                        //    $("#txtInvTotalIGSTAmt").val(parseFloat(IGSTTotal).toFixed(2));
+                        //}
+
+                        
+                    }
+                    else { $("#txtPOTransportIGSTAmount").val(0); }
+                }
+            }
+            CountNetAndInvoiceAmount();
+        }
+    }
+
+    function BindEmptyRowToOtherGrid() {
+        var mrrindex = $("#ddlspMrr option:selected").index();
+        var mrrno = $("#ddlspMrr option:selected").val();
+        if (mrrindex == 0) {
+            $("#divPOInvInfoMsg").append("<div>Select MRR Number</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if ($("#rGSTTypeY").is(':checked') == false && $("#rGSTTypeN").is(':checked') == false) {
+
+            $("#divPOInvInfoMsg").append("<div>Select GST Type</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").addClass("hidden");
+            var type = "";
+          
+            if ($("#rGSTTypeY").is(':checked') === true) {
+                type = "Creditable";
+            }
+            else { type = "Non-Creditable";}
+            
+          
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetSupplierOtherDeductionDCA",
+                data: "{MRRNo:'" + mrrno + "' ,TaxType: '" + type + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                       var count = $("#InvOtherChargeTable tbody tr").length;
+                       // if (count > 0) {
+                            //var selecteddcalist = [];
+                            //$("#InvOtherChargeTable tbody tr").each(function () {
+                            //    var currentRow = $(this);
+                            //    var taxdca = currentRow.find("td").eq(2).find("select option:selected").index();
+                            //    if (taxdca !== 0) {
+                            //        selecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                            //    }
+                            //});
+                       // }
+                        var rowno = 0;
+                        rowno = count + 1;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center"  >' + rowno + '</td>';
+                        cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox">';
+                        cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkClientTax">';
+                        cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle sppoOtherChargedca" >';
+                        cols += '<option selected="selected" value="Select" >-Select-</option>';
+                        $.each(response, function () {
+                            //if (count > 0) {
+                            //    var status = checkValueInArray(this['DCACode'], selecteddcalist);
+                            //    if (status === false) {
+                            //        cols += '<option value=' + this['DCACode'] + ' select="selected">' + this['DCAIDSTR'] + '</option>';
+                            //    }
+                            //}
+                            //else {
+                                cols += '<option value=' + this['DCACode'] + ' select="selected">' + this['DCAIDSTR'] + '</option>';
+                            //}
+                        });
+                        cols += '</select></td><td  style="text-align:center"><select class="form-control dropdown-toggle sppoOtherChargesdca" >';
+                        cols += '<option selected="selected" value="Select">-Select-</option></select></td>';
+                        cols += '<td style="text-align:center"><input type="text" class="form-control sppoOtherChargeamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountNetAndInvoiceAmount()"/></td>';
+
+                        cols += '<td style="text-align:center"><input type="button" class="ibtnOtherChargedelete btn btn-md btn-danger" value="Delete"></td>';
+                        newRow.append(cols);
+                        $("table.order-list.InvOtherChargeTable").append(newRow);
+
+                        $("#OtherGrid").removeClass('hidden');
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").addClass("hidden");
+
+                    }
+                    else {
+                        $("#OtherGrid").addClass('hidden');
+                        $("#divPOInvInfoMsg").append("<div>Account Head Does Not Exist</div>");
+                        $("#divPOInvInfoMsg").addClass("alert-danger");
+                        $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                        $("#Otheryes").prop("checked", false);
+                        $("#OtherNo").prop("checked", true);
+                      
+
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+    }
+
+    function BindNewRowToOtherGrid(){
+
+        isValid = true;
+        var errorMsg = "";
+        var dcacount = 0, sdcacount = 0, taxvaluecount = 0, taxchkcount = 0;
+        $("#InvOtherChargeTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(1).find('input[type="checkbox"]').is(':checked');
+
+            var taxdca = currentRow.find("td").eq(2).find("select option:selected").index();
+            var taxsdca = currentRow.find("td").eq(3).find("select option:selected").index();
+
+            var taxamount = currentRow.find("td").eq(4).find("input[type='text']").val();
+            if (taxdca === 0) { dcacount = dcacount + 1; }
+          
+            if (taxsdca === 0) { sdcacount = sdcacount + 1; }
+            if (taxamount === "" || taxamount === "0") { taxvaluecount = taxvaluecount + 1; }
+            if (check === false) { taxchkcount = taxchkcount + 1; }
+
+        });
+
+
+        if (dcacount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Other Charge Account Head</p>";
+            isValid = false;
+        }
+        if (sdcacount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Other Charge Sub Account Head</p>";
+            isValid = false;
+        }
+
+        if (taxvaluecount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Other Charge Amount</p>";
+            isValid = false;
+        }
+        if (taxchkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Check Other Charges </p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var selecteddcalist = [];
+            $("#InvOtherChargeTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var taxdca = currentRow.find("td").eq(2).find("select option:selected").val();
+                var taxsdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                if (taxdca !== 0) {
+                    selecteddcalist.push(taxdca +","+ taxsdca);
+                }
+            });  
+            var duplicatelist = selecteddcalist.filter(i => selecteddcalist.filter(ii => ii === i).length > 1);
+            if (duplicatelist.length > 0) {
+                var finalerror2 = "<div style='align:center'><p>Duplicate Accounts Heads for Other Cahrge</p>";
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append(finalerror2 + "</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").addClass("hidden");
+                BindEmptyRowToOtherGrid();
+            }
+        }
+    }
+  
+    function ReassignRowNoOtherCharge() {
+        var rowno = 1;
+        $("#InvOtherChargeTable tbody tr").each(function () {
+            var currentRow = $(this);
+            currentRow.find("td").eq(0).html('<label style="margin-top:10%">' + rowno + '<label>');
+            rowno++;
+        });
+    }
+
+    function clearforGST() {
+
+        $("#divShowTransport").addClass("hidden");
+        $("#OtherGrid").addClass("hidden");
+        $("#DeductionGrid").addClass("hidden");
+        $("#divbtns").addClass("hidden");
+
+        $("#Otheryes").prop("checked", false);
+        $("#OtherNo").prop("checked", true);
+        $("#rTransportY").prop("checked", false);
+        $("#rTransportN").prop("checked", true);
+        $("#rDeductionY").prop("checked", false);
+        $("#rDeductionN").prop("checked", true);
+
+        $("#txtPOTransportCGSTpercent").val("0");
+        $("#txtPOTransportCGSTAmt").val("0");
+        $("#txtPOTransportSGSTpercent").val("0");
+        $("#txtPOTransportSGSTAmt").val("0");
+        $("#txtPOTransportIGSTPercent").val("0");
+        $("#txtPOTransportIGSTAmount").val("0");  
+        $("#txtPOTransportAmount").val("");
+        var dcaddl = $("#ddlPOTransportDCA");
+        var sdcaddl = $("#ddlPOTransportSubDCA");
+        dcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+
+        
+
+        if ($("#tblPOGrid tbody tr").length > 0) {
+            $("#txtitmetotal").val("");
+            $("#txtCGSTtotal").val("");
+            $("#txtSGSTtotal").val("");
+            $("#txtIGSTtotal").val("");
+            $("#txtGSTApplicable").val("");
+
+            $("#tblPOGrid tfoot tr").each(function () {
+                var footerRow = $(this);
+                footerRow.find("td").eq(9).html("");
+                footerRow.find("td").eq(11).html("");
+                footerRow.find("td").eq(13).html("");
+                footerRow.find("td").eq(15).html("");
+            });
+
+        }
+        $("#divItemgrid").addClass("hidden");
+        $("#tblPOGrid tbody tr").remove();
+        $("#DeductionTable tbody tr").remove();
+        $("#InvOtherChargeTable tbody tr").remove();
+        $("#InvOtherChargeTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            footerRow.find("td").eq(4).html("");
+        });
+        $("#DeductionTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            footerRow.find("td").eq(4).html("");
+        });
+
+       // $("#txtPONo").val("");
+        $("#txtInvNo").val("");
+        //$("#txtInvDate").val("");
+        //$("#txtInvMakingDate").val("");
+         $("#txtInvDate").datepicker("setDate", 'dateToday');
+    $("#txtInvMakingDate").datepicker("setDate", 'dateToday');
+        $("#txtBasicValue").val("");
+        $("#txtInvTotalCGSTAmt").val("");
+        $("#txtInvTotalSGSTAmt").val("");
+        $("#txtInvTotalIGSTAmt").val("");
+
+        $("#InvGSTTotal").val("");
+        $("#txtInvoiceValue").val("");
+        $("#txtNetAmount").val("");
+    }
+
+    function clearforMRRR() {
+        $("#rGSTTypeY").prop("checked", false);
+        $("#rGSTTypeN").prop("checked", false);
+        $("#ddlPOVendorGST").prop('disabled', false);
+        $("#ddlPOCompanyGST").prop('disabled', false);
+        $("#GSTType input:radio").attr('disabled', true);
+        $("#divShowTransport").addClass("hidden");
+        $("#OtherGrid").addClass("hidden");
+        $("#DeductionGrid").addClass("hidden");
+        $("#divbtns").addClass("hidden");
+
+        $("#Otheryes").prop("checked", false);
+        $("#OtherNo").prop("checked", true);
+        $("#rTransportY").prop("checked", false);
+        $("#rTransportN").prop("checked", true);
+        $("#rDeductionY").prop("checked", false);
+        $("#rDeductionN").prop("checked", true);
+
+        $("#txtPOTransportCGSTpercent").val("0");
+        $("#txtPOTransportCGSTAmt").val("0");
+        $("#txtPOTransportSGSTpercent").val("0");
+        $("#txtPOTransportSGSTAmt").val("0");
+        $("#txtPOTransportIGSTPercent").val("0");
+        $("#txtPOTransportIGSTAmount").val("0");
+        $("#txtPOTransportAmount").val("");
+        var dcaddl = $("#ddlPOTransportDCA");
+        var sdcaddl = $("#ddlPOTransportSubDCA");
+        dcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        sdcaddl.empty().append('<option selected="selected" value="0">-Please Select-</option>');
+
+        if ($("#tblPOGrid tbody tr").length > 0) {
+            $("#txtitmetotal").val("");
+            $("#txtCGSTtotal").val("");
+            $("#txtSGSTtotal").val("");
+            $("#txtIGSTtotal").val("");
+            $("#txtGSTApplicable").val("");            
+        }
+
+        $("#tblPOGrid tbody tr").remove();
+        $("#DeductionTable tbody tr").remove();
+        $("#InvOtherChargeTable tbody tr").remove();
+
+        $("#divItemgrid").addClass("hidden");
+        $("#tblPOGrid tfoot tr").each(function () {
+            var footerRow = $(this);
+            footerRow.find("td").eq(9).html("");
+            footerRow.find("td").eq(11).html("");
+            footerRow.find("td").eq(13).html("");
+            footerRow.find("td").eq(15).html("");
+        });
+
+
+        $("#InvOtherChargeTable tfoot tr").each(function () {
+            var footerRow = $(this);          
+         footerRow.find("td").eq(4).html("");
+        });
+        $("#DeductionTable tfoot tr").each(function () {
+            var footerRow = $(this);
+            footerRow.find("td").eq(4).html("");
+        });
+
+
+        $("#txtPONo").val("");
+        $("#txtInvNo").val("");
+        //$("#txtInvDate").val("");
+        //$("#txtInvMakingDate").val("");
+        $("#txtInvDate").datepicker("setDate", 'dateToday');
+        $("#txtInvMakingDate").datepicker("setDate", 'dateToday');
+        $("#txtBasicValue").val("");
+        $("#txtInvTotalCGSTAmt").val("");
+        $("#txtInvTotalSGSTAmt").val("");
+        $("#txtInvTotalIGSTAmt").val("");
+
+        $("#InvGSTTotal").val("");
+        $("#txtInvoiceValue").val("");
+        $("#txtNetAmount").val("");
+
+        $("#txtPOVendorCode").val("");        
+        $("#txtPOVendorName").val("");
+        $("#txtPODCA").val("");        
+        $("#ddlPOVendorGST").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#ddlPOCompanyGST").empty().append('<option selected="selected" value="0">-Please Select-</option>');
+        $("#txtNSpAdvance").val(0);
+        $("#txtOriginalAdvance").val(0);     
+     
+    }
+    function HideDeductionGrid() {
+        $("#DeductionTable tbody tr").remove();
+        $("#DeductionGrid").addClass('hidden');
+        CountNetAndInvoiceAmount();
+    }
+    function ShowDeductionGrid() {
+        $("#DeductionTable tbody tr").remove();
+        BindEmptyRowToSPPOInvDeductionGrid();
+    }
+
+    function BindEmptyRowToSPPOInvDeductionGrid() {
+        var mrrindex = $("#ddlspMrr option:selected").index();
+        var mrrno = $("#ddlspMrr option:selected").val();
+        if (mrrindex == 0) {
+            $("#divPOInvInfoMsg").append("<div>Select MRR Number</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else if ($("#rGSTTypeY").is(':checked') == false && $("#rGSTTypeN").is(':checked') == false) {
+
+            $("#divPOInvInfoMsg").append("<div>Select GST Type</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+          
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").addClass("hidden");
+
+            var type = "";
+
+            if ($("#rGSTTypeY").is(':checked') === true) {
+                type = "Creditable";
+            }
+            else { type = "Non-Creditable"; }
+            $.ajax({
+                type: "POST",
+                url: "/Purchase/GetSupplierOtherDeductionDCA",
+                data: "{MRRNo:'" + mrrno + "' ,TaxType: '" + type + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var count1 = Object.keys(response).length;
+                    if (count1 > 0) {
+                        var count = $("#DeductionTable tbody tr").length;
+                        if (count > 0) {
+                            var selecteddcalist = [];
+
+                            $("#DeductionTable tbody tr").each(function () {
+                                var currentRow = $(this);
+                                var taxdca = currentRow.find("td").eq(2).find("select option:selected").index();
+                                var taxsdca = currentRow.find("td").eq(3).find("select option:selected").index();
+                                if (taxdca !== 0) {
+                                    selecteddcalist.push(taxdca+","+taxsdca);
+                                }
+                            });
+                        }
+
+                        var rowno = 0;
+
+                        rowno = count + 1;
+                        var newRow = $("<tr>");
+                        var cols = "";
+                        cols += '<td style="text-align:center"  >' + rowno + '</td>';
+                        cols += '<td style="text-align:center"><ul class="list-inline"><li class="eagle-checkbox">';
+                        cols += '<label class="eagle-check custom-checkbox"><input type="checkbox" class="eagle-check-input" id="chkClientTax">';
+                        cols += '<span class="eagle-check-indicator"></span><span class="eagle-check-description"></span></label></li></ul></td>';
+
+                        cols += '<td style="text-align:center"><select class="form-control dropdown-toggle sppoDeddca" >';
+                        cols += '<option selected="selected" value="Select" >-Select-</option>';
+                        $.each(response, function () {
+                            //if (count > 0) { 
+                            //    var status = checkValueInArray(this['DCACode'], selecteddcalist);
+                            //    if (status === false) {
+                            //        cols += '<option value=' + this['DCACode'] + ' select="selected">' + this['DCAIDSTR'] + '</option>';
+                            //    }
+                            //}
+                            //else {
+                                cols += '<option value=' + this['DCACode'] + ' select="selected">' + this['DCAIDSTR'] + '</option>';
+                            //}
+                        });
+                        cols += '</select></td><td  style="text-align:center"><select class="form-control dropdown-toggle sppoDedsdca" >';
+                        cols += '<option selected="selected" value="Select">-Select-</option></select></td>';
+                        cols += '<td style="text-align:center"><input type="text" class="form-control sppoDedamount" value=""  onkeypress = "return ValidateAmount(this,event);" onkeyup="CountNetAndInvoiceAmount()"/></td>';
+
+                        cols += '<td style="text-align:center"><input type="button" class="ibtnsppoInvDeddelete btn btn-md btn-danger" value="Delete"></td>';
+                        newRow.append(cols);
+                        $("table.order-list.SPInvDeductionTable").append(newRow);
+
+                        $("#DeductionGrid").removeClass('hidden');
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").addClass("hidden");
+                    }
+                    else {
+                        $("#DeductionGrid").addClass('hidden');
+                        $("#divPOInvInfoMsg").append("<div>Account Head Does Not Exist</div>");
+                        $("#divPOInvInfoMsg").addClass("alert-danger");
+                        $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                       
+                        $("#rDeductionY").prop("checked", false);
+                        $("#rDeductionN").prop("checked", true);
+                    }
+                },
+                failure: function (response) {
+                },
+                error: function (response) {
+                }
+            });
+        }
+        function ReassignRowNoSPPOInvDeduction() {
+            var rowno = 1;
+            $("#DeductionTable tbody tr").each(function () {
+                var currentRow = $(this);
+                currentRow.find("td").eq(0).html('<label style="margin-top:10%">' + rowno + '<label>');
+                rowno++;
+            });
+        }
+    }
+    function BindNewRowtoDeductionGrid() {
+
+        isValid = true;
+        var errorMsg = "";
+        var dcacount = 0, sdcacount = 0, taxvaluecount = 0, taxchkcount = 0;
+        $("#DeductionTable tbody tr").each(function () {
+            var currentRow = $(this);
+            var check = currentRow.find("td").eq(1).find('input[type="checkbox"]').is(':checked');
+            var taxdca = currentRow.find("td").eq(2).find("select option:selected").index();
+            var taxsdca = currentRow.find("td").eq(3).find("select option:selected").index();
+            var taxamount = currentRow.find("td").eq(4).find("input[type='text']").val();
+            if (taxdca === 0) { dcacount = dcacount + 1; }
+            if (taxsdca === 0) { sdcacount = sdcacount + 1; }
+            if (taxamount === "" || taxamount === "0") { taxvaluecount = taxvaluecount + 1; }
+            if (check === false) { taxchkcount = taxchkcount + 1; }
+        });
+        if (dcacount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Deduction Account Head</p>";
+            isValid = false;
+        }
+        if (sdcacount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Deduction Sub Account Head</p>";
+            isValid = false;
+        }
+
+        if (taxvaluecount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Deduction Amount</p>";
+            isValid = false;
+        }
+        if (taxchkcount > 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Check Deduction </p>";
+            isValid = false;
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+            var selecteddcalist = [];
+           
+            $("#DeductionTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var taxdca = currentRow.find("td").eq(2).find("select option:selected").val();
+                var taxsdca = currentRow.find("td").eq(3).find("select option:selected").index();
+                if (taxdca !== 0) {
+                    selecteddcalist.push(taxdca + "," + taxsdca);
+                }
+            });
+            var duplicatelist = selecteddcalist.filter(i => selecteddcalist.filter(ii => ii === i).length > 1);
+            if (duplicatelist.length > 0) {
+                var finalerror2 = "<div style='align:center'><p>Duplicate Accounts Heads for Deduction</p>";
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").append(finalerror2 + "</div>");
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                return false;
+            }
+            else {
+                $("#divPOInvInfoMsg").text("");
+                $("#divPOInvInfoMsg").addClass("hidden");
+                BindEmptyRowToSPPOInvDeductionGrid();
+            }
+
+        }
+    }
+    function ResetInvoice() {
+        location.reload();
+    }
+    function POVendorGSTChange() {
+        clearforGST();
+        $("#ddlPOCompanyGST").prop('selectedIndex', 0);       
+    }
+    function SubmitSupplierpoInvoice() {
+        isValid = true;
+        var errorMsg = "";
+        var vendortypeIndex = $("#ddlspVendorType option:selected").index();
+        var mrrIndex = $("#ddlspMrr option:selected").index();
+        var vendorGSTindex = $("#ddlPOVendorGST option:selected").index();
+        var GSTindex = $("#ddlPOCompanyGST option:selected").index();
+
+        var invoiceno = $("#txtInvNo").val();
+        var invoicedate = $("#txtInvDate").val();
+        var invoiceMakingdate = $("#txtInvMakingDate").val();
+        if (vendortypeIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor Type</p>";
+            isValid = false;
+        }
+        if (mrrIndex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select MRR Number</p>";
+            isValid = false;
+        }
+        if (vendorGSTindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Vendor GST</p>";
+            isValid = false;
+        }
+        if ($("#rGSTTypeY").is(':checked') == false && $("#rGSTTypeN").is(':checked') == false) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select GST Type</p>";
+            isValid = false;
+        }
+        if (GSTindex === 0) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select GST</p>";
+            isValid = false;
+        }
+        if (invoiceno === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Enter Invoice No</p>";
+            isValid = false;
+        }
+        if (invoicedate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Date</p>";
+            isValid = false;
+        } if (invoiceMakingdate === "") {
+            errorMsg += "<p style='margin-top:-5px!important;'>Select Invoice Makingdate</p>";
+            isValid = false;
+        }
+
+        if ($("#tblPOGrid tbody tr").length > 0) {
+            var taxchkcount = 0;
+            $("#tblPOGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                var check = currentRow.find("td").eq(0).find('input[type="checkbox"]').is(':checked');            
+                
+                if (check === false) { taxchkcount = taxchkcount + 1; }
+
+            });
+            if (taxchkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check Items </p>";
+                isValid = false;
+            }
+        }
+
+        var isassetpo = $("#txtisAssetExchange").val();
+        let exchangeamount = 0;
+        //debugger;
+        if (isassetpo == "true" && $("#chkExchange").is(':checked') === true) {
+            exchangeamount = $("#txtExItemAmount").val();
+            var exchangeitemindex = $("#ddlitemcode option:selected").index();
+            if (exchangeamount == "") {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Exchange Amount </p>";
+                isValid = false;
+            }
+            if (exchangeitemindex == 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Exchange Item </p>";
+                isValid = false;
+            }
+        }
+        if ($("#rTransportY").is(':checked')==true) {
+          
+            var tramount = $("#txtPOTransportAmount").val();
+            var statecheck = $("#txtGSTApplicable").val();
+            var trcgstper = $("#txtPOTransportCGSTpercent").val();
+            var trsgstper = $("#txtPOTransportSGSTpercent").val();
+            var trigstper = $("#txtPOTransportIGSTPercent").val();
+
+            if (tramount === "" || tramount === 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Transport Amount </p>";
+                isValid = false;
+            }
+                if (!isNaN(parseFloat(tramount))) {
+                    if (statecheck == "true" && (parseFloat(trcgstper) === "" || parseFloat(trcgstper) === 0)) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Transport CGST Percent</p>";
+                        isValid = false;
+                    }
+                    if (statecheck == "true" && (parseFloat(trsgstper) === "" || parseFloat(trsgstper) === 0)) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Transport SGST Percent</p>";
+                        isValid = false;
+                    }
+                    if (statecheck == "false" && (parseFloat(trigstper) === "" || parseFloat(trigstper) === 0 )) {
+                        errorMsg += "<p style='margin-top:-5px!important;'>Enter Transport  IGST Percent </p>";
+                        isValid = false;
+                    }
+                }
+        }
+        if ($('#Otheryes').is(":checked") == true) {
+            var Otherselecteddcalist = [];
+            var otherdcacount = 0, othersdcacount = 0, othervaluecount = 0, otherchkcount = 0;
+            $("#InvOtherChargeTable tbody tr").each(function () {
+                let currentRow = $(this);
+                let othercheck = currentRow.find("td").eq(1).find('input[type="checkbox"]').is(':checked');
+
+                let otherdca = currentRow.find("td").eq(2).find("select option:selected").index();
+                let othersdca = currentRow.find("td").eq(3).find("select option:selected").index();
+
+                let otheramount = currentRow.find("td").eq(4).find("input[type='text']").val();
+
+                if (otherdca === 0) { otherdcacount = otherdcacount + 1; }
+                else {
+                   
+                    if (otherdca !== 0 && othersdca !== 0) {
+                        Otherselecteddcalist.push(otherdca + "," + othersdca);
+                    }
+                    //Otherselecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                }
+                if (othersdca === 0) { othersdcacount = othersdcacount + 1; }
+                if (otheramount === "" || otheramount === "0") { othervaluecount = othervaluecount + 1; }
+                if (othercheck === false) { otherchkcount = otherchkcount + 1; }
+
+            });
+            if (otherdcacount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Other Charge Account Head</p>";
+                isValid = false;
+            }
+            else {
+                var duplicatelist1 = Otherselecteddcalist.filter(i => Otherselecteddcalist.filter(ii => ii === i).length > 1);
+                if (duplicatelist1.length > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Accounts Heads for Other Charges</p>";
+                    isValid = false;
+                }
+            }
+            if (othersdcacount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Other Charge Sub Account Head</p>";
+                isValid = false;
+            }
+
+            if (othervaluecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Other Charge Amount</p>";
+                isValid = false;
+            }
+            if (otherchkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check Other Charges </p>";
+                isValid = false;
+            }
+        }
+        if ($('#rDeductionY').is(":checked") == true) {
+            var Deductionselecteddcalist = [];
+            var Deddcacount = 0, Dedsdcacount = 0, Dedvaluecount = 0, Dedchkcount = 0;
+            $("#DeductionTable tbody tr").each(function () {
+                var currentRow = $(this);
+                var Dedcheck = currentRow.find("td").eq(1).find('input[type="checkbox"]').is(':checked');
+
+                var Deddca = currentRow.find("td").eq(2).find("select option:selected").index();
+                var Dedsdca = currentRow.find("td").eq(3).find("select option:selected").index();
+
+                var Dedamount = currentRow.find("td").eq(4).find("input[type='text']").val();
+
+                if (Deddca === 0) { Deddcacount = Deddcacount + 1; }
+                else {
+                    if (Deddca !== 0 && Dedsdca !== 0) {
+                        Deductionselecteddcalist.push(Deddca + "," + Dedsdca);
+                    }
+                    //Deductionselecteddcalist.push(currentRow.find("td").eq(2).find("select option:selected").val());
+                }
+
+                if (Dedsdca === 0) { Dedsdcacount = Dedsdcacount + 1; }
+                if (Dedamount === "" || Dedamount === "0") { Dedvaluecount = Dedvaluecount + 1; }
+                if (Dedcheck === false) { Dedchkcount = Dedchkcount + 1; }
+            });
+
+            if (Deddcacount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Deduction Account Head</p>";
+                isValid = false;
+            } else {
+                var duplicatelist2 = Deductionselecteddcalist.filter(i => Deductionselecteddcalist.filter(ii => ii === i).length > 1);
+                if (duplicatelist2.length > 0) {
+                    errorMsg += "<p style='margin-top:-5px!important;'>Duplicate Accounts Heads for Deduction</p>";
+                    isValid = false;
+                }
+            }
+            if (Dedsdcacount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Select Deduction Sub Account Head</p>";
+                isValid = false;
+            }
+
+            if (Dedvaluecount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Enter Deduction Amount</p>";
+                isValid = false;
+            }
+            if (Dedchkcount > 0) {
+                errorMsg += "<p style='margin-top:-5px!important;'>Check Deduction </p>";
+                isValid = false;
+            }
+        }
+        var originalAdvance = $("#txtOriginalAdvance").val();
+        var Advance = $("#txtNSpAdvance").val();
+        if (parseFloat(Advance) > parseFloat(originalAdvance)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Advance Amount is Greater Than Paid Advance</p>";
+            isValid = false;           
+        }
+       var invoicevalue= $("#txtInvoiceValue").val();
+    
+        if (parseFloat(invoicevalue) < parseFloat(Advance)) {
+            errorMsg += "<p style='margin-top:-5px!important;'>Advance Amount Should Not Be Greater Than Invoice Value</p>";
+            isValid = false;       
+        }
+        if (!isValid) {
+            var finalerror1 = "<div style='align:center'><p>Please enter all required fields!</p>";
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append(finalerror1 + errorMsg + "</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+            return false;
+        }
+        else {
+         //   alert("Submite");
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").addClass("hidden");
+            
+            var itemcodes = "", Otherdcas = "", OtherAmounts = "", type="";
+            if ($("#tblPOGrid tbody tr").length > 0) {
+                var taxchkcount = 0;
+                $("#tblPOGrid tbody tr").each(function () {
+                    var currentRow = $(this);
+                    var item = currentRow.find("td").eq(1).html();
+                    itemcodes +=$.trim(item)+ ',';
+                });               
+            }
+            if ($('#Otheryes').is(":checked") == true) {
+                $("#InvOtherChargeTable tbody tr").each(function () {
+                    let currentRow = $(this);
+                    let otherdca = currentRow.find("td").eq(2).find("select option:selected").val();
+                    let otheramount = currentRow.find("td").eq(4).find("input[type='text']").val();
+                    let othersdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                    Otherdcas += otherdca + ',';
+                   
+                    OtherAmounts += otheramount + ',';
+                });
+            }
+            if ($("#rGSTTypeY").is(':checked') === true) {
+                type = "Creditable";
+            }
+            else { type = "Non-Creditable"; }
+
+            var BudgetData = {
+                Itemids: itemcodes,
+                BasicValue: $("#txtBasicValue").val(),
+                PONo: $("#txtPONo").val(),
+                CCCode: $("#txtPOCC").val(),
+                TransportAmount: $("#txtPOTransportAmount").val(),                 
+                Otherchargedcas: Otherdcas,
+                Otherchargeamounts: OtherAmounts,
+                GSTType: type,  
+                InvoiceDate: $("#txtInvDate").val(),
+                InvGSTTotal: $("#InvGSTTotal").val()
+            }; 
+
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: '/Purchase/CheckSuppleirInvoiceBudget',
+                data: { InvData: BudgetData },
+                success: function (response) {
+                    result = response.saveStatus;
+                    if (result === "sufficent") {
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").addClass("hidden");
+                        //SaveSupplierInvoice();
+                        checkInputGSTConfig();
+                    }
+                    else {
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").append("<div>" + response.saveStatus + "</div>");
+                        $("#divPOInvInfoMsg").addClass("alert-danger");
+                        $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $("#divPOInvInfoMsg").text(addFailMsg);
+                    $("#divPOInvInfoMsg").addClass("alert-danger");
+                    $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                }
+            });
+           
+        }
+
+    }
+
+    function checkInputGSTConfig() {
+      var  VendorType= $("#ddlspVendorType option:selected").val();
+        if ($("#rGSTTypeY").is(':checked') === true) {
+            type = "Creditable";
+        }
+        else { type = "Non-Creditable"; }
+        $.ajax({
+            type: "POST",
+            url: "/Purchase/GetInvoiceGSTConfigDCASDCA",
+            data: '{CompanyGST:"' + $("#ddlPOCompanyGST option:selected").val() + '",VendorClientGSTNo:"' + $("#ddlPOVendorGST option:selected").text() + '",InvoiceType:"Vendor",Cccode:"' + $("#txtPOCC").val() + '",Taxtype:"' + type + '",PONO:"' + $("#txtPONo").val() + '",InvDate:"' + $("#txtInvDate").val() + '",Configtyp: "Input GST",VendorOrClient: "' + VendorType + '"}',
+
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var count1 = Object.keys(response).length;
+                if (count1 > 0) {
+                    //debugger;
+
+                    var configcount = response.ConfigCount;
+                    var statecheck = response.SameState;
+                    // alert(configcount);
+                    if (configcount === 4) {
+
+                        let Taxdca = response.DCAcode;
+                        let Taxcgstsdca = response.CGSTSubDCA;
+                        let Taxsgstsdca = response.SGSTSubDCA;
+                        let TaxIgstsdca = response.IGSTSubDCA;
+                        SaveSupplierInvoice(Taxdca, Taxcgstsdca, Taxsgstsdca, TaxIgstsdca);
+                    }
+                    else {
+
+                        $("#divPOInvInfoMsg").text("");
+                        $("#divPOInvInfoMsg").append("<div>Input GST Data Is Not Configured </div>");
+                        $("#divPOInvInfoMsg").addClass("alert-danger");
+                        $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                    }
+
+                }
+            },
+            failure: function (response) {
+
+            },
+            error: function (response) {
+
+            }
+        });
+    }
+    function SaveSupplierInvoice(Taxdca, Taxcgstsdca, Taxsgstsdca, TaxIgstsdca) {
+       // alert();
+        var itemAmounts = "",  type = "", ids = "", itemCgstper = "", itemSgstper = "", itemigstper = "";
+        var Otherdcas = "", OtherSdcas = "", OtherAmounts = "";
+        var Deddcas = "", DedSdcas = "", DedAmounts = "";
+        if ($("#tblPOGrid tbody tr").length > 0) {
+            var taxchkcount = 0;
+            $("#tblPOGrid tbody tr").each(function () {
+                var currentRow = $(this);
+                let itemid = currentRow.find("td").eq(16).html();
+                let itemAmt = currentRow.find("td").eq(8).html();
+                let itemcgst = currentRow.find("td").eq(10).html();
+                let itemsgst = currentRow.find("td").eq(12).html();
+                let itemigst = currentRow.find("td").eq(14).html();
+                ids += $.trim(itemid) + ',';
+                itemAmounts += $.trim(itemAmt) + ',';
+                itemCgstper += $.trim(itemcgst) + ',';
+                itemSgstper += $.trim(itemsgst) + ',';
+                itemigstper += $.trim(itemigst) + ',';
+            });
+        }
+        if ($('#Otheryes').is(":checked") == true) {
+            $("#InvOtherChargeTable tbody tr").each(function () {
+                let currentRow = $(this);
+                let otherdca = currentRow.find("td").eq(2).find("select option:selected").val();
+                let otheramount = currentRow.find("td").eq(4).find("input[type='text']").val();
+                let othersdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                Otherdcas += otherdca + ',';
+                OtherSdcas += othersdca + ',';
+                OtherAmounts += otheramount + ',';
+            });
+        }
+
+        if ($('#rDeductionY').is(":checked") == true) {
+            $("#DeductionTable tbody tr").each(function () {
+                let currentRow = $(this);
+                let ddca = currentRow.find("td").eq(2).find("select option:selected").val();
+                let dsdca = currentRow.find("td").eq(3).find("select option:selected").val();
+                let damount = currentRow.find("td").eq(4).find("input[type='text']").val();
+                Deddcas += ddca + ',';
+                DedSdcas += dsdca + ',';
+                DedAmounts += damount + ',';
+            });
+         
+        }
+        if ($("#rGSTTypeY").is(':checked') === true) {
+            type = "Creditable";
+        }
+        else { type = "Non-Creditable"; }
+
+        var isassetpo = $("#txtisAssetExchange").val();
+        var exchangeitem = "";
+        let exchangeamount = 0;       
+        let isexchangeexist = 'No';
+        if (isassetpo == "true" && $("#chkExchange").is(':checked') === true) {
+            exchangeamount = $("#txtExItemAmount").val();
+            exchangeitem = $("#ddlitemcode option:selected").val();   
+            
+            isexchangeexist = 'Yes';
+        }
+        var addInv = {
+            VendorId: $("#txtPOVendorCode").val(),
+            VendorName: $("#txtPOVendorName").val(),
+            MRR: $("#ddlspMrr option:selected").val(),
+            PONo: $("#txtPONo").val(),
+            InvoiceNo: $("#txtInvNo").val(),
+            InvoiceDate: $("#txtInvDate").val(),
+            InvoiceMakingDate: $("#txtInvMakingDate").val(),
+            BasicValue: $("#txtBasicValue").val(),
+            NetAmount: $("#txtNetAmount").val(),
+            VendorType: $("#ddlspVendorType option:selected").val(),
+            GSTType: type,
+            CompanyGST: $("#ddlPOCompanyGST option:selected").val(),
+            VendorGST: $("#ddlPOVendorGST option:selected").text(),
+            CGSTTotal: $("#txtInvTotalCGSTAmt").val(),
+            SGSTTotal: $("#txtInvTotalSGSTAmt").val(),
+            IGSTTotal: $("#txtInvTotalIGSTAmt").val(),
+            InvGSTTotal: $("#InvGSTTotal").val(),
+            Otherchargedcas: Otherdcas,
+            Otherchargesdcas: OtherSdcas,
+            Otherchargeamounts: OtherAmounts,
+            Deductiondcas: Deddcas,
+            Deductionsdcas: DedSdcas,
+            Deductionamounts: DedAmounts,
+            TransportDCA: $("#ddlPOTransportDCA option:selected").val(),
+            TransportSubDCA: $("#ddlPOTransportSubDCA option:selected").val(),
+            TransportAmount: $("#txtPOTransportAmount").val(),
+            TransportCGSTAmt: $("#txtPOTransportCGSTAmt").val(),
+            TransportSGSTAmt: $("#txtPOTransportSGSTAmt").val(),
+            TransportIGSTAmt: $("#txtPOTransportIGSTAmount").val(),
+            Itemids: ids,
+            ItemAmts: itemAmounts,
+            CGSTpercents: itemCgstper,
+            SGSTpercents: itemSgstper,
+            IGSTpercents: itemigstper,
+            CCCode: $("#txtPOCC").val(),
+            AccountHead: $("#txtPODCA").val(),
+            Taxdca: Taxdca,
+            Cgstsdca: Taxcgstsdca,
+            Sgstsdca: Taxsgstsdca,
+            Igstsdca: TaxIgstsdca,
+            ExItemAmount: exchangeamount,
+            ExchangeItem: exchangeitem,
+            isExchangeExist: isexchangeexist,
+            Advance : $("#txtNSpAdvance").val()
+        };
+        debugger;
+        addFailMsg = "Error Occurred While Adding New PO Invoice";
+        addSuccessMsg = "PO Invoice Added Successfully.";
+        $("#btnSubmitSupplierpoInvoice").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/Purchase/SaveSupplierPOInvoice',
+            data: { InvData: addInv },
+            success: function (Data) {
+                if (Data.saveStatus === 'Submited') {
+                    $("#divPOInvInfoMsg").text(addSuccessMsg);
+                    $("#divPOInvInfoMsg").removeClass("hidden alert-danger");
+                    $("#divPOInvInfoMsg").addClass("alert-success");
+          
+                }
+                else {
+                    $("#divPOInvInfoMsg").text(Data.saveStatus);
+                    $("#divPOInvInfoMsg").addClass("alert-danger");
+                    $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                    $("#btnSubmitSupplierpoInvoice").prop("disabled", false);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                $("#divPOInvInfoMsg").text(addFailMsg);
+                $("#divPOInvInfoMsg").addClass("alert-danger");
+                $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+                $("#btnSubmitSupplierpoInvoice").prop("disabled", false);
+            }
+        });
+    }   
+    function CheckAdvance() {
+        debugger;
+        var originalAdvance = $("#txtOriginalAdvance").val();
+        var Advance = $("#txtNSpAdvance").val();
+        if (parseFloat(Advance) > parseFloat(originalAdvance)) {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").append("<div>Advance Amount is Greater Than Paid Advance</div>");
+            $("#divPOInvInfoMsg").addClass("alert-danger");
+            $("#divPOInvInfoMsg").removeClass("hidden alert-success");
+        }
+        else {
+            $("#divPOInvInfoMsg").text("");
+            $("#divPOInvInfoMsg").addClass("hidden");
+            CountNetAndInvoiceAmount();
+        }
+
+    }
+</script>

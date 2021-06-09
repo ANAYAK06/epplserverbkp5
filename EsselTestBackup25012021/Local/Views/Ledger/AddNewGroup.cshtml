@@ -1,0 +1,86 @@
+﻿
+@model EsselTestLocalApplication.Models.MasterGroup
+@{
+    ViewBag.Title = "AddNewGroup";
+}
+
+<div class="col-md-12">
+    <form onsubmit="return false">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NatureGroupId)
+                        @Html.DropDownListFor(model => model.NatureGroupId, new SelectList(Model.NatureofGroupsList, "NatureGroupId", "NatureGroupName"), "-Please Select-", htmlAttributes: new { @class = "form-control dropdown-toggle", @id = "ddlMGroupNature", onchange = "MasterGroupNatureChange()" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divAddMasterGroupGrid">
+            <div class="col-md-12 change-tab">
+                <div class="strike">
+                    <span>Add Groups</span>
+                </div>
+                <div class="tabledynamic">
+                    <br />
+                    <table id="AddMasterGroupTable" class="table order-list addmastergbtable">
+                        <thead>
+                            <tr>
+                                <td style="text-align:center;color:#fff !important">S.No</td>
+                                <td style="text-align:center;color:#fff !important">Group Name</td>
+                                <td style="text-align:center;color:#fff !important">For Gross Profit Calculation</td>
+                                @*<td style="text-align:center"><label>IncomeExpenditure AccountHead</label></td>*@
+                                <td style="text-align:center"></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center" class="addmgsno">1</td>
+                                <td style="text-align:center" class="addmgname">
+                                    <input type="text" class="form-control mgpname" style="text-transform:uppercase" />
+                                </td>
+
+                                <td style="text-align:center">
+                                    <select class="form-control dropdown-toggle pcapplicable">
+                                        <option selected="selected" value="Select">Select</option>
+                                        <option value="Y">Yes</option>
+                                        <option value="N">No</option>
+                                    </select>                                 
+                                </td>
+                                @*<td>
+                                    <select class="form-control dropdown-toggle incomeexp" id="ddlIncomeExpediture" >
+                                        <option selected="selected" value="0">-Select-</option>                                      
+                                    </select>
+                                </td>*@
+                            </tr>
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="btn btn-default  btn-block" value="Add New Group" onclick="Addmastergroupgridnewrow();" />
+                                </td>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                <div class="text-right">
+                    <input type="submit" class="btn btn1 btn-success" id="btnSubmitNewMasterGroup" onclick="SubmitNewMasterGroup()" value="Submit" />
+                    <input type="button" class="btn btn1 btn-success" id="btnResetNewMasterGroup" onclick="ResetNewMasterGroup()" value="Reset" />
+                    
+                </div>
+            </div>
+            <div class="row col-md-12 text-center">
+                <br/>
+                <div id="divNewMasterGroupInfoMsg" class="alert alert-danger hidden">
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
